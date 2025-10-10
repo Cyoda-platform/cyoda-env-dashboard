@@ -1,0 +1,1495 @@
+{
+  "@bean": "com.cyoda.plugins.mapping.core.dtos.DataMappingConfigDto",
+  "id": "ba8b9730-9b1d-11ec-9479-024265f17e9a",
+  "dataType": "XML",
+  "name": "anton KBO_COMPANY_REPORT_4 copy",
+  "description": "",
+  "entityMappings": [
+    {
+      "entityClass": "com.cyoda.encompass.model.OrganisationEntity",
+      "srcRelativeRootPath": "root:/Envelope/Body",
+      "columns": [
+        {
+          "srcColumnPath": "ReadEnterpriseReply/Enterprise/Number",
+          "dstCyodaColumnPath": "org@com#encompasscorporation#edmservice#model#dto#Organisation.identifiers.[0]@com#encompasscorporation#edmservice#model#dto#Identifier.identifier",
+          "dstCyodaColumnPathType": "java.lang.String",
+          "transformer": {
+            "type": "COMPOSITE",
+            "children": []
+          }
+        },
+        {
+          "srcColumnPath": "ReadEnterpriseReply/Enterprise/JuridicalForm/Description/Value",
+          "dstCyodaColumnPath": "org@com#encompasscorporation#edmservice#model#dto#Organisation.legalForm@com#encompasscorporation#edmservice#model#dto#LegalForm.legalForm",
+          "dstCyodaColumnPathType": "java.lang.String",
+          "transformer": {
+            "type": "COMPOSITE",
+            "children": [
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.SourceObjectValueTransformer$ToString",
+                "parameters": []
+              },
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim",
+                "parameters": []
+              }
+            ]
+          }
+        },
+        {
+          "srcColumnPath": "ReadEnterpriseReply/Enterprise/Period/Begin",
+          "dstCyodaColumnPath": "org@com#encompasscorporation#edmservice#model#dto#Organisation.registrationDetails.[0]@com#encompasscorporation#edmservice#model#dto#RegistrationDetail.registrationDate",
+          "dstCyodaColumnPathType": "java.util.Date",
+          "transformer": {
+            "type": "COMPOSITE",
+            "children": [
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.SourceObjectValueTransformer$ToString",
+                "parameters": []
+              },
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$ToDatePredefinedFormat",
+                "parameters": [
+                  {
+                    "@bean": "com.cyoda.core.namedparameters.StringParameter",
+                    "name": "format",
+                    "value": "yyyy-MM-dd",
+                    "parameterType": "java.lang.String"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "srcColumnPath": "ReadEnterpriseReply/Enterprise/JuridicalSituation/Status/Description/Value",
+          "dstCyodaColumnPath": "org@com#encompasscorporation#edmservice#model#dto#Organisation.registrationDetails.[0]@com#encompasscorporation#edmservice#model#dto#RegistrationDetail.organisationStatus",
+          "dstCyodaColumnPathType": "java.lang.String",
+          "transformer": {
+            "type": "COMPOSITE",
+            "children": [
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.SourceObjectValueTransformer$ToString",
+                "parameters": []
+              },
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim",
+                "parameters": []
+              }
+            ]
+          }
+        }
+      ],
+      "functionalMappings": [
+        {
+          "name": "denominationBasedOnLanguageFullName",
+          "srcPaths": ["ReadEnterpriseReply/Enterprise/Denomination/*/Code", "ReadEnterpriseReply/Enterprise/Denomination/*/Description/Value", "ReadEnterpriseReply/Enterprise/Denomination/*/Description/Language"],
+          "statements": [
+            {
+              "type": "ASSIGN_VAR",
+              "variableName": "allDenominations",
+              "expression": {
+                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.AsMap",
+                "args": [
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                    "value": "code"
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.SrcValueReadExpressionConfigDto",
+                    "srcPath": "ReadEnterpriseReply/Enterprise/Denomination/*/Code"
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                    "value": "name"
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.SrcValueReadExpressionConfigDto",
+                    "srcPath": "ReadEnterpriseReply/Enterprise/Denomination/*/Description/Value"
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                    "value": "language"
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.SrcValueReadExpressionConfigDto",
+                    "srcPath": "ReadEnterpriseReply/Enterprise/Denomination/*/Description/Language"
+                  }
+                ]
+              }
+            },
+            {
+              "type": "ASSIGN_VAR",
+              "variableName": "enName",
+              "expression": {
+                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.GetElementByIndex",
+                "args": [
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.reduce.ToFilteredList",
+                    "args": [
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                        "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+                        "args": [
+                          {
+                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                            "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim"
+                          },
+                          {
+                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                            "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.GetElementByKey",
+                            "args": [
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                                "variableName": "allDenominations"
+                              },
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                "value": "name"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                        "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.And",
+                        "args": [
+                          {
+                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                            "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.Equals",
+                            "args": [
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                "value": "001"
+                              },
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+                                "args": [
+                                  {
+                                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                    "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim"
+                                  },
+                                  {
+                                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                                    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.GetElementByKey",
+                                    "args": [
+                                      {
+                                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                                        "variableName": "allDenominations"
+                                      },
+                                      {
+                                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                        "value": "code"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                            "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.Equals",
+                            "args": [
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                "value": "en"
+                              },
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+                                "args": [
+                                  {
+                                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                    "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim"
+                                  },
+                                  {
+                                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                                    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.GetElementByKey",
+                                    "args": [
+                                      {
+                                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                                        "variableName": "allDenominations"
+                                      },
+                                      {
+                                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                        "value": "language"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.LongConstantExpressionConfigDto",
+                    "value": {
+                      "@type": "Long",
+                      "value": 0
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "type": "ASSIGN_VAR",
+              "variableName": "frName",
+              "expression": {
+                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.GetElementByIndex",
+                "args": [
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.reduce.ToFilteredList",
+                    "args": [
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                        "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+                        "args": [
+                          {
+                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                            "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim"
+                          },
+                          {
+                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                            "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.GetElementByKey",
+                            "args": [
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                                "variableName": "allDenominations"
+                              },
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                "value": "name"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                        "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.And",
+                        "args": [
+                          {
+                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                            "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.Equals",
+                            "args": [
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                "value": "001"
+                              },
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+                                "args": [
+                                  {
+                                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                    "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim"
+                                  },
+                                  {
+                                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                                    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.GetElementByKey",
+                                    "args": [
+                                      {
+                                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                                        "variableName": "allDenominations"
+                                      },
+                                      {
+                                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                        "value": "code"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                            "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.Equals",
+                            "args": [
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                "value": "fr"
+                              },
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+                                "args": [
+                                  {
+                                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                    "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim"
+                                  },
+                                  {
+                                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                                    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.GetElementByKey",
+                                    "args": [
+                                      {
+                                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                                        "variableName": "allDenominations"
+                                      },
+                                      {
+                                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                        "value": "language"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.LongConstantExpressionConfigDto",
+                    "value": {
+                      "@type": "Long",
+                      "value": 0
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "type": "ASSIGN_VAR",
+              "variableName": "nlName",
+              "expression": {
+                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.GetElementByIndex",
+                "args": [
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.reduce.ToFilteredList",
+                    "args": [
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                        "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+                        "args": [
+                          {
+                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                            "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim"
+                          },
+                          {
+                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                            "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.GetElementByKey",
+                            "args": [
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                                "variableName": "allDenominations"
+                              },
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                "value": "name"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                        "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.And",
+                        "args": [
+                          {
+                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                            "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.Equals",
+                            "args": [
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                "value": "001"
+                              },
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+                                "args": [
+                                  {
+                                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                    "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim"
+                                  },
+                                  {
+                                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                                    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.GetElementByKey",
+                                    "args": [
+                                      {
+                                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                                        "variableName": "allDenominations"
+                                      },
+                                      {
+                                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                        "value": "code"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                            "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.Equals",
+                            "args": [
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                "value": "nl"
+                              },
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+                                "args": [
+                                  {
+                                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                    "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim"
+                                  },
+                                  {
+                                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                                    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.GetElementByKey",
+                                    "args": [
+                                      {
+                                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                                        "variableName": "allDenominations"
+                                      },
+                                      {
+                                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                        "value": "language"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.LongConstantExpressionConfigDto",
+                    "value": {
+                      "@type": "Long",
+                      "value": 0
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "type": "ASSIGN_VAR",
+              "variableName": "deName",
+              "expression": {
+                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.GetElementByIndex",
+                "args": [
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.reduce.ToFilteredList",
+                    "args": [
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                        "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+                        "args": [
+                          {
+                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                            "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim"
+                          },
+                          {
+                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                            "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.GetElementByKey",
+                            "args": [
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                                "variableName": "allDenominations"
+                              },
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                "value": "name"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                        "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.And",
+                        "args": [
+                          {
+                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                            "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.Equals",
+                            "args": [
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                "value": "001"
+                              },
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+                                "args": [
+                                  {
+                                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                    "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim"
+                                  },
+                                  {
+                                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                                    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.GetElementByKey",
+                                    "args": [
+                                      {
+                                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                                        "variableName": "allDenominations"
+                                      },
+                                      {
+                                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                        "value": "code"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                            "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.Equals",
+                            "args": [
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                "value": "de"
+                              },
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+                                "args": [
+                                  {
+                                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                    "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim"
+                                  },
+                                  {
+                                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                                    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.GetElementByKey",
+                                    "args": [
+                                      {
+                                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                                        "variableName": "allDenominations"
+                                      },
+                                      {
+                                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                        "value": "language"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.LongConstantExpressionConfigDto",
+                    "value": {
+                      "@type": "Long",
+                      "value": 0
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "type": "RETURN",
+              "expression": {
+                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.IfElse",
+                "args": [
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.IsNotNull",
+                    "args": [
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                        "variableName": "enName"
+                      }
+                    ]
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                    "variableName": "enName"
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.IfElse",
+                    "args": [
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                        "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.IsNotNull",
+                        "args": [
+                          {
+                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                            "variableName": "frName"
+                          }
+                        ]
+                      },
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                        "variableName": "frName"
+                      },
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                        "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.IfElse",
+                        "args": [
+                          {
+                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                            "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.IsNotNull",
+                            "args": [
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                                "variableName": "nlName"
+                              }
+                            ]
+                          },
+                          {
+                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                            "variableName": "nlName"
+                          },
+                          {
+                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                            "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.IfElse",
+                            "args": [
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.IsNotNull",
+                                "args": [
+                                  {
+                                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                                    "variableName": "deName"
+                                  }
+                                ]
+                              },
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                                "variableName": "deName"
+                              },
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.NullValueExpressionConfigDto"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ],
+          "dstPath": "org@com#encompasscorporation#edmservice#model#dto#Organisation.fullName"
+        },
+        {
+          "name": "Functional-Mapping-1",
+          "srcPaths": ["ReadEnterpriseReply/Enterprise/Denomination/*/Code", "ReadEnterpriseReply/Enterprise/Denomination/*/Description/Value", "ReadEnterpriseReply/Enterprise/Denomination/*/Description/Language"],
+          "statements": [
+            {
+              "type": "ASSIGN_VAR",
+              "variableName": "allDenominations",
+              "expression": {
+                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.AsMap",
+                "args": [
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                    "value": "code"
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.SrcValueReadExpressionConfigDto",
+                    "srcPath": "ReadEnterpriseReply/Enterprise/Denomination/*/Code"
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                    "value": "name"
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.SrcValueReadExpressionConfigDto",
+                    "srcPath": "ReadEnterpriseReply/Enterprise/Denomination/*/Description/Value"
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                    "value": "language"
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.SrcValueReadExpressionConfigDto",
+                    "srcPath": "ReadEnterpriseReply/Enterprise/Denomination/*/Description/Language"
+                  }
+                ]
+              }
+            },
+            {
+              "type": "ASSIGN_VAR",
+              "variableName": "enName",
+              "expression": {
+                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.GetElementByIndex",
+                "args": [
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.reduce.ToFilteredList",
+                    "args": [
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                        "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+                        "args": [
+                          {
+                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                            "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim"
+                          },
+                          {
+                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                            "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.GetElementByKey",
+                            "args": [
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                                "variableName": "allDenominations"
+                              },
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                "value": "name"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                        "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.And",
+                        "args": [
+                          {
+                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                            "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.Equals",
+                            "args": [
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                "value": "1"
+                              },
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+                                "args": [
+                                  {
+                                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                    "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim"
+                                  },
+                                  {
+                                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                                    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.GetElementByKey",
+                                    "args": [
+                                      {
+                                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                                        "variableName": "allDenominations"
+                                      },
+                                      {
+                                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                        "value": "code"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                            "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.Equals",
+                            "args": [
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                "value": "en"
+                              },
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+                                "args": [
+                                  {
+                                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                    "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim"
+                                  },
+                                  {
+                                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                                    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.GetElementByKey",
+                                    "args": [
+                                      {
+                                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                                        "variableName": "allDenominations"
+                                      },
+                                      {
+                                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                        "value": "language"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.LongConstantExpressionConfigDto",
+                    "value": {
+                      "@type": "Long",
+                      "value": 0
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "type": "ASSIGN_VAR",
+              "variableName": "frName",
+              "expression": {
+                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.GetElementByIndex",
+                "args": [
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.reduce.ToFilteredList",
+                    "args": [
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                        "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+                        "args": [
+                          {
+                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                            "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim"
+                          },
+                          {
+                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                            "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.GetElementByKey",
+                            "args": [
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                                "variableName": "allDenominations"
+                              },
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                "value": "name"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                        "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.And",
+                        "args": [
+                          {
+                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                            "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.Equals",
+                            "args": [
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                "value": "1"
+                              },
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+                                "args": [
+                                  {
+                                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                    "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim"
+                                  },
+                                  {
+                                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                                    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.GetElementByKey",
+                                    "args": [
+                                      {
+                                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                                        "variableName": "allDenominations"
+                                      },
+                                      {
+                                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                        "value": "code"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                            "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.Equals",
+                            "args": [
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                "value": "fr"
+                              },
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+                                "args": [
+                                  {
+                                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                    "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim"
+                                  },
+                                  {
+                                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                                    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.GetElementByKey",
+                                    "args": [
+                                      {
+                                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                                        "variableName": "allDenominations"
+                                      },
+                                      {
+                                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                        "value": "language"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.LongConstantExpressionConfigDto",
+                    "value": {
+                      "@type": "Long",
+                      "value": 0
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "type": "ASSIGN_VAR",
+              "variableName": "nlName",
+              "expression": {
+                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.GetElementByIndex",
+                "args": [
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.reduce.ToFilteredList",
+                    "args": [
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                        "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+                        "args": [
+                          {
+                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                            "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim"
+                          },
+                          {
+                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                            "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.GetElementByKey",
+                            "args": [
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                                "variableName": "allDenominations"
+                              },
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                "value": "name"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                        "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.And",
+                        "args": [
+                          {
+                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                            "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.Equals",
+                            "args": [
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                "value": "1"
+                              },
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+                                "args": [
+                                  {
+                                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                    "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim"
+                                  },
+                                  {
+                                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                                    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.GetElementByKey",
+                                    "args": [
+                                      {
+                                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                                        "variableName": "allDenominations"
+                                      },
+                                      {
+                                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                        "value": "code"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                            "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.Equals",
+                            "args": [
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                "value": "nl"
+                              },
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+                                "args": [
+                                  {
+                                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                    "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim"
+                                  },
+                                  {
+                                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                                    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.GetElementByKey",
+                                    "args": [
+                                      {
+                                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                                        "variableName": "allDenominations"
+                                      },
+                                      {
+                                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                        "value": "language"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.LongConstantExpressionConfigDto",
+                    "value": {
+                      "@type": "Long",
+                      "value": 0
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "type": "ASSIGN_VAR",
+              "variableName": "deName",
+              "expression": {
+                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.GetElementByIndex",
+                "args": [
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.reduce.ToFilteredList",
+                    "args": [
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                        "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+                        "args": [
+                          {
+                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                            "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim"
+                          },
+                          {
+                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                            "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.GetElementByKey",
+                            "args": [
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                                "variableName": "allDenominations"
+                              },
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                "value": "name"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                        "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.And",
+                        "args": [
+                          {
+                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                            "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.Equals",
+                            "args": [
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                "value": "1"
+                              },
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+                                "args": [
+                                  {
+                                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                    "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim"
+                                  },
+                                  {
+                                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                                    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.GetElementByKey",
+                                    "args": [
+                                      {
+                                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                                        "variableName": "allDenominations"
+                                      },
+                                      {
+                                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                        "value": "code"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                            "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.Equals",
+                            "args": [
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                "value": "de"
+                              },
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+                                "args": [
+                                  {
+                                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                    "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim"
+                                  },
+                                  {
+                                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                                    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.GetElementByKey",
+                                    "args": [
+                                      {
+                                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                                        "variableName": "allDenominations"
+                                      },
+                                      {
+                                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                        "value": "language"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.LongConstantExpressionConfigDto",
+                    "value": {
+                      "@type": "Long",
+                      "value": 0
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "type": "ASSIGN_VAR",
+              "variableName": "filteredCode",
+              "expression": {
+                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.reduce.ToFilteredList",
+                "args": [
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                    "variableName": "allDenominations"
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.Equals",
+                    "args": [
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                        "value": "001"
+                      },
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                        "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+                        "args": [
+                          {
+                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                            "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim"
+                          },
+                          {
+                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                            "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.GetElementByKey",
+                            "args": [
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                                "variableName": "allDenominations"
+                              },
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                "value": "code"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "type": "ASSIGN_VAR",
+              "variableName": "filteredCodeMap",
+              "expression": {
+                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.Cast",
+                "args": [
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.enlarge.EnlargeFromList",
+                    "args": [
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                        "value": "tempName"
+                      },
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                        "variableName": "filteredCode"
+                      }
+                    ]
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                    "value": "Map"
+                  }
+                ]
+              }
+            },
+            {
+              "type": "ASSIGN_VAR",
+              "variableName": "filteredFullName",
+              "expression": {
+                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.reduce.ToFilteredList",
+                "args": [
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                    "variableName": "filteredCodeMap"
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.Not",
+                    "args": [
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                        "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.Equals",
+                        "args": [
+                          {
+                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                            "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.GetElementByKey",
+                            "args": [
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                                "variableName": "filteredCodeMap"
+                              },
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                "value": "name"
+                              }
+                            ]
+                          },
+                          {
+                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                            "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.IfElse",
+                            "args": [
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.IsNotNull",
+                                "args": [
+                                  {
+                                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                                    "variableName": "enName"
+                                  }
+                                ]
+                              },
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                                "variableName": "enName"
+                              },
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.IfElse",
+                                "args": [
+                                  {
+                                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                                    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.IsNotNull",
+                                    "args": [
+                                      {
+                                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                                        "variableName": "frName"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                                    "variableName": "frName"
+                                  },
+                                  {
+                                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                                    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.IfElse",
+                                    "args": [
+                                      {
+                                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                                        "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.IsNotNull",
+                                        "args": [
+                                          {
+                                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                                            "variableName": "nlName"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                                        "variableName": "nlName"
+                                      },
+                                      {
+                                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                                        "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.IfElse",
+                                        "args": [
+                                          {
+                                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                                            "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.IsNotNull",
+                                            "args": [
+                                              {
+                                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                                                "variableName": "deName"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                                            "variableName": "deName"
+                                          },
+                                          {
+                                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.NullValueExpressionConfigDto"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "type": "ASSIGN_VAR",
+              "variableName": "filteredFullNameMap",
+              "expression": {
+                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.Cast",
+                "args": [
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.enlarge.EnlargeFromList",
+                    "args": [
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                        "value": "tempName2"
+                      },
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                        "variableName": "filteredFullName"
+                      }
+                    ]
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                    "value": "Map"
+                  }
+                ]
+              }
+            },
+            {
+              "type": "SET_DST_VALUE",
+              "dstPath": "org@com#encompasscorporation#edmservice#model#dto#Organisation.organisationAliases.[*]@com#encompasscorporation#edmservice#model#dto#OrganisationAlias.language",
+              "expression": {
+                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.GetElementByKey",
+                "args": [
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                    "variableName": "filteredFullNameMap"
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                    "value": "language"
+                  }
+                ]
+              }
+            },
+            {
+              "type": "RETURN",
+              "expression": {
+                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.GetElementByKey",
+                "args": [
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                    "variableName": "filteredFullNameMap"
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                    "value": "name"
+                  }
+                ]
+              }
+            }
+          ],
+          "dstPath": "org@com#encompasscorporation#edmservice#model#dto#Organisation.organisationAliases.[*]@com#encompasscorporation#edmservice#model#dto#OrganisationAlias.alias"
+        }
+      ],
+      "columnPathsForUniqueCheck": [],
+      "metadata": []
+    }
+  ],
+  "sampleContent": "<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n   <soap:Header>\n      <ReplyContext xmlns:ns2=\"http://economie.fgov.be/kbopub/webservices/v1/datamodel\" xmlns=\"http://economie.fgov.be/kbopub/webservices/v1/messages\">\n         <RequestId>1</RequestId>\n         <ReplyId>defc2aed-c57c-49ad-a818-6073af038137</ReplyId>\n         <ReplyStatus>\n            <Code>00001</Code>\n            <Description>The operation completed successfully</Description>\n         </ReplyStatus>\n         <AccountBalance>70</AccountBalance>\n         <SnapshotDate>2022-02-14</SnapshotDate>\n      </ReplyContext>\n   </soap:Header>\n   <soap:Body>\n      <ReadEnterpriseReply xmlns:ns2=\"http://economie.fgov.be/kbopub/webservices/v1/datamodel\" xmlns=\"http://economie.fgov.be/kbopub/webservices/v1/messages\">\n         <ns2:Enterprise>\n            <ns2:Number>314595348</ns2:Number>\n            <ns2:JuridicalSituation>\n               <ns2:Code>000</ns2:Code>\n               <ns2:Description>\n                  <ns2:Value>Situation normale</ns2:Value>\n                  <ns2:Language>fr</ns2:Language>\n               </ns2:Description>\n               <ns2:ValidityPeriod>\n                  <ns2:Begin>1968-01-01</ns2:Begin>\n               </ns2:ValidityPeriod>\n               <ns2:Status>\n                  <ns2:Code>AC</ns2:Code>\n                  <ns2:Description>\n                     <ns2:Value>Actif</ns2:Value>\n                     <ns2:Language>fr</ns2:Language>\n                  </ns2:Description>\n               </ns2:Status>\n            </ns2:JuridicalSituation>\n            <ns2:Period>\n               <ns2:Begin>1968-01-01</ns2:Begin>\n            </ns2:Period>\n            <ns2:TypeOfEnterprise>ELP</ns2:TypeOfEnterprise>\n            <ns2:JuridicalForm>\n               <ns2:Code>301</ns2:Code>\n               <ns2:Description>\n                  <ns2:Value>Service public fédéral</ns2:Value>\n                  <ns2:Language>fr</ns2:Language>\n               </ns2:Description>\n               <ns2:ValidityPeriod>\n                  <ns2:Begin>2002-03-05</ns2:Begin>\n               </ns2:ValidityPeriod>\n            </ns2:JuridicalForm>\n            <ns2:Denomination>\n               <ns2:Code>001</ns2:Code>\n               <ns2:Description>\n                  <ns2:Value>Service Public Fédéral Economie, P.M.E., Classes Moyennes et Energie</ns2:Value>\n                  <ns2:Language>fr</ns2:Language>\n               </ns2:Description>\n               <ns2:ValidityPeriod>\n                  <ns2:Begin>2002-03-05</ns2:Begin>\n               </ns2:ValidityPeriod>\n            </ns2:Denomination>\n            <ns2:Denomination>\n               <ns2:Code>002</ns2:Code>\n               <ns2:Description>\n                  <ns2:Value>ECO</ns2:Value>\n                  <ns2:Language>fr</ns2:Language>\n               </ns2:Description>\n               <ns2:ValidityPeriod>\n                  <ns2:Begin>2002-03-05</ns2:Begin>\n               </ns2:ValidityPeriod>\n            </ns2:Denomination>\n            <ns2:Denomination>\n               <ns2:Code>001</ns2:Code>\n               <ns2:Description>\n                  <ns2:Value>Federale Overheidsdienst Economie, K.M.O., Middenstand en Energie</ns2:Value>\n                  <ns2:Language>nl</ns2:Language>\n               </ns2:Description>\n               <ns2:ValidityPeriod>\n                  <ns2:Begin>2002-03-05</ns2:Begin>\n               </ns2:ValidityPeriod>\n            </ns2:Denomination>\n            <ns2:Denomination>\n               <ns2:Code>002</ns2:Code>\n               <ns2:Description>\n                  <ns2:Value>ECO</ns2:Value>\n                  <ns2:Language>nl</ns2:Language>\n               </ns2:Description>\n               <ns2:ValidityPeriod>\n                  <ns2:Begin>2002-03-05</ns2:Begin>\n               </ns2:ValidityPeriod>\n            </ns2:Denomination>\n            <ns2:Denomination>\n               <ns2:Code>001</ns2:Code>\n               <ns2:Description>\n                  <ns2:Value>Föderaler Öffentlicher Dienst Wirtschaft, K.M.B., Mittelstand und Energie</ns2:Value>\n                  <ns2:Language>de</ns2:Language>\n               </ns2:Description>\n               <ns2:ValidityPeriod>\n                  <ns2:Begin>2002-03-05</ns2:Begin>\n               </ns2:ValidityPeriod>\n            </ns2:Denomination>\n            <ns2:Denomination>\n               <ns2:Code>002</ns2:Code>\n               <ns2:Description>\n                  <ns2:Value>ECO</ns2:Value>\n                  <ns2:Language>de</ns2:Language>\n               </ns2:Description>\n               <ns2:ValidityPeriod>\n                  <ns2:Begin>2002-03-05</ns2:Begin>\n               </ns2:ValidityPeriod>\n            </ns2:Denomination>\n            <ns2:Address>\n               <ns2:Street>\n                  <ns2:Code>0086</ns2:Code>\n                  <ns2:Description>\n                     <ns2:Value>Rue du Progrès</ns2:Value>\n                     <ns2:Language>fr</ns2:Language>\n                  </ns2:Description>\n               </ns2:Street>\n               <ns2:HouseNumber>50</ns2:HouseNumber>\n               <ns2:Zipcode>1210</ns2:Zipcode>\n               <ns2:Municipality>\n                  <ns2:Code>21014</ns2:Code>\n                  <ns2:Description>\n                     <ns2:Value>Saint-Josse-ten-Noode</ns2:Value>\n                     <ns2:Language>fr</ns2:Language>\n                  </ns2:Description>\n               </ns2:Municipality>\n               <ns2:ExtraAddressInfo>City Atrium</ns2:ExtraAddressInfo>\n               <ns2:Begin>2005-02-01</ns2:Begin>\n               <ns2:TypeOfAddress>\n                  <ns2:Code>REGO</ns2:Code>\n                  <ns2:Description>\n                     <ns2:Value>Adresse du siège social</ns2:Value>\n                     <ns2:Language>fr</ns2:Language>\n                  </ns2:Description>\n               </ns2:TypeOfAddress>\n            </ns2:Address>\n            <ns2:ContactInformation>\n               <ns2:ContactType>001</ns2:ContactType>\n               <ns2:Description>\n                  <ns2:Value>Téléphone</ns2:Value>\n                  <ns2:Language>fr</ns2:Language>\n               </ns2:Description>\n               <ns2:Value>+3222775111</ns2:Value>\n               <ns2:Begin>2005-02-01</ns2:Begin>\n            </ns2:ContactInformation>\n            <ns2:ContactInformation>\n               <ns2:ContactType>002</ns2:ContactType>\n               <ns2:Description>\n                  <ns2:Value>Fax</ns2:Value>\n                  <ns2:Language>fr</ns2:Language>\n               </ns2:Description>\n               <ns2:Value>+3222775021</ns2:Value>\n               <ns2:Begin>2005-02-01</ns2:Begin>\n            </ns2:ContactInformation>\n            <ns2:ContactInformation>\n               <ns2:ContactType>003</ns2:ContactType>\n               <ns2:Description>\n                  <ns2:Value>Site Internet</ns2:Value>\n                  <ns2:Language>fr</ns2:Language>\n               </ns2:Description>\n               <ns2:Value>http://economie.fgov.be</ns2:Value>\n               <ns2:Begin>2005-02-01</ns2:Begin>\n            </ns2:ContactInformation>\n            <ns2:ContactInformation>\n               <ns2:ContactType>004</ns2:ContactType>\n               <ns2:Description>\n                  <ns2:Value>Email</ns2:Value>\n                  <ns2:Language>fr</ns2:Language>\n               </ns2:Description>\n               <ns2:Value>info.eco@economie.fgov.be</ns2:Value>\n               <ns2:Begin>2005-02-01</ns2:Begin>\n            </ns2:ContactInformation>\n            <ns2:BusinessUnits>15</ns2:BusinessUnits>\n            <ns2:Qualification>\n               <ns2:Code>00070</ns2:Code>\n               <ns2:Description>\n                  <ns2:Value>Employeur ONSS</ns2:Value>\n                  <ns2:Language>fr</ns2:Language>\n               </ns2:Description>\n               <ns2:Period>\n                  <ns2:Begin>2005-01-01</ns2:Begin>\n               </ns2:Period>\n            </ns2:Qualification>\n            <ns2:Qualification>\n               <ns2:Code>00084</ns2:Code>\n               <ns2:Description>\n                  <ns2:Value>Assujetti à la TVA</ns2:Value>\n                  <ns2:Language>fr</ns2:Language>\n               </ns2:Description>\n               <ns2:Period>\n                  <ns2:Begin>1993-06-01</ns2:Begin>\n               </ns2:Period>\n            </ns2:Qualification>\n            <ns2:Qualification>\n               <ns2:Code>00300</ns2:Code>\n               <ns2:Description>\n                  <ns2:Value>Pouvoir adjudicateur</ns2:Value>\n                  <ns2:Language>fr</ns2:Language>\n               </ns2:Description>\n               <ns2:Period>\n                  <ns2:Begin>1968-01-01</ns2:Begin>\n               </ns2:Period>\n            </ns2:Qualification>\n            <ns2:Activity>\n               <ns2:Code>84130</ns2:Code>\n               <ns2:ActivityGroupAdministration>\n                  <ns2:ActivityGroup>006</ns2:ActivityGroup>\n                  <ns2:Description>\n                     <ns2:Value>Activités ONSS</ns2:Value>\n                     <ns2:Language>fr</ns2:Language>\n                  </ns2:Description>\n               </ns2:ActivityGroupAdministration>\n               <ns2:Version>2008</ns2:Version>\n               <ns2:Description>\n                  <ns2:Value>Administration publique (tutelle) des activités économiques</ns2:Value>\n                  <ns2:Language>fr</ns2:Language>\n               </ns2:Description>\n               <ns2:Period>\n                  <ns2:Begin>2008-01-01</ns2:Begin>\n               </ns2:Period>\n               <ns2:ActivityClassification>\n                  <ns2:Code>MAIN</ns2:Code>\n                  <ns2:Description>\n                     <ns2:Value>Activité principale</ns2:Value>\n                     <ns2:Language>fr</ns2:Language>\n                  </ns2:Description>\n               </ns2:ActivityClassification>\n            </ns2:Activity>\n            <ns2:Activity>\n               <ns2:Code>84130</ns2:Code>\n               <ns2:ActivityGroupAdministration>\n                  <ns2:ActivityGroup>001</ns2:ActivityGroup>\n                  <ns2:Description>\n                     <ns2:Value>Activités TVA</ns2:Value>\n                     <ns2:Language>fr</ns2:Language>\n                  </ns2:Description>\n               </ns2:ActivityGroupAdministration>\n               <ns2:Version>2008</ns2:Version>\n               <ns2:Description>\n                  <ns2:Value>Administration publique (tutelle) des activités économiques</ns2:Value>\n                  <ns2:Language>fr</ns2:Language>\n               </ns2:Description>\n               <ns2:Period>\n                  <ns2:Begin>2008-01-01</ns2:Begin>\n               </ns2:Period>\n               <ns2:ActivityClassification>\n                  <ns2:Code>MAIN</ns2:Code>\n                  <ns2:Description>\n                     <ns2:Value>Activité principale</ns2:Value>\n                     <ns2:Language>fr</ns2:Language>\n                  </ns2:Description>\n               </ns2:ActivityClassification>\n            </ns2:Activity>\n            <ns2:Activity>\n               <ns2:Code>75130</ns2:Code>\n               <ns2:ActivityGroupAdministration>\n                  <ns2:ActivityGroup>001</ns2:ActivityGroup>\n                  <ns2:Description>\n                     <ns2:Value>Activités TVA</ns2:Value>\n                     <ns2:Language>fr</ns2:Language>\n                  </ns2:Description>\n               </ns2:ActivityGroupAdministration>\n               <ns2:Version>2003</ns2:Version>\n               <ns2:Description>\n                  <ns2:Value>Activités d'organismes publics relatives aux matières économiques</ns2:Value>\n                  <ns2:Language>fr</ns2:Language>\n               </ns2:Description>\n               <ns2:Period>\n                  <ns2:Begin>1993-06-01</ns2:Begin>\n               </ns2:Period>\n               <ns2:ActivityClassification>\n                  <ns2:Code>MAIN</ns2:Code>\n                  <ns2:Description>\n                     <ns2:Value>Activité principale</ns2:Value>\n                     <ns2:Language>fr</ns2:Language>\n                  </ns2:Description>\n               </ns2:ActivityClassification>\n            </ns2:Activity>\n            <ns2:Activity>\n               <ns2:Code>75130</ns2:Code>\n               <ns2:ActivityGroupAdministration>\n                  <ns2:ActivityGroup>006</ns2:ActivityGroup>\n                  <ns2:Description>\n                     <ns2:Value>Activités ONSS</ns2:Value>\n                     <ns2:Language>fr</ns2:Language>\n                  </ns2:Description>\n               </ns2:ActivityGroupAdministration>\n               <ns2:Version>2003</ns2:Version>\n               <ns2:Description>\n                  <ns2:Value>Activités d'organismes publics relatives aux matières économiques</ns2:Value>\n                  <ns2:Language>fr</ns2:Language>\n               </ns2:Description>\n               <ns2:Period>\n                  <ns2:Begin>2005-01-01</ns2:Begin>\n               </ns2:Period>\n               <ns2:ActivityClassification>\n                  <ns2:Code>MAIN</ns2:Code>\n                  <ns2:Description>\n                     <ns2:Value>Activité principale</ns2:Value>\n                     <ns2:Language>fr</ns2:Language>\n                  </ns2:Description>\n               </ns2:ActivityClassification>\n            </ns2:Activity>\n            <ns2:Function>\n               <ns2:Code>10010</ns2:Code>\n               <ns2:Description>\n                  <ns2:Value>Président</ns2:Value>\n                  <ns2:Language>fr</ns2:Language>\n               </ns2:Description>\n               <ns2:Period>\n                  <ns2:Begin>2021-02-15</ns2:Begin>\n               </ns2:Period>\n               <ns2:Person>\n                  <ns2:Surname>Waterbley</ns2:Surname>\n                  <ns2:GivenName>Séverine</ns2:GivenName>\n               </ns2:Person>\n            </ns2:Function>\n            <ns2:LinkedEnterprise>\n               <ns2:Code>006</ns2:Code>\n               <ns2:Description>\n                  <ns2:Value>relation inconnue</ns2:Value>\n                  <ns2:Language>fr</ns2:Language>\n               </ns2:Description>\n               <ns2:EnterpriseNumberSubject>354317739</ns2:EnterpriseNumberSubject>\n               <ns2:EnterpriseNumberObject>314595348</ns2:EnterpriseNumberObject>\n               <ns2:Period>\n                  <ns2:Begin>2002-03-05</ns2:Begin>\n               </ns2:Period>\n            </ns2:LinkedEnterprise>\n         </ns2:Enterprise>\n      </ReadEnterpriseReply>\n   </soap:Body>\n</soap:Envelope>",
+  "metadata": "{\"org@com#encompasscorporation#edmservice#model#dto#Organisation_fullName\":\"<xml xmlns=\\\"https://developers.google.com/blockly/xml\\\"><variables><variable id=\\\"(36L`nWaMy~7?$3-K+:(\\\">allDenominations</variable><variable id=\\\"QT)B}X0:t%(,Jz_tK`6}\\\">enName</variable><variable id=\\\"rGlfTVYi/*V1D/7fm.RP\\\">frName</variable><variable id=\\\"YDje5wiB%,vMx;/p%=9y\\\">nlName</variable><variable id=\\\"|4s`=3w_n6crPa1`{!yN\\\">deName</variable></variables><block type=\\\"statement_variables_set\\\" id=\\\"nz6niq*4!e0o*7%+zvSg\\\" x=\\\"138\\\" y=\\\"-163\\\"><field name=\\\"VAR\\\" id=\\\"(36L`nWaMy~7?$3-K+:(\\\">allDenominations</field><value name=\\\"VALUE\\\"><block type=\\\"function_simple_as_map\\\" id=\\\"=ZAh?w2!1sp[kM8to},h\\\"><mutation items=\\\"6\\\"></mutation><value name=\\\"ADD0\\\"><block type=\\\"expression_string\\\" id=\\\"4-/JMUeWq^7scDLA%f9M\\\"><field name=\\\"NAME\\\">code</field></block></value><value name=\\\"ADD1\\\"><block type=\\\"expression_src_value_read\\\" id=\\\"T+RX4BP2~buWu$LgL,Ry\\\"><field name=\\\"NAME\\\">ReadEnterpriseReply/Enterprise/Denomination/*/Code</field></block></value><value name=\\\"ADD2\\\"><block type=\\\"expression_string\\\" id=\\\"4S!Cg+hmqchBc(~Lc4=n\\\"><field name=\\\"NAME\\\">name</field></block></value><value name=\\\"ADD3\\\"><block type=\\\"expression_src_value_read\\\" id=\\\"fI;YCo)MHu!Y(UdaT55,\\\"><field name=\\\"NAME\\\">ReadEnterpriseReply/Enterprise/Denomination/*/Description/Value</field></block></value><value name=\\\"ADD4\\\"><block type=\\\"expression_string\\\" id=\\\"S`+*.|Anjj*q*P^0XRme\\\"><field name=\\\"NAME\\\">language</field></block></value><value name=\\\"ADD5\\\"><block type=\\\"expression_src_value_read\\\" id=\\\"(/=2L+yE*6ggmCt`4HeS\\\"><field name=\\\"NAME\\\">ReadEnterpriseReply/Enterprise/Denomination/*/Description/Language</field></block></value></block></value><next><block type=\\\"statement_variables_set\\\" id=\\\"VtS5yROe,3BsH].e]Hhq\\\"><field name=\\\"VAR\\\" id=\\\"QT)B}X0:t%(,Jz_tK`6}\\\">enName</field><value name=\\\"VALUE\\\"><block type=\\\"function_simple_get_element_by_index\\\" id=\\\"q[(_.xiush-?u=SFp@%g\\\"><value name=\\\"LIST\\\"><block type=\\\"function_reduce_toFilteredList\\\" id=\\\"c~9Ig6XLM7J$Zpku,_%H\\\"><value name=\\\"element\\\"><block type=\\\"transformer_stringvaluetransformer_trim\\\" id=\\\"*}^!,8gq`(?zSrA+e=Ve\\\"><value name=\\\"VALUE\\\"><block type=\\\"function_simple_get_element_by_key\\\" id=\\\"d=P^99V8_Lhz4kfo70P3\\\"><value name=\\\"LIST\\\"><block type=\\\"expression_var_read\\\" id=\\\"eaC5G:@KSu!*Y*k^,~m~\\\"><field name=\\\"NAME\\\" id=\\\"(36L`nWaMy~7?$3-K+:(\\\">allDenominations</field></block></value><value name=\\\"KEY\\\"><block type=\\\"expression_string\\\" id=\\\"L#7tHieH|YC=nrclT^Y2\\\"><field name=\\\"NAME\\\">name</field></block></value></block></value></block></value><value name=\\\"filterResult\\\"><block type=\\\"function_simple_and\\\" id=\\\"Av3);)I-{GPb!3c(hRHo\\\"><value name=\\\"param1\\\"><block type=\\\"function_simple_equal\\\" id=\\\"?sw:/h64m}@;rH5mzvB}\\\"><value name=\\\"A\\\"><block type=\\\"expression_string\\\" id=\\\"g+=y-Oy44w4I~$1`|nP)\\\"><field name=\\\"NAME\\\">001</field></block></value><value name=\\\"B\\\"><block type=\\\"transformer_stringvaluetransformer_trim\\\" id=\\\"X7@[4NwkdjW)ApJZ;/kO\\\"><value name=\\\"VALUE\\\"><block type=\\\"function_simple_get_element_by_key\\\" id=\\\"rrQf:C#boob^wigl0OB_\\\"><value name=\\\"LIST\\\"><block type=\\\"expression_var_read\\\" id=\\\"vWb?*j_h(U?u,]lX-0-x\\\"><field name=\\\"NAME\\\" id=\\\"(36L`nWaMy~7?$3-K+:(\\\">allDenominations</field></block></value><value name=\\\"KEY\\\"><block type=\\\"expression_string\\\" id=\\\"MBh%}3!ow)p]^pwUEo2p\\\"><field name=\\\"NAME\\\">code</field></block></value></block></value></block></value></block></value><value name=\\\"param2\\\"><block type=\\\"function_simple_equal\\\" id=\\\"zu-61cTq-1Z1HOaMv=S.\\\"><value name=\\\"A\\\"><block type=\\\"expression_string\\\" id=\\\"Ic/od:X1|COJKj-WbZm}\\\"><field name=\\\"NAME\\\">en</field></block></value><value name=\\\"B\\\"><block type=\\\"transformer_stringvaluetransformer_trim\\\" id=\\\"Vcc*e8*D@as3tJI{^u$w\\\"><value name=\\\"VALUE\\\"><block type=\\\"function_simple_get_element_by_key\\\" id=\\\";tUsP7OGKxCjYYpVv0F2\\\"><value name=\\\"LIST\\\"><block type=\\\"expression_var_read\\\" id=\\\"vu^Yn.WX+Y(p0(VwLDot\\\"><field name=\\\"NAME\\\" id=\\\"(36L`nWaMy~7?$3-K+:(\\\">allDenominations</field></block></value><value name=\\\"KEY\\\"><block type=\\\"expression_string\\\" id=\\\"TIMRdZuu:lzGeo6BjTvQ\\\"><field name=\\\"NAME\\\">language</field></block></value></block></value></block></value></block></value></block></value></block></value><value name=\\\"INDEX\\\"><block type=\\\"expression_long\\\" id=\\\"a%/2Md6d$7mpkdsB^)eu\\\"><field name=\\\"NAME\\\">0</field></block></value></block></value><next><block type=\\\"statement_variables_set\\\" id=\\\"CcogDdDw_w6NxmQ]$cC4\\\"><field name=\\\"VAR\\\" id=\\\"rGlfTVYi/*V1D/7fm.RP\\\">frName</field><value name=\\\"VALUE\\\"><block type=\\\"function_simple_get_element_by_index\\\" id=\\\"J+)wIL`{(kgEfFY}GvGc\\\"><value name=\\\"LIST\\\"><block type=\\\"function_reduce_toFilteredList\\\" id=\\\"~NR-YJxSuJBd1d1/j6Yz\\\"><value name=\\\"element\\\"><block type=\\\"transformer_stringvaluetransformer_trim\\\" id=\\\"Z1xaTTxX*@j3x~5,)YY]\\\"><value name=\\\"VALUE\\\"><block type=\\\"function_simple_get_element_by_key\\\" id=\\\"7s9S`3,d|bFqv?;7kHum\\\"><value name=\\\"LIST\\\"><block type=\\\"expression_var_read\\\" id=\\\"o#.-K5-T}Q@5c8Bs!BKl\\\"><field name=\\\"NAME\\\" id=\\\"(36L`nWaMy~7?$3-K+:(\\\">allDenominations</field></block></value><value name=\\\"KEY\\\"><block type=\\\"expression_string\\\" id=\\\"blIj)|7wWQ4Z|K}2O9cD\\\"><field name=\\\"NAME\\\">name</field></block></value></block></value></block></value><value name=\\\"filterResult\\\"><block type=\\\"function_simple_and\\\" id=\\\"%:g}2#ALv{#tb@|wHt=0\\\"><value name=\\\"param1\\\"><block type=\\\"function_simple_equal\\\" id=\\\"(u?]+%Y+[qt=_%Uoo.|z\\\"><value name=\\\"A\\\"><block type=\\\"expression_string\\\" id=\\\"|a*r9K@5YTQ|%u;txNyB\\\"><field name=\\\"NAME\\\">001</field></block></value><value name=\\\"B\\\"><block type=\\\"transformer_stringvaluetransformer_trim\\\" id=\\\"-Z9:^}$/QCG,)!o0.AGV\\\"><value name=\\\"VALUE\\\"><block type=\\\"function_simple_get_element_by_key\\\" id=\\\"yNYm9pAi!hv7#!IS.`OC\\\"><value name=\\\"LIST\\\"><block type=\\\"expression_var_read\\\" id=\\\"pSj9L!x!1dV_L17e0;@E\\\"><field name=\\\"NAME\\\" id=\\\"(36L`nWaMy~7?$3-K+:(\\\">allDenominations</field></block></value><value name=\\\"KEY\\\"><block type=\\\"expression_string\\\" id=\\\"cCscK/76!?,2|FV2%sI+\\\"><field name=\\\"NAME\\\">code</field></block></value></block></value></block></value></block></value><value name=\\\"param2\\\"><block type=\\\"function_simple_equal\\\" id=\\\"@QNjV|hW2mnq?O]|AJDN\\\"><value name=\\\"A\\\"><block type=\\\"expression_string\\\" id=\\\"Q*++NHC{c.Xn8waD2AJ/\\\"><field name=\\\"NAME\\\">fr</field></block></value><value name=\\\"B\\\"><block type=\\\"transformer_stringvaluetransformer_trim\\\" id=\\\"]P1R4B2#yv+1)+kq_v/T\\\"><value name=\\\"VALUE\\\"><block type=\\\"function_simple_get_element_by_key\\\" id=\\\"g@$BzBFsPS[q;=z[AQzZ\\\"><value name=\\\"LIST\\\"><block type=\\\"expression_var_read\\\" id=\\\"El_:xBZ,$IZso~$@faeh\\\"><field name=\\\"NAME\\\" id=\\\"(36L`nWaMy~7?$3-K+:(\\\">allDenominations</field></block></value><value name=\\\"KEY\\\"><block type=\\\"expression_string\\\" id=\\\":lp%PfP.622Lk=fwpTLR\\\"><field name=\\\"NAME\\\">language</field></block></value></block></value></block></value></block></value></block></value></block></value><value name=\\\"INDEX\\\"><block type=\\\"expression_long\\\" id=\\\"!w.X/!aXxl*fcUa^5li)\\\"><field name=\\\"NAME\\\">0</field></block></value></block></value><next><block type=\\\"statement_variables_set\\\" id=\\\"f8;=,RFqJPx#Lz2w*R$T\\\"><field name=\\\"VAR\\\" id=\\\"YDje5wiB%,vMx;/p%=9y\\\">nlName</field><value name=\\\"VALUE\\\"><block type=\\\"function_simple_get_element_by_index\\\" id=\\\"!-Ru/*]Um6POr4g;%K;I\\\"><value name=\\\"LIST\\\"><block type=\\\"function_reduce_toFilteredList\\\" id=\\\"7Z|S:B2B:odttMn3qy!I\\\"><value name=\\\"element\\\"><block type=\\\"transformer_stringvaluetransformer_trim\\\" id=\\\"%mWduhbU3*ta.cFDd;wQ\\\"><value name=\\\"VALUE\\\"><block type=\\\"function_simple_get_element_by_key\\\" id=\\\"7lxK`/u|MHg+*:gc0Lfq\\\"><value name=\\\"LIST\\\"><block type=\\\"expression_var_read\\\" id=\\\"agRn73?x25f:Mzq[NLJ@\\\"><field name=\\\"NAME\\\" id=\\\"(36L`nWaMy~7?$3-K+:(\\\">allDenominations</field></block></value><value name=\\\"KEY\\\"><block type=\\\"expression_string\\\" id=\\\"7sQ$##eQ8r0utI8s4~8j\\\"><field name=\\\"NAME\\\">name</field></block></value></block></value></block></value><value name=\\\"filterResult\\\"><block type=\\\"function_simple_and\\\" id=\\\"5F?-uvvl?/8rUT=x;1b^\\\"><value name=\\\"param1\\\"><block type=\\\"function_simple_equal\\\" id=\\\"8*:vM8Nkuhre2^wj$3^t\\\"><value name=\\\"A\\\"><block type=\\\"expression_string\\\" id=\\\"NbAac?Cn61Sv/A:|rd@]\\\"><field name=\\\"NAME\\\">001</field></block></value><value name=\\\"B\\\"><block type=\\\"transformer_stringvaluetransformer_trim\\\" id=\\\"g{uVrZJ+T`vo}.vkYGOf\\\"><value name=\\\"VALUE\\\"><block type=\\\"function_simple_get_element_by_key\\\" id=\\\"UEoOFxLzC}QgMLy8?7MI\\\"><value name=\\\"LIST\\\"><block type=\\\"expression_var_read\\\" id=\\\"JD`QpM6Zn2Iju6b2kBq]\\\"><field name=\\\"NAME\\\" id=\\\"(36L`nWaMy~7?$3-K+:(\\\">allDenominations</field></block></value><value name=\\\"KEY\\\"><block type=\\\"expression_string\\\" id=\\\"4N)S?z*BV5.0X8b#yeYB\\\"><field name=\\\"NAME\\\">code</field></block></value></block></value></block></value></block></value><value name=\\\"param2\\\"><block type=\\\"function_simple_equal\\\" id=\\\"J=l8j`5z_@jzmp2Sokda\\\"><value name=\\\"A\\\"><block type=\\\"expression_string\\\" id=\\\"4.w{6BzA6L6/*0BwQiLy\\\"><field name=\\\"NAME\\\">nl</field></block></value><value name=\\\"B\\\"><block type=\\\"transformer_stringvaluetransformer_trim\\\" id=\\\":^[2Zkc:.yb.M^D%yd5m\\\"><value name=\\\"VALUE\\\"><block type=\\\"function_simple_get_element_by_key\\\" id=\\\"}gz1}-j_{!JAO0V?N{Lp\\\"><value name=\\\"LIST\\\"><block type=\\\"expression_var_read\\\" id=\\\"{+Q1+0/Evw7ajF]$^*+$\\\"><field name=\\\"NAME\\\" id=\\\"(36L`nWaMy~7?$3-K+:(\\\">allDenominations</field></block></value><value name=\\\"KEY\\\"><block type=\\\"expression_string\\\" id=\\\"f$-V-$8]hQA4tIszYkGe\\\"><field name=\\\"NAME\\\">language</field></block></value></block></value></block></value></block></value></block></value></block></value><value name=\\\"INDEX\\\"><block type=\\\"expression_long\\\" id=\\\"]dyYrP)?pEy;d`i:_`ch\\\"><field name=\\\"NAME\\\">0</field></block></value></block></value><next><block type=\\\"statement_variables_set\\\" id=\\\"-m=XU3:Sh;w9Tx.+k5dR\\\"><field name=\\\"VAR\\\" id=\\\"|4s`=3w_n6crPa1`{!yN\\\">deName</field><value name=\\\"VALUE\\\"><block type=\\\"function_simple_get_element_by_index\\\" id=\\\"eW-zA-`L[$.[2gqGyD%w\\\"><value name=\\\"LIST\\\"><block type=\\\"function_reduce_toFilteredList\\\" id=\\\"F6|:aY7XUuaC}PG0HqFz\\\"><value name=\\\"element\\\"><block type=\\\"transformer_stringvaluetransformer_trim\\\" id=\\\"s}prLMVuL~d6#DU%I9Fo\\\"><value name=\\\"VALUE\\\"><block type=\\\"function_simple_get_element_by_key\\\" id=\\\"mOQ;fGq-ikm[4_.=M*r8\\\"><value name=\\\"LIST\\\"><block type=\\\"expression_var_read\\\" id=\\\"/B,,lyql;!T]brt,w(;~\\\"><field name=\\\"NAME\\\" id=\\\"(36L`nWaMy~7?$3-K+:(\\\">allDenominations</field></block></value><value name=\\\"KEY\\\"><block type=\\\"expression_string\\\" id=\\\"|%JW]d*UF3w2=j3um_ic\\\"><field name=\\\"NAME\\\">name</field></block></value></block></value></block></value><value name=\\\"filterResult\\\"><block type=\\\"function_simple_and\\\" id=\\\"fseNbnUK-I:Arc|481U)\\\"><value name=\\\"param1\\\"><block type=\\\"function_simple_equal\\\" id=\\\"i;#!r}?))L]W(tu1dPS[\\\"><value name=\\\"A\\\"><block type=\\\"expression_string\\\" id=\\\"gpYk+[dHl7_,v;4=g?4J\\\"><field name=\\\"NAME\\\">001</field></block></value><value name=\\\"B\\\"><block type=\\\"transformer_stringvaluetransformer_trim\\\" id=\\\"L+mdZfhsxhx)q~IiAXiH\\\"><value name=\\\"VALUE\\\"><block type=\\\"function_simple_get_element_by_key\\\" id=\\\"Vi${Uhy0Msu[}(e[fZuY\\\"><value name=\\\"LIST\\\"><block type=\\\"expression_var_read\\\" id=\\\"FegKEA/AX;4,[Z:CSN,\\\"><field name=\\\"NAME\\\" id=\\\"(36L`nWaMy~7?$3-K+:(\\\">allDenominations</field></block></value><value name=\\\"KEY\\\"><block type=\\\"expression_string\\\" id=\\\"A^ql1T[AWf#|y/,W-5B{\\\"><field name=\\\"NAME\\\">code</field></block></value></block></value></block></value></block></value><value name=\\\"param2\\\"><block type=\\\"function_simple_equal\\\" id=\\\"rQ}LyUhcu-9yzAt5hC/*\\\"><value name=\\\"A\\\"><block type=\\\"expression_string\\\" id=\\\"=/1YVHxmQKfMFwRP`[LQ\\\"><field name=\\\"NAME\\\">de</field></block></value><value name=\\\"B\\\"><block type=\\\"transformer_stringvaluetransformer_trim\\\" id=\\\"U$qY*yHl]%1K8E^6vWnR\\\"><value name=\\\"VALUE\\\"><block type=\\\"function_simple_get_element_by_key\\\" id=\\\"A0{Hyz/8|4Ohs;!0n[Mo\\\"><value name=\\\"LIST\\\"><block type=\\\"expression_var_read\\\" id=\\\"o(^,j4Cz#TRy-F1r0G}w\\\"><field name=\\\"NAME\\\" id=\\\"(36L`nWaMy~7?$3-K+:(\\\">allDenominations</field></block></value><value name=\\\"KEY\\\"><block type=\\\"expression_string\\\" id=\\\"n3Ustlgi-t^;Wp/=`AUL\\\"><field name=\\\"NAME\\\">language</field></block></value></block></value></block></value></block></value></block></value></block></value><value name=\\\"INDEX\\\"><block type=\\\"expression_long\\\" id=\\\":?tPk8$]mWA)ZRd-:7gu\\\"><field name=\\\"NAME\\\">0</field></block></value></block></value><next><block type=\\\"statement_return\\\" id=\\\"M`$1(FffALbUS4E%dmEi\\\"><value name=\\\"EXPRESSION\\\"><block type=\\\"function_simple_if_else\\\" id=\\\"Fn2YINR5s/:AO4[VmCV#\\\"><value name=\\\"IF\\\"><block type=\\\"function_simple_isNotNull\\\" id=\\\"1[%Nk0%r-iVJdj^cA4ua\\\"><value name=\\\"param\\\"><block type=\\\"expression_var_read\\\" id=\\\"#`es9o.=qDffR+}$7kfa\\\"><field name=\\\"NAME\\\" id=\\\"QT)B}X0:t%(,Jz_tK`6}\\\">enName</field></block></value></block></value><value name=\\\"THEN\\\"><block type=\\\"expression_var_read\\\" id=\\\"+ciw/hfjU,7y5`UZRJ`O\\\"><field name=\\\"NAME\\\" id=\\\"QT)B}X0:t%(,Jz_tK`6}\\\">enName</field></block></value><value name=\\\"ELSE\\\"><block type=\\\"function_simple_if_else\\\" id=\\\"fOC{3L-jx4I*z.$AQ]`c\\\"><value name=\\\"IF\\\"><block type=\\\"function_simple_isNotNull\\\" id=\\\"9pn%ILXS_3wF^@4l;H%S\\\"><value name=\\\"param\\\"><block type=\\\"expression_var_read\\\" id=\\\"a$Z@CEs^t$I!@tE{E%i4\\\"><field name=\\\"NAME\\\" id=\\\"rGlfTVYi/*V1D/7fm.RP\\\">frName</field></block></value></block></value><value name=\\\"THEN\\\"><block type=\\\"expression_var_read\\\" id=\\\"UccYb9EG3:hnC*P-Qdn|\\\"><field name=\\\"NAME\\\" id=\\\"rGlfTVYi/*V1D/7fm.RP\\\">frName</field></block></value><value name=\\\"ELSE\\\"><block type=\\\"function_simple_if_else\\\" id=\\\"Z0BCuf5HVV}~P[HG4PT1\\\"><value name=\\\"IF\\\"><block type=\\\"function_simple_isNotNull\\\" id=\\\"KzrIS[^8x.MAvz9Ay}!,\\\"><value name=\\\"param\\\"><block type=\\\"expression_var_read\\\" id=\\\"4Crq`lk6|J.`23RrbW5S\\\"><field name=\\\"NAME\\\" id=\\\"YDje5wiB%,vMx;/p%=9y\\\">nlName</field></block></value></block></value><value name=\\\"THEN\\\"><block type=\\\"expression_var_read\\\" id=\\\"p(Az4~O!zNX!m}|F|;Ge\\\"><field name=\\\"NAME\\\" id=\\\"YDje5wiB%,vMx;/p%=9y\\\">nlName</field></block></value><value name=\\\"ELSE\\\"><block type=\\\"function_simple_if_else\\\" id=\\\"Hz;{c1Ttqz#{BJR/*[~\\\"><value name=\\\"IF\\\"><block type=\\\"function_simple_isNotNull\\\" id=\\\"z)e`%Jq{3:mChecFMZ`s\\\"><value name=\\\"param\\\"><block type=\\\"expression_var_read\\\" id=\\\"@}Xm5Gu_!H+RIkr-cdgp\\\"><field name=\\\"NAME\\\" id=\\\"|4s`=3w_n6crPa1`{!yN\\\">deName</field></block></value></block></value><value name=\\\"THEN\\\"><block type=\\\"expression_var_read\\\" id=\\\"#bkJ+n]7)?O!}+0k`abU\\\"><field name=\\\"NAME\\\" id=\\\"|4s`=3w_n6crPa1`{!yN\\\">deName</field></block></value><value name=\\\"ELSE\\\"><block type=\\\"expression_null\\\" id=\\\"kJSQk!=`=[yEU4H}lfoT\\\"></block></value></block></value></block></value></block></value></block></value></block></next></block></next></block></next></block></next></block></next></block></xml>\",\"org@com#encompasscorporation#edmservice#model#dto#Organisation_organisationAliases_[*]@com#encompasscorporation#edmservice#model#dto#OrganisationAlias_alias\":\"<xml xmlns=\\\"https://developers.google.com/blockly/xml\\\"><variables><variable id=\\\"(36L`nWaMy~7?$3-K+:(\\\">allDenominations</variable><variable id=\\\"QT)B}X0:t%(,Jz_tK`6}\\\">enName</variable><variable id=\\\"rGlfTVYi/*V1D/7fm.RP\\\">frName</variable><variable id=\\\"YDje5wiB%,vMx;/p%=9y\\\">nlName</variable><variable id=\\\"|4s`=3w_n6crPa1`{!yN\\\">deName</variable><variable id=\\\"PQOK:!xgD{wnZ$RiCR$b\\\">filteredCode</variable><variable id=\\\"$SW8c:MQwOQ2XhGADT21\\\">filteredCodeMap</variable><variable id=\\\"[Bb@6gJd@273(I{]Nl2,\\\">filteredFullName</variable><variable id=\\\"w#_3M9V)w@xL5T%TUtQ4\\\">filteredFullNameMap</variable></variables><block type=\\\"statement_variables_set\\\" id=\\\"nz6niq*4!e0o*7%+zvSg\\\" x=\\\"138\\\" y=\\\"-163\\\"><field name=\\\"VAR\\\" id=\\\"(36L`nWaMy~7?$3-K+:(\\\">allDenominations</field><value name=\\\"VALUE\\\"><block type=\\\"function_simple_as_map\\\" id=\\\"=ZAh?w2!1sp[kM8to},h\\\"><mutation items=\\\"6\\\"></mutation><value name=\\\"ADD0\\\"><block type=\\\"expression_string\\\" id=\\\"4-/JMUeWq^7scDLA%f9M\\\"><field name=\\\"NAME\\\">code</field></block></value><value name=\\\"ADD1\\\"><block type=\\\"expression_src_value_read\\\" id=\\\"T+RX4BP2~buWu$LgL,Ry\\\"><field name=\\\"NAME\\\">ReadEnterpriseReply/Enterprise/Denomination/*/Code</field></block></value><value name=\\\"ADD2\\\"><block type=\\\"expression_string\\\" id=\\\"4S!Cg+hmqchBc(~Lc4=n\\\"><field name=\\\"NAME\\\">name</field></block></value><value name=\\\"ADD3\\\"><block type=\\\"expression_src_value_read\\\" id=\\\"fI;YCo)MHu!Y(UdaT55,\\\"><field name=\\\"NAME\\\">ReadEnterpriseReply/Enterprise/Denomination/*/Description/Value</field></block></value><value name=\\\"ADD4\\\"><block type=\\\"expression_string\\\" id=\\\"S`+*.|Anjj*q*P^0XRme\\\"><field name=\\\"NAME\\\">language</field></block></value><value name=\\\"ADD5\\\"><block type=\\\"expression_src_value_read\\\" id=\\\"(/=2L+yE*6ggmCt`4HeS\\\"><field name=\\\"NAME\\\">ReadEnterpriseReply/Enterprise/Denomination/*/Description/Language</field></block></value></block></value><next><block type=\\\"statement_variables_set\\\" id=\\\"VtS5yROe,3BsH].e]Hhq\\\"><field name=\\\"VAR\\\" id=\\\"QT)B}X0:t%(,Jz_tK`6}\\\">enName</field><value name=\\\"VALUE\\\"><block type=\\\"function_simple_get_element_by_index\\\" id=\\\"q[(_.xiush-?u=SFp@%g\\\"><value name=\\\"LIST\\\"><block type=\\\"function_reduce_toFilteredList\\\" id=\\\"c~9Ig6XLM7J$Zpku,_%H\\\"><value name=\\\"element\\\"><block type=\\\"transformer_stringvaluetransformer_trim\\\" id=\\\"*}^!,8gq`(?zSrA+e=Ve\\\"><value name=\\\"VALUE\\\"><block type=\\\"function_simple_get_element_by_key\\\" id=\\\"d=P^99V8_Lhz4kfo70P3\\\"><value name=\\\"LIST\\\"><block type=\\\"expression_var_read\\\" id=\\\"eaC5G:@KSu!*Y*k^,~m~\\\"><field name=\\\"NAME\\\" id=\\\"(36L`nWaMy~7?$3-K+:(\\\">allDenominations</field></block></value><value name=\\\"KEY\\\"><block type=\\\"expression_string\\\" id=\\\"L#7tHieH|YC=nrclT^Y2\\\"><field name=\\\"NAME\\\">name</field></block></value></block></value></block></value><value name=\\\"filterResult\\\"><block type=\\\"function_simple_and\\\" id=\\\"Av3);)I-{GPb!3c(hRHo\\\"><value name=\\\"param1\\\"><block type=\\\"function_simple_equal\\\" id=\\\"?sw:/h64m}@;rH5mzvB}\\\"><value name=\\\"A\\\"><block type=\\\"expression_string\\\" id=\\\"g+=y-Oy44w4I~$1`|nP)\\\"><field name=\\\"NAME\\\">1</field></block></value><value name=\\\"B\\\"><block type=\\\"transformer_stringvaluetransformer_trim\\\" id=\\\"X7@[4NwkdjW)ApJZ;/kO\\\"><value name=\\\"VALUE\\\"><block type=\\\"function_simple_get_element_by_key\\\" id=\\\"rrQf:C#boob^wigl0OB_\\\"><value name=\\\"LIST\\\"><block type=\\\"expression_var_read\\\" id=\\\"vWb?*j_h(U?u,]lX-0-x\\\"><field name=\\\"NAME\\\" id=\\\"(36L`nWaMy~7?$3-K+:(\\\">allDenominations</field></block></value><value name=\\\"KEY\\\"><block type=\\\"expression_string\\\" id=\\\"MBh%}3!ow)p]^pwUEo2p\\\"><field name=\\\"NAME\\\">code</field></block></value></block></value></block></value></block></value><value name=\\\"param2\\\"><block type=\\\"function_simple_equal\\\" id=\\\"zu-61cTq-1Z1HOaMv=S.\\\"><value name=\\\"A\\\"><block type=\\\"expression_string\\\" id=\\\"Ic/od:X1|COJKj-WbZm}\\\"><field name=\\\"NAME\\\">en</field></block></value><value name=\\\"B\\\"><block type=\\\"transformer_stringvaluetransformer_trim\\\" id=\\\"Vcc*e8*D@as3tJI{^u$w\\\"><value name=\\\"VALUE\\\"><block type=\\\"function_simple_get_element_by_key\\\" id=\\\";tUsP7OGKxCjYYpVv0F2\\\"><value name=\\\"LIST\\\"><block type=\\\"expression_var_read\\\" id=\\\"vu^Yn.WX+Y(p0(VwLDot\\\"><field name=\\\"NAME\\\" id=\\\"(36L`nWaMy~7?$3-K+:(\\\">allDenominations</field></block></value><value name=\\\"KEY\\\"><block type=\\\"expression_string\\\" id=\\\"TIMRdZuu:lzGeo6BjTvQ\\\"><field name=\\\"NAME\\\">language</field></block></value></block></value></block></value></block></value></block></value></block></value><value name=\\\"INDEX\\\"><block type=\\\"expression_long\\\" id=\\\"a%/2Md6d$7mpkdsB^)eu\\\"><field name=\\\"NAME\\\">0</field></block></value></block></value><next><block type=\\\"statement_variables_set\\\" id=\\\"CcogDdDw_w6NxmQ]$cC4\\\"><field name=\\\"VAR\\\" id=\\\"rGlfTVYi/*V1D/7fm.RP\\\">frName</field><value name=\\\"VALUE\\\"><block type=\\\"function_simple_get_element_by_index\\\" id=\\\"J+)wIL`{(kgEfFY}GvGc\\\"><value name=\\\"LIST\\\"><block type=\\\"function_reduce_toFilteredList\\\" id=\\\"~NR-YJxSuJBd1d1/j6Yz\\\"><value name=\\\"element\\\"><block type=\\\"transformer_stringvaluetransformer_trim\\\" id=\\\"Z1xaTTxX*@j3x~5,)YY]\\\"><value name=\\\"VALUE\\\"><block type=\\\"function_simple_get_element_by_key\\\" id=\\\"7s9S`3,d|bFqv?;7kHum\\\"><value name=\\\"LIST\\\"><block type=\\\"expression_var_read\\\" id=\\\"o#.-K5-T}Q@5c8Bs!BKl\\\"><field name=\\\"NAME\\\" id=\\\"(36L`nWaMy~7?$3-K+:(\\\">allDenominations</field></block></value><value name=\\\"KEY\\\"><block type=\\\"expression_string\\\" id=\\\"blIj)|7wWQ4Z|K}2O9cD\\\"><field name=\\\"NAME\\\">name</field></block></value></block></value></block></value><value name=\\\"filterResult\\\"><block type=\\\"function_simple_and\\\" id=\\\"%:g}2#ALv{#tb@|wHt=0\\\"><value name=\\\"param1\\\"><block type=\\\"function_simple_equal\\\" id=\\\"(u?]+%Y+[qt=_%Uoo.|z\\\"><value name=\\\"A\\\"><block type=\\\"expression_string\\\" id=\\\"|a*r9K@5YTQ|%u;txNyB\\\"><field name=\\\"NAME\\\">1</field></block></value><value name=\\\"B\\\"><block type=\\\"transformer_stringvaluetransformer_trim\\\" id=\\\"-Z9:^}$/QCG,)!o0.AGV\\\"><value name=\\\"VALUE\\\"><block type=\\\"function_simple_get_element_by_key\\\" id=\\\"yNYm9pAi!hv7#!IS.`OC\\\"><value name=\\\"LIST\\\"><block type=\\\"expression_var_read\\\" id=\\\"pSj9L!x!1dV_L17e0;@E\\\"><field name=\\\"NAME\\\" id=\\\"(36L`nWaMy~7?$3-K+:(\\\">allDenominations</field></block></value><value name=\\\"KEY\\\"><block type=\\\"expression_string\\\" id=\\\"cCscK/76!?,2|FV2%sI+\\\"><field name=\\\"NAME\\\">code</field></block></value></block></value></block></value></block></value><value name=\\\"param2\\\"><block type=\\\"function_simple_equal\\\" id=\\\"@QNjV|hW2mnq?O]|AJDN\\\"><value name=\\\"A\\\"><block type=\\\"expression_string\\\" id=\\\"Q*++NHC{c.Xn8waD2AJ/\\\"><field name=\\\"NAME\\\">fr</field></block></value><value name=\\\"B\\\"><block type=\\\"transformer_stringvaluetransformer_trim\\\" id=\\\"]P1R4B2#yv+1)+kq_v/T\\\"><value name=\\\"VALUE\\\"><block type=\\\"function_simple_get_element_by_key\\\" id=\\\"g@$BzBFsPS[q;=z[AQzZ\\\"><value name=\\\"LIST\\\"><block type=\\\"expression_var_read\\\" id=\\\"El_:xBZ,$IZso~$@faeh\\\"><field name=\\\"NAME\\\" id=\\\"(36L`nWaMy~7?$3-K+:(\\\">allDenominations</field></block></value><value name=\\\"KEY\\\"><block type=\\\"expression_string\\\" id=\\\":lp%PfP.622Lk=fwpTLR\\\"><field name=\\\"NAME\\\">language</field></block></value></block></value></block></value></block></value></block></value></block></value><value name=\\\"INDEX\\\"><block type=\\\"expression_long\\\" id=\\\"!w.X/!aXxl*fcUa^5li)\\\"><field name=\\\"NAME\\\">0</field></block></value></block></value><next><block type=\\\"statement_variables_set\\\" id=\\\"f8;=,RFqJPx#Lz2w*R$T\\\"><field name=\\\"VAR\\\" id=\\\"YDje5wiB%,vMx;/p%=9y\\\">nlName</field><value name=\\\"VALUE\\\"><block type=\\\"function_simple_get_element_by_index\\\" id=\\\"!-Ru/*]Um6POr4g;%K;I\\\"><value name=\\\"LIST\\\"><block type=\\\"function_reduce_toFilteredList\\\" id=\\\"7Z|S:B2B:odttMn3qy!I\\\"><value name=\\\"element\\\"><block type=\\\"transformer_stringvaluetransformer_trim\\\" id=\\\"%mWduhbU3*ta.cFDd;wQ\\\"><value name=\\\"VALUE\\\"><block type=\\\"function_simple_get_element_by_key\\\" id=\\\"7lxK`/u|MHg+*:gc0Lfq\\\"><value name=\\\"LIST\\\"><block type=\\\"expression_var_read\\\" id=\\\"agRn73?x25f:Mzq[NLJ@\\\"><field name=\\\"NAME\\\" id=\\\"(36L`nWaMy~7?$3-K+:(\\\">allDenominations</field></block></value><value name=\\\"KEY\\\"><block type=\\\"expression_string\\\" id=\\\"7sQ$##eQ8r0utI8s4~8j\\\"><field name=\\\"NAME\\\">name</field></block></value></block></value></block></value><value name=\\\"filterResult\\\"><block type=\\\"function_simple_and\\\" id=\\\"5F?-uvvl?/8rUT=x;1b^\\\"><value name=\\\"param1\\\"><block type=\\\"function_simple_equal\\\" id=\\\"8*:vM8Nkuhre2^wj$3^t\\\"><value name=\\\"A\\\"><block type=\\\"expression_string\\\" id=\\\"NbAac?Cn61Sv/A:|rd@]\\\"><field name=\\\"NAME\\\">1</field></block></value><value name=\\\"B\\\"><block type=\\\"transformer_stringvaluetransformer_trim\\\" id=\\\"g{uVrZJ+T`vo}.vkYGOf\\\"><value name=\\\"VALUE\\\"><block type=\\\"function_simple_get_element_by_key\\\" id=\\\"UEoOFxLzC}QgMLy8?7MI\\\"><value name=\\\"LIST\\\"><block type=\\\"expression_var_read\\\" id=\\\"JD`QpM6Zn2Iju6b2kBq]\\\"><field name=\\\"NAME\\\" id=\\\"(36L`nWaMy~7?$3-K+:(\\\">allDenominations</field></block></value><value name=\\\"KEY\\\"><block type=\\\"expression_string\\\" id=\\\"4N)S?z*BV5.0X8b#yeYB\\\"><field name=\\\"NAME\\\">code</field></block></value></block></value></block></value></block></value><value name=\\\"param2\\\"><block type=\\\"function_simple_equal\\\" id=\\\"J=l8j`5z_@jzmp2Sokda\\\"><value name=\\\"A\\\"><block type=\\\"expression_string\\\" id=\\\"4.w{6BzA6L6/*0BwQiLy\\\"><field name=\\\"NAME\\\">nl</field></block></value><value name=\\\"B\\\"><block type=\\\"transformer_stringvaluetransformer_trim\\\" id=\\\":^[2Zkc:.yb.M^D%yd5m\\\"><value name=\\\"VALUE\\\"><block type=\\\"function_simple_get_element_by_key\\\" id=\\\"}gz1}-j_{!JAO0V?N{Lp\\\"><value name=\\\"LIST\\\"><block type=\\\"expression_var_read\\\" id=\\\"{+Q1+0/Evw7ajF]$^*+$\\\"><field name=\\\"NAME\\\" id=\\\"(36L`nWaMy~7?$3-K+:(\\\">allDenominations</field></block></value><value name=\\\"KEY\\\"><block type=\\\"expression_string\\\" id=\\\"f$-V-$8]hQA4tIszYkGe\\\"><field name=\\\"NAME\\\">language</field></block></value></block></value></block></value></block></value></block></value></block></value><value name=\\\"INDEX\\\"><block type=\\\"expression_long\\\" id=\\\"]dyYrP)?pEy;d`i:_`ch\\\"><field name=\\\"NAME\\\">0</field></block></value></block></value><next><block type=\\\"statement_variables_set\\\" id=\\\"-m=XU3:Sh;w9Tx.+k5dR\\\"><field name=\\\"VAR\\\" id=\\\"|4s`=3w_n6crPa1`{!yN\\\">deName</field><value name=\\\"VALUE\\\"><block type=\\\"function_simple_get_element_by_index\\\" id=\\\"eW-zA-`L[$.[2gqGyD%w\\\"><value name=\\\"LIST\\\"><block type=\\\"function_reduce_toFilteredList\\\" id=\\\"F6|:aY7XUuaC}PG0HqFz\\\"><value name=\\\"element\\\"><block type=\\\"transformer_stringvaluetransformer_trim\\\" id=\\\"s}prLMVuL~d6#DU%I9Fo\\\"><value name=\\\"VALUE\\\"><block type=\\\"function_simple_get_element_by_key\\\" id=\\\"mOQ;fGq-ikm[4_.=M*r8\\\"><value name=\\\"LIST\\\"><block type=\\\"expression_var_read\\\" id=\\\"/B,,lyql;!T]brt,w(;~\\\"><field name=\\\"NAME\\\" id=\\\"(36L`nWaMy~7?$3-K+:(\\\">allDenominations</field></block></value><value name=\\\"KEY\\\"><block type=\\\"expression_string\\\" id=\\\"|%JW]d*UF3w2=j3um_ic\\\"><field name=\\\"NAME\\\">name</field></block></value></block></value></block></value><value name=\\\"filterResult\\\"><block type=\\\"function_simple_and\\\" id=\\\"fseNbnUK-I:Arc|481U)\\\"><value name=\\\"param1\\\"><block type=\\\"function_simple_equal\\\" id=\\\"i;#!r}?))L]W(tu1dPS[\\\"><value name=\\\"A\\\"><block type=\\\"expression_string\\\" id=\\\"gpYk+[dHl7_,v;4=g?4J\\\"><field name=\\\"NAME\\\">1</field></block></value><value name=\\\"B\\\"><block type=\\\"transformer_stringvaluetransformer_trim\\\" id=\\\"L+mdZfhsxhx)q~IiAXiH\\\"><value name=\\\"VALUE\\\"><block type=\\\"function_simple_get_element_by_key\\\" id=\\\"Vi${Uhy0Msu[}(e[fZuY\\\"><value name=\\\"LIST\\\"><block type=\\\"expression_var_read\\\" id=\\\"FegKEA/AX;4,[Z:CSN,\\\"><field name=\\\"NAME\\\" id=\\\"(36L`nWaMy~7?$3-K+:(\\\">allDenominations</field></block></value><value name=\\\"KEY\\\"><block type=\\\"expression_string\\\" id=\\\"A^ql1T[AWf#|y/,W-5B{\\\"><field name=\\\"NAME\\\">code</field></block></value></block></value></block></value></block></value><value name=\\\"param2\\\"><block type=\\\"function_simple_equal\\\" id=\\\"rQ}LyUhcu-9yzAt5hC/*\\\"><value name=\\\"A\\\"><block type=\\\"expression_string\\\" id=\\\"=/1YVHxmQKfMFwRP`[LQ\\\"><field name=\\\"NAME\\\">de</field></block></value><value name=\\\"B\\\"><block type=\\\"transformer_stringvaluetransformer_trim\\\" id=\\\"U$qY*yHl]%1K8E^6vWnR\\\"><value name=\\\"VALUE\\\"><block type=\\\"function_simple_get_element_by_key\\\" id=\\\"A0{Hyz/8|4Ohs;!0n[Mo\\\"><value name=\\\"LIST\\\"><block type=\\\"expression_var_read\\\" id=\\\"o(^,j4Cz#TRy-F1r0G}w\\\"><field name=\\\"NAME\\\" id=\\\"(36L`nWaMy~7?$3-K+:(\\\">allDenominations</field></block></value><value name=\\\"KEY\\\"><block type=\\\"expression_string\\\" id=\\\"n3Ustlgi-t^;Wp/=`AUL\\\"><field name=\\\"NAME\\\">language</field></block></value></block></value></block></value></block></value></block></value></block></value><value name=\\\"INDEX\\\"><block type=\\\"expression_long\\\" id=\\\":?tPk8$]mWA)ZRd-:7gu\\\"><field name=\\\"NAME\\\">0</field></block></value></block></value><next><block type=\\\"statement_variables_set\\\" id=\\\"OCUpQJ]Z.5KiPpO)?v:c\\\"><field name=\\\"VAR\\\" id=\\\"PQOK:!xgD{wnZ$RiCR$b\\\">filteredCode</field><value name=\\\"VALUE\\\"><block type=\\\"function_reduce_toFilteredList\\\" id=\\\"J%G~T~Ab9fx%q2An4AP=\\\"><value name=\\\"element\\\"><block type=\\\"expression_var_read\\\" id=\\\"E-I)Y!$EkeezY#!X;jG/\\\"><field name=\\\"NAME\\\" id=\\\"(36L`nWaMy~7?$3-K+:(\\\">allDenominations</field></block></value><value name=\\\"filterResult\\\"><block type=\\\"function_simple_equal\\\" id=\\\"^LpH$F=HU6W{%xzQb=c_\\\"><value name=\\\"A\\\"><block type=\\\"expression_string\\\" id=\\\"QF@HtWqF#|.E(iE#[9P_\\\"><field name=\\\"NAME\\\">001</field></block></value><value name=\\\"B\\\"><block type=\\\"transformer_stringvaluetransformer_trim\\\" id=\\\"PYGv4-U?xMI=aMZ$2lzR\\\"><value name=\\\"VALUE\\\"><block type=\\\"function_simple_get_element_by_key\\\" id=\\\"PHfPIm`#+C-VCO@(Jez,\\\"><value name=\\\"LIST\\\"><block type=\\\"expression_var_read\\\" id=\\\"A/GV|;ZVyBuD*+8RRvJG\\\"><field name=\\\"NAME\\\" id=\\\"(36L`nWaMy~7?$3-K+:(\\\">allDenominations</field></block></value><value name=\\\"KEY\\\"><block type=\\\"expression_string\\\" id=\\\"2gk%dLQ[.S:2}H$rJ1V!\\\"><field name=\\\"NAME\\\">code</field></block></value></block></value></block></value></block></value></block></value><next><block type=\\\"statement_variables_set\\\" id=\\\"GGp+_VaMGDF#AylkTm[Y\\\"><field name=\\\"VAR\\\" id=\\\"$SW8c:MQwOQ2XhGADT21\\\">filteredCodeMap</field><value name=\\\"VALUE\\\"><block type=\\\"function_simple_cast\\\" id=\\\"Bz2G!J}!/eKMdd%6*7r~\\\"><value name=\\\"value\\\"><block type=\\\"function_enlarge_enlargeFromList\\\" id=\\\"^WN=dPe-t,]jmTd/un2d\\\"><value name=\\\"listName\\\"><block type=\\\"expression_string\\\" id=\\\"8f73w/Vh+IH)2a|W-IA%\\\"><field name=\\\"NAME\\\">tempName</field></block></value><value name=\\\"list\\\"><block type=\\\"expression_var_read\\\" id=\\\"hwN7=YG]XajNR?yzAXrv\\\"><field name=\\\"NAME\\\" id=\\\"PQOK:!xgD{wnZ$RiCR$b\\\">filteredCode</field></block></value></block></value><value name=\\\"class-name\\\"><block type=\\\"expression_string\\\" id=\\\"aW9Tz2S:Twao+Yp/~~uc\\\"><field name=\\\"NAME\\\">Map</field></block></value></block></value><next><block type=\\\"statement_variables_set\\\" id=\\\"ygED_N%.i1X3Lkpgt8bu\\\"><field name=\\\"VAR\\\" id=\\\"[Bb@6gJd@273(I{]Nl2,\\\">filteredFullName</field><value name=\\\"VALUE\\\"><block type=\\\"function_reduce_toFilteredList\\\" id=\\\"Ck,Uk[F!2ZZD#L[fy:xe\\\"><value name=\\\"element\\\"><block type=\\\"expression_var_read\\\" id=\\\"lxfwWfZ+2kyTx_DFe?K1\\\"><field name=\\\"NAME\\\" id=\\\"$SW8c:MQwOQ2XhGADT21\\\">filteredCodeMap</field></block></value><value name=\\\"filterResult\\\"><block type=\\\"function_simple_not\\\" id=\\\"HtTH@C/RWp(`6y!oP5K@\\\"><value name=\\\"param\\\"><block type=\\\"function_simple_equal\\\" id=\\\"U!fE)s~D4Tb=}1wX5qh+\\\"><value name=\\\"A\\\"><block type=\\\"function_simple_get_element_by_key\\\" id=\\\"tQ3g*9@GRQlQT5ol~K4G\\\"><value name=\\\"LIST\\\"><block type=\\\"expression_var_read\\\" id=\\\"_wAXXb8=-A$7@PD9yfQ%\\\"><field name=\\\"NAME\\\" id=\\\"$SW8c:MQwOQ2XhGADT21\\\">filteredCodeMap</field></block></value><value name=\\\"KEY\\\"><block type=\\\"expression_string\\\" id=\\\"W~JaV$Q|NsHjWL.NzF8W\\\"><field name=\\\"NAME\\\">name</field></block></value></block></value><value name=\\\"B\\\"><block type=\\\"function_simple_if_else\\\" id=\\\"DuM#/7V[Bj62E[;-Vo?9\\\"><value name=\\\"IF\\\"><block type=\\\"function_simple_isNotNull\\\" id=\\\"woR:G%1vL;H9Xd.9T*^v\\\"><value name=\\\"param\\\"><block type=\\\"expression_var_read\\\" id=\\\"hS51xUX1g/-k/poQ1SOU\\\"><field name=\\\"NAME\\\" id=\\\"QT)B}X0:t%(,Jz_tK`6}\\\">enName</field></block></value></block></value><value name=\\\"THEN\\\"><block type=\\\"expression_var_read\\\" id=\\\"^7|mS`;HJ[sKUd8i}(u?\\\"><field name=\\\"NAME\\\" id=\\\"QT)B}X0:t%(,Jz_tK`6}\\\">enName</field></block></value><value name=\\\"ELSE\\\"><block type=\\\"function_simple_if_else\\\" id=\\\"^4}q}rUQEcR{Qle{%pSX\\\"><value name=\\\"IF\\\"><block type=\\\"function_simple_isNotNull\\\" id=\\\"6x4OaMGej_)1$f?J0?ld\\\"><value name=\\\"param\\\"><block type=\\\"expression_var_read\\\" id=\\\"*%_p?U9hz25CA]c7I3/P\\\"><field name=\\\"NAME\\\" id=\\\"rGlfTVYi/*V1D/7fm.RP\\\">frName</field></block></value></block></value><value name=\\\"THEN\\\"><block type=\\\"expression_var_read\\\" id=\\\"D(b.7BRbmED_^Z%y+8Pm\\\"><field name=\\\"NAME\\\" id=\\\"rGlfTVYi/*V1D/7fm.RP\\\">frName</field></block></value><value name=\\\"ELSE\\\"><block type=\\\"function_simple_if_else\\\" id=\\\"jFy$bmecI6XUFMN~(-_X\\\"><value name=\\\"IF\\\"><block type=\\\"function_simple_isNotNull\\\" id=\\\"#21_]Wxtw-]4w]py3C12\\\"><value name=\\\"param\\\"><block type=\\\"expression_var_read\\\" id=\\\"ukx$[fThx9HfyXB`{Wev\\\"><field name=\\\"NAME\\\" id=\\\"YDje5wiB%,vMx;/p%=9y\\\">nlName</field></block></value></block></value><value name=\\\"THEN\\\"><block type=\\\"expression_var_read\\\" id=\\\"|wQHZ.pH}e7;p(SOBDA#\\\"><field name=\\\"NAME\\\" id=\\\"YDje5wiB%,vMx;/p%=9y\\\">nlName</field></block></value><value name=\\\"ELSE\\\"><block type=\\\"function_simple_if_else\\\" id=\\\"0!L{5*d7=@qfZ8mxU5Sr\\\"><value name=\\\"IF\\\"><block type=\\\"function_simple_isNotNull\\\" id=\\\"fe5F6YiOdCbrXbb9$g)G\\\"><value name=\\\"param\\\"><block type=\\\"expression_var_read\\\" id=\\\")KJXo0zn3[b~xFM`(Vz,\\\"><field name=\\\"NAME\\\" id=\\\"|4s`=3w_n6crPa1`{!yN\\\">deName</field></block></value></block></value><value name=\\\"THEN\\\"><block type=\\\"expression_var_read\\\" id=\\\"Pi8*kb5#:8W;*FU~t3#r\\\"><field name=\\\"NAME\\\" id=\\\"|4s`=3w_n6crPa1`{!yN\\\">deName</field></block></value><value name=\\\"ELSE\\\"><block type=\\\"expression_null\\\" id=\\\"gah=gq0Efq~H4(AtxVWP\\\"></block></value></block></value></block></value></block></value></block></value></block></value></block></value></block></value><next><block type=\\\"statement_variables_set\\\" id=\\\"WaEdy37%Pn7.q.bj!i~[\\\"><field name=\\\"VAR\\\" id=\\\"w#_3M9V)w@xL5T%TUtQ4\\\">filteredFullNameMap</field><value name=\\\"VALUE\\\"><block type=\\\"function_simple_cast\\\" id=\\\"wbau+bF1P/?P7O_@`EAa\\\"><value name=\\\"value\\\"><block type=\\\"function_enlarge_enlargeFromList\\\" id=\\\"tRsUJIx[]lwUmzNosdIG\\\"><value name=\\\"listName\\\"><block type=\\\"expression_string\\\" id=\\\"9GuK]b72x721?vVGd4(?\\\"><field name=\\\"NAME\\\">tempName2</field></block></value><value name=\\\"list\\\"><block type=\\\"expression_var_read\\\" id=\\\"[BLIlY^#s]xmjTe!5+5B\\\"><field name=\\\"NAME\\\" id=\\\"[Bb@6gJd@273(I{]Nl2,\\\">filteredFullName</field></block></value></block></value><value name=\\\"class-name\\\"><block type=\\\"expression_string\\\" id=\\\"L[oG8o`g?1~)_2*i1{tG\\\"><field name=\\\"NAME\\\">Map</field></block></value></block></value><next><block type=\\\"statement_set_dst_value\\\" id=\\\".oB6+o#|L(W/lO-?wK0u\\\"><field name=\\\"DST_PATH\\\">org@com#encompasscorporation#edmservice#model#dto#Organisation.organisationAliases.[*]@com#encompasscorporation#edmservice#model#dto#OrganisationAlias.language</field><value name=\\\"VALUE\\\"><block type=\\\"function_simple_get_element_by_key\\\" id=\\\"fn6hCi1i];LVMHFO9|8g\\\"><value name=\\\"LIST\\\"><block type=\\\"expression_var_read\\\" id=\\\"t0kT$;RqMRc;~C0(oFH$\\\"><field name=\\\"NAME\\\" id=\\\"w#_3M9V)w@xL5T%TUtQ4\\\">filteredFullNameMap</field></block></value><value name=\\\"KEY\\\"><block type=\\\"expression_string\\\" id=\\\"Jt{fSk}wC0yX|.]zozu|\\\"><field name=\\\"NAME\\\">language</field></block></value></block></value><next><block type=\\\"statement_return\\\" id=\\\"M`$1(FffALbUS4E%dmEi\\\"><value name=\\\"EXPRESSION\\\"><block type=\\\"function_simple_get_element_by_key\\\" id=\\\"$=eklU-U1-UFP!WXktb)\\\"><value name=\\\"LIST\\\"><block type=\\\"expression_var_read\\\" id=\\\"[g9=C#eV5Bz2p80)b_Ku\\\"><field name=\\\"NAME\\\" id=\\\"w#_3M9V)w@xL5T%TUtQ4\\\">filteredFullNameMap</field></block></value><value name=\\\"KEY\\\"><block type=\\\"expression_string\\\" id=\\\"%ts3oi[a`Ln6(pLurf_;\\\"><field name=\\\"NAME\\\">name</field></block></value></block></value></block></next></block></next></block></next></block></next></block></next></block></next></block></next></block></next></block></next></block></next></block></xml>\"}"
+}

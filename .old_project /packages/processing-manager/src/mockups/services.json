@@ -1,0 +1,22 @@
+[
+  {
+    "name": "ZkClientRunnableComponent",
+    "running": true
+  },
+  {
+    "name": "[PM]MainProcessingController",
+    "running": false
+  },
+  {
+    "name": "[PM]ScheduledTasksManager",
+    "running": true
+  },
+  {
+    "name": "[PM]ServiceProcessesManager",
+    "running": true
+  },
+  {
+    "name": "com.cyoda.service.notifications.transport.NetworkNotificationsCtrl",
+    "running": true
+  }
+]

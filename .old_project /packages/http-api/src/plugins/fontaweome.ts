@@ -1,0 +1,76 @@
+import { library } from '@fortawesome/fontawesome-svg-core'
+import {
+  faAlignJustify,
+  faArrowsRotate,
+  faBraille,
+  faCalendarAlt,
+  faChartBar,
+  faChartLine,
+  faChartPie,
+  faChevronLeft,
+  faCogs,
+  faCopy,
+  faDownload,
+  faEllipsisV,
+  faExclamationCircle,
+  faHandPointer,
+  faHeading,
+  faInfoCircle,
+  faListOl,
+  faLongArrowAltLeft,
+  faMaximize,
+  faMinimize,
+  faPencilAlt,
+  faPlay,
+  faPlus,
+  faSave,
+  faSearchMinus,
+  faSearchPlus,
+  faStop,
+  faSync,
+  faSyncAlt,
+  faTimesCircle,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
+// @ts-ignore
+library.add(
+  faAlignJustify,
+  faArrowsRotate,
+  faBraille,
+  faCalendarAlt,
+  faChartBar,
+  faChartLine,
+  faChartPie,
+  faChevronLeft,
+  faCogs,
+  faCopy,
+  faDownload,
+  faEllipsisV,
+  faExclamationCircle,
+  faHandPointer,
+  faHeading,
+  faInfoCircle,
+  faListOl,
+  faLongArrowAltLeft,
+  faMaximize,
+  faMinimize,
+  faPencilAlt,
+  faPlay,
+  faPlus,
+  faSave,
+  faSearchMinus,
+  faSearchPlus,
+  faStop,
+  faSync,
+  faSyncAlt,
+  faTimesCircle,
+  faTrash,
+);
+
+export default {
+    install: (app) => {
+        app.component("font-awesome-icon", FontAwesomeIcon);
+    }
+}

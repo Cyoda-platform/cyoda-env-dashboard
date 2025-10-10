@@ -1,0 +1,66 @@
+{
+  "address": {
+    "firstLine":"",
+    "secondLine":""
+  },
+  "cityName":"",
+  "country":"",
+  "dateAdded":"",
+  "dateUpdated":"",
+  "descriptions": [
+    {
+      "dateSeen": [
+        ""
+      ],
+      "sourceURLs": [
+        ""
+      ],
+      "value":""
+    }
+  ],
+  "features": [
+    {
+      "key":"",
+      "value": []
+    },
+    {
+      "key":"",
+      "value": []
+    }
+  ],
+  "imageURLs": [
+    "",
+    ""
+  ],
+  "keys":[],
+  "latitude":"",
+  "longitude":"",
+  "name":"",
+  "numRoom": 77,
+  "phones": [],
+  "postalCode":"",
+  "province":"",
+  "reviews": [
+    {
+      "date":"",
+      "dateAdded":"",
+      "dateSeen": [],
+      "rating": 2,
+      "sourceURLs": [],
+      "text":"",
+      "title":"",
+      "username":""
+    },
+    {
+      "date":"",
+      "dateAdded":"",
+      "dateSeen": [],
+      "rating": 3,
+      "sourceURLs": [],
+      "text":"",
+      "username":""
+    }
+  ],
+  "sourceURLs": [],
+  "id":""
+}

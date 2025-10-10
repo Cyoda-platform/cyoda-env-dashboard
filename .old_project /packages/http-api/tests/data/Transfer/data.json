@@ -1,0 +1,34 @@
+[
+  {
+    "@bean": "com.cyoda.core.reports.columns.ReportSimpleColumn",
+    "name": "id"
+  },
+  {
+    "@bean": "com.cyoda.core.reports.columns.ReportSimpleColumn",
+    "name": "state"
+  },
+  {
+    "@bean": "com.cyoda.core.reports.columns.ReportSimpleColumn",
+    "name": "type"
+  },
+  {
+    "@bean": "com.cyoda.core.reports.columns.ReportSimpleColumn",
+    "name": "typeVersion"
+  },
+  {
+    "@bean": "com.cyoda.core.reports.columns.ReportSimpleColumn",
+    "name": "connectionName"
+  },
+  {
+    "@bean": "com.cyoda.core.reports.columns.ReportSimpleColumn",
+    "name": "enteredDateTime"
+  },
+  {
+    "@bean": "com.cyoda.core.reports.columns.ReportSimpleColumn",
+    "name": "gateway"
+  },
+  {
+    "@bean": "com.cyoda.core.reports.columns.ReportSimpleColumn",
+    "name": "direction"
+  }
+]

@@ -1,0 +1,344 @@
+{
+  "@bean": "com.cyoda.plugins.mapping.core.dtos.DataMappingConfigDto",
+  "id": "a6b0aed0-ecb7-11ec-b5ad-901b0ea4aa73",
+  "name": "UK Companies CSV",
+  "dataType": "CSV",
+  "description": "",
+  "entityMappings": [
+    {
+      "id": {
+        "id": "9f6da41a-1f9e-11ed-ba01-02c31e2e93dc",
+        "uiId": 2
+      },
+      "name": "generated-entity-mapping-1",
+      "entityClass": "net.cyoda.saas.model.OrganisationEntity",
+      "entityRelationConfigs": [
+        {
+          "srcRelativeRootPath": "root:/*"
+        }
+      ],
+      "columns": [
+        {
+          "srcColumnPath": " CompanyNumber",
+          "dstCyodaColumnPath": "org@net#cyoda#saas#model#dto#Organisation.idAtRegistry",
+          "dstCyodaColumnPathType": "java.lang.String",
+          "dstCollectionElementSetModes": [],
+          "transformer": {
+            "type": "COMPOSITE",
+            "children": [
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.SourceObjectValueTransformer$ToString",
+                "parameters": []
+              },
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim",
+                "parameters": []
+              }
+            ]
+          }
+        },
+        {
+          "srcColumnPath": "CompanyName",
+          "dstCyodaColumnPath": "org@net#cyoda#saas#model#dto#Organisation.name",
+          "dstCyodaColumnPathType": "java.lang.String",
+          "dstCollectionElementSetModes": [],
+          "transformer": {
+            "type": "COMPOSITE",
+            "children": [
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.SourceObjectValueTransformer$ToString",
+                "parameters": []
+              },
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim",
+                "parameters": []
+              }
+            ]
+          }
+        },
+        {
+          "srcColumnPath": "RegAddress.PostCode",
+          "dstCyodaColumnPath": "org@net#cyoda#saas#model#dto#Organisation.addresses.[0]@net#cyoda#saas#model#dto#Address.zipCode",
+          "dstCyodaColumnPathType": "java.lang.String",
+          "dstCollectionElementSetModes": [],
+          "transformer": {
+            "type": "COMPOSITE",
+            "children": [
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.SourceObjectValueTransformer$ToString",
+                "parameters": []
+              },
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim",
+                "parameters": []
+              }
+            ]
+          }
+        },
+        {
+          "srcColumnPath": "RegAddress.PostTown",
+          "dstCyodaColumnPath": "org@net#cyoda#saas#model#dto#Organisation.addresses.[0]@net#cyoda#saas#model#dto#Address.city",
+          "dstCyodaColumnPathType": "java.lang.String",
+          "dstCollectionElementSetModes": [],
+          "transformer": {
+            "type": "COMPOSITE",
+            "children": [
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.SourceObjectValueTransformer$ToString",
+                "parameters": []
+              },
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim",
+                "parameters": []
+              }
+            ]
+          }
+        },
+        {
+          "srcColumnPath": "RegAddress.Country",
+          "dstCyodaColumnPath": "org@net#cyoda#saas#model#dto#Organisation.addresses.[0]@net#cyoda#saas#model#dto#Address.country",
+          "dstCyodaColumnPathType": "java.lang.String",
+          "dstCollectionElementSetModes": [],
+          "transformer": {
+            "type": "COMPOSITE",
+            "children": [
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.SourceObjectValueTransformer$ToString",
+                "parameters": []
+              },
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim",
+                "parameters": []
+              }
+            ]
+          }
+        },
+        {
+          "srcColumnPath": "RegAddress.AddressLine1",
+          "dstCyodaColumnPath": "org@net#cyoda#saas#model#dto#Organisation.addresses.[0]@net#cyoda#saas#model#dto#Address.line1",
+          "dstCyodaColumnPathType": "java.lang.String",
+          "dstCollectionElementSetModes": [],
+          "transformer": {
+            "type": "COMPOSITE",
+            "children": [
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.SourceObjectValueTransformer$ToString",
+                "parameters": []
+              },
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim",
+                "parameters": []
+              }
+            ]
+          }
+        },
+        {
+          "srcColumnPath": "IncorporationDate",
+          "dstCyodaColumnPath": "org@net#cyoda#saas#model#dto#Organisation.startDate",
+          "dstCyodaColumnPathType": "java.time.LocalDate",
+          "dstCollectionElementSetModes": [],
+          "transformer": {
+            "type": "COMPOSITE",
+            "children": [
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.SourceObjectValueTransformer$ToString",
+                "parameters": []
+              },
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$ToLocalDateArbitraryFormat",
+                "parameters": [
+                  {
+                    "@bean": "com.cyoda.core.namedparameters.StringParameter",
+                    "name": "format",
+                    "value": "dd/MM/yyyy",
+                    "parameterType": "java.lang.String"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "srcColumnPath": "CountryOfOrigin",
+          "dstCyodaColumnPath": "org@net#cyoda#saas#model#dto#Organisation.countryOfRegistration",
+          "dstCyodaColumnPathType": "java.lang.String",
+          "dstCollectionElementSetModes": [],
+          "transformer": {
+            "type": "COMPOSITE",
+            "children": [
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.SourceObjectValueTransformer$ToString",
+                "parameters": []
+              },
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim",
+                "parameters": []
+              }
+            ]
+          }
+        },
+        {
+          "srcColumnPath": "RegAddress.County",
+          "dstCyodaColumnPath": "org@net#cyoda#saas#model#dto#Organisation.addresses.[0]@net#cyoda#saas#model#dto#Address.line3",
+          "dstCyodaColumnPathType": "java.lang.String",
+          "dstCollectionElementSetModes": [],
+          "transformer": {
+            "type": "COMPOSITE",
+            "children": [
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.SourceObjectValueTransformer$ToString",
+                "parameters": []
+              },
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim",
+                "parameters": []
+              }
+            ]
+          }
+        },
+        {
+          "srcColumnPath": " RegAddress.AddressLine2",
+          "dstCyodaColumnPath": "org@net#cyoda#saas#model#dto#Organisation.addresses.[0]@net#cyoda#saas#model#dto#Address.line2",
+          "dstCyodaColumnPathType": "java.lang.String",
+          "dstCollectionElementSetModes": [],
+          "transformer": {
+            "type": "COMPOSITE",
+            "children": [
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.SourceObjectValueTransformer$ToString",
+                "parameters": []
+              },
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim",
+                "parameters": []
+              }
+            ]
+          }
+        },
+        {
+          "srcColumnPath": "DissolutionDate",
+          "dstCyodaColumnPath": "org@net#cyoda#saas#model#dto#Organisation.endDate",
+          "dstCyodaColumnPathType": "java.time.LocalDate",
+          "dstCollectionElementSetModes": [],
+          "transformer": {
+            "type": "COMPOSITE",
+            "children": [
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.SourceObjectValueTransformer$ToString",
+                "parameters": []
+              },
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$ToLocalDatePredefinedFormat",
+                "parameters": [
+                  {
+                    "@bean": "com.cyoda.core.namedparameters.StringParameter",
+                    "name": "format",
+                    "value": "MM/dd/yyyy",
+                    "parameterType": "java.lang.String"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "functionalMappings": [],
+      "columnPathsForUniqueCheck": [
+        "org@net#cyoda#saas#model#dto#Organisation.idAtRegistry"
+      ],
+      "metadata": [],
+      "entityFilter": {
+        "@bean": "com.cyoda.core.conditions.GroupCondition",
+        "operator": "AND",
+        "conditions": []
+      },
+      "isShowNoneMappingFields": false
+    }
+  ],
+  "sampleContent": "CompanyName, CompanyNumber,RegAddress.CareOf,RegAddress.POBox,RegAddress.AddressLine1, RegAddress.AddressLine2,RegAddress.PostTown,RegAddress.County,RegAddress.Country,RegAddress.PostCode,CompanyCategory,CompanyStatus,CountryOfOrigin,DissolutionDate,IncorporationDate,Accounts.AccountRefDay,Accounts.AccountRefMonth,Accounts.NextDueDate,Accounts.LastMadeUpDate,Accounts.AccountCategory,Returns.NextDueDate,Returns.LastMadeUpDate,Mortgages.NumMortCharges,Mortgages.NumMortOutstanding,Mortgages.NumMortPartSatisfied,Mortgages.NumMortSatisfied,SICCode.SicText_1,SICCode.SicText_2,SICCode.SicText_3,SICCode.SicText_4,LimitedPartnerships.NumGenPartners,LimitedPartnerships.NumLimPartners,URI,PreviousName_1.CONDATE, PreviousName_1.CompanyName, PreviousName_2.CONDATE, PreviousName_2.CompanyName,PreviousName_3.CONDATE, PreviousName_3.CompanyName,PreviousName_4.CONDATE, PreviousName_4.CompanyName,PreviousName_5.CONDATE, PreviousName_5.CompanyName,PreviousName_6.CONDATE, PreviousName_6.CompanyName,PreviousName_7.CONDATE, PreviousName_7.CompanyName,PreviousName_8.CONDATE, PreviousName_8.CompanyName,PreviousName_9.CONDATE, PreviousName_9.CompanyName,PreviousName_10.CONDATE, PreviousName_10.CompanyName,ConfStmtNextDueDate, ConfStmtLastMadeUpDate\n\"ZLCC INVESTMENT LTD\",\"11806234\",\"\",\"\",\"219A STANWELL ROAD\",\"\",\"ASHFORD\",\"\",\"UNITED KINGDOM\",\"TW15 3QY\",\"Private Limited Company\",\"Active\",\"United Kingdom\",\"\",\"05/02/2019\",\"28\",\"2\",\"30/11/2022\",\"28/02/2021\",\"DORMANT\",\"04/03/2020\",\"\",\"1\",\"1\",\"0\",\"0\",\"68100 - Buying and selling of own real estate\",\"68209 - Other letting and operating of own or leased real estate\",\"\",\"\",\"0\",\"0\",\"http://business.data.gov.uk/id/company/11806234\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"18/02/2023\",\"04/02/2022\"\n\"ZLCP LTD\",\"13209518\",\"\",\"\",\"71A MARE STREET\",\"\",\"LONDON\",\"\",\"ENGLAND\",\"E8 4RG\",\"Private Limited Company\",\"Active\",\"United Kingdom\",\"\",\"18/02/2021\",\"28\",\"2\",\"18/11/2022\",\"\",\"NO ACCOUNTS FILED\",\"18/03/2022\",\"\",\"0\",\"0\",\"0\",\"0\",\"90010 - Performing arts\",\"90030 - Artistic creation\",\"\",\"\",\"0\",\"0\",\"http://business.data.gov.uk/id/company/13209518\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"04/03/2023\",\"18/02/2022\"\n\"ZLD CARE & WELLBEING SERVICES LTD\",\"12174775\",\"\",\"\",\"68 KIRKGATE\",\"\",\"SHIPLEY\",\"\",\"UNITED KINGDOM\",\"BD18 3EL\",\"Private Limited Company\",\"Active\",\"United Kingdom\",\"\",\"27/08/2019\",\"30\",\"8\",\"31/08/2022\",\"31/08/2020\",\"MICRO ENTITY\",\"24/09/2020\",\"\",\"0\",\"0\",\"0\",\"0\",\"55209 - Other holiday and other collective accommodation\",\"70229 - Management consultancy activities other than financial management\",\"77400 - Leasing of intellectual property and similar products, except copyright works\",\"96090 - Other service activities n.e.c.\",\"0\",\"0\",\"http://business.data.gov.uk/id/company/12174775\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"07/09/2022\",\"24/08/2021\"\n\"ZLD FINANCE LTD\",\"13399067\",\"\",\"\",\"UNIT 5, DUCKETTS WHARF\",\"SOUTH STREET\",\"BISHOP'S STORTFORD\",\"HERTFORDSHIRE\",\"UNITED KINGDOM\",\"CM23 3AR\",\"Private Limited Company\",\"Active\",\"United Kingdom\",\"\",\"14/05/2021\",\"31\",\"5\",\"14/02/2023\",\"\",\"NO ACCOUNTS FILED\",\"11/06/2022\",\"\",\"0\",\"0\",\"0\",\"0\",\"70221 - Financial management\",\"\",\"\",\"\",\"0\",\"0\",\"http://business.data.gov.uk/id/company/13399067\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"27/05/2023\",\"13/05/2022\"\n\"ZLD LIMITED\",\"07270173\",\"\",\"\",\"4 KING SQUARE\",\"\",\"BRIDGWATER\",\"SOMERSET\",\"\",\"TA6 3YF\",\"Private Limited Company\",\"Active\",\"United Kingdom\",\"\",\"01/06/2010\",\"31\",\"1\",\"31/10/2022\",\"31/01/2021\",\"UNAUDITED ABRIDGED\",\"29/06/2017\",\"01/06/2016\",\"0\",\"0\",\"0\",\"0\",\"82990 - Other business support service activities n.e.c.\",\"\",\"\",\"\",\"0\",\"0\",\"http://business.data.gov.uk/id/company/07270173\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"15/06/2022\",\"01/06/2021\"\n\"ZLDS TRANSPORT LTD\",\"12247264\",\"\",\"\",\"48 MONA ROAD\",\"\",\"BURTON-ON-TRENT\",\"\",\"ENGLAND\",\"DE13 0UF\",\"Private Limited Company\",\"Active\",\"United Kingdom\",\"\",\"07/10/2019\",\"31\",\"10\",\"31/07/2022\",\"31/10/2020\",\"MICRO ENTITY\",\"04/11/2020\",\"\",\"0\",\"0\",\"0\",\"0\",\"49410 - Freight transport by road\",\"\",\"\",\"\",\"0\",\"0\",\"http://business.data.gov.uk/id/company/12247264\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"20/10/2022\",\"06/10/2021\"\n\"ZLE 1 SOLUTIONS LIMITED\",\"08773451\",\"\",\"\",\"MANSION HOUSE\",\"MANCHESTER ROAD\",\"ALTRINCHAM\",\"CHESHIRE\",\"\",\"WA14 4RW\",\"Private Limited Company\",\"Active\",\"United Kingdom\",\"\",\"13/11/2013\",\"30\",\"11\",\"31/08/2022\",\"30/11/2020\",\"MICRO ENTITY\",\"11/12/2016\",\"13/11/2015\",\"0\",\"0\",\"0\",\"0\",\"82990 - Other business support service activities n.e.c.\",\"\",\"\",\"\",\"0\",\"0\",\"http://business.data.gov.uk/id/company/08773451\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"27/11/2022\",\"13/11/2021\"\n\"ZLEEPY LTD\",\"13436723\",\"\",\"\",\"INGLEWOOD GARDENS\",\"ASPATRIA\",\"WIGTON\",\"\",\"UNITED KINGDOM\",\"CA7 2DA\",\"Private Limited Company\",\"Active\",\"United Kingdom\",\"\",\"03/06/2021\",\"30\",\"6\",\"03/03/2023\",\"\",\"NO ACCOUNTS FILED\",\"01/07/2022\",\"\",\"0\",\"0\",\"0\",\"0\",\"47910 - Retail sale via mail order houses or via Internet\",\"\",\"\",\"\",\"0\",\"0\",\"http://business.data.gov.uk/id/company/13436723\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"16/06/2022\",\"\"\n\"ZLEIBIERD LTD\",\"13499419\",\"\",\"\",\"UNIT 40 BALTIC WORKS\",\"EFFINGHAM ROAD\",\"SHEFFIELD\",\"\",\"UNITED KINGDOM\",\"S9 3QA\",\"Private Limited Company\",\"Active\",\"United Kingdom\",\"\",\"07/07/2021\",\"31\",\"7\",\"07/04/2023\",\"\",\"NO ACCOUNTS FILED\",\"04/08/2022\",\"\",\"0\",\"0\",\"0\",\"0\",\"56210 - Event catering activities\",\"\",\"\",\"\",\"0\",\"0\",\"http://business.data.gov.uk/id/company/13499419\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"20/07/2022\",\"\"\n",
+  "metadata": "",
+  "lastUpdated": 1661976051729,
+  "parserParameters": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.CSVParserParametersDto",
+    "withHeader": true,
+    "headers": [
+      "CompanyName",
+      " CompanyNumber",
+      "RegAddress.CareOf",
+      "RegAddress.POBox",
+      "RegAddress.AddressLine1",
+      " RegAddress.AddressLine2",
+      "RegAddress.PostTown",
+      "RegAddress.County",
+      "RegAddress.Country",
+      "RegAddress.PostCode",
+      "CompanyCategory",
+      "CompanyStatus",
+      "CountryOfOrigin",
+      "DissolutionDate",
+      "IncorporationDate",
+      "Accounts.AccountRefDay",
+      "Accounts.AccountRefMonth",
+      "Accounts.NextDueDate",
+      "Accounts.LastMadeUpDate",
+      "Accounts.AccountCategory",
+      "Returns.NextDueDate",
+      "Returns.LastMadeUpDate",
+      "Mortgages.NumMortCharges",
+      "Mortgages.NumMortOutstanding",
+      "Mortgages.NumMortPartSatisfied",
+      "Mortgages.NumMortSatisfied",
+      "SICCode.SicText_1",
+      "SICCode.SicText_2",
+      "SICCode.SicText_3",
+      "SICCode.SicText_4",
+      "LimitedPartnerships.NumGenPartners",
+      "LimitedPartnerships.NumLimPartners",
+      "URI",
+      "PreviousName_1.CONDATE",
+      " PreviousName_1.CompanyName",
+      " PreviousName_2.CONDATE",
+      " PreviousName_2.CompanyName",
+      "PreviousName_3.CONDATE",
+      " PreviousName_3.CompanyName",
+      "PreviousName_4.CONDATE",
+      " PreviousName_4.CompanyName",
+      "PreviousName_5.CONDATE",
+      " PreviousName_5.CompanyName",
+      "PreviousName_6.CONDATE",
+      " PreviousName_6.CompanyName",
+      "PreviousName_7.CONDATE",
+      " PreviousName_7.CompanyName",
+      "PreviousName_8.CONDATE",
+      " PreviousName_8.CompanyName",
+      "PreviousName_9.CONDATE",
+      " PreviousName_9.CompanyName",
+      "PreviousName_10.CONDATE",
+      " PreviousName_10.CompanyName",
+      "ConfStmtNextDueDate",
+      " ConfStmtLastMadeUpDate"
+    ]
+  }
+}

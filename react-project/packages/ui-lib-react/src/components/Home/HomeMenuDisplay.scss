@@ -1,0 +1,43 @@
+.home-menu-display {
+  .ant-row {
+    margin-bottom: 15px;
+
+    .text-center {
+      text-align: center;
+    }
+
+    .cyoda-btn {
+      background-color: #148751;
+      border-color: #148751;
+      width: 300px;
+      color: #fff;
+      padding: 12px 20px;
+      font-size: 14px;
+      border-radius: 4px;
+      text-align: center;
+      display: block;
+      text-decoration: none;
+
+      &:after {
+        display: none;
+      }
+
+      &:hover {
+        background-color: #149c66;
+        border-color: #149c66;
+        color: #fff;
+      }
+    }
+  }
+
+  hr {
+    box-shadow: none;
+    display: block;
+    height: 0;
+    border: 0;
+    border-top: 2px solid rgb(232, 232, 232);
+    margin: 1em 0;
+    padding: 0;
+  }
+}
+

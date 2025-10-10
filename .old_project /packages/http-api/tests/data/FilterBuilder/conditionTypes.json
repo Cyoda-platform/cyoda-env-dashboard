@@ -1,0 +1,255 @@
+[
+  {
+    "@bean": "com.cyoda.core.conditions.nonqueryable.IEquals",
+    "key": "IEQUALS",
+    "label": "equals (disregard case)",
+    "types": ["String", "UUID"]
+  },
+  {
+    "@bean": "com.cyoda.core.conditions.nonqueryable.INotEquals",
+    "key": "INOT_EQUAL",
+    "label": "not equal (disregard case)",
+    "types": ["String", "UUID"]
+  },
+  {
+    "@bean": "com.cyoda.core.conditions.queryable.Between",
+    "key": "BETWEEN",
+    "label": "between (inclusive)",
+    "types": [
+      "String",
+      "Date",
+      "LocalDate",
+      "LocalDateTime",
+      "Long",
+      "BigDecimal",
+      "Double",
+      "Integer",
+      "Float",
+      "UUID"
+    ],
+    "isRange": true
+  },
+  {
+    "@bean": "com.cyoda.core.conditions.nonqueryable.IContains",
+    "key": "CONTAINS",
+    "label": "contains",
+    "types": ["String", "UUID"]
+  },
+  {
+    "@bean": "com.cyoda.core.conditions.nonqueryable.IStartsWith",
+    "key": "ISTARTS_WITH",
+    "label": "starts with",
+    "types": ["String", "UUID"]
+  },
+  {
+    "@bean": "com.cyoda.core.conditions.nonqueryable.IEndsWith",
+    "key": "IENDS_WITH",
+    "label": "ends with",
+    "types": ["String", "UUID"]
+  },
+  {
+    "@bean": "com.cyoda.core.conditions.nonqueryable.INotContains",
+    "key": "INOT_CONTAINS",
+    "label": "does not contain",
+    "types": ["String", "UUID"]
+  },
+  {
+    "@bean": "com.cyoda.core.conditions.nonqueryable.INotStartsWith",
+    "key": "INOT_STARTS_WITH",
+    "label": "does not start with",
+    "types": ["String", "UUID"]
+  },
+  {
+    "@bean": "com.cyoda.core.conditions.nonqueryable.NotEndsWith",
+    "key": "NOT_ENDS_WITH",
+    "label": "does not end with",
+    "types": ["String", "UUID"]
+  },
+  {
+    "@bean": "com.cyoda.core.conditions.nonqueryable.INotEndsWith",
+    "key": "INOT_ENDS_WITH",
+    "label": "matches other field (case insensitive)",
+    "types": ["String", "UUID"]
+  },
+  {
+    "@bean": "",
+    "key": "",
+    "label": "matches other field (case insensitive)"
+  },
+  {
+    "@bean": "",
+    "key": "",
+    "label": "differs from field (case insensitive)"
+  },
+  {
+    "@bean": "com.cyoda.core.conditions.queryable.Equals",
+    "key": "EQUALS",
+    "label": "equals",
+    "types": [
+      "String",
+      "Date",
+      "LocalDate",
+      "LocalDateTime",
+      "Long",
+      "BigDecimal",
+      "Double",
+      "Integer",
+      "Float",
+      "UUID",
+      "ByteBuffer",
+      "Boolean"
+    ]
+  },
+  {
+    "@bean": "com.cyoda.core.conditions.nonqueryable.NotEquals",
+    "key": "NOT_EQUAL",
+    "label": "not equal",
+    "types": [
+      "String",
+      "Date",
+      "LocalDate",
+      "LocalDateTime",
+      "Long",
+      "BigDecimal",
+      "Double",
+      "Integer",
+      "Float",
+      "UUID",
+      "Boolean"
+    ]
+  },
+  {
+    "@bean": "com.cyoda.core.conditions.queryable.LessThan",
+    "key": "LESS_THAN",
+    "label": "less than",
+    "types": [
+      "Date",
+      "LocalDate",
+      "LocalDateTime",
+      "Long",
+      "BigDecimal",
+      "Double",
+      "Integer",
+      "Float"
+    ]
+  },
+  {
+    "@bean": "com.cyoda.core.conditions.queryable.GreaterThan",
+    "key": "GREATER_THAN",
+    "label": "greater than",
+    "types": [
+      "Date",
+      "LocalDate",
+      "LocalDateTime",
+      "Long",
+      "BigDecimal",
+      "Double",
+      "Integer",
+      "Float"
+    ]
+  },
+  {
+    "@bean": "com.cyoda.core.conditions.queryable.LessThanEquals",
+    "key": "LESS_OR_EQUAL",
+    "label": "less than or equal to",
+    "types": [
+      "Date",
+      "LocalDate",
+      "LocalDateTime",
+      "Long",
+      "BigDecimal",
+      "Double",
+      "Integer",
+      "Float"
+    ]
+  },
+  {
+    "@bean": "com.cyoda.core.conditions.queryable.GreaterThanEquals",
+    "key": "GREATER_OR_EQUAL",
+    "label": "greater than or equal to",
+    "types": [
+      "Date",
+      "LocalDate",
+      "LocalDateTime",
+      "Long",
+      "BigDecimal",
+      "Double",
+      "Integer",
+      "Float"
+    ]
+  },
+  {
+    "@bean": "com.cyoda.core.conditions.queryable.BetweenInclusive",
+    "key": "BETWEEN_INCLUSIVE",
+    "label": "between (inclusive, match case)",
+    "isRange": true
+  },
+  {
+    "@bean": "com.cyoda.core.conditions.nonqueryable.IsNull",
+    "key": "IS_NULL",
+    "label": "is null",
+    "types": [
+      "String",
+      "Date",
+      "LocalDate",
+      "LocalDateTime",
+      "Long",
+      "BigDecimal",
+      "Double",
+      "Integer",
+      "Float",
+      "UUID",
+      "Boolean"
+    ],
+    "disableValueField": true
+  },
+  {
+    "@bean": "com.cyoda.core.conditions.nonqueryable.NotNull",
+    "key": "NOT_NULL",
+    "label": "is not null",
+    "types": [
+      "String",
+      "Date",
+      "LocalDate",
+      "LocalDateTime",
+      "Long",
+      "BigDecimal",
+      "Double",
+      "Integer",
+      "Float",
+      "UUID",
+      "Boolean"
+    ],
+    "disableValueField": true
+  },
+  {
+    "@bean": "",
+    "key": "",
+    "label": "matches other field"
+  },
+  {
+    "@bean": "",
+    "key": "",
+    "label": "differs from field"
+  },
+  {
+    "@bean": "",
+    "key": "",
+    "label": "greater than field"
+  },
+  {
+    "@bean": "",
+    "key": "",
+    "label": "less than field"
+  },
+  {
+    "@bean": "",
+    "key": "",
+    "label": "greater than or equal to field"
+  },
+  {
+    "@bean": "",
+    "key": "",
+    "label": "less than or equal to field"
+  }
+]

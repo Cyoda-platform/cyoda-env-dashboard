@@ -1,0 +1,22 @@
+[
+  {
+    "name": "MAIN-DEFAULT",
+    "size": 64,
+    "available": 64
+  },
+  {
+    "shard": 9,
+    "status": "READY_TO_USE",
+    "runningProcesses": 1
+  },
+  {
+    "shard": 10,
+    "status": "READY_TO_USE",
+    "runningProcesses": 2
+  },
+  {
+    "shard": 11,
+    "status": "READY_TO_USE",
+    "runningProcesses": 12
+  }
+]

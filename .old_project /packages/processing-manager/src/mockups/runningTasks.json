@@ -1,0 +1,9 @@
+[
+  {
+    "lastEntity": "class com.cyoda.core.model.reports.DistributedReport: PLAY_USER-InterfaceMessage-afbf2970-0fa6-11ea-936b-0242653449a8",
+    "lastEventId": "afc6a3a8-0fa6-11ea-936b-0242653449a8",
+    "lastShard": 10,
+    "lastQueue": "DISTRIBUTED_REPORT_1_PHASE",
+    "lastProcesses": "[directClass@com.cyoda.service.processing.processors.core.reports.SimpleReportFirstPhaseProcessor]"
+  }
+]

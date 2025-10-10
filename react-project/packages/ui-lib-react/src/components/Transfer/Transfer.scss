@@ -1,0 +1,24 @@
+.transfer-component {
+  .ant-transfer {
+    display: flex;
+    align-items: center;
+  }
+
+  .ant-transfer-list {
+    border: 1px solid #d9d9d9;
+    border-radius: 2px;
+  }
+
+  .ant-transfer-operation {
+    margin: 0 40px;
+    
+    .ant-btn {
+      display: block;
+      
+      &:not(:last-child) {
+        margin-bottom: 8px;
+      }
+    }
+  }
+}
+

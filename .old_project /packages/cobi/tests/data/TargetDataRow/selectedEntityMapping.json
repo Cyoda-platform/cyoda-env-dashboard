@@ -1,0 +1,209 @@
+{
+  "entityClass": "com.cyoda.encompass.model.PersonEntity",
+  "srcRelativeRootPath": "root:/items/*",
+  "columns": [
+    {
+      "srcColumnPath": "name",
+      "dstCyodaColumnPath": "person@com#cyoda#encompass#datamodel#v1p1b#Person.fullName",
+      "dstCyodaColumnPathType": "java.lang.String",
+      "transformer": {
+        "type": "COMPOSITE",
+        "children": [
+          {
+            "type": "SINGLE",
+            "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.SourceObjectValueTransformer$ToString",
+            "parameters": []
+          },
+          {
+            "type": "SINGLE",
+            "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim",
+            "parameters": []
+          }
+        ]
+      }
+    },
+    {
+      "srcColumnPath": "occupation",
+      "dstCyodaColumnPath": "person@com#cyoda#encompass#datamodel#v1p1b#Person.occupation",
+      "dstCyodaColumnPathType": "java.lang.String",
+      "transformer": {
+        "type": "COMPOSITE",
+        "children": [
+          {
+            "type": "SINGLE",
+            "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.SourceObjectValueTransformer$ToString",
+            "parameters": []
+          },
+          {
+            "type": "SINGLE",
+            "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim",
+            "parameters": []
+          }
+        ]
+      }
+    },
+    {
+      "srcColumnPath": "address/address_line_1",
+      "dstCyodaColumnPath": "person@com#cyoda#encompass#datamodel#v1p1b#Person.locations.[0]@com#cyoda#encompass#datamodel#v1p1b#Address.addressLine1",
+      "dstCyodaColumnPathType": "java.lang.String",
+      "transformer": {
+        "type": "COMPOSITE",
+        "children": [
+          {
+            "type": "SINGLE",
+            "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.SourceObjectValueTransformer$ToString",
+            "parameters": []
+          },
+          {
+            "type": "SINGLE",
+            "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim",
+            "parameters": []
+          }
+        ]
+      }
+    },
+    {
+      "srcColumnPath": "address/address_line_2",
+      "dstCyodaColumnPath": "person@com#cyoda#encompass#datamodel#v1p1b#Person.locations.[0]@com#cyoda#encompass#datamodel#v1p1b#Address.addressLine2",
+      "dstCyodaColumnPathType": "java.lang.String",
+      "transformer": {
+        "type": "COMPOSITE",
+        "children": [
+          {
+            "type": "SINGLE",
+            "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.SourceObjectValueTransformer$ToString",
+            "parameters": []
+          },
+          {
+            "type": "SINGLE",
+            "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim",
+            "parameters": []
+          }
+        ]
+      }
+    },
+    {
+      "srcColumnPath": "address/postal_code",
+      "dstCyodaColumnPath": "person@com#cyoda#encompass#datamodel#v1p1b#Person.locations.[0]@com#cyoda#encompass#datamodel#v1p1b#Address.postalCode",
+      "dstCyodaColumnPathType": "java.lang.String",
+      "transformer": {
+        "type": "COMPOSITE",
+        "children": [
+          {
+            "type": "SINGLE",
+            "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.SourceObjectValueTransformer$ToString",
+            "parameters": []
+          },
+          {
+            "type": "SINGLE",
+            "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim",
+            "parameters": []
+          }
+        ]
+      }
+    },
+    {
+      "srcColumnPath": "address/region",
+      "dstCyodaColumnPath": "person@com#cyoda#encompass#datamodel#v1p1b#Person.locations.[0]@com#cyoda#encompass#datamodel#v1p1b#Address.region",
+      "dstCyodaColumnPathType": "java.lang.String",
+      "transformer": {
+        "type": "COMPOSITE",
+        "children": [
+          {
+            "type": "SINGLE",
+            "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.SourceObjectValueTransformer$ToString",
+            "parameters": []
+          },
+          {
+            "type": "SINGLE",
+            "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim",
+            "parameters": []
+          }
+        ]
+      }
+    },
+    {
+      "srcColumnPath": "links/self",
+      "dstCyodaColumnPath": "person@com#cyoda#encompass#datamodel#v1p1b#Person.identifiers.[0]@com#cyoda#encompass#datamodel#v1p1b#Identifier.identifier",
+      "dstCyodaColumnPathType": "java.lang.String",
+      "transformer": {
+        "type": "COMPOSITE",
+        "children": [
+          {
+            "type": "SINGLE",
+            "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.SourceObjectValueTransformer$ToString",
+            "parameters": []
+          },
+          {
+            "type": "SINGLE",
+            "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim",
+            "parameters": []
+          },
+          {
+            "type": "SINGLE",
+            "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Split",
+            "parameters": [
+              {
+                "@bean": "com.cyoda.core.namedparameters.StringParameter",
+                "name": "delimiter",
+                "value": "/",
+                "parameterType": "java.lang.String"
+              },
+              {
+                "@bean": "com.cyoda.core.namedparameters.StringParameter",
+                "name": "index",
+                "value": "3",
+                "parameterType": "java.lang.String"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "columnPathsForUniqueCheck": [],
+  "metadata": [
+    {
+      "name": "Test",
+      "dstCyodaColumnPath": "person@com#cyoda#encompass#datamodel#v1p1b#Person.authorisedActivities.[*]@com#cyoda#encompass#datamodel#v1p1b#AuthorisedActivity.endDate",
+      "dstCyodaColumnPathType": "java.time.LocalDate",
+      "transformer": {
+        "type": "COMPOSITE",
+        "children": []
+      },
+      "defaultValue": "test"
+    },
+    {
+      "name": "Test",
+      "dstCyodaColumnPath": "owner",
+      "dstCyodaColumnPathType": "java.lang.String",
+      "transformer": {
+        "type": "COMPOSITE",
+        "children": [
+          {
+            "type": "SINGLE",
+            "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.SourceObjectValueTransformer$ToString",
+            "parameters": []
+          }
+        ]
+      },
+      "defaultValue": "Test"
+    },
+    {
+      "name": "test",
+      "dstCyodaColumnPath": "previousTransition",
+      "dstCyodaColumnPathType": "java.lang.String",
+      "transformer": {
+        "type": "COMPOSITE",
+        "children": [
+          {
+            "type": "SINGLE",
+            "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.SourceObjectValueTransformer$ToString",
+            "parameters": []
+          }
+        ]
+      },
+      "defaultValue": "test"
+    }
+  ]
+}

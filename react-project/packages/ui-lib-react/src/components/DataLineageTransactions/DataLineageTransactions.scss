@@ -1,0 +1,49 @@
+.data-lineage-transactions {
+  &__header {
+    strong {
+      text-decoration: underline;
+    }
+  }
+
+  &__body {
+    position: relative;
+    margin-top: 20px;
+    padding-left: 15px;
+    border-left: 2px solid #606266;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: -5px;
+      left: -8px;
+      width: 0;
+      height: 0;
+      border-left: 7px solid transparent;
+      border-right: 7px solid transparent;
+      border-bottom: 7px solid #606266;
+    }
+  }
+
+  &__item {
+    position: relative;
+    padding-left: 170px;
+  }
+
+  &__date {
+    position: absolute;
+    left: -155px;
+    top: 0;
+  }
+
+  &__fields {
+    width: 200px;
+    position: relative;
+
+    .ant-checkbox-wrapper {
+      position: absolute;
+      right: 0;
+      top: -20px;
+    }
+  }
+}
+

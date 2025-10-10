@@ -1,0 +1,608 @@
+{
+  "content": {
+    "@bean": "com.cyoda.service.api.beans.ReportDefinition",
+    "description": "ExampleFIXMLMessageReport super description",
+    "requestClass": "com.cyoda.core.model.message.InterfaceMessage",
+    "condition": {
+      "@bean": "com.cyoda.core.conditions.GroupCondition",
+      "operator": "OR",
+      "conditions": [
+        {
+          "@bean": "com.cyoda.core.conditions.GroupCondition",
+          "operator": "AND",
+          "conditions": [
+            {
+              "@bean": "com.cyoda.core.conditions.queryable.Equals",
+              "fieldName": "secType",
+              "operation": "EQUALS",
+              "value": {
+                "@type": "String",
+                "value": "OPT"
+              },
+              "queryable": true
+            },
+            {
+              "@bean": "com.cyoda.core.conditions.queryable.BetweenInclusive",
+              "fieldName": "amount",
+              "operation": "BETWEEN_INCLUSIVE",
+              "from": {
+                "@type": "BigDecimal",
+                "value": "-2400"
+              },
+              "to": {
+                "@type": "BigDecimal",
+                "value": "1600"
+              }
+            },
+            {
+              "@bean": "com.cyoda.core.conditions.queryable.Equals",
+              "fieldName": "currency",
+              "operation": "EQUALS",
+              "value": {
+                "@type": "String",
+                "value": "EUR"
+              },
+              "queryable": true
+            },
+            {
+              "@bean": "com.cyoda.core.conditions.queryable.GreaterThan",
+              "fieldName": "settlementDate",
+              "operation": "GREATER_THAN",
+              "value": {
+                "@type": "java.time.LocalDate",
+                "value": "2020-02-17"
+              }
+            },
+            {
+              "@bean": "com.cyoda.core.conditions.queryable.Equals",
+              "fieldName": "state",
+              "operation": "EQUALS",
+              "value": {
+                "@type": "String",
+                "value": "PROCESSED"
+              },
+              "queryable": true
+            }
+          ]
+        },
+        {
+          "@bean": "com.cyoda.core.conditions.GroupCondition",
+          "operator": "AND",
+          "conditions": [
+            {
+              "@bean": "com.cyoda.core.conditions.queryable.Equals",
+              "fieldName": "secType",
+              "operation": "EQUALS",
+              "value": {
+                "@type": "String",
+                "value": "FUT"
+              },
+              "queryable": true
+            },
+            {
+              "@bean": "com.cyoda.core.conditions.queryable.BetweenInclusive",
+              "fieldName": "amount",
+              "operation": "BETWEEN_INCLUSIVE",
+              "from": {
+                "@type": "BigDecimal",
+                "value": "-2400"
+              },
+              "to": {
+                "@type": "BigDecimal",
+                "value": "1600"
+              }
+            },
+            {
+              "@bean": "com.cyoda.core.conditions.queryable.Equals",
+              "fieldName": "currency",
+              "operation": "EQUALS",
+              "value": {
+                "@type": "String",
+                "value": "EUR"
+              },
+              "queryable": true
+            },
+            {
+              "@bean": "com.cyoda.core.conditions.queryable.GreaterThan",
+              "fieldName": "settlementDate",
+              "operation": "GREATER_THAN",
+              "value": {
+                "@type": "java.time.LocalDate",
+                "value": "2020-02-17"
+              }
+            },
+            {
+              "@bean": "com.cyoda.core.conditions.queryable.Equals",
+              "fieldName": "state",
+              "operation": "EQUALS",
+              "value": {
+                "@type": "String",
+                "value": "PROCESSED"
+              },
+              "queryable": true
+            }
+          ]
+        },
+        {
+          "@bean": "com.cyoda.core.conditions.GroupCondition",
+          "operator": "AND",
+          "conditions": [
+            {
+              "@bean": "com.cyoda.core.conditions.queryable.Equals",
+              "fieldName": "secType",
+              "operation": "EQUALS",
+              "value": {
+                "@type": "String",
+                "value": "CORP"
+              },
+              "queryable": true
+            },
+            {
+              "@bean": "com.cyoda.core.conditions.queryable.BetweenInclusive",
+              "fieldName": "amount",
+              "operation": "BETWEEN_INCLUSIVE",
+              "from": {
+                "@type": "BigDecimal",
+                "value": "-2400"
+              },
+              "to": {
+                "@type": "BigDecimal",
+                "value": "1600"
+              }
+            },
+            {
+              "@bean": "com.cyoda.core.conditions.queryable.Equals",
+              "fieldName": "currency",
+              "operation": "EQUALS",
+              "value": {
+                "@type": "String",
+                "value": "EUR"
+              },
+              "queryable": true
+            },
+            {
+              "@bean": "com.cyoda.core.conditions.queryable.GreaterThan",
+              "fieldName": "settlementDate",
+              "operation": "GREATER_THAN",
+              "value": {
+                "@type": "java.time.LocalDate",
+                "value": "2020-02-17"
+              }
+            },
+            {
+              "@bean": "com.cyoda.core.conditions.queryable.Equals",
+              "fieldName": "state",
+              "operation": "EQUALS",
+              "value": {
+                "@type": "String",
+                "value": "PROCESSED"
+              },
+              "queryable": true
+            }
+          ]
+        }
+      ]
+    },
+    "pointTime": "2200-01-01T00:00:00.000+03:00",
+    "valuationPointTime": "2020-02-17T13:10:21.704+03:00",
+    "columns": [
+      {
+        "@bean": "com.cyoda.core.reports.columns.ReportSimpleColumn",
+        "name": "id"
+      },
+      {
+        "@bean": "com.cyoda.core.reports.columns.ReportAliasColumn",
+        "name": "secType"
+      },
+      {
+        "@bean": "com.cyoda.core.reports.columns.ReportAliasColumn",
+        "name": "currency"
+      },
+      {
+        "@bean": "com.cyoda.core.reports.columns.ReportAliasColumn",
+        "name": "amount"
+      },
+      {
+        "@bean": "com.cyoda.core.reports.columns.ReportAliasColumn",
+        "name": "price"
+      },
+      {
+        "@bean": "com.cyoda.core.reports.columns.ReportAliasColumn",
+        "name": "quantity"
+      },
+      {
+        "@bean": "com.cyoda.core.reports.columns.ReportAliasColumn",
+        "name": "side"
+      },
+      {
+        "@bean": "com.cyoda.core.reports.columns.ReportAliasColumn",
+        "name": "settlementDate"
+      }
+    ],
+    "sorting": [
+      {
+        "column": {
+          "@bean": "com.cyoda.core.reports.columns.ReportAliasColumn",
+          "name": "settlementDate"
+        },
+        "reverse": false
+      }
+    ],
+    "grouping": [
+      {
+        "@bean": "com.cyoda.core.reports.columns.ReportAliasColumn",
+        "name": "secType"
+      }
+    ],
+    "summary": [
+      [
+        {
+          "@bean": "com.cyoda.core.reports.columns.ReportSimpleColumn",
+          "name": "id"
+        },
+        ["COUNT"]
+      ],
+      [
+        {
+          "@bean": "com.cyoda.core.reports.columns.ReportAliasColumn",
+          "name": "amount"
+        },
+        ["SUM"]
+      ]
+    ],
+    "colDefs": [
+      {
+        "fullPath": "id",
+        "parts": {
+          "@meta": "com.cyoda.core.reports.columndefs.ReportColPartDef[]",
+          "value": [
+            {
+              "rootClass": "com.cyoda.core.model.message.InterfaceMessage",
+              "path": "id",
+              "type": "java.util.UUID"
+            }
+          ]
+        },
+        "colType": "java.util.UUID"
+      },
+      {
+        "fullPath": "state",
+        "parts": {
+          "@meta": "com.cyoda.core.reports.columndefs.ReportColPartDef[]",
+          "value": [
+            {
+              "rootClass": "com.cyoda.core.model.message.InterfaceMessage",
+              "path": "state",
+              "type": "java.lang.String"
+            }
+          ]
+        },
+        "colType": "java.lang.String"
+      }
+    ],
+    "aliasDefs": [
+      {
+        "name": "settlementDate",
+        "aliasPaths": {
+          "@meta": "com.cyoda.core.reports.columndefs.ReportAliasPathDef[]",
+          "value": [
+            {
+              "colDef": {
+                "fullPath": "messageBody@com#cyoda#business#model#message#C24MessageBody.fix44Body@org#fixprotocol#fixml44#Fixmlmain44DocumentRoot.fIXML@org#fixprotocol#fixml44#FIXMLLocal.message@org#fixprotocol#fixml44#TradeCaptureReport_message_t.settlDt",
+                "parts": {
+                  "@meta": "com.cyoda.core.reports.columndefs.ReportColPartDef[]",
+                  "value": [
+                    {
+                      "rootClass": "com.cyoda.core.model.message.InterfaceMessage",
+                      "path": "messageBody@com#cyoda#business#model#message#C24MessageBody.fix44Body@org#fixprotocol#fixml44#Fixmlmain44DocumentRoot.fIXML@org#fixprotocol#fixml44#FIXMLLocal.message@org#fixprotocol#fixml44#TradeCaptureReport_message_t.settlDt",
+                      "type": "java.time.LocalDate"
+                    }
+                  ]
+                },
+                "colType": "java.time.LocalDate"
+              },
+              "mapperClass": "com.cyoda.core.reports.aliasmappers.BasicMapper"
+            },
+            {
+              "colDef": {
+                "fullPath": "messageBody@com#cyoda#business#model#message#C24MessageBody.fix50Body@org#fixprotocol#fixml50sp2#Fixmlmain50SP2DocumentRoot.fIXML@org#fixprotocol#fixml50sp2#FIXMLLocal.message@org#fixprotocol#fixml50sp2#TradeCaptureReport_message_t.settlDt",
+                "parts": {
+                  "@meta": "com.cyoda.core.reports.columndefs.ReportColPartDef[]",
+                  "value": [
+                    {
+                      "rootClass": "com.cyoda.core.model.message.InterfaceMessage",
+                      "path": "messageBody@com#cyoda#business#model#message#C24MessageBody.fix50Body@org#fixprotocol#fixml50sp2#Fixmlmain50SP2DocumentRoot.fIXML@org#fixprotocol#fixml50sp2#FIXMLLocal.message@org#fixprotocol#fixml50sp2#TradeCaptureReport_message_t.settlDt",
+                      "type": "java.time.LocalDate"
+                    }
+                  ]
+                },
+                "colType": "java.time.LocalDate"
+              },
+              "mapperClass": "com.cyoda.core.reports.aliasmappers.BasicMapper"
+            }
+          ]
+        },
+        "aliasType": "java.time.LocalDate"
+      },
+      {
+        "name": "secType",
+        "aliasPaths": {
+          "@meta": "com.cyoda.core.reports.columndefs.ReportAliasPathDef[]",
+          "value": [
+            {
+              "colDef": {
+                "fullPath": "messageBody@com#cyoda#business#model#message#C24MessageBody.fix44Body@org#fixprotocol#fixml44#Fixmlmain44DocumentRoot.fIXML@org#fixprotocol#fixml44#FIXMLLocal.message@org#fixprotocol#fixml44#TradeCaptureReport_message_t.tradeCaptureReportElements@org#fixprotocol#fixml44#TradeCaptureReportElementsLocalGroup.instrmt@org#fixprotocol#fixml44#Instrument_Block_t.secTyp",
+                "parts": {
+                  "@meta": "com.cyoda.core.reports.columndefs.ReportColPartDef[]",
+                  "value": [
+                    {
+                      "rootClass": "com.cyoda.core.model.message.InterfaceMessage",
+                      "path": "messageBody@com#cyoda#business#model#message#C24MessageBody.fix44Body@org#fixprotocol#fixml44#Fixmlmain44DocumentRoot.fIXML@org#fixprotocol#fixml44#FIXMLLocal.message@org#fixprotocol#fixml44#TradeCaptureReport_message_t.tradeCaptureReportElements@org#fixprotocol#fixml44#TradeCaptureReportElementsLocalGroup.instrmt@org#fixprotocol#fixml44#Instrument_Block_t.secTyp",
+                      "type": "java.lang.String"
+                    }
+                  ]
+                },
+                "colType": "java.lang.String"
+              },
+              "mapperClass": "com.cyoda.reports.mappers.fixml.v44.FIXMLv44SecTypeMapper"
+            },
+            {
+              "colDef": {
+                "fullPath": "messageBody@com#cyoda#business#model#message#C24MessageBody.fix50Body@org#fixprotocol#fixml50sp2#Fixmlmain50SP2DocumentRoot.fIXML@org#fixprotocol#fixml50sp2#FIXMLLocal.message@org#fixprotocol#fixml50sp2#TradeCaptureReport_message_t.tradeCaptureReportElements@org#fixprotocol#fixml50sp2#TradeCaptureReportElementsLocalGroup.instrmt@org#fixprotocol#fixml50sp2#Instrument_Block_t.secTyp",
+                "parts": {
+                  "@meta": "com.cyoda.core.reports.columndefs.ReportColPartDef[]",
+                  "value": [
+                    {
+                      "rootClass": "com.cyoda.core.model.message.InterfaceMessage",
+                      "path": "messageBody@com#cyoda#business#model#message#C24MessageBody.fix50Body@org#fixprotocol#fixml50sp2#Fixmlmain50SP2DocumentRoot.fIXML@org#fixprotocol#fixml50sp2#FIXMLLocal.message@org#fixprotocol#fixml50sp2#TradeCaptureReport_message_t.tradeCaptureReportElements@org#fixprotocol#fixml50sp2#TradeCaptureReportElementsLocalGroup.instrmt@org#fixprotocol#fixml50sp2#Instrument_Block_t.secTyp",
+                      "type": "java.lang.String"
+                    }
+                  ]
+                },
+                "colType": "java.lang.String"
+              },
+              "mapperClass": "com.cyoda.reports.mappers.fixml.v50.FIXMLv50SecTypeMapper"
+            }
+          ]
+        },
+        "aliasType": "java.lang.String"
+      },
+      {
+        "name": "currency",
+        "aliasPaths": {
+          "@meta": "com.cyoda.core.reports.columndefs.ReportAliasPathDef[]",
+          "value": [
+            {
+              "colDef": {
+                "fullPath": "messageBody@com#cyoda#business#model#message#C24MessageBody.fix44Body@org#fixprotocol#fixml44#Fixmlmain44DocumentRoot.fIXML@org#fixprotocol#fixml44#FIXMLLocal.message@org#fixprotocol#fixml44#TradeCaptureReport_message_t.tradeCaptureReportElements@org#fixprotocol#fixml44#TradeCaptureReportElementsLocalGroup.rptSide.[*]@org#fixprotocol#fixml44#TrdCapRptSideGrp_Block_t.ccy",
+                "parts": {
+                  "@meta": "com.cyoda.core.reports.columndefs.ReportColPartDef[]",
+                  "value": [
+                    {
+                      "rootClass": "com.cyoda.core.model.message.InterfaceMessage",
+                      "path": "messageBody@com#cyoda#business#model#message#C24MessageBody.fix44Body@org#fixprotocol#fixml44#Fixmlmain44DocumentRoot.fIXML@org#fixprotocol#fixml44#FIXMLLocal.message@org#fixprotocol#fixml44#TradeCaptureReport_message_t.tradeCaptureReportElements@org#fixprotocol#fixml44#TradeCaptureReportElementsLocalGroup.rptSide.[*]@org#fixprotocol#fixml44#TrdCapRptSideGrp_Block_t.ccy",
+                      "type": "java.lang.String"
+                    }
+                  ]
+                },
+                "colType": "java.lang.String"
+              },
+              "mapperClass": "com.cyoda.core.reports.aliasmappers.BasicMapper"
+            },
+            {
+              "colDef": {
+                "fullPath": "messageBody@com#cyoda#business#model#message#C24MessageBody.fix50Body@org#fixprotocol#fixml50sp2#Fixmlmain50SP2DocumentRoot.fIXML@org#fixprotocol#fixml50sp2#FIXMLLocal.message@org#fixprotocol#fixml50sp2#TradeCaptureReport_message_t.tradeCaptureReportElements@org#fixprotocol#fixml50sp2#TradeCaptureReportElementsLocalGroup.rptSide.[*]@org#fixprotocol#fixml50sp2#TrdCapRptSideGrp_Block_t.ccy",
+                "parts": {
+                  "@meta": "com.cyoda.core.reports.columndefs.ReportColPartDef[]",
+                  "value": [
+                    {
+                      "rootClass": "com.cyoda.core.model.message.InterfaceMessage",
+                      "path": "messageBody@com#cyoda#business#model#message#C24MessageBody.fix50Body@org#fixprotocol#fixml50sp2#Fixmlmain50SP2DocumentRoot.fIXML@org#fixprotocol#fixml50sp2#FIXMLLocal.message@org#fixprotocol#fixml50sp2#TradeCaptureReport_message_t.tradeCaptureReportElements@org#fixprotocol#fixml50sp2#TradeCaptureReportElementsLocalGroup.rptSide.[*]@org#fixprotocol#fixml50sp2#TrdCapRptSideGrp_Block_t.ccy",
+                      "type": "java.lang.String"
+                    }
+                  ]
+                },
+                "colType": "java.lang.String"
+              },
+              "mapperClass": "com.cyoda.core.reports.aliasmappers.BasicMapper"
+            }
+          ]
+        },
+        "aliasType": "java.lang.String"
+      },
+      {
+        "name": "amount",
+        "aliasPaths": {
+          "@meta": "com.cyoda.core.reports.columndefs.ReportAliasPathDef[]",
+          "value": [
+            {
+              "colDef": {
+                "fullPath": "messageBody@com#cyoda#business#model#message#C24MessageBody.fix44Body@org#fixprotocol#fixml44#Fixmlmain44DocumentRoot.fIXML@org#fixprotocol#fixml44#FIXMLLocal.message@org#fixprotocol#fixml44#TradeCaptureReport_message_t.tradeCaptureReportElements@org#fixprotocol#fixml44#TradeCaptureReportElementsLocalGroup.rptSide.[*]@org#fixprotocol#fixml44#TrdCapRptSideGrp_Block_t.grossTrdAmt",
+                "parts": {
+                  "@meta": "com.cyoda.core.reports.columndefs.ReportColPartDef[]",
+                  "value": [
+                    {
+                      "rootClass": "com.cyoda.core.model.message.InterfaceMessage",
+                      "path": "messageBody@com#cyoda#business#model#message#C24MessageBody.fix44Body@org#fixprotocol#fixml44#Fixmlmain44DocumentRoot.fIXML@org#fixprotocol#fixml44#FIXMLLocal.message@org#fixprotocol#fixml44#TradeCaptureReport_message_t.tradeCaptureReportElements@org#fixprotocol#fixml44#TradeCaptureReportElementsLocalGroup.rptSide.[*]@org#fixprotocol#fixml44#TrdCapRptSideGrp_Block_t.grossTrdAmt",
+                      "type": "java.math.BigDecimal"
+                    }
+                  ]
+                },
+                "colType": "java.math.BigDecimal"
+              },
+              "mapperClass": "com.cyoda.core.reports.aliasmappers.BasicMapper"
+            },
+            {
+              "colDef": {
+                "fullPath": "messageBody@com#cyoda#business#model#message#C24MessageBody.fix50Body@org#fixprotocol#fixml50sp2#Fixmlmain50SP2DocumentRoot.fIXML@org#fixprotocol#fixml50sp2#FIXMLLocal.message@org#fixprotocol#fixml50sp2#TradeCaptureReport_message_t.tradeCaptureReportElements@org#fixprotocol#fixml50sp2#TradeCaptureReportElementsLocalGroup.rptSide.[*]@org#fixprotocol#fixml50sp2#TrdCapRptSideGrp_Block_t.sideGrossTradeAmt",
+                "parts": {
+                  "@meta": "com.cyoda.core.reports.columndefs.ReportColPartDef[]",
+                  "value": [
+                    {
+                      "rootClass": "com.cyoda.core.model.message.InterfaceMessage",
+                      "path": "messageBody@com#cyoda#business#model#message#C24MessageBody.fix50Body@org#fixprotocol#fixml50sp2#Fixmlmain50SP2DocumentRoot.fIXML@org#fixprotocol#fixml50sp2#FIXMLLocal.message@org#fixprotocol#fixml50sp2#TradeCaptureReport_message_t.tradeCaptureReportElements@org#fixprotocol#fixml50sp2#TradeCaptureReportElementsLocalGroup.rptSide.[*]@org#fixprotocol#fixml50sp2#TrdCapRptSideGrp_Block_t.sideGrossTradeAmt",
+                      "type": "java.math.BigDecimal"
+                    }
+                  ]
+                },
+                "colType": "java.math.BigDecimal"
+              },
+              "mapperClass": "com.cyoda.core.reports.aliasmappers.BasicMapper"
+            }
+          ]
+        },
+        "aliasType": "java.math.BigDecimal"
+      },
+      {
+        "name": "quantity",
+        "aliasPaths": {
+          "@meta": "com.cyoda.core.reports.columndefs.ReportAliasPathDef[]",
+          "value": [
+            {
+              "colDef": {
+                "fullPath": "messageBody@com#cyoda#business#model#message#C24MessageBody.fix44Body@org#fixprotocol#fixml44#Fixmlmain44DocumentRoot.fIXML@org#fixprotocol#fixml44#FIXMLLocal.message@org#fixprotocol#fixml44#TradeCaptureReport_message_t.tradeCaptureReportElements@org#fixprotocol#fixml44#TradeCaptureReportElementsLocalGroup.ordQty@org#fixprotocol#fixml44#OrderQtyData_Block_t.qty",
+                "parts": {
+                  "@meta": "com.cyoda.core.reports.columndefs.ReportColPartDef[]",
+                  "value": [
+                    {
+                      "rootClass": "com.cyoda.core.model.message.InterfaceMessage",
+                      "path": "messageBody@com#cyoda#business#model#message#C24MessageBody.fix44Body@org#fixprotocol#fixml44#Fixmlmain44DocumentRoot.fIXML@org#fixprotocol#fixml44#FIXMLLocal.message@org#fixprotocol#fixml44#TradeCaptureReport_message_t.tradeCaptureReportElements@org#fixprotocol#fixml44#TradeCaptureReportElementsLocalGroup.ordQty@org#fixprotocol#fixml44#OrderQtyData_Block_t.qty",
+                      "type": "java.math.BigDecimal"
+                    }
+                  ]
+                },
+                "colType": "java.math.BigDecimal"
+              },
+              "mapperClass": "com.cyoda.core.reports.aliasmappers.BasicMapper"
+            },
+            {
+              "colDef": {
+                "fullPath": "messageBody@com#cyoda#business#model#message#C24MessageBody.fix50Body@org#fixprotocol#fixml50sp2#Fixmlmain50SP2DocumentRoot.fIXML@org#fixprotocol#fixml50sp2#FIXMLLocal.message@org#fixprotocol#fixml50sp2#TradeCaptureReport_message_t.tradeCaptureReportElements@org#fixprotocol#fixml50sp2#TradeCaptureReportElementsLocalGroup.rptSide.[*]@org#fixprotocol#fixml50sp2#TrdCapRptSideGrp_Block_t.trdRptOrdDetl@org#fixprotocol#fixml50sp2#TradeReportOrderDetail_Block_t.ordQty@org#fixprotocol#fixml50sp2#OrderQtyData_Block_t.qty",
+                "parts": {
+                  "@meta": "com.cyoda.core.reports.columndefs.ReportColPartDef[]",
+                  "value": [
+                    {
+                      "rootClass": "com.cyoda.core.model.message.InterfaceMessage",
+                      "path": "messageBody@com#cyoda#business#model#message#C24MessageBody.fix50Body@org#fixprotocol#fixml50sp2#Fixmlmain50SP2DocumentRoot.fIXML@org#fixprotocol#fixml50sp2#FIXMLLocal.message@org#fixprotocol#fixml50sp2#TradeCaptureReport_message_t.tradeCaptureReportElements@org#fixprotocol#fixml50sp2#TradeCaptureReportElementsLocalGroup.rptSide.[*]@org#fixprotocol#fixml50sp2#TrdCapRptSideGrp_Block_t.trdRptOrdDetl@org#fixprotocol#fixml50sp2#TradeReportOrderDetail_Block_t.ordQty@org#fixprotocol#fixml50sp2#OrderQtyData_Block_t.qty",
+                      "type": "java.math.BigDecimal"
+                    }
+                  ]
+                },
+                "colType": "java.math.BigDecimal"
+              },
+              "mapperClass": "com.cyoda.core.reports.aliasmappers.BasicMapper"
+            }
+          ]
+        },
+        "aliasType": "java.math.BigDecimal"
+      },
+      {
+        "name": "price",
+        "aliasPaths": {
+          "@meta": "com.cyoda.core.reports.columndefs.ReportAliasPathDef[]",
+          "value": [
+            {
+              "colDef": {
+                "fullPath": "messageBody@com#cyoda#business#model#message#C24MessageBody.fix44Body@org#fixprotocol#fixml44#Fixmlmain44DocumentRoot.fIXML@org#fixprotocol#fixml44#FIXMLLocal.message@org#fixprotocol#fixml44#TradeCaptureReport_message_t.lastPx",
+                "parts": {
+                  "@meta": "com.cyoda.core.reports.columndefs.ReportColPartDef[]",
+                  "value": [
+                    {
+                      "rootClass": "com.cyoda.core.model.message.InterfaceMessage",
+                      "path": "messageBody@com#cyoda#business#model#message#C24MessageBody.fix44Body@org#fixprotocol#fixml44#Fixmlmain44DocumentRoot.fIXML@org#fixprotocol#fixml44#FIXMLLocal.message@org#fixprotocol#fixml44#TradeCaptureReport_message_t.lastPx",
+                      "type": "java.math.BigDecimal"
+                    }
+                  ]
+                },
+                "colType": "java.math.BigDecimal"
+              },
+              "mapperClass": "com.cyoda.core.reports.aliasmappers.BasicMapper"
+            },
+            {
+              "colDef": {
+                "fullPath": "messageBody@com#cyoda#business#model#message#C24MessageBody.fix50Body@org#fixprotocol#fixml50sp2#Fixmlmain50SP2DocumentRoot.fIXML@org#fixprotocol#fixml50sp2#FIXMLLocal.message@org#fixprotocol#fixml50sp2#TradeCaptureReport_message_t.lastPx",
+                "parts": {
+                  "@meta": "com.cyoda.core.reports.columndefs.ReportColPartDef[]",
+                  "value": [
+                    {
+                      "rootClass": "com.cyoda.core.model.message.InterfaceMessage",
+                      "path": "messageBody@com#cyoda#business#model#message#C24MessageBody.fix50Body@org#fixprotocol#fixml50sp2#Fixmlmain50SP2DocumentRoot.fIXML@org#fixprotocol#fixml50sp2#FIXMLLocal.message@org#fixprotocol#fixml50sp2#TradeCaptureReport_message_t.lastPx",
+                      "type": "java.math.BigDecimal"
+                    }
+                  ]
+                },
+                "colType": "java.math.BigDecimal"
+              },
+              "mapperClass": "com.cyoda.core.reports.aliasmappers.BasicMapper"
+            }
+          ]
+        },
+        "aliasType": "java.math.BigDecimal"
+      },
+      {
+        "name": "side",
+        "aliasPaths": {
+          "@meta": "com.cyoda.core.reports.columndefs.ReportAliasPathDef[]",
+          "value": [
+            {
+              "colDef": {
+                "fullPath": "messageBody@com#cyoda#business#model#message#C24MessageBody.fix44Body@org#fixprotocol#fixml44#Fixmlmain44DocumentRoot.fIXML@org#fixprotocol#fixml44#FIXMLLocal.message@org#fixprotocol#fixml44#TradeCaptureReport_message_t.tradeCaptureReportElements@org#fixprotocol#fixml44#TradeCaptureReportElementsLocalGroup.rptSide.[*]@org#fixprotocol#fixml44#TrdCapRptSideGrp_Block_t.side",
+                "parts": {
+                  "@meta": "com.cyoda.core.reports.columndefs.ReportColPartDef[]",
+                  "value": [
+                    {
+                      "rootClass": "com.cyoda.core.model.message.InterfaceMessage",
+                      "path": "messageBody@com#cyoda#business#model#message#C24MessageBody.fix44Body@org#fixprotocol#fixml44#Fixmlmain44DocumentRoot.fIXML@org#fixprotocol#fixml44#FIXMLLocal.message@org#fixprotocol#fixml44#TradeCaptureReport_message_t.tradeCaptureReportElements@org#fixprotocol#fixml44#TradeCaptureReportElementsLocalGroup.rptSide.[*]@org#fixprotocol#fixml44#TrdCapRptSideGrp_Block_t.side",
+                      "type": "java.lang.String"
+                    }
+                  ]
+                },
+                "colType": "java.lang.String"
+              },
+              "mapperClass": "com.cyoda.reports.mappers.fixml.SideToBuySellMapper"
+            },
+            {
+              "colDef": {
+                "fullPath": "messageBody@com#cyoda#business#model#message#C24MessageBody.fix50Body@org#fixprotocol#fixml50sp2#Fixmlmain50SP2DocumentRoot.fIXML@org#fixprotocol#fixml50sp2#FIXMLLocal.message@org#fixprotocol#fixml50sp2#TradeCaptureReport_message_t.tradeCaptureReportElements@org#fixprotocol#fixml50sp2#TradeCaptureReportElementsLocalGroup.rptSide.[*]@org#fixprotocol#fixml50sp2#TrdCapRptSideGrp_Block_t.side",
+                "parts": {
+                  "@meta": "com.cyoda.core.reports.columndefs.ReportColPartDef[]",
+                  "value": [
+                    {
+                      "rootClass": "com.cyoda.core.model.message.InterfaceMessage",
+                      "path": "messageBody@com#cyoda#business#model#message#C24MessageBody.fix50Body@org#fixprotocol#fixml50sp2#Fixmlmain50SP2DocumentRoot.fIXML@org#fixprotocol#fixml50sp2#FIXMLLocal.message@org#fixprotocol#fixml50sp2#TradeCaptureReport_message_t.tradeCaptureReportElements@org#fixprotocol#fixml50sp2#TradeCaptureReportElementsLocalGroup.rptSide.[*]@org#fixprotocol#fixml50sp2#TrdCapRptSideGrp_Block_t.side",
+                      "type": "java.lang.String"
+                    }
+                  ]
+                },
+                "colType": "java.lang.String"
+              },
+              "mapperClass": "com.cyoda.reports.mappers.fixml.SideToBuySellMapper"
+            }
+          ]
+        },
+        "aliasType": "java.lang.String"
+      }
+    ],
+    "hierarhyEnable": false,
+    "reportVersion": 0
+  },
+  "_links": {
+    "/pre": {
+      "href": "/reporting/pre?gridConfig=PLAY-InterfaceMessage_0-ExampleFixMessageReport",
+      "hreflang": null,
+      "title": "Launch a preconfigured report",
+      "type": "POST",
+      "deprecation": null,
+      "title": null
+    },
+    "/history": {
+      "href": "/reporting/history?report_name=PLAY-InterfaceMessage_0-ExampleFixMessageReport{&user,from,to}",
+      "hreflang": null,
+      "title": "Get report histories",
+      "type": "GET",
+      "deprecation": null,
+      "templated": true,
+      "title": null
+    }
+  }
+}

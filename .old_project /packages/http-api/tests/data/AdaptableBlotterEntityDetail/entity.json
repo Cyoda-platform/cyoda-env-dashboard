@@ -1,0 +1,169 @@
+[
+  {
+    "columnInfo": {
+      "columnName": "owner",
+      "columnPath": "owner",
+      "type": "LEAF",
+      "clazzType": "java.lang.String",
+      "decision": null
+    },
+    "value": "SYSTEM",
+    "type": "LEAF",
+    "decision": "FULL_ACCESS"
+  },
+  {
+    "columnInfo": {
+      "columnName": "leiUUID",
+      "columnPath": "leiUUID",
+      "type": "LEAF",
+      "clazzType": "java.util.UUID",
+      "decision": null
+    },
+    "value": "4551b66d-d502-1000-8422-0c4100552386",
+    "type": "LEAF",
+    "decision": "FULL_ACCESS"
+  },
+  {
+    "columnInfo": {
+      "columnName": "previousTransition",
+      "columnPath": "previousTransition",
+      "type": "LEAF",
+      "clazzType": "java.lang.String",
+      "decision": null
+    },
+    "value": "ACTIVATE",
+    "type": "LEAF",
+    "decision": "FULL_ACCESS"
+  },
+  {
+    "columnInfo": {
+      "columnName": "name",
+      "columnPath": "name",
+      "type": "LEAF",
+      "clazzType": "java.lang.String",
+      "decision": null
+    },
+    "value": "Rolf Kühl Holding GmbH & Co. KG",
+    "type": "LEAF",
+    "decision": "FULL_ACCESS"
+  },
+  {
+    "columnInfo": {
+      "columnName": "state",
+      "columnPath": "state",
+      "type": "LEAF",
+      "clazzType": "java.lang.String",
+      "decision": null
+    },
+    "value": "ACTIVE",
+    "type": "LEAF",
+    "decision": "FULL_ACCESS"
+  },
+  {
+    "columnInfo": {
+      "columnName": "contactUser",
+      "columnPath": "contactUser",
+      "type": "LEAF",
+      "clazzType": "java.lang.String",
+      "decision": null
+    },
+    "value": null,
+    "type": "LEAF",
+    "decision": "FULL_ACCESS"
+  },
+  {
+    "columnInfo": {
+      "columnName": "systemAccount",
+      "columnPath": "systemAccount",
+      "type": "LEAF",
+      "clazzType": "java.lang.Boolean",
+      "decision": null
+    },
+    "value": false,
+    "type": "LEAF",
+    "decision": "FULL_ACCESS"
+  },
+  {
+    "columnInfo": {
+      "columnName": "creationDate",
+      "columnPath": "creationDate",
+      "type": "LEAF",
+      "clazzType": "java.util.Date",
+      "decision": null
+    },
+    "value": "2020-10-09T17:41:44.972+00:00",
+    "type": "LEAF",
+    "decision": "FULL_ACCESS"
+  },
+  {
+    "columnInfo": {
+      "columnName": "lastUpdateTime",
+      "columnPath": "lastUpdateTime",
+      "type": "LEAF",
+      "clazzType": "java.util.Date",
+      "decision": null
+    },
+    "value": "2020-10-09T17:44:38.532+00:00",
+    "type": "LEAF",
+    "decision": "FULL_ACCESS"
+  },
+  {
+    "columnInfo": {
+      "columnName": "id",
+      "columnPath": "id",
+      "type": "LEAF",
+      "clazzType": "java.lang.String",
+      "decision": null
+    },
+    "value": "391200FKYNNGGOQQKA93",
+    "type": "LEAF",
+    "decision": "FULL_ACCESS"
+  },
+  {
+    "columnInfo": {
+      "columnName": "leiRecordType",
+      "columnPath": "leiRecordType",
+      "type": "EMBEDDED",
+      "declaredClass": "org.gleif.data.schema.leidata._2016.LEIRecordType",
+      "subClasses": [],
+      "decision": null
+    },
+    "presented": true,
+    "realClass": "org.gleif.data.schema.leidata._2016.LEIRecordType",
+    "type": "EMBEDDED",
+    "decision": "FULL_ACCESS"
+  },
+  {
+    "columnInfo": {
+      "columnName": "types",
+      "columnPath": "types",
+      "type": "LIST",
+      "elementInfo": {
+        "columnName": null,
+        "columnPath": "types.[*]",
+        "type": "LEAF",
+        "clazzType": "java.lang.String",
+        "decision": null
+      },
+      "decision": null
+    },
+    "listSize": 1,
+    "presented": true,
+    "type": "LIST",
+    "decision": "FULL_ACCESS"
+  },
+  {
+    "columnInfo": {
+      "columnName": "masterAgreement",
+      "columnPath": "masterAgreement",
+      "type": "EMBEDDED",
+      "declaredClass": "com.cyoda.business.model.common.MasterAgreement",
+      "subClasses": [],
+      "decision": null
+    },
+    "presented": true,
+    "realClass": "com.cyoda.business.model.common.MasterAgreement",
+    "type": "EMBEDDED",
+    "decision": "FULL_ACCESS"
+  }
+]

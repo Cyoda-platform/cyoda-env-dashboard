@@ -1,0 +1,41 @@
+{
+  "@bean": "com.cyoda.plugins.mapping.core.dtos.DataMappingConfigDto",
+  "id": "1f1d88c0-5767-11ec-a8a4-ee32478034d7",
+  "dataType": "JSON",
+  "name": "test",
+  "description": "",
+  "entityMappings": [
+    {
+      "entityClass": "com.cyoda.encompass.model.OrganisationEntity",
+      "srcRelativeRootPath": "root:/embedded/companies/*",
+      "columns": [],
+      "functionalMappings": [
+        {
+          "srcPaths": ["name"],
+          "statements": [
+            {
+              "type": "SET_DST_VALUE",
+              "dstPath": "creationDate",
+              "expression": {
+                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                "value": "1"
+              }
+            },
+            {
+              "type": "RETURN",
+              "expression": {
+                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                "value": "2"
+              }
+            }
+          ],
+          "dstPath": "id"
+        }
+      ],
+      "columnPathsForUniqueCheck": [],
+      "metadata": []
+    }
+  ],
+  "sampleContent": "{\"nonNeedField\":123,\"embedded\":{\"companies\":[{\"name\":\"Company1\",\"employeeCount\":100,\"ints\":[1,2,3],\"address\":{\"street\":\"Street1\",\"house\":\"1\",\"apartment\":1},\"person\":{\"firstName\":\"firstName11\",\"lastName\":\"lastName11\"}},{\"name\":\"Company2\",\"employeeCount\":200,\"ints\":[4,5],\"address\":{\"street\":\"Street2\",\"house\":\"2\",\"apartment\":2},\"person\":{\"firstName\":\"firstName21\",\"lastName\":\"lastName21\"}}]}}",
+  "metadata": "{\"id\":\"<xml xmlns=\\\"https://developers.google.com/blockly/xml\\\"><block type=\\\"statement_set_dst_value\\\" id=\\\"b}NtJUWcG*g??{A;UYx7\\\" x=\\\"12\\\" y=\\\"13\\\"><field name=\\\"DST_PATH\\\">creationDate</field><value name=\\\"VALUE\\\"><block type=\\\"expression_string\\\" id=\\\"tKcVK[BM4*o~%}3bk!_K\\\"><field name=\\\"NAME\\\">1</field></block></value><next><block type=\\\"statement_return\\\" id=\\\"B_j7Zr]r8VKu5dyq2[Hi\\\"><value name=\\\"EXPRESSION\\\"><block type=\\\"expression_string\\\" id=\\\"W_rruZ/zW(GGTGcY]hNT\\\"><field name=\\\"NAME\\\">2</field></block></value></block></next></block></xml>\"}"
+}

@@ -1,0 +1,168 @@
+{
+  "@bean": "com.cyoda.plugins.datasource.dtos.DataSourceConfigsContainerDto",
+  "dataSources": [],
+  "chainings": [],
+  "mappings": [
+    {
+      "id": "c39fd7a0-baba-11ee-9a52-8a1b68db654e",
+      "name": "test_demo_kl_ml_1",
+      "lastUpdated": 1710526330954,
+      "dataType": "JSON",
+      "description": "",
+      "entityMappings": [
+        {
+          "id": {
+            "id": "65e80ad0-83d6-11ee-8529-523b43f140f9"
+          },
+          "name": "test_demo_kl",
+          "entityClass": "net.cyoda.saas.model.OrganisationEntity",
+          "entityRelationConfigs": [
+            {
+              "srcRelativeRootPath": "root:/"
+            }
+          ],
+          "columns": [
+            {
+              "srcColumnPath": "result/name",
+              "dstCyodaColumnPath": "org@net#cyoda#saas#model#dto#Organisation.name",
+              "dstCyodaColumnPathType": "java.lang.String",
+              "dstCollectionElementSetModes": [],
+              "transformer": {
+                "type": "COMPOSITE",
+                "children": [
+                  {
+                    "type": "SINGLE",
+                    "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.SourceObjectValueTransformer$ToString",
+                    "parameters": []
+                  },
+                  {
+                    "type": "SINGLE",
+                    "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim",
+                    "parameters": []
+                  }
+                ]
+              }
+            },
+            {
+              "srcColumnPath": "result/idAtRegistry",
+              "dstCyodaColumnPath": "org@net#cyoda#saas#model#dto#Organisation.idAtRegistry",
+              "dstCyodaColumnPathType": "java.lang.String",
+              "dstCollectionElementSetModes": [],
+              "transformer": {
+                "type": "COMPOSITE",
+                "children": [
+                  {
+                    "type": "SINGLE",
+                    "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.SourceObjectValueTransformer$ToString",
+                    "parameters": []
+                  },
+                  {
+                    "type": "SINGLE",
+                    "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim",
+                    "parameters": []
+                  }
+                ]
+              }
+            },
+            {
+              "srcColumnPath": "website",
+              "dstCyodaColumnPath": "org@net#cyoda#saas#model#dto#Organisation.website",
+              "dstCyodaColumnPathType": "java.lang.String",
+              "dstCollectionElementSetModes": [],
+              "transformer": {
+                "type": "COMPOSITE",
+                "children": [
+                  {
+                    "type": "SINGLE",
+                    "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.SourceObjectValueTransformer$ToString",
+                    "parameters": []
+                  },
+                  {
+                    "type": "SINGLE",
+                    "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim",
+                    "parameters": []
+                  }
+                ]
+              }
+            },
+            {
+              "srcColumnPath": "countryOfRegistration",
+              "dstCyodaColumnPath": "org@net#cyoda#saas#model#dto#Organisation.countryOfRegistration",
+              "dstCyodaColumnPathType": "java.lang.String",
+              "dstCollectionElementSetModes": [],
+              "transformer": {
+                "type": "COMPOSITE",
+                "children": [
+                  {
+                    "type": "SINGLE",
+                    "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.SourceObjectValueTransformer$ToString",
+                    "parameters": []
+                  },
+                  {
+                    "type": "SINGLE",
+                    "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim",
+                    "parameters": []
+                  }
+                ]
+              }
+            }
+          ],
+          "functionalMappings": [],
+          "columnPathsForUniqueCheck": [],
+          "metadata": [],
+          "cobiCoreMetadata": [],
+          "script": {
+            "body": "var Organisation = Java.type('net.cyoda.saas.model.dto.Organisation');\nvar organisation = new Organisation();\n\nvar emails = [];\nvar phoneNumbers = [];\nvar Address = Java.type('net.cyoda.saas.model.dto.Address');\nvar addresses = [];\n\nfor (var i = 0; i < input.result.data.length; i++) {\n    emails.push(input.result.data[i].emailAddress);\n    phoneNumbers.push(input.result.data[i].num);\n    var address = new Address();\n    address.setLine1(input.result.data[i].city);\n    address.setCountry(input.result.countryOfRegistration);\n    addresses.push(address);\n}\n\norganisation.setEmails(emails);\norganisation.setPhoneNumbers(phoneNumbers);\norganisation.setAddresses(addresses);\norganisation.setIsInCrm(input.isInCrm == true);\n\nentity.org = organisation;",
+            "inputSrcPaths": [
+              "website",
+              "nameOfCompany",
+              "result/total",
+              "result/orderNo",
+              "result/data/*/date",
+              "result/data/*/city",
+              "result/data/*/country",
+              "result/data/*/size",
+              "result/data/*/docId",
+              "result/data/*/page",
+              "result/data/*/emaiAddress",
+              "result/data/*/keyNo",
+              "result/data/*/status",
+              "result/totalPages",
+              "result/page",
+              "result/status",
+              "code",
+              "message",
+              "result/data/*/emailAddress",
+              "result/data/*/num",
+              "name",
+              "departments/*/name",
+              "departments/*/head",
+              "telephones/*",
+              "locations/*/city",
+              "locations/*/country",
+              "departments/*/email",
+              "departments/*/telephones/*",
+              "departments/*/cities/*",
+              "departments/*/countries/*",
+              "site",
+              "departments/*/emails/*",
+              "result/lastUpdated",
+              "result/idAtRegistry",
+              "result/name",
+              "countryOfRegistration"
+            ],
+            "inputMetaPaths": [],
+            "reusableScripts": []
+          },
+          "entityFilter": {
+            "@bean": "com.cyoda.core.conditions.GroupCondition",
+            "operator": "AND",
+            "conditions": []
+          }
+        }
+      ],
+      "sampleContent": "{\"result\":{\"lastUpdated\":\"2022-08-23 16:13:25\",\"total\":10,\"name\":\"CompanyName\",\"idAtRegistry\":\"12343\",\"data\":[{\"date\":\"2022-05-23 00:00:00\",\"city\":\"Paris\",\"keyNo\":\"k2022\",\"size\":\"141KB\",\"docId\":\"23301974955\",\"page\":\"4\",\"status\":\"Available\",\"emailAddress\":\"kk@kk.kk\",\"num\":\"+7878787\"},{\"date\":\"2022-05-23 00:00:00\",\"city\":\"Marseille\",\"keyNo\":\"k2022\",\"size\":\"141KB\",\"docId\":\"23301974955\",\"page\":\"4\",\"status\":\"Available\",\"emailAddress\":\"kks@kk.kk\",\"num\":\"+78787875\"},{\"date\":\"2022-02-08 00:00:00\",\"city\":\"Toulouse\",\"keyNo\":\"k202206051216101348165273\",\"size\":\"8.1MB\",\"docId\":\"22702450381\",\"page\":\"192\",\"status\":\"Available\",\"emailAddress\":\"kks@kk.krk\",\"num\":\"+787875875\"}],\"totalPages\":4,\"page\":1,\"status\":200004},\"code\":200,\"countryOfRegistration\":\"US\",\"message\":\"Request succeeded\",\"website\":\"travel.com\"}",
+      "metadata": "{\"entityMappingsMetaDatas\":[{\"uiId\":1,\"cobiPathsRelations\":[{\"srcColumnPath\":\"result/name\",\"dstColumnPath\":\"org@net#cyoda#saas#model#dto#Organisation.name\",\"jsonPath\":\"result/name\"},{\"srcColumnPath\":\"result/idAtRegistry\",\"dstColumnPath\":\"org@net#cyoda#saas#model#dto#Organisation.idAtRegistry\",\"jsonPath\":\"result/idAtRegistry\"},{\"srcColumnPath\":\"website\",\"dstColumnPath\":\"org@net#cyoda#saas#model#dto#Organisation.website\",\"jsonPath\":\"website\"},{\"srcColumnPath\":\"countryOfRegistration\",\"dstColumnPath\":\"org@net#cyoda#saas#model#dto#Organisation.countryOfRegistration\",\"jsonPath\":\"countryOfRegistration\"},{\"srcColumnPath\":\"website\",\"jsonPath\":\"\",\"dstColumnPath\":\"\"},{\"srcColumnPath\":\"nameOfCompany\",\"jsonPath\":\"nameOfCompany\",\"dstColumnPath\":\"\"},{\"srcColumnPath\":\"result/total\",\"jsonPath\":\"result/total\",\"dstColumnPath\":\"\"},{\"srcColumnPath\":\"result/orderNo\",\"jsonPath\":\"\",\"dstColumnPath\":\"\"},{\"srcColumnPath\":\"result/data/*/date\",\"jsonPath\":\"\",\"dstColumnPath\":\"\"},{\"srcColumnPath\":\"result/data/*/city\",\"jsonPath\":\"\",\"dstColumnPath\":\"\"},{\"srcColumnPath\":\"result/data/*/country\",\"jsonPath\":\"\",\"dstColumnPath\":\"\"},{\"srcColumnPath\":\"result/data/*/size\",\"jsonPath\":\"\",\"dstColumnPath\":\"\"},{\"srcColumnPath\":\"result/data/*/docId\",\"jsonPath\":\"\",\"dstColumnPath\":\"\"},{\"srcColumnPath\":\"result/data/*/page\",\"jsonPath\":\"\",\"dstColumnPath\":\"\"},{\"srcColumnPath\":\"result/data/*/emaiAddress\",\"jsonPath\":\"\",\"dstColumnPath\":\"\"},{\"srcColumnPath\":\"result/data/*/keyNo\",\"jsonPath\":\"\",\"dstColumnPath\":\"\"},{\"srcColumnPath\":\"result/data/*/status\",\"jsonPath\":\"\",\"dstColumnPath\":\"\"},{\"srcColumnPath\":\"result/totalPages\",\"jsonPath\":\"\",\"dstColumnPath\":\"\"},{\"srcColumnPath\":\"result/page\",\"jsonPath\":\"\",\"dstColumnPath\":\"\"},{\"srcColumnPath\":\"result/status\",\"jsonPath\":\"result/status\",\"dstColumnPath\":\"\"},{\"srcColumnPath\":\"code\",\"jsonPath\":\"\",\"dstColumnPath\":\"\"},{\"srcColumnPath\":\"message\",\"jsonPath\":\"\",\"dstColumnPath\":\"\"},{\"srcColumnPath\":\"result/data/*/emailAddress\",\"jsonPath\":\"\",\"dstColumnPath\":\"\"},{\"srcColumnPath\":\"result/data/*/num\",\"jsonPath\":\"\",\"dstColumnPath\":\"\"},{\"srcColumnPath\":\"name\",\"jsonPath\":\"name\",\"dstColumnPath\":\"\"},{\"srcColumnPath\":\"departments/*/name\",\"jsonPath\":\"\",\"dstColumnPath\":\"\"},{\"srcColumnPath\":\"departments/*/head\",\"jsonPath\":\"\",\"dstColumnPath\":\"\"},{\"srcColumnPath\":\"telephones/*\",\"jsonPath\":\"\",\"dstColumnPath\":\"\"},{\"srcColumnPath\":\"locations/*/city\",\"jsonPath\":\"\",\"dstColumnPath\":\"\"},{\"srcColumnPath\":\"locations/*/country\",\"jsonPath\":\"\",\"dstColumnPath\":\"\"},{\"srcColumnPath\":\"departments/*/email\",\"jsonPath\":\"\",\"dstColumnPath\":\"\"},{\"srcColumnPath\":\"departments/*/telephones/*\",\"jsonPath\":\"\",\"dstColumnPath\":\"\"},{\"srcColumnPath\":\"departments/*/cities/*\",\"jsonPath\":\"\",\"dstColumnPath\":\"\"},{\"srcColumnPath\":\"departments/*/countries/*\",\"jsonPath\":\"\",\"dstColumnPath\":\"\"},{\"srcColumnPath\":\"site\",\"jsonPath\":\"site\",\"dstColumnPath\":\"\"},{\"srcColumnPath\":\"departments/*/emails/*\",\"jsonPath\":\"\",\"dstColumnPath\":\"\"},{\"srcColumnPath\":\"result/lastUpdated\",\"jsonPath\":\"result/lastUpdated\",\"dstColumnPath\":\"\"},{\"srcColumnPath\":\"result/idAtRegistry\",\"jsonPath\":\"result/idAtRegistry\",\"dstColumnPath\":\"\"},{\"srcColumnPath\":\"result/name\",\"jsonPath\":\"result/name\",\"dstColumnPath\":\"\"},{\"srcColumnPath\":\"countryOfRegistration\",\"jsonPath\":\"countryOfRegistration\",\"dstColumnPath\":\"\"}],\"isShowNoneMappingFields\":true,\"isPolymorphicList\":false}]}"
+    }
+  ]
+}

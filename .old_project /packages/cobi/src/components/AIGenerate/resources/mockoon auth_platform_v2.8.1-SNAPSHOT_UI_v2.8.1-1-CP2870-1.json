@@ -1,0 +1,225 @@
+{
+  "@bean": "com.cyoda.plugins.datasource.dtos.DataSourceConfigsContainerDto",
+  "dataSources": [
+    {
+      "id": "f4114bb0-7a2b-11ed-bc08-7085c2ba41e4",
+      "name": "mockoon auth",
+      "lastUpdated": 1709564292019,
+      "description": "",
+      "connections": [
+        {
+          "@bean": "com.cyoda.plugins.datasource.dtos.connection.HttpConnectionDetailsDto",
+          "name": "HTTP connection (baseUrl = https://mockoon.cyoda.com)",
+          "baseUrl": "https://mockoon.cyoda.org",
+          "headers": {},
+          "authType": "X_AUTH_TOKEN",
+          "authConfig": {
+            "name": "get token",
+            "authOperationConfigs": [
+              {
+                "authService": "com.cyoda.plugins.datasource.service.handler.auth.DSHttpAuthService",
+                "authServiceName": "default-auth-service",
+                "baseUrl": "https://mockoon.cyoda.org",
+                "query": "/auth/login",
+                "method": "POST_BODY",
+                "bodyTemplate": "{\"username\":\"${username}\", \"password\":\"${password}\"}",
+                "headers": {
+                  "Authorization": "Bearer null",
+                  "X-Requested-With": "XMLHttpRequest",
+                  "Content-Type": "application/json"
+                },
+                "parameters": [
+                  {
+                    "name": "username",
+                    "defaultValue": "robert",
+                    "secure": false,
+                    "required": true,
+                    "template": false,
+                    "templateValue": "",
+                    "type": "REQUEST_BODY_VARIABLE",
+                    "optionValues": []
+                  },
+                  {
+                    "name": "password",
+                    "defaultValue": "stardust",
+                    "secure": false,
+                    "required": true,
+                    "template": false,
+                    "templateValue": "",
+                    "type": "REQUEST_BODY_VARIABLE",
+                    "optionValues": []
+                  }
+                ],
+                "dataSourceAuthRespConfig": {
+                  "responseParser": "com.cyoda.plugins.datasource.service.handler.auth.resp.JsonDefaultResponseParser",
+                  "responseParserName": "json-default-response-parser",
+                  "responseParamToPathMap": {
+                    "token": {
+                      "@bean": "com.cyoda.plugins.datasource.dtos.connection.auth.resp.JsonRespSourcePathDto",
+                      "path": "$.token"
+                    }
+                  }
+                },
+                "connectionTimeout": 2,
+                "readWriteTimeout": 2
+              }
+            ],
+            "numOfRetries": 3,
+            "cacheConfig": {
+              "ttl": 100000000000,
+              "persistCache": true
+            }
+          }
+        }
+      ],
+      "endpoints": [
+        {
+          "@bean": "com.cyoda.plugins.datasource.dtos.endpoint.HttpEndpointDto",
+          "consumerConfig": {
+            "consumerType": "COBI_MAPPER",
+            "configId": "4f476ed0-7a2a-11ed-bc08-7085c2ba41e4"
+          },
+          "chainings": [],
+          "operation": "test1",
+          "cache": {
+            "parameters": [],
+            "ttl": 1000000000000
+          },
+          "connectionIndex": 0,
+          "type": "123",
+          "query": "/json/people/${doc_id}",
+          "method": "GET",
+          "parameters": [
+            {
+              "name": "doc_id",
+              "defaultValue": "111",
+              "secure": false,
+              "required": true,
+              "template": false,
+              "templateValue": "",
+              "type": "PATH_VARIABLE",
+              "optionValues": []
+            }
+          ],
+          "bodyTemplate": "{\"username\":\"robert\", \"password\":\"stardust\"}",
+          "connectionTimeout": 1,
+          "readWriteTimeout": 1
+        },
+        {
+          "@bean": "com.cyoda.plugins.datasource.dtos.endpoint.HttpEndpointDto",
+          "consumerConfig": {
+            "consumerType": "COBI_MAPPER",
+            "configId": "4f476ed0-7a2a-11ed-bc08-7085c2ba41e4"
+          },
+          "chainings": [],
+          "operation": "test2",
+          "cache": {
+            "parameters": [],
+            "ttl": 0
+          },
+          "connectionIndex": 0,
+          "type": "2",
+          "query": "/json/people/${doc_id2}",
+          "method": "GET",
+          "parameters": [
+            {
+              "name": "doc_id2",
+              "defaultValue": "222",
+              "secure": false,
+              "required": false,
+              "template": false,
+              "templateValue": "",
+              "type": "PATH_VARIABLE",
+              "optionValues": []
+            }
+          ],
+          "bodyTemplate": "",
+          "connectionTimeout": 1,
+          "readWriteTimeout": 1
+        }
+      ],
+      "active": true
+    }
+  ],
+  "chainings": [],
+  "mappings": [
+    {
+      "id": "4f476ed0-7a2a-11ed-bc08-7085c2ba41e4",
+      "name": "auth test mokoon",
+      "lastUpdated": 1709564292019,
+      "dataType": "JSON",
+      "description": "",
+      "entityMappings": [
+        {
+          "id": {
+            "id": "4f3e9530-7a2a-11ed-bc08-7085c2ba41e4"
+          },
+          "name": "name",
+          "entityClass": "net.cyoda.saas.model.PersonEntity",
+          "entityRelationConfigs": [
+            {
+              "srcRelativeRootPath": "root:/results/*"
+            }
+          ],
+          "columns": [
+            {
+              "srcColumnPath": "data/name_elements/forename",
+              "dstCyodaColumnPath": "person@net#cyoda#saas#model#dto#Person.firstName",
+              "dstCyodaColumnPathType": "java.lang.String",
+              "dstCollectionElementSetModes": [],
+              "transformer": {
+                "type": "COMPOSITE",
+                "children": [
+                  {
+                    "type": "SINGLE",
+                    "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.SourceObjectValueTransformer$ToString",
+                    "parameters": []
+                  },
+                  {
+                    "type": "SINGLE",
+                    "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim",
+                    "parameters": []
+                  }
+                ]
+              }
+            },
+            {
+              "srcColumnPath": "company_number",
+              "dstCyodaColumnPath": "person@net#cyoda#saas#model#dto#Person.identifier",
+              "dstCyodaColumnPathType": "java.lang.String",
+              "dstCollectionElementSetModes": [],
+              "transformer": {
+                "type": "COMPOSITE",
+                "children": [
+                  {
+                    "type": "SINGLE",
+                    "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.SourceObjectValueTransformer$ToString",
+                    "parameters": []
+                  },
+                  {
+                    "type": "SINGLE",
+                    "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim",
+                    "parameters": []
+                  }
+                ]
+              }
+            }
+          ],
+          "functionalMappings": [],
+          "columnPathsForUniqueCheck": [
+            "person@net#cyoda#saas#model#dto#Person.firstName"
+          ],
+          "metadata": [],
+          "cobiCoreMetadata": [],
+          "entityFilter": {
+            "@bean": "com.cyoda.core.conditions.GroupCondition",
+            "operator": "AND",
+            "conditions": []
+          }
+        }
+      ],
+      "sampleContent": "{\"type\":\"UK Companies House Person\",\"version\":\"1\",\"totalResults\":-1,\"resultsFrom\":0,\"previousResultsUri\":null,\"nextResultsUri\":null,\"exceptionNoticeUri\":null,\"results\":[{\"company_number\":\"09071554\",\"data\":{\"address\":{\"address_line_1\":\"Sackup Lane\",\"address_line_2\":\"Darton\",\"country\":\"England\",\"locality\":\"Barnsley\",\"postal_code\":\"S75 5AN\",\"premises\":\"31a Sackup Lane\"},\"country_of_residence\":\"England\",\"date_of_birth\":{\"month\":2,\"year\":1972},\"etag\":\"c44a39a359bd3d887cd920504f1731a5e454a60a\",\"kind\":\"individual-person-with-significant-control\",\"links\":{\"self\":\"/company/09071554/persons-with-significant-control/individual/PZncLMqPBdZUbZPhOvP4UVMh60U\"},\"name\":\"Mr Timothy Patrick Smith\",\"name_elements\":{\"forename\":\"Timothy\",\"midlename\":\"Patrick\",\"surname\":\"Smith\",\"title\":\"Mr\"},\"nationality\":\"British\",\"natures_of_control\":[\"ownership-of-shares-75-to-100-percent\"],\"notified_on\":\"2016-06-30\"}}]}",
+      "metadata": ""
+    }
+  ]
+}

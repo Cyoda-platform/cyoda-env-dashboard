@@ -1,0 +1,58 @@
+hr {
+  box-shadow: none;
+  display: block;
+  height: 0;
+  border: 0;
+  border-top: 2px solid rgb(232, 232, 232);
+  margin: 1em 0;
+  padding: 0;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  top: 0;
+  clip: rect(1px, 1px, 1px, 1px) !important;
+  overflow: hidden !important;
+  height: 1px !important;
+  width: 1px !important;
+  padding: 0 !important;
+  border: 0 !important;
+}
+
+.header-contents {
+  align-items: flex-end;
+  display: flex;
+  flex-wrap: wrap;
+
+  > * {
+    flex: 0 1 auto;
+    min-width: 0;
+  }
+
+  .logout {
+    margin-left: auto;
+  }
+  small {
+    margin-left: 20px;
+    margin-right: 50px;
+    font-size: 16px;
+    position: relative;
+    top: -5px;
+    color: #148751;
+    font-weight: bold;
+    font-family: Arial, sans-serif;
+  }
+
+  .links{
+    vertical-align: bottom;
+  }
+
+  a {
+    color: #148751 !important;
+  }
+
+  a.router-link-exact-active {
+    color: #001123 !important;
+    cursor: auto;
+  }
+}

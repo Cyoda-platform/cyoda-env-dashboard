@@ -1,0 +1,655 @@
+{
+  "id": "51632a60-036f-11ed-a0ac-0218eb079997",
+  "name": "REG_FR_1_Shareholders",
+  "lastUpdated": 1676583531170,
+  "dataType": "JSON",
+  "description": "Infogreffe shareholders",
+  "entityMappings": [
+    {
+      "id": {
+        "id": "ecf777a0-4eed-11ed-bb6c-a66bb6e9b088"
+      },
+      "name": "generated-entity-mapping-1",
+      "entityClass": "com.cyoda.encompass.model.OrganisationEntity",
+      "entityRelationConfigs": [
+        {
+          "srcRelativeRootPath": "root:/"
+        }
+      ],
+      "columns": [
+        {
+          "srcColumnPath": "Data/Data/CapitalDetention/*/Identification/VilleNaissance",
+          "dstCyodaColumnPath": "org@com#encompasscorporation#edmservice#model#dto#Organisation.shareClasses.[*]@com#encompasscorporation#edmservice#model#dto#ShareClass.personShareholdings.[0]@com#encompasscorporation#edmservice#model#dto#PersonShareholding.person@com#encompasscorporation#edmservice#model#dto#Person.birthPlace",
+          "dstCyodaColumnPathType": "java.lang.String",
+          "dstCollectionElementSetModes": [],
+          "transformer": {
+            "type": "COMPOSITE",
+            "children": [
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.SourceObjectValueTransformer$ToString",
+                "parameters": []
+              },
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim",
+                "parameters": []
+              }
+            ]
+          }
+        },
+        {
+          "srcColumnPath": "Data/Data/CapitalDetention/*/Identification/Prenom",
+          "dstCyodaColumnPath": "org@com#encompasscorporation#edmservice#model#dto#Organisation.shareClasses.[*]@com#encompasscorporation#edmservice#model#dto#ShareClass.personShareholdings.[0]@com#encompasscorporation#edmservice#model#dto#PersonShareholding.person@com#encompasscorporation#edmservice#model#dto#Person.firstName",
+          "dstCyodaColumnPathType": "java.lang.String",
+          "dstCollectionElementSetModes": [],
+          "transformer": {
+            "type": "COMPOSITE",
+            "children": [
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.SourceObjectValueTransformer$ToString",
+                "parameters": []
+              },
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim",
+                "parameters": []
+              }
+            ]
+          }
+        },
+        {
+          "srcColumnPath": "Data/Data/CapitalDetention/*/Identification/NomPatronymique",
+          "dstCyodaColumnPath": "org@com#encompasscorporation#edmservice#model#dto#Organisation.shareClasses.[*]@com#encompasscorporation#edmservice#model#dto#ShareClass.personShareholdings.[0]@com#encompasscorporation#edmservice#model#dto#PersonShareholding.person@com#encompasscorporation#edmservice#model#dto#Person.surname",
+          "dstCyodaColumnPathType": "java.lang.String",
+          "dstCollectionElementSetModes": [],
+          "transformer": {
+            "type": "COMPOSITE",
+            "children": [
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.SourceObjectValueTransformer$ToString",
+                "parameters": []
+              },
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim",
+                "parameters": []
+              }
+            ]
+          }
+        },
+        {
+          "srcColumnPath": "Data/Data/CapitalDetention/*/Identification/Denomination",
+          "dstCyodaColumnPath": "org@com#encompasscorporation#edmservice#model#dto#Organisation.shareClasses.[*]@com#encompasscorporation#edmservice#model#dto#ShareClass.organisationShareholdings.[0]@com#encompasscorporation#edmservice#model#dto#OrganisationShareholding.organisation@com#encompasscorporation#edmservice#model#dto#Organisation.fullName",
+          "dstCyodaColumnPathType": "java.lang.String",
+          "dstCollectionElementSetModes": [],
+          "transformer": {
+            "type": "COMPOSITE",
+            "children": [
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.SourceObjectValueTransformer$ToString",
+                "parameters": []
+              },
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim",
+                "parameters": []
+              }
+            ]
+          }
+        },
+        {
+          "srcColumnPath": "Data/Data/CapitalDetention/*/Identification/Siren",
+          "dstCyodaColumnPath": "org@com#encompasscorporation#edmservice#model#dto#Organisation.shareClasses.[*]@com#encompasscorporation#edmservice#model#dto#ShareClass.organisationShareholdings.[0]@com#encompasscorporation#edmservice#model#dto#OrganisationShareholding.organisation@com#encompasscorporation#edmservice#model#dto#Organisation.identifiers.[0]@com#encompasscorporation#edmservice#model#dto#Identifier.identifier",
+          "dstCyodaColumnPathType": "java.lang.String",
+          "dstCollectionElementSetModes": [],
+          "transformer": {
+            "type": "COMPOSITE",
+            "children": [
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.SourceObjectValueTransformer$ToString",
+                "parameters": []
+              },
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim",
+                "parameters": []
+              }
+            ]
+          }
+        },
+        {
+          "srcColumnPath": "Data/Data/CapitalDetention/*/Identification/Siren",
+          "dstCyodaColumnPath": "org@com#encompasscorporation#edmservice#model#dto#Organisation.shareClasses.[*]@com#encompasscorporation#edmservice#model#dto#ShareClass.organisationShareholdings.[0]@com#encompasscorporation#edmservice#model#dto#OrganisationShareholding.organisation@com#encompasscorporation#edmservice#model#dto#Organisation.identifiers.[0]@com#encompasscorporation#edmservice#model#dto#Identifier.identifierType",
+          "dstCyodaColumnPathType": "java.lang.String",
+          "dstCollectionElementSetModes": [],
+          "transformer": {
+            "type": "COMPOSITE",
+            "children": [
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.SourceObjectValueTransformer$ToString",
+                "parameters": []
+              },
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim",
+                "parameters": []
+              },
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$HardCodeValue",
+                "parameters": [
+                  {
+                    "@bean": "com.cyoda.core.namedparameters.StringParameter",
+                    "name": "harcode.value",
+                    "value": "Siren",
+                    "parameterType": "java.lang.String"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "srcColumnPath": "Data/Data/CapitalDetention/*/Identification/Siren",
+          "dstCyodaColumnPath": "org@com#encompasscorporation#edmservice#model#dto#Organisation.shareClasses.[*]@com#encompasscorporation#edmservice#model#dto#ShareClass.organisationShareholdings.[0]@com#encompasscorporation#edmservice#model#dto#OrganisationShareholding.organisation@com#encompasscorporation#edmservice#model#dto#Organisation.identifiers.[0]@com#encompasscorporation#edmservice#model#dto#Identifier.issuer",
+          "dstCyodaColumnPathType": "java.lang.String",
+          "dstCollectionElementSetModes": [],
+          "transformer": {
+            "type": "COMPOSITE",
+            "children": [
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.SourceObjectValueTransformer$ToString",
+                "parameters": []
+              },
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim",
+                "parameters": []
+              },
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$HardCodeValue",
+                "parameters": [
+                  {
+                    "@bean": "com.cyoda.core.namedparameters.StringParameter",
+                    "name": "harcode.value",
+                    "value": "insee",
+                    "parameterType": "java.lang.String"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "srcColumnPath": "Data/Data/CapitalDetention/*/Identification/LibelleFormeJuridique",
+          "dstCyodaColumnPath": "org@com#encompasscorporation#edmservice#model#dto#Organisation.shareClasses.[*]@com#encompasscorporation#edmservice#model#dto#ShareClass.organisationShareholdings.[0]@com#encompasscorporation#edmservice#model#dto#OrganisationShareholding.organisation@com#encompasscorporation#edmservice#model#dto#Organisation.legalForm@com#encompasscorporation#edmservice#model#dto#LegalForm.legalForm",
+          "dstCyodaColumnPathType": "java.lang.String",
+          "dstCollectionElementSetModes": [],
+          "transformer": {
+            "type": "COMPOSITE",
+            "children": [
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.SourceObjectValueTransformer$ToString",
+                "parameters": []
+              },
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim",
+                "parameters": []
+              }
+            ]
+          }
+        },
+        {
+          "srcColumnPath": "Data/Data/CapitalDetention/*/Identification/Civilite",
+          "dstCyodaColumnPath": "org@com#encompasscorporation#edmservice#model#dto#Organisation.shareClasses.[*]@com#encompasscorporation#edmservice#model#dto#ShareClass.personShareholdings.[0]@com#encompasscorporation#edmservice#model#dto#PersonShareholding.person@com#encompasscorporation#edmservice#model#dto#Person.title",
+          "dstCyodaColumnPathType": "java.lang.String",
+          "dstCollectionElementSetModes": [],
+          "transformer": {
+            "type": "COMPOSITE",
+            "children": [
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.SourceObjectValueTransformer$ToString",
+                "parameters": []
+              },
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim",
+                "parameters": []
+              }
+            ]
+          }
+        }
+      ],
+      "functionalMappings": [
+        {
+          "name": "Functional-Mapping-1",
+          "srcPaths": [
+            "Data/Data/CapitalDetention/*/Identification/DateNaissance"
+          ],
+          "statements": [
+            {
+              "type": "RETURN",
+              "collectElemsSetModes": [],
+              "expression": {
+                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+                "args": [
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                    "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$ToDatePredefinedFormat"
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.SrcValueReadExpressionConfigDto",
+                    "srcPath": "Data/Data/CapitalDetention/*/Identification/DateNaissance"
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                    "value": "format"
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                    "value": "MM/dd/yyyy"
+                  }
+                ]
+              }
+            }
+          ],
+          "dstPath": "org@com#encompasscorporation#edmservice#model#dto#Organisation.shareClasses.[*]@com#encompasscorporation#edmservice#model#dto#ShareClass.personShareholdings.[0]@com#encompasscorporation#edmservice#model#dto#PersonShareholding.person@com#encompasscorporation#edmservice#model#dto#Person.dateOfBirth",
+          "collectElemsSetModes": []
+        },
+        {
+          "name": "Functional-Mapping-2",
+          "srcPaths": [
+            "Data/Data/CapitalDetention/*/Identification/TypePersonne",
+            "Data/Data/CapitalDetention/*/Identification/Adresse/AdresseConcat"
+          ],
+          "statements": [
+            {
+              "type": "RETURN",
+              "collectElemsSetModes": [],
+              "expression": {
+                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.IfElse",
+                "args": [
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.Equals",
+                    "args": [
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.SrcValueReadExpressionConfigDto",
+                        "srcPath": "Data/Data/CapitalDetention/*/Identification/TypePersonne"
+                      },
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                        "value": "Personne Physique"
+                      }
+                    ]
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.SrcValueReadExpressionConfigDto",
+                    "srcPath": "Data/Data/CapitalDetention/*/Identification/Adresse/AdresseConcat"
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.NullValueExpressionConfigDto"
+                  }
+                ]
+              }
+            }
+          ],
+          "dstPath": "org@com#encompasscorporation#edmservice#model#dto#Organisation.shareClasses.[*]@com#encompasscorporation#edmservice#model#dto#ShareClass.personShareholdings.[0]@com#encompasscorporation#edmservice#model#dto#PersonShareholding.person@com#encompasscorporation#edmservice#model#dto#Person.addresses.[0]@com#encompasscorporation#edmservice#model#dto#Address.addressLine1",
+          "collectElemsSetModes": []
+        },
+        {
+          "name": "Functional-Mapping-3",
+          "srcPaths": [
+            "Data/Data/CapitalDetention/*/Identification/Adresse/CodePostal",
+            "Data/Data/CapitalDetention/*/Identification/TypePersonne"
+          ],
+          "statements": [
+            {
+              "type": "RETURN",
+              "collectElemsSetModes": [],
+              "expression": {
+                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.IfElse",
+                "args": [
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.Equals",
+                    "args": [
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.SrcValueReadExpressionConfigDto",
+                        "srcPath": "Data/Data/CapitalDetention/*/Identification/TypePersonne"
+                      },
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                        "value": "Personne Physique"
+                      }
+                    ]
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.SrcValueReadExpressionConfigDto",
+                    "srcPath": "Data/Data/CapitalDetention/*/Identification/Adresse/CodePostal"
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.NullValueExpressionConfigDto"
+                  }
+                ]
+              }
+            }
+          ],
+          "dstPath": "org@com#encompasscorporation#edmservice#model#dto#Organisation.shareClasses.[*]@com#encompasscorporation#edmservice#model#dto#ShareClass.personShareholdings.[0]@com#encompasscorporation#edmservice#model#dto#PersonShareholding.person@com#encompasscorporation#edmservice#model#dto#Person.addresses.[0]@com#encompasscorporation#edmservice#model#dto#Address.postalCode",
+          "collectElemsSetModes": []
+        },
+        {
+          "name": "Functional-Mapping-4",
+          "srcPaths": [
+            "Data/Data/CapitalDetention/*/Identification/TypePersonne",
+            "Data/Data/CapitalDetention/*/Identification/Adresse/AdresseConcat"
+          ],
+          "statements": [
+            {
+              "type": "RETURN",
+              "collectElemsSetModes": [],
+              "expression": {
+                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.IfElse",
+                "args": [
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.Equals",
+                    "args": [
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.SrcValueReadExpressionConfigDto",
+                        "srcPath": "Data/Data/CapitalDetention/*/Identification/TypePersonne"
+                      },
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                        "value": "Personne Morale"
+                      }
+                    ]
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.SrcValueReadExpressionConfigDto",
+                    "srcPath": "Data/Data/CapitalDetention/*/Identification/Adresse/AdresseConcat"
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.NullValueExpressionConfigDto"
+                  }
+                ]
+              }
+            }
+          ],
+          "dstPath": "org@com#encompasscorporation#edmservice#model#dto#Organisation.shareClasses.[*]@com#encompasscorporation#edmservice#model#dto#ShareClass.organisationShareholdings.[0]@com#encompasscorporation#edmservice#model#dto#OrganisationShareholding.organisation@com#encompasscorporation#edmservice#model#dto#Organisation.addresses.[0]@com#encompasscorporation#edmservice#model#dto#Address.addressLine1",
+          "collectElemsSetModes": []
+        },
+        {
+          "name": "Functional-Mapping-5",
+          "srcPaths": [
+            "Data/Data/CapitalDetention/*/Identification/TypePersonne",
+            "Data/Data/CapitalDetention/*/Identification/Adresse/CodePostal"
+          ],
+          "statements": [
+            {
+              "type": "RETURN",
+              "collectElemsSetModes": [],
+              "expression": {
+                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.IfElse",
+                "args": [
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.Equals",
+                    "args": [
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.SrcValueReadExpressionConfigDto",
+                        "srcPath": "Data/Data/CapitalDetention/*/Identification/TypePersonne"
+                      },
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                        "value": "Personne Morale"
+                      }
+                    ]
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.SrcValueReadExpressionConfigDto",
+                    "srcPath": "Data/Data/CapitalDetention/*/Identification/Adresse/CodePostal"
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.NullValueExpressionConfigDto"
+                  }
+                ]
+              }
+            }
+          ],
+          "dstPath": "org@com#encompasscorporation#edmservice#model#dto#Organisation.shareClasses.[*]@com#encompasscorporation#edmservice#model#dto#ShareClass.organisationShareholdings.[0]@com#encompasscorporation#edmservice#model#dto#OrganisationShareholding.organisation@com#encompasscorporation#edmservice#model#dto#Organisation.addresses.[0]@com#encompasscorporation#edmservice#model#dto#Address.postalCode",
+          "collectElemsSetModes": []
+        },
+        {
+          "name": "Functional-Mapping-6",
+          "srcPaths": [
+            "Data/Data/CapitalDetention/*/Identification/TypePersonne",
+            "Data/Data/CapitalDetention/*/Identification/Adresse/Commune"
+          ],
+          "statements": [
+            {
+              "type": "RETURN",
+              "collectElemsSetModes": [],
+              "expression": {
+                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.IfElse",
+                "args": [
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.Equals",
+                    "args": [
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.SrcValueReadExpressionConfigDto",
+                        "srcPath": "Data/Data/CapitalDetention/*/Identification/TypePersonne"
+                      },
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                        "value": "Personne Morale"
+                      }
+                    ]
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.SrcValueReadExpressionConfigDto",
+                    "srcPath": "Data/Data/CapitalDetention/*/Identification/Adresse/Commune"
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.NullValueExpressionConfigDto"
+                  }
+                ]
+              }
+            }
+          ],
+          "dstPath": "org@com#encompasscorporation#edmservice#model#dto#Organisation.shareClasses.[*]@com#encompasscorporation#edmservice#model#dto#ShareClass.organisationShareholdings.[0]@com#encompasscorporation#edmservice#model#dto#OrganisationShareholding.organisation@com#encompasscorporation#edmservice#model#dto#Organisation.addresses.[0]@com#encompasscorporation#edmservice#model#dto#Address.city",
+          "collectElemsSetModes": []
+        },
+        {
+          "name": "Functional-Mapping-7",
+          "srcPaths": [
+            "Data/Data/CapitalDetention/*/Identification/TypePersonne",
+            "Data/Data/CapitalDetention/*/Identification/Adresse/Pays"
+          ],
+          "statements": [
+            {
+              "type": "RETURN",
+              "collectElemsSetModes": [],
+              "expression": {
+                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.IfElse",
+                "args": [
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.Equals",
+                    "args": [
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.SrcValueReadExpressionConfigDto",
+                        "srcPath": "Data/Data/CapitalDetention/*/Identification/TypePersonne"
+                      },
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                        "value": "Personne Morale"
+                      }
+                    ]
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.SrcValueReadExpressionConfigDto",
+                    "srcPath": "Data/Data/CapitalDetention/*/Identification/Adresse/Pays"
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.NullValueExpressionConfigDto"
+                  }
+                ]
+              }
+            }
+          ],
+          "dstPath": "org@com#encompasscorporation#edmservice#model#dto#Organisation.shareClasses.[*]@com#encompasscorporation#edmservice#model#dto#ShareClass.organisationShareholdings.[0]@com#encompasscorporation#edmservice#model#dto#OrganisationShareholding.organisation@com#encompasscorporation#edmservice#model#dto#Organisation.addresses.[0]@com#encompasscorporation#edmservice#model#dto#Address.country@com#encompasscorporation#edmservice#model#dto#Country.countryName",
+          "collectElemsSetModes": []
+        },
+        {
+          "name": "Functional-Mapping-8",
+          "srcPaths": [
+            "Data/Data/CapitalDetention/*/Identification/TypePersonne",
+            "Data/Data/CapitalDetention/*/PourcentageDetention"
+          ],
+          "statements": [
+            {
+              "type": "RETURN",
+              "collectElemsSetModes": [],
+              "expression": {
+                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.IfElse",
+                "args": [
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.IEquals",
+                    "args": [
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                        "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+                        "args": [
+                          {
+                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                            "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.SourceObjectValueTransformer$ToString"
+                          },
+                          {
+                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.SrcValueReadExpressionConfigDto",
+                            "srcPath": "Data/Data/CapitalDetention/*/Identification/TypePersonne"
+                          }
+                        ]
+                      },
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                        "value": "Personne Physique"
+                      }
+                    ]
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+                    "args": [
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                        "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.IntValueTransformer$ToString"
+                      },
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.SrcValueReadExpressionConfigDto",
+                        "srcPath": "Data/Data/CapitalDetention/*/NbrParts"
+                      }
+                    ]
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.NullValueExpressionConfigDto"
+                  }
+                ]
+              }
+            }
+          ],
+          "dstPath": "org@com#encompasscorporation#edmservice#model#dto#Organisation.shareClasses.[*]@com#encompasscorporation#edmservice#model#dto#ShareClass.personShareholdings.[0]@com#encompasscorporation#edmservice#model#dto#PersonShareholding.numberOfShares",
+          "collectElemsSetModes": []
+        },
+        {
+          "name": "Functional-Mapping-9",
+          "srcPaths": [
+            "Data/Data/CapitalDetention/*/Identification/TypePersonne",
+            "Data/Data/CapitalDetention/*/NbrParts"
+          ],
+          "statements": [
+            {
+              "type": "RETURN",
+              "collectElemsSetModes": [],
+              "expression": {
+                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.IfElse",
+                "args": [
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.IEquals",
+                    "args": [
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                        "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+                        "args": [
+                          {
+                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                            "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.SourceObjectValueTransformer$ToString"
+                          },
+                          {
+                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.SrcValueReadExpressionConfigDto",
+                            "srcPath": "Data/Data/CapitalDetention/*/Identification/TypePersonne"
+                          }
+                        ]
+                      },
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                        "value": "Personne Morale"
+                      }
+                    ]
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+                    "args": [
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                        "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.IntValueTransformer$ToString"
+                      },
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.SrcValueReadExpressionConfigDto",
+                        "srcPath": "Data/Data/CapitalDetention/*/NbrParts"
+                      }
+                    ]
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.NullValueExpressionConfigDto"
+                  }
+                ]
+              }
+            }
+          ],
+          "dstPath": "org@com#encompasscorporation#edmservice#model#dto#Organisation.shareClasses.[*]@com#encompasscorporation#edmservice#model#dto#ShareClass.organisationShareholdings.[0]@com#encompasscorporation#edmservice#model#dto#OrganisationShareholding.numberOfShares",
+          "collectElemsSetModes": []
+        }
+      ],
+      "columnPathsForUniqueCheck": [],
+      "metadata": [],
+      "cobiCoreMetadata": []
+    }
+  ],
+  "sampleContent": "{\"Metadata\":{\"CreditsUsed\":30,\"CreditsLeft\":122},\"Data\":{\"PdfUrl\":\"https://api.datainfogreffe.fr/pdf/8be39dedcf864f918a7ecc95d3cf4081-521922583\",\"Data\":{\"ReferentielGreffe\":{\"CodeGreffe\":\"8903\",\"NomGreffe\":\"SENS\",\"Adresse\":{\"AdresseConcat\":\"1 RUE  DU PALAIS DE JUSTICE \",\"AdresseComplement\":\"\",\"CodePostal\":\"89100\",\"Commune\":\"SENS\",\"Cedex\":\"SENS \",\"Pays\":\"France\",\"AdresseSuite\":\"\"}},\"SocieteInfos\":{\"Denomination\":\"ABCS\",\"Siren\":\"521922583\",\"Registre\":\"R.C.S.\",\"LibelleGreffe\":\"SENS\",\"Adresse\":{\"AdresseConcat\":\"13 AVENUE GEORGES POMPIDOU\",\"AdresseComplement\":\"\",\"CodePostal\":\"89100\",\"Commune\":\"SENS\",\"Cedex\":null,\"Pays\":\"FRANCE\",\"AdresseSuite\":null},\"LibelleFormeJuridique\":\"Société par actions simplifiée\",\"CodeFormeJuridique\":\"SASh\"},\"CapitalSocial\":{\"Montant\":119980.0,\"Devise\":null,\"NbrParts\":857,\"PourcentageDetentionPP\":99.88,\"PourcentageDetentionPM\":0.12},\"CapitalDetention\":[{\"Identification\":{\"TypePersonne\":\"Personne Morale\",\"Denomination\":\"BVD FR\",\"Civilite\":null,\"NomPatronymique\":null,\"NomUsage\":null,\"Prenom\":null,\"LibelleFormeJuridique\":\"Société par actions simplifiée à associé unique\",\"CodeFormeJuridique\":null,\"Siren\":\"379398456\",\"Adresse\":{\"AdresseConcat\":\"25 RUE DU GROS CAILLOU\",\"AdresseComplement\":\"\",\"CodePostal\":\"78340\",\"Commune\":\"LES CLAYES-SOUS-BOIS\",\"Cedex\":null,\"Pays\":\"FRANCE\",\"AdresseSuite\":null},\"DateNaissance\":null,\"DateNaissanceISO\":null,\"VilleNaissance\":null,\"CodeInseeNaissance\":null},\"NbrParts\":1,\"PourcentageDetention\":0.12},{\"Identification\":{\"TypePersonne\":\"Personne Physique\",\"Denomination\":null,\"Civilite\":\"M.\",\"NomPatronymique\":\"BOUTIN\",\"NomUsage\":null,\"Prenom\":\"SERGE\",\"LibelleFormeJuridique\":null,\"CodeFormeJuridique\":null,\"Siren\":null,\"Adresse\":null,\"DateNaissance\":null,\"DateNaissanceISO\":null,\"VilleNaissance\":\"\",\"CodeInseeNaissance\":null},\"NbrParts\":86,\"PourcentageDetention\":10.04},{\"Identification\":{\"TypePersonne\":\"Personne Physique\",\"Denomination\":null,\"Civilite\":\"Mme\",\"NomPatronymique\":\"BOUTIN\",\"NomUsage\":null,\"Prenom\":\"CHRYSTELLE\",\"LibelleFormeJuridique\":null,\"CodeFormeJuridique\":null,\"Siren\":null,\"Adresse\":null,\"DateNaissance\":\"08/04/1968\",\"DateNaissanceISO\":\"1968-04-08\",\"VilleNaissance\":\"SAINT-PIERRE-LES-NEMOURS (FRANCE)\",\"CodeInseeNaissance\":\"77431\"},\"NbrParts\":257,\"PourcentageDetention\":29.99},{\"Identification\":{\"TypePersonne\":\"Personne Physique\",\"Denomination\":null,\"Civilite\":\"M.\",\"NomPatronymique\":\"BOUTIN\",\"NomUsage\":null,\"Prenom\":\"STEPHANE LAURENT\",\"LibelleFormeJuridique\":null,\"CodeFormeJuridique\":null,\"Siren\":null,\"Adresse\":null,\"DateNaissance\":\"21/10/1973\",\"DateNaissanceISO\":\"1973-10-21\",\"VilleNaissance\":\"NIORT (FRANCE)\",\"CodeInseeNaissance\":\"79191\"},\"NbrParts\":513,\"PourcentageDetention\":59.86}],\"RepresentantsDetail\":[{\"Identification\":{\"TypePersonne\":\"Personne Physique\",\"Denomination\":null,\"Civilite\":\"M.\",\"NomPatronymique\":\"BOUTIN\",\"NomUsage\":null,\"Prenom\":\"STEPHANE LAURENT\",\"LibelleFormeJuridique\":null,\"CodeFormeJuridique\":null,\"Siren\":null,\"Adresse\":null,\"DateNaissance\":\"21/10/1973\",\"DateNaissanceISO\":\"1973-10-21\",\"VilleNaissance\":\"NIORT (FRANCE)\",\"CodeInseeNaissance\":null},\"Qualite\":\"Président\",\"CodeQualite\":\"PREH\"}],\"Depot\":{\"Date\":\"2019-11-13\",\"DateISO\":\"2019-11-13\",\"Numero\":\"3298\",\"Acte\":{\"Date\":\"2019-06-27\",\"DateISO\":\"2019-06-27\",\"Numero\":\"1\"}}}}}",
+  "metadata": "{\"org@com#encompasscorporation#edmservice#model#dto#Organisation_shareClasses_[*]@com#encompasscorporation#edmservice#model#dto#ShareClass_personShareholdings_[0]@com#encompasscorporation#edmservice#model#dto#PersonShareholding_person@com#encompasscorporation#edmservice#model#dto#Person_dateOfBirth\":\"<xml xmlns=\\\"https://developers.google.com/blockly/xml\\\"><block type=\\\"statement_return\\\" id=\\\";DVhx7{}uHf1}8D1-iZ?\\\" x=\\\"338\\\" y=\\\"122\\\"><value name=\\\"EXPRESSION\\\"><block type=\\\"transformer_stringvaluetransformer_todatepredefinedformat\\\" id=\\\"bbcTpr~uB;nh`JT}P.qq\\\"><field name=\\\"format\\\">MM/dd/yyyy</field><value name=\\\"VALUE\\\"><block type=\\\"expression_src_value_read\\\" id=\\\"gNXqf*7)+fL1]Nqu)mx6\\\"><field name=\\\"NAME\\\">Data/Data/CapitalDetention/*/Identification/DateNaissance</field></block></value></block></value></block></xml>\",\"org@com#encompasscorporation#edmservice#model#dto#Organisation_shareClasses_[*]@com#encompasscorporation#edmservice#model#dto#ShareClass_personShareholdings_[0]@com#encompasscorporation#edmservice#model#dto#PersonShareholding_person@com#encompasscorporation#edmservice#model#dto#Person_addresses_[0]@com#encompasscorporation#edmservice#model#dto#Address_addressLine1\":\"<xml xmlns=\\\"https://developers.google.com/blockly/xml\\\"><block type=\\\"statement_return\\\" id=\\\"X$vcW2[?]3{A)TlFtK?J\\\" x=\\\"360\\\" y=\\\"140\\\"><value name=\\\"EXPRESSION\\\"><block type=\\\"function_simple_if_else\\\" id=\\\"JMF/G-c+D4l~|SPBS?0U\\\"><value name=\\\"IF\\\"><block type=\\\"function_simple_equal\\\" id=\\\"7VrrnY.|9~~{7D@g;t*z\\\"><value name=\\\"A\\\"><block type=\\\"expression_src_value_read\\\" id=\\\"F%0?AnqgX$t$YwG0Bv^X\\\"><field name=\\\"NAME\\\">Data/Data/CapitalDetention/*/Identification/TypePersonne</field></block></value><value name=\\\"B\\\"><block type=\\\"expression_string\\\" id=\\\"A{8zwx^9^D2EEEFflTkL\\\"><field name=\\\"NAME\\\">Personne Physique</field></block></value></block></value><value name=\\\"THEN\\\"><block type=\\\"expression_src_value_read\\\" id=\\\"D[R(*!gHxR@OeikWq6x4\\\"><field name=\\\"NAME\\\">Data/Data/CapitalDetention/*/Identification/Adresse/AdresseConcat</field></block></value><value name=\\\"ELSE\\\"><block type=\\\"expression_null\\\" id=\\\"#U]dd~/m*R#tyE;gH{Rk\\\"></block></value></block></value></block></xml>\",\"org@com#encompasscorporation#edmservice#model#dto#Organisation_shareClasses_[*]@com#encompasscorporation#edmservice#model#dto#ShareClass_personShareholdings_[0]@com#encompasscorporation#edmservice#model#dto#PersonShareholding_person@com#encompasscorporation#edmservice#model#dto#Person_addresses_[0]@com#encompasscorporation#edmservice#model#dto#Address_postalCode\":\"<xml xmlns=\\\"https://developers.google.com/blockly/xml\\\"><block type=\\\"statement_return\\\" id=\\\"X$vcW2[?]3{A)TlFtK?J\\\" x=\\\"360\\\" y=\\\"140\\\"><value name=\\\"EXPRESSION\\\"><block type=\\\"function_simple_if_else\\\" id=\\\"JMF/G-c+D4l~|SPBS?0U\\\"><value name=\\\"IF\\\"><block type=\\\"function_simple_equal\\\" id=\\\"7VrrnY.|9~~{7D@g;t*z\\\"><value name=\\\"A\\\"><block type=\\\"expression_src_value_read\\\" id=\\\"F%0?AnqgX$t$YwG0Bv^X\\\"><field name=\\\"NAME\\\">Data/Data/CapitalDetention/*/Identification/TypePersonne</field></block></value><value name=\\\"B\\\"><block type=\\\"expression_string\\\" id=\\\"A{8zwx^9^D2EEEFflTkL\\\"><field name=\\\"NAME\\\">Personne Physique</field></block></value></block></value><value name=\\\"THEN\\\"><block type=\\\"expression_src_value_read\\\" id=\\\"D[R(*!gHxR@OeikWq6x4\\\"><field name=\\\"NAME\\\">Data/Data/CapitalDetention/*/Identification/Adresse/CodePostal</field></block></value><value name=\\\"ELSE\\\"><block type=\\\"expression_null\\\" id=\\\"#U]dd~/m*R#tyE;gH{Rk\\\"></block></value></block></value></block></xml>\",\"org@com#encompasscorporation#edmservice#model#dto#Organisation_shareClasses_[*]@com#encompasscorporation#edmservice#model#dto#ShareClass_organisationShareholdings_[0]@com#encompasscorporation#edmservice#model#dto#OrganisationShareholding_organisation@com#encompasscorporation#edmservice#model#dto#Organisation_addresses_[0]@com#encompasscorporation#edmservice#model#dto#Address_addressLine1\":\"<xml xmlns=\\\"https://developers.google.com/blockly/xml\\\"><block type=\\\"statement_return\\\" id=\\\"X$vcW2[?]3{A)TlFtK?J\\\" x=\\\"360\\\" y=\\\"140\\\"><value name=\\\"EXPRESSION\\\"><block type=\\\"function_simple_if_else\\\" id=\\\"JMF/G-c+D4l~|SPBS?0U\\\"><value name=\\\"IF\\\"><block type=\\\"function_simple_equal\\\" id=\\\"7VrrnY.|9~~{7D@g;t*z\\\"><value name=\\\"A\\\"><block type=\\\"expression_src_value_read\\\" id=\\\"F%0?AnqgX$t$YwG0Bv^X\\\"><field name=\\\"NAME\\\">Data/Data/CapitalDetention/*/Identification/TypePersonne</field></block></value><value name=\\\"B\\\"><block type=\\\"expression_string\\\" id=\\\"A{8zwx^9^D2EEEFflTkL\\\"><field name=\\\"NAME\\\">Personne Morale</field></block></value></block></value><value name=\\\"THEN\\\"><block type=\\\"expression_src_value_read\\\" id=\\\"D[R(*!gHxR@OeikWq6x4\\\"><field name=\\\"NAME\\\">Data/Data/CapitalDetention/*/Identification/Adresse/AdresseConcat</field></block></value><value name=\\\"ELSE\\\"><block type=\\\"expression_null\\\" id=\\\"#U]dd~/m*R#tyE;gH{Rk\\\"></block></value></block></value></block></xml>\",\"org@com#encompasscorporation#edmservice#model#dto#Organisation_shareClasses_[*]@com#encompasscorporation#edmservice#model#dto#ShareClass_organisationShareholdings_[0]@com#encompasscorporation#edmservice#model#dto#OrganisationShareholding_organisation@com#encompasscorporation#edmservice#model#dto#Organisation_addresses_[0]@com#encompasscorporation#edmservice#model#dto#Address_postalCode\":\"<xml xmlns=\\\"https://developers.google.com/blockly/xml\\\"><block type=\\\"statement_return\\\" id=\\\"X$vcW2[?]3{A)TlFtK?J\\\" x=\\\"360\\\" y=\\\"140\\\"><value name=\\\"EXPRESSION\\\"><block type=\\\"function_simple_if_else\\\" id=\\\"JMF/G-c+D4l~|SPBS?0U\\\"><value name=\\\"IF\\\"><block type=\\\"function_simple_equal\\\" id=\\\"7VrrnY.|9~~{7D@g;t*z\\\"><value name=\\\"A\\\"><block type=\\\"expression_src_value_read\\\" id=\\\"F%0?AnqgX$t$YwG0Bv^X\\\"><field name=\\\"NAME\\\">Data/Data/CapitalDetention/*/Identification/TypePersonne</field></block></value><value name=\\\"B\\\"><block type=\\\"expression_string\\\" id=\\\"A{8zwx^9^D2EEEFflTkL\\\"><field name=\\\"NAME\\\">Personne Morale</field></block></value></block></value><value name=\\\"THEN\\\"><block type=\\\"expression_src_value_read\\\" id=\\\"D[R(*!gHxR@OeikWq6x4\\\"><field name=\\\"NAME\\\">Data/Data/CapitalDetention/*/Identification/Adresse/CodePostal</field></block></value><value name=\\\"ELSE\\\"><block type=\\\"expression_null\\\" id=\\\"#U]dd~/m*R#tyE;gH{Rk\\\"></block></value></block></value></block></xml>\",\"org@com#encompasscorporation#edmservice#model#dto#Organisation_shareClasses_[*]@com#encompasscorporation#edmservice#model#dto#ShareClass_organisationShareholdings_[0]@com#encompasscorporation#edmservice#model#dto#OrganisationShareholding_organisation@com#encompasscorporation#edmservice#model#dto#Organisation_addresses_[0]@com#encompasscorporation#edmservice#model#dto#Address_city\":\"<xml xmlns=\\\"https://developers.google.com/blockly/xml\\\"><block type=\\\"statement_return\\\" id=\\\"X$vcW2[?]3{A)TlFtK?J\\\" x=\\\"360\\\" y=\\\"140\\\"><value name=\\\"EXPRESSION\\\"><block type=\\\"function_simple_if_else\\\" id=\\\"JMF/G-c+D4l~|SPBS?0U\\\"><value name=\\\"IF\\\"><block type=\\\"function_simple_equal\\\" id=\\\"7VrrnY.|9~~{7D@g;t*z\\\"><value name=\\\"A\\\"><block type=\\\"expression_src_value_read\\\" id=\\\"F%0?AnqgX$t$YwG0Bv^X\\\"><field name=\\\"NAME\\\">Data/Data/CapitalDetention/*/Identification/TypePersonne</field></block></value><value name=\\\"B\\\"><block type=\\\"expression_string\\\" id=\\\"A{8zwx^9^D2EEEFflTkL\\\"><field name=\\\"NAME\\\">Personne Morale</field></block></value></block></value><value name=\\\"THEN\\\"><block type=\\\"expression_src_value_read\\\" id=\\\"D[R(*!gHxR@OeikWq6x4\\\"><field name=\\\"NAME\\\">Data/Data/CapitalDetention/*/Identification/Adresse/Commune</field></block></value><value name=\\\"ELSE\\\"><block type=\\\"expression_null\\\" id=\\\"#U]dd~/m*R#tyE;gH{Rk\\\"></block></value></block></value></block></xml>\",\"org@com#encompasscorporation#edmservice#model#dto#Organisation_shareClasses_[*]@com#encompasscorporation#edmservice#model#dto#ShareClass_organisationShareholdings_[0]@com#encompasscorporation#edmservice#model#dto#OrganisationShareholding_organisation@com#encompasscorporation#edmservice#model#dto#Organisation_addresses_[0]@com#encompasscorporation#edmservice#model#dto#Address_country@com#encompasscorporation#edmservice#model#dto#Country_countryName\":\"<xml xmlns=\\\"https://developers.google.com/blockly/xml\\\"><block type=\\\"statement_return\\\" id=\\\"X$vcW2[?]3{A)TlFtK?J\\\" x=\\\"360\\\" y=\\\"140\\\"><value name=\\\"EXPRESSION\\\"><block type=\\\"function_simple_if_else\\\" id=\\\"JMF/G-c+D4l~|SPBS?0U\\\"><value name=\\\"IF\\\"><block type=\\\"function_simple_equal\\\" id=\\\"7VrrnY.|9~~{7D@g;t*z\\\"><value name=\\\"A\\\"><block type=\\\"expression_src_value_read\\\" id=\\\"F%0?AnqgX$t$YwG0Bv^X\\\"><field name=\\\"NAME\\\">Data/Data/CapitalDetention/*/Identification/TypePersonne</field></block></value><value name=\\\"B\\\"><block type=\\\"expression_string\\\" id=\\\"A{8zwx^9^D2EEEFflTkL\\\"><field name=\\\"NAME\\\">Personne Morale</field></block></value></block></value><value name=\\\"THEN\\\"><block type=\\\"expression_src_value_read\\\" id=\\\"D[R(*!gHxR@OeikWq6x4\\\"><field name=\\\"NAME\\\">Data/Data/CapitalDetention/*/Identification/Adresse/Pays</field></block></value><value name=\\\"ELSE\\\"><block type=\\\"expression_null\\\" id=\\\"#U]dd~/m*R#tyE;gH{Rk\\\"></block></value></block></value></block></xml>\",\"org@com#encompasscorporation#edmservice#model#dto#Organisation_shareClasses_[*]@com#encompasscorporation#edmservice#model#dto#ShareClass_personShareholdings_[0]@com#encompasscorporation#edmservice#model#dto#PersonShareholding_numberOfShares\":\"<xml xmlns=\\\"https://developers.google.com/blockly/xml\\\"><block type=\\\"statement_return\\\" id=\\\"X$vcW2[?]3{A)TlFtK?J\\\" x=\\\"290\\\" y=\\\"105\\\"><value name=\\\"EXPRESSION\\\"><block type=\\\"function_simple_if_else\\\" id=\\\"JMF/G-c+D4l~|SPBS?0U\\\"><value name=\\\"IF\\\"><block type=\\\"function_simple_IEquals\\\" id=\\\"~OcZGP-mY$Gc*f.to2=x\\\"><value name=\\\"param1\\\"><block type=\\\"transformer_sourceobjectvaluetransformer_tostring\\\" id=\\\"O#2ft3xJ8qLa:V]eFDWp\\\"><value name=\\\"VALUE\\\"><block type=\\\"expression_src_value_read\\\" id=\\\"F%0?AnqgX$t$YwG0Bv^X\\\"><field name=\\\"NAME\\\">Data/Data/CapitalDetention/*/Identification/TypePersonne</field></block></value></block></value><value name=\\\"param2\\\"><block type=\\\"expression_string\\\" id=\\\"A{8zwx^9^D2EEEFflTkL\\\"><field name=\\\"NAME\\\">Personne Physique</field></block></value></block></value><value name=\\\"THEN\\\"><block type=\\\"transformer_intvaluetransformer_tostring\\\" id=\\\"6`DpM/0-8z9l,KHjF4J`\\\"><value name=\\\"VALUE\\\"><block type=\\\"expression_src_value_read\\\" id=\\\"D[R(*!gHxR@OeikWq6x4\\\"><field name=\\\"NAME\\\">Data/Data/CapitalDetention/*/NbrParts</field></block></value></block></value><value name=\\\"ELSE\\\"><block type=\\\"expression_null\\\" id=\\\"Fdj6L[7.D@~x}ub#P36C\\\"></block></value></block></value></block></xml>\",\"org@com#encompasscorporation#edmservice#model#dto#Organisation_shareClasses_[*]@com#encompasscorporation#edmservice#model#dto#ShareClass_organisationShareholdings_[0]@com#encompasscorporation#edmservice#model#dto#OrganisationShareholding_numberOfShares\":\"<xml xmlns=\\\"https://developers.google.com/blockly/xml\\\"><block type=\\\"statement_return\\\" id=\\\"R@Mi$R168@2lR[Ka(5k[\\\" x=\\\"327\\\" y=\\\"114\\\"><value name=\\\"EXPRESSION\\\"><block type=\\\"function_simple_if_else\\\" id=\\\"QtQR@u@/#Xe,pLlhX@}y\\\"><value name=\\\"IF\\\"><block type=\\\"function_simple_IEquals\\\" id=\\\"/VzX;.okImgzugtz90%,\\\"><value name=\\\"param1\\\"><block type=\\\"transformer_sourceobjectvaluetransformer_tostring\\\" id=\\\"N=5cM2PINUhkm#$~.1Xs\\\"><value name=\\\"VALUE\\\"><block type=\\\"expression_src_value_read\\\" id=\\\"RLq[H6EsOssm}.mWg4cD\\\"><field name=\\\"NAME\\\">Data/Data/CapitalDetention/*/Identification/TypePersonne</field></block></value></block></value><value name=\\\"param2\\\"><block type=\\\"expression_string\\\" id=\\\"vJg=}7#880ZSfrRI~2@X\\\"><field name=\\\"NAME\\\">Personne Morale</field></block></value></block></value><value name=\\\"THEN\\\"><block type=\\\"transformer_intvaluetransformer_tostring\\\" id=\\\"hV#-lDaDi/1mK=wnz%5W\\\"><value name=\\\"VALUE\\\"><block type=\\\"expression_src_value_read\\\" id=\\\"zlRSIN9Fe2F3+Y(bJM{w\\\"><field name=\\\"NAME\\\">Data/Data/CapitalDetention/*/NbrParts</field></block></value></block></value><value name=\\\"ELSE\\\"><block type=\\\"expression_null\\\" id=\\\"F6VD-4d7W-8yDiX]y)+}\\\"></block></value></block></value></block></xml>\"}"
+}

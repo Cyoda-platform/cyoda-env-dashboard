@@ -1,0 +1,17 @@
+.consistency-dialog {
+  &__content {
+    // Content styles
+  }
+
+  &__header {
+    h4 {
+      font-size: 18px;
+      margin-bottom: 16px;
+    }
+  }
+
+  &__actions {
+    margin-bottom: 16px;
+  }
+}
+

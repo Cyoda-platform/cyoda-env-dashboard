@@ -1,0 +1,12 @@
+[
+  {
+    "transactionId": "f3ed3118-24b5-11ea-977d-901b0ebee9d4",
+    "user": "paul.schleger@cyoda.com",
+    "transactionStatus": "SUCCESS",
+    "createTime": "2019-12-22 13:24:08.833",
+    "submitTime": "2019-12-22 13:24:09.448",
+    "finishTime": "2019-12-22 13:24:09.528",
+    "prepareDuration": "00s 615ms",
+    "processDuration": "00s 080ms"
+  }
+]

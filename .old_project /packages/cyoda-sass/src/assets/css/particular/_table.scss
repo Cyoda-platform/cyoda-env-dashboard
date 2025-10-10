@@ -1,0 +1,30 @@
+.pagination-bar {
+  margin-top: 20px;
+}
+//.is-scrolling-none{
+//  height: auto !important;
+//}
+
+.no-wrap .cell {
+  white-space: nowrap !important;
+}
+
+.ab-style .el-table__header-wrapper thead th {
+  //background: #f5f7f7 !important;
+  color: rgba(0, 0, 0, 0.54);
+  font-weight: 600 !important;
+  font-size: 12px !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif !important;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  border-right: 1px solid #bdc3c7;
+}
+.ab-style .el-table__header-wrapper thead tr th {
+  border-bottom: 1px solid #bdc3c7 !important;
+}
+.ab-style.el-table {
+  border: 1px solid #bdc3c7 !important;
+}
+.ab-style .el-table__expanded-cell {
+  padding: 5px !important;
+}

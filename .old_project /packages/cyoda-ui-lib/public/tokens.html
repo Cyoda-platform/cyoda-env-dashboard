@@ -1,0 +1,846 @@
+
+      <!DOCTYPE html>
+      <html lang="en">
+        <head>
+          <meta charset="utf-8" />
+          <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+          <title>Design Tokens</title>
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" />
+          <style>
+            html {
+              box-sizing: border-box;
+              font-size: 1em;
+              font-family: Helvetica, Arial, sans-serif;
+              line-height: 1.5;
+              background: #fff;
+              color: #444;
+            }
+            *,
+            *:before,
+            *:after {
+              box-sizing: inherit;
+            }
+            body { font-size: .75rem; }
+            ::-moz-selection {
+              background: #b3d4fc;
+              text-shadow: none;
+            }
+            ::selection {
+              background: #b3d4fc;
+              text-shadow: none;
+            }
+            .banner,
+            .contentinfo { background: #f5f5f5; }
+            .banner { padding: 1em 0; }
+            .container {
+              margin: 0 auto;
+              padding: 0 2rem;
+              max-width: 80rem;
+            }
+            main {
+              margin-right: -2rem;
+              margin-left:  -2rem;
+              padding-bottom: 2rem;
+            }
+            h1 {
+              margin: 0;
+              font-weight: normal;
+              line-height: 1.25;
+            }
+            table {
+              table-layout: fixed;
+              border-collapse: separate;
+              border-spacing: 1rem;
+              width: 100%;
+            }
+            th,
+            td {
+              padding: 0 1rem;
+              vertical-align: baseline;
+              word-break: break-word;
+              hyphens: auto;
+            }
+            th {
+              font-weight: normal;
+              text-align: left;
+            }
+            thead th {
+              border-bottom: 1px solid #eee;
+              padding-top: 1rem;
+              padding-bottom: .5rem;
+              color: #999;
+            }
+            thead th:first-child {
+              font-size: 1.25rem;
+              color: inherit;
+            }
+            code { font-family: monaco, Consolas, monospace, monospace; }
+            hr {
+              display: block;
+              margin: 2rem 0;
+              border: 0;
+              border-top: 1px solid #eee;
+              padding: 0;
+              height: 1px;
+            }
+            .metric-box,
+            .radius-box {
+              display: inline-block;
+              vertical-align: middle;
+              background: #eee;
+            }
+            .radius-box {
+              width: 100%;
+              height: 3rem;
+            }
+            .radius-box.borderRadiusCircle {
+              width: 3rem;
+            }
+            .line-height-example {
+              border-bottom: 1px solid #eee;
+              background-image: -webkit-linear-gradient(#eee 1px, transparent 1px);
+              background-image: linear-gradient(#eee 1px, transparent 1px);
+              background-size: 100% 1rem;
+            }
+          </style>
+        </head>
+        <body>
+          <header role="banner" class="banner">
+            <div class="container">
+              <h1>Design Tokens</h1>
+            </div>
+          </header>
+          <div class="container">
+            <main role="main">
+              
+              
+              
+      <section>
+        <table>
+          
+      <thead>
+        <tr id=font>
+          <th scope="col">Fonts</th>
+          <th scope="col">Value</th>
+          <th scope="col">Examples</th>
+          <th scope="col">Usage</th>
+        </tr>
+      </thead>
+    
+          <tbody>
+            <tr>
+        <th scope="row">
+          <code>fontFamilyHeading</code>
+        </th>
+        <td>
+          <code>'Work Sans', sans-serif</code>
+        </td>
+        
+        <td>
+          <div style="font-family: 'Work Sans', sans-serif;">
+            The quick brown fox jumps over the lazy dog.
+          </div>
+        </td>
+      
+        <td></td>
+      </tr>
+    
+      <tr>
+        <th scope="row">
+          <code>fontFamilyText</code>
+        </th>
+        <td>
+          <code>'Open Sans', sans-serif</code>
+        </td>
+        
+        <td>
+          <div style="font-family: 'Open Sans', sans-serif;">
+            The quick brown fox jumps over the lazy dog.
+          </div>
+        </td>
+      
+        <td></td>
+      </tr>
+    
+      <tr>
+        <th scope="row">
+          <code>fontWeightHeadingRegular</code>
+        </th>
+        <td>
+          <code>500</code>
+        </td>
+        
+        <td>
+          <div style="font-family: 500;">
+            The quick brown fox jumps over the lazy dog.
+          </div>
+        </td>
+      
+        <td></td>
+      </tr>
+    
+      <tr>
+        <th scope="row">
+          <code>fontWeightTextRegular</code>
+        </th>
+        <td>
+          <code>400</code>
+        </td>
+        
+        <td>
+          <div style="font-family: 400;">
+            The quick brown fox jumps over the lazy dog.
+          </div>
+        </td>
+      
+        <td></td>
+      </tr>
+    
+      <tr>
+        <th scope="row">
+          <code>fontWeightTextBold</code>
+        </th>
+        <td>
+          <code>600</code>
+        </td>
+        
+        <td>
+          <div style="font-family: 600;">
+            The quick brown fox jumps over the lazy dog.
+          </div>
+        </td>
+      
+        <td></td>
+      </tr>
+          </tbody>
+        </table>
+        <hr />
+      </section>
+    
+              
+              
+              
+      <section>
+        <table>
+          
+      <thead>
+        <tr id=font-size>
+          <th scope="col">Font Sizes</th>
+          <th scope="col">Value</th>
+          <th scope="col">Examples</th>
+          <th scope="col">Usage</th>
+        </tr>
+      </thead>
+    
+          <tbody>
+            <tr>
+        <th scope="row">
+          <code>fontSizeXxxLarge</code>
+        </th>
+        <td>
+          <code>32px</code>
+        </td>
+        
+        <td>
+          <div style="font-size: 32px;">
+            The quick brown fox jumps over the lazy dog.
+          </div>
+        </td>
+      
+        <td></td>
+      </tr>
+    
+      <tr>
+        <th scope="row">
+          <code>fontSizeXxLarge</code>
+        </th>
+        <td>
+          <code>24px</code>
+        </td>
+        
+        <td>
+          <div style="font-size: 24px;">
+            The quick brown fox jumps over the lazy dog.
+          </div>
+        </td>
+      
+        <td></td>
+      </tr>
+    
+      <tr>
+        <th scope="row">
+          <code>fontSizeXLarge</code>
+        </th>
+        <td>
+          <code>22px</code>
+        </td>
+        
+        <td>
+          <div style="font-size: 22px;">
+            The quick brown fox jumps over the lazy dog.
+          </div>
+        </td>
+      
+        <td></td>
+      </tr>
+    
+      <tr>
+        <th scope="row">
+          <code>fontSizeLarge</code>
+        </th>
+        <td>
+          <code>20px</code>
+        </td>
+        
+        <td>
+          <div style="font-size: 20px;">
+            The quick brown fox jumps over the lazy dog.
+          </div>
+        </td>
+      
+        <td></td>
+      </tr>
+    
+      <tr>
+        <th scope="row">
+          <code>fontSizeMedium</code>
+        </th>
+        <td>
+          <code>18px</code>
+        </td>
+        
+        <td>
+          <div style="font-size: 18px;">
+            The quick brown fox jumps over the lazy dog.
+          </div>
+        </td>
+      
+        <td></td>
+      </tr>
+    
+      <tr>
+        <th scope="row">
+          <code>fontSizeBase</code>
+        </th>
+        <td>
+          <code>16px</code>
+        </td>
+        
+        <td>
+          <div style="font-size: 16px;">
+            The quick brown fox jumps over the lazy dog.
+          </div>
+        </td>
+      
+        <td></td>
+      </tr>
+    
+      <tr>
+        <th scope="row">
+          <code>fontSizeSmall</code>
+        </th>
+        <td>
+          <code>14px</code>
+        </td>
+        
+        <td>
+          <div style="font-size: 14px;">
+            The quick brown fox jumps over the lazy dog.
+          </div>
+        </td>
+      
+        <td></td>
+      </tr>
+    
+      <tr>
+        <th scope="row">
+          <code>fontSizeXSmall</code>
+        </th>
+        <td>
+          <code>12px</code>
+        </td>
+        
+        <td>
+          <div style="font-size: 12px;">
+            The quick brown fox jumps over the lazy dog.
+          </div>
+        </td>
+      
+        <td></td>
+      </tr>
+          </tbody>
+        </table>
+        <hr />
+      </section>
+    
+              
+      <section>
+        <table>
+          
+      <thead>
+        <tr id=line-height>
+          <th scope="col">Line Heights</th>
+          <th scope="col">Value</th>
+          <th scope="col">Examples</th>
+          <th scope="col">Usage</th>
+        </tr>
+      </thead>
+    
+          <tbody>
+            <tr>
+        <th scope="row">
+          <code>lineHeightBase</code>
+        </th>
+        <td>
+          <code>1.6</code>
+        </td>
+        
+        <td>
+          <div class="line-height-example" style="line-height: 1.6; background-size: 100% 1.6em;">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec
+            elementum odio et lacus rutrum molestie. Nunc arcu enim, elementum
+            id feugiat at, venenatis quis erat.
+          </div>
+        </td>
+      
+        <td></td>
+      </tr>
+    
+      <tr>
+        <th scope="row">
+          <code>lineHeightSmall</code>
+        </th>
+        <td>
+          <code>1.3</code>
+        </td>
+        
+        <td>
+          <div class="line-height-example" style="line-height: 1.3; background-size: 100% 1.3em;">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec
+            elementum odio et lacus rutrum molestie. Nunc arcu enim, elementum
+            id feugiat at, venenatis quis erat.
+          </div>
+        </td>
+      
+        <td></td>
+      </tr>
+    
+      <tr>
+        <th scope="row">
+          <code>lineHeightHeading</code>
+        </th>
+        <td>
+          <code>1</code>
+        </td>
+        
+        <td>
+          <div class="line-height-example" style="line-height: 1; background-size: 100% 1em;">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec
+            elementum odio et lacus rutrum molestie. Nunc arcu enim, elementum
+            id feugiat at, venenatis quis erat.
+          </div>
+        </td>
+      
+        <td></td>
+      </tr>
+          </tbody>
+        </table>
+        <hr />
+      </section>
+    
+              
+              
+              
+      <section>
+        <table>
+          
+      <thead>
+        <tr id=border-color>
+          <th scope="col">Border Colors</th>
+          <th scope="col">Value</th>
+          <th scope="col">Examples</th>
+          <th scope="col">Usage</th>
+        </tr>
+      </thead>
+    
+          <tbody>
+            <tr>
+        <th scope="row">
+          <code>colorBorder</code>
+        </th>
+        <td>
+          <code>rgb(232, 232, 232)</code>
+        </td>
+        <td style="border: 2px solid rgb(232, 232, 232);"></td>
+        <td></td>
+      </tr>
+    
+      <tr>
+        <th scope="row">
+          <code>colorBoxShadow</code>
+        </th>
+        <td>
+          <code>rgb(204, 204, 204)</code>
+        </td>
+        <td style="border: 2px solid rgb(204, 204, 204);"></td>
+        <td></td>
+      </tr>
+          </tbody>
+        </table>
+        <hr />
+      </section>
+    
+              
+              
+      <section>
+        <table>
+          
+      <thead>
+        <tr id=border-radius>
+          <th scope="col">Border Radii</th>
+          <th scope="col">Value</th>
+          <th scope="col">Examples</th>
+          <th scope="col">Usage</th>
+        </tr>
+      </thead>
+    
+          <tbody>
+            <tr>
+        <th scope="row">
+          <code>borderRadiusDefault</code>
+        </th>
+        <td>
+          <code>8px</code>
+        </td>
+        
+        <td>
+          <div class="radius-box" style="border-radius: 8px;"></div>
+        </td>
+      
+        <td></td>
+      </tr>
+    
+      <tr>
+        <th scope="row">
+          <code>borderRadiusCircle</code>
+        </th>
+        <td>
+          <code>50%</code>
+        </td>
+        
+        <td>
+          <div class="radius-box" style="border-radius: 50%;"></div>
+        </td>
+      
+        <td></td>
+      </tr>
+          </tbody>
+        </table>
+        <hr />
+      </section>
+    
+              
+              
+      <section>
+        <table>
+          
+      <thead>
+        <tr id=background-color>
+          <th scope="col">Background Colors</th>
+          <th scope="col">Value</th>
+          <th scope="col">Examples</th>
+          <th scope="col">Usage</th>
+        </tr>
+      </thead>
+    
+          <tbody>
+            <tr>
+        <th scope="row">
+          <code>colorValid</code>
+        </th>
+        <td>
+          <code>rgb(20, 135, 81)</code>
+        </td>
+        <td style="background-color: rgb(20, 135, 81); border: 1px solid #f6f6f6;"></td>
+        <td></td>
+      </tr>
+    
+      <tr>
+        <th scope="row">
+          <code>colorPrimary</code>
+        </th>
+        <td>
+          <code>rgb(20, 135, 81)</code>
+        </td>
+        <td style="background-color: rgb(20, 135, 81); border: 1px solid #f6f6f6;"></td>
+        <td></td>
+      </tr>
+    
+      <tr>
+        <th scope="row">
+          <code>colorAccent</code>
+        </th>
+        <td>
+          <code>rgb(247, 173, 17)</code>
+        </td>
+        <td style="background-color: rgb(247, 173, 17); border: 1px solid #f6f6f6;"></td>
+        <td></td>
+      </tr>
+    
+      <tr>
+        <th scope="row">
+          <code>colorLightGray</code>
+        </th>
+        <td>
+          <code>rgb(232, 232, 232)</code>
+        </td>
+        <td style="background-color: rgb(232, 232, 232); border: 1px solid #f6f6f6;"></td>
+        <td></td>
+      </tr>
+    
+      <tr>
+        <th scope="row">
+          <code>colorLightBg</code>
+        </th>
+        <td>
+          <code>rgb(249, 253, 253)</code>
+        </td>
+        <td style="background-color: rgb(249, 253, 253); border: 1px solid #f6f6f6;"></td>
+        <td></td>
+      </tr>
+    
+      <tr>
+        <th scope="row">
+          <code>colorSecondaryLight</code>
+        </th>
+        <td>
+          <code>rgb(243, 246, 255)</code>
+        </td>
+        <td style="background-color: rgb(243, 246, 255); border: 1px solid #f6f6f6;"></td>
+        <td></td>
+      </tr>
+    
+      <tr>
+        <th scope="row">
+          <code>colorPrimaryDark</code>
+        </th>
+        <td>
+          <code>rgb(23, 94, 71)</code>
+        </td>
+        <td style="background-color: rgb(23, 94, 71); border: 1px solid #f6f6f6;"></td>
+        <td></td>
+      </tr>
+    
+      <tr>
+        <th scope="row">
+          <code>colorDangerDark</code>
+        </th>
+        <td>
+          <code>rgb(145, 38, 36)</code>
+        </td>
+        <td style="background-color: rgb(145, 38, 36); border: 1px solid #f6f6f6;"></td>
+        <td></td>
+      </tr>
+    
+      <tr>
+        <th scope="row">
+          <code>colorBaseBg</code>
+        </th>
+        <td>
+          <code>rgb(255, 255, 255)</code>
+        </td>
+        <td style="background-color: rgb(255, 255, 255); border: 1px solid #f6f6f6;"></td>
+        <td></td>
+      </tr>
+    
+      <tr>
+        <th scope="row">
+          <code>colorSecondary</code>
+        </th>
+        <td>
+          <code>rgb(50, 72, 145)</code>
+        </td>
+        <td style="background-color: rgb(50, 72, 145); border: 1px solid #f6f6f6;"></td>
+        <td></td>
+      </tr>
+    
+      <tr>
+        <th scope="row">
+          <code>colorPrimaryLight</code>
+        </th>
+        <td>
+          <code>rgb(107, 189, 151)</code>
+        </td>
+        <td style="background-color: rgb(107, 189, 151); border: 1px solid #f6f6f6;"></td>
+        <td></td>
+      </tr>
+    
+      <tr>
+        <th scope="row">
+          <code>colorSecondaryDark</code>
+        </th>
+        <td>
+          <code>rgb(33, 48, 99)</code>
+        </td>
+        <td style="background-color: rgb(33, 48, 99); border: 1px solid #f6f6f6;"></td>
+        <td></td>
+      </tr>
+    
+      <tr>
+        <th scope="row">
+          <code>colorGray</code>
+        </th>
+        <td>
+          <code>rgb(204, 204, 204)</code>
+        </td>
+        <td style="background-color: rgb(204, 204, 204); border: 1px solid #f6f6f6;"></td>
+        <td></td>
+      </tr>
+    
+      <tr>
+        <th scope="row">
+          <code>colorDanger</code>
+        </th>
+        <td>
+          <code>rgb(178, 46, 44)</code>
+        </td>
+        <td style="background-color: rgb(178, 46, 44); border: 1px solid #f6f6f6;"></td>
+        <td></td>
+      </tr>
+          </tbody>
+        </table>
+        <hr />
+      </section>
+    
+              
+              
+              
+              
+      <section>
+        <table>
+          
+      <thead>
+        <tr id=box-shadow>
+          <th scope="col">Box Shadows</th>
+          <th scope="col">Value</th>
+          <th scope="col">Examples</th>
+          <th scope="col">Usage</th>
+        </tr>
+      </thead>
+    
+          <tbody>
+            <tr>
+        <th scope="row">
+          <code>boxShadowSmall</code>
+        </th>
+        <td>
+          <code>0 0 0 1px rgba(92,106,196,.1)</code>
+        </td>
+        <td style="box-shadow: 0 0 0 1px rgba(92,106,196,.1);"></td>
+        <td></td>
+      </tr>
+    
+      <tr>
+        <th scope="row">
+          <code>boxShadowSmallInset</code>
+        </th>
+        <td>
+          <code>inset 0 0 0 1px rgba(0,0,0,.05)</code>
+        </td>
+        <td style="box-shadow: inset 0 0 0 1px rgba(0,0,0,.05);"></td>
+        <td></td>
+      </tr>
+          </tbody>
+        </table>
+        <hr />
+      </section>
+    
+              
+              
+              
+              
+      <section>
+        <table>
+          
+      <thead>
+        <tr id=time>
+          <th scope="col">Time</th>
+          <th scope="col">Value</th>
+          <th scope="col">Examples</th>
+          <th scope="col">Usage</th>
+        </tr>
+      </thead>
+    
+          <tbody>
+            <tr>
+        <th scope="row">
+          <code>durationQuickly</code>
+        </th>
+        <td>
+          <code>0.08s</code>
+        </td>
+        <td></td>
+        <td></td>
+      </tr>
+    
+      <tr>
+        <th scope="row">
+          <code>durationSlowly</code>
+        </th>
+        <td>
+          <code>0.5s</code>
+        </td>
+        <td></td>
+        <td></td>
+      </tr>
+          </tbody>
+        </table>
+        <hr />
+      </section>
+    
+              
+      <section>
+        <table>
+          
+      <thead>
+        <tr id=media-query>
+          <th scope="col">Media Queries</th>
+          <th scope="col">Value</th>
+          <th scope="col">Examples</th>
+          <th scope="col">Usage</th>
+        </tr>
+      </thead>
+    
+          <tbody>
+            <tr>
+        <th scope="row">
+          <code>mediaQueryMedium</code>
+        </th>
+        <td>
+          <code>(min-width: 768px)</code>
+        </td>
+        <td></td>
+        <td></td>
+      </tr>
+    
+      <tr>
+        <th scope="row">
+          <code>mediaQueryLarge</code>
+        </th>
+        <td>
+          <code>(min-width: 1024px)</code>
+        </td>
+        <td></td>
+        <td></td>
+      </tr>
+          </tbody>
+        </table>
+        <hr />
+      </section>
+    
+            </main>
+          </div>
+        </body>
+      </html>
+    

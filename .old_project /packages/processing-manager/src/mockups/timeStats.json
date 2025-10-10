@@ -1,0 +1,20 @@
+[
+  {
+    "key": "Commit@DistributedReportingServiceImpl.saveChunkOfRowsForGroup",
+    "numCalls": 5,
+    "min": "615(us)",
+    "avg": "615(us)",
+    "max": "615(us)",
+    "last": "615(us)",
+    "total": "0",
+    "0to1Ms": "0",
+    "1to10Ms": "0",
+    "10to50Ms": "0",
+    "50to100Ms": "0",
+    "100to500Ms": "0",
+    "500to999Ms": "0",
+    "1to2Sec": "0",
+    "2to10Sec": "0",
+    "more10Sec": "0"
+  }
+]

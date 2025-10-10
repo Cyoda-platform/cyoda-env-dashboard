@@ -1,0 +1,172 @@
+{
+  "function_simple_iStartsWith": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.IStartsWith",
+    "args": []
+  },
+  "function_simple_EncLength": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.encompass.functions.Length",
+    "args": []
+  },
+  "function_simple_endsWith": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.IEndsWith",
+    "args": []
+  },
+  "function_simple_cast": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.Cast",
+    "args": []
+  },
+  "function_simple_LessThanEquals": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.LessThanEquals",
+    "args": []
+  },
+  "function_simple_startsWith": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.StartsWith",
+    "args": []
+  },
+  "function_enlarge_enlargeFromList": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.enlarge.EnlargeFromList",
+    "args": []
+  },
+  "function_reduce_minComparableElement": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.reduce.MinComparableElement",
+    "args": []
+  },
+  "function_reduce_toGroupByMap": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.encompass.functions.ToGroupByMap",
+    "args": []
+  },
+  "function_simple_greaterThanEquals": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.GreaterThanEquals",
+    "args": []
+  },
+  "function_reduce_avgElement": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.reduce.AvgElement",
+    "args": []
+  },
+  "function_simple_AddToList": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.encompass.functions.AddToList",
+    "args": []
+  },
+  "function_simple_to-singleton-list": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.ToSingletonList",
+    "args": []
+  },
+  "function_simple_isNull": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.IsNull",
+    "args": []
+  },
+  "function_reduce_toFilteredList": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.reduce.ToFilteredList",
+    "args": []
+  },
+  "function_simple_not": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.Not",
+    "args": []
+  },
+  "function_simple_matchesRegex": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.MatchRegex",
+    "args": []
+  },
+  "function_reduce_toUniqueList": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.reduce.ToUniqueList",
+    "args": []
+  },
+  "function_simple_DocumentConverter": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.encompass.functions.DocumentConverter",
+    "args": []
+  },
+  "function_simple_AppendToList": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.AppendToList",
+    "args": []
+  },
+  "function_simple_AppendToMap": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.AppendToMap",
+    "args": []
+  },
+  "function_simple_contains": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.Contains",
+    "args": []
+  },
+  "function_simple_ifElseNull": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.IfElseNull",
+    "args": []
+  },
+  "function_simple_isBlank": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.IsBlank",
+    "args": []
+  },
+  "function_reduce_maxComparableElement": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.reduce.MaxComparableElement",
+    "args": []
+  },
+  "function_simple_IEquals": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.IEquals",
+    "args": []
+  },
+  "function_simple_EncJoinLists": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.encompass.functions.CustomJoinLists",
+    "args": []
+  },
+  "function_simple_isNotNull": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.IsNotNull",
+    "args": []
+  },
+  "function_simple_greaterThan": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.GreaterThan",
+    "args": []
+  },
+  "function_enlarge_enlargeFromCollection": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.enlarge.EnlargeFromCollection",
+    "args": []
+  },
+  "function_simple_InstanceOf": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.InstanceOf",
+    "args": []
+  },
+  "function_simple_Compare": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.Compare",
+    "args": []
+  },
+  "function_simple_Length": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.GetStringLength",
+    "args": []
+  },
+  "function_simple_lessThan": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.LessThan",
+    "args": []
+  }
+}

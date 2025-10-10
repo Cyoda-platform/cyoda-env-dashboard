@@ -1,0 +1,13 @@
+.el-message-box {
+  width: auto;
+  max-width: 650px;
+  min-width: 400px;
+}
+
+.el-overlay.is-message-box {
+  z-index: 6000 !important;
+}
+
+//.el-message-box__wrapper{
+//  z-index: 9999 !important;
+//}

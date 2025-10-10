@@ -1,0 +1,264 @@
+{
+  "_embedded": {
+    "groupHeaders": [
+      {
+        "groupValuesJson": "[\"ACTIVE\",\"DE\"]",
+        "groupValuesJsonBase64": "WyJBQ1RJVkUiLCJERSJd",
+        "groupValues": ["ACTIVE", "DE"],
+        "parentGroupValuesJson": null,
+        "groupLevel": 1,
+        "isNext": false,
+        "leaf": true,
+        "summary": {
+          "leiUUID": {
+            "values": {
+              "COUNT": 272
+            }
+          }
+        },
+        "commonGroupValues": {
+          "state": "ACTIVE",
+          "country": "DE"
+        },
+        "columnNames": ["leiUUID"],
+        "_links": {
+          "/report/{id}/group_rows/{group_json_base64}": {
+            "href": "/reporting/report/patrick.stanton@cyoda.com-LegalEntity-d54d7d70-0a57-11eb-ac3c-527691bd5880/group_rows/WyJBQ1RJVkUiLCJERSJd",
+            "title": "Get a report group",
+            "type": "GET"
+          }
+        }
+      },
+      {
+        "groupValuesJson": "[\"ACTIVE\",\"DK\"]",
+        "groupValuesJsonBase64": "WyJBQ1RJVkUiLCJESyJd",
+        "groupValues": ["ACTIVE", "DK"],
+        "parentGroupValuesJson": null,
+        "groupLevel": 1,
+        "isNext": false,
+        "leaf": true,
+        "summary": {
+          "leiUUID": {
+            "values": {
+              "COUNT": 1
+            }
+          }
+        },
+        "commonGroupValues": {
+          "state": "ACTIVE",
+          "country": "DK"
+        },
+        "columnNames": ["leiUUID"],
+        "_links": {
+          "/report/{id}/group_rows/{group_json_base64}": {
+            "href": "/reporting/report/patrick.stanton@cyoda.com-LegalEntity-d54d7d70-0a57-11eb-ac3c-527691bd5880/group_rows/WyJBQ1RJVkUiLCJESyJd",
+            "title": "Get a report group",
+            "type": "GET"
+          }
+        }
+      },
+      {
+        "groupValuesJson": "[\"ACTIVE\",\"FR\"]",
+        "groupValuesJsonBase64": "WyJBQ1RJVkUiLCJGUiJd",
+        "groupValues": ["ACTIVE", "FR"],
+        "parentGroupValuesJson": null,
+        "groupLevel": 1,
+        "isNext": false,
+        "leaf": true,
+        "summary": {
+          "leiUUID": {
+            "values": {
+              "COUNT": 1
+            }
+          }
+        },
+        "commonGroupValues": {
+          "state": "ACTIVE",
+          "country": "FR"
+        },
+        "columnNames": ["leiUUID"],
+        "_links": {
+          "/report/{id}/group_rows/{group_json_base64}": {
+            "href": "/reporting/report/patrick.stanton@cyoda.com-LegalEntity-d54d7d70-0a57-11eb-ac3c-527691bd5880/group_rows/WyJBQ1RJVkUiLCJGUiJd",
+            "title": "Get a report group",
+            "type": "GET"
+          }
+        }
+      },
+      {
+        "groupValuesJson": "[\"ACTIVE\",\"GB\"]",
+        "groupValuesJsonBase64": "WyJBQ1RJVkUiLCJHQiJd",
+        "groupValues": ["ACTIVE", "GB"],
+        "parentGroupValuesJson": null,
+        "groupLevel": 1,
+        "isNext": false,
+        "leaf": true,
+        "summary": {
+          "leiUUID": {
+            "values": {
+              "COUNT": 65
+            }
+          }
+        },
+        "commonGroupValues": {
+          "state": "ACTIVE",
+          "country": "GB"
+        },
+        "columnNames": ["leiUUID"],
+        "_links": {
+          "/report/{id}/group_rows/{group_json_base64}": {
+            "href": "/reporting/report/patrick.stanton@cyoda.com-LegalEntity-d54d7d70-0a57-11eb-ac3c-527691bd5880/group_rows/WyJBQ1RJVkUiLCJHQiJd",
+            "title": "Get a report group",
+            "type": "GET"
+          }
+        }
+      },
+      {
+        "groupValuesJson": "[\"ACTIVE\",\"JE\"]",
+        "groupValuesJsonBase64": "WyJBQ1RJVkUiLCJKRSJd",
+        "groupValues": ["ACTIVE", "JE"],
+        "parentGroupValuesJson": null,
+        "groupLevel": 1,
+        "isNext": false,
+        "leaf": true,
+        "summary": {
+          "leiUUID": {
+            "values": {
+              "COUNT": 2
+            }
+          }
+        },
+        "commonGroupValues": {
+          "state": "ACTIVE",
+          "country": "JE"
+        },
+        "columnNames": ["leiUUID"],
+        "_links": {
+          "/report/{id}/group_rows/{group_json_base64}": {
+            "href": "/reporting/report/patrick.stanton@cyoda.com-LegalEntity-d54d7d70-0a57-11eb-ac3c-527691bd5880/group_rows/WyJBQ1RJVkUiLCJKRSJd",
+            "title": "Get a report group",
+            "type": "GET"
+          }
+        }
+      },
+      {
+        "groupValuesJson": "[\"ACTIVE\",\"NL\"]",
+        "groupValuesJsonBase64": "WyJBQ1RJVkUiLCJOTCJd",
+        "groupValues": ["ACTIVE", "NL"],
+        "parentGroupValuesJson": null,
+        "groupLevel": 1,
+        "isNext": false,
+        "leaf": true,
+        "summary": {
+          "leiUUID": {
+            "values": {
+              "COUNT": 1
+            }
+          }
+        },
+        "commonGroupValues": {
+          "state": "ACTIVE",
+          "country": "NL"
+        },
+        "columnNames": ["leiUUID"],
+        "_links": {
+          "/report/{id}/group_rows/{group_json_base64}": {
+            "href": "/reporting/report/patrick.stanton@cyoda.com-LegalEntity-d54d7d70-0a57-11eb-ac3c-527691bd5880/group_rows/WyJBQ1RJVkUiLCJOTCJd",
+            "title": "Get a report group",
+            "type": "GET"
+          }
+        }
+      },
+      {
+        "groupValuesJson": "[\"ACTIVE\",\"US\"]",
+        "groupValuesJsonBase64": "WyJBQ1RJVkUiLCJVUyJd",
+        "groupValues": ["ACTIVE", "US"],
+        "parentGroupValuesJson": null,
+        "groupLevel": 1,
+        "isNext": false,
+        "leaf": true,
+        "summary": {
+          "leiUUID": {
+            "values": {
+              "COUNT": 643
+            }
+          }
+        },
+        "commonGroupValues": {
+          "state": "ACTIVE",
+          "country": "US"
+        },
+        "columnNames": ["leiUUID"],
+        "_links": {
+          "/report/{id}/group_rows/{group_json_base64}": {
+            "href": "/reporting/report/patrick.stanton@cyoda.com-LegalEntity-d54d7d70-0a57-11eb-ac3c-527691bd5880/group_rows/WyJBQ1RJVkUiLCJVUyJd",
+            "title": "Get a report group",
+            "type": "GET"
+          }
+        }
+      },
+      {
+        "groupValuesJson": "[\"ACTIVE\",\"VI\"]",
+        "groupValuesJsonBase64": "WyJBQ1RJVkUiLCJWSSJd",
+        "groupValues": ["ACTIVE", "VI"],
+        "parentGroupValuesJson": null,
+        "groupLevel": 1,
+        "isNext": false,
+        "leaf": true,
+        "summary": {
+          "leiUUID": {
+            "values": {
+              "COUNT": 1
+            }
+          }
+        },
+        "commonGroupValues": {
+          "state": "ACTIVE",
+          "country": "VI"
+        },
+        "columnNames": ["leiUUID"],
+        "_links": {
+          "/report/{id}/group_rows/{group_json_base64}": {
+            "href": "/reporting/report/patrick.stanton@cyoda.com-LegalEntity-d54d7d70-0a57-11eb-ac3c-527691bd5880/group_rows/WyJBQ1RJVkUiLCJWSSJd",
+            "title": "Get a report group",
+            "type": "GET"
+          }
+        }
+      },
+      {
+        "groupValuesJson": "[\"ACTIVE\",\"nl\"]",
+        "groupValuesJsonBase64": "WyJBQ1RJVkUiLCJubCJd",
+        "groupValues": ["ACTIVE", ""],
+        "parentGroupValuesJson": null,
+        "groupLevel": 1,
+        "isNext": false,
+        "leaf": true,
+        "summary": {
+          "leiUUID": {
+            "values": {
+              "COUNT": 0
+            }
+          }
+        },
+        "commonGroupValues": {
+          "state": "ACTIVE",
+          "country": null
+        },
+        "columnNames": ["leiUUID"],
+        "_links": {
+          "/report/{id}/group_rows/{group_json_base64}": {
+            "href": "/reporting/report/patrick.stanton@cyoda.com-LegalEntity-d54d7d70-0a57-11eb-ac3c-527691bd5880/group_rows/WyJBQ1RJVkUiLCJubCJd",
+            "title": "Get a report group",
+            "type": "GET"
+          }
+        }
+      }
+    ]
+  },
+  "page": {
+    "size": 10,
+    "totalElements": 10,
+    "totalPages": 1,
+    "number": 0
+  }
+}

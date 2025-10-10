@@ -1,0 +1,82 @@
+{
+  "@bean": "com.cyoda.plugins.mapping.core.dtos.DataMappingConfigDto",
+  "id": "93efdaa0-9ff0-11ec-b9b7-f2f34d2c0ab0",
+  "dataType": "JSON",
+  "name": "test3",
+  "description": "",
+  "entityMappings": [
+    {
+      "entityClass": "com.cyoda.encompass.model.common.User",
+      "srcRelativeRootPath": "root:/embedded/companies/*",
+      "columns": [
+        {
+          "srcColumnPath": "employeeCount",
+          "dstCyodaColumnPath": "legalEntityId",
+          "dstCyodaColumnPathType": "java.lang.String",
+          "transformer": {
+            "type": "COMPOSITE",
+            "children": [
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.SourceObjectValueTransformer$ToString",
+                "parameters": []
+              }
+            ]
+          }
+        }
+      ],
+      "functionalMappings": [
+        {
+          "name": "Functional-Mapping-1",
+          "srcPaths": ["name"],
+          "statements": [
+            {
+              "type": "ASSIGN_VAR",
+              "variableName": "i",
+              "expression": {
+                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.reduce.MaxComparableElement",
+                "args": [
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+                    "args": [
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                        "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$ToDateArbitraryFormat"
+                      },
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.SrcValueReadExpressionConfigDto",
+                        "srcPath": "name"
+                      },
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                        "value": "format"
+                      },
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                        "value": "yyyy-MM-dd'T'HH:mm:ss.SSS"
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "type": "RETURN",
+              "expression": {
+                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                "variableName": "i"
+              }
+            }
+          ],
+          "dstPath": "owner"
+        }
+      ],
+      "columnPathsForUniqueCheck": [],
+      "metadata": []
+    }
+  ],
+  "sampleContent": "{\"nonNeedField\":123,\"embedded\":{\"companies\":[{\"name\":\"Company1\",\"employeeCount\":100,\"ints\":[1,2,3],\"address\":{\"street\":\"Street1\",\"house\":\"1\",\"apartment\":1},\"person\":{\"firstName\":\"firstName11\",\"lastName\":\"lastName11\"}},{\"name\":\"Company2\",\"employeeCount\":200,\"ints\":[4,5],\"address\":{\"street\":\"Street2\",\"house\":\"2\",\"apartment\":2},\"person\":{\"firstName\":\"firstName21\",\"lastName\":\"lastName21\"}}]}}",
+  "metadata": "{\"owner\":\"<xml xmlns=\\\"https://developers.google.com/blockly/xml\\\"><variables><variable id=\\\"gzVvbq)|HMI.vYDDQku[\\\">i</variable></variables><block type=\\\"statement_variables_set\\\" id=\\\"Xz/~g}3nXm$e|Q_.rObF\\\" x=\\\"219\\\" y=\\\"9\\\"><field name=\\\"VAR\\\" id=\\\"gzVvbq)|HMI.vYDDQku[\\\">i</field><value name=\\\"VALUE\\\"><block type=\\\"function_reduce_maxComparableElement\\\" id=\\\"72Yf!?3Uk{Y7}]KesN9p\\\"><value name=\\\"list\\\"><block type=\\\"transformer_stringvaluetransformer_todatearbitraryformat\\\" id=\\\"Iy*:Coi[aPq7]YK?2k{w\\\"><field name=\\\"format\\\">yyyy-MM-dd'T'HH:mm:ss.SSS</field><value name=\\\"VALUE\\\"><block type=\\\"expression_src_value_read\\\" id=\\\"=?,{8{7f%m)YQ;*w?~.p\\\"><field name=\\\"NAME\\\">name</field></block></value></block></value></block></value><next><block type=\\\"statement_return\\\" id=\\\"6*oeXbYNbKqsbw-E[zms\\\"><value name=\\\"EXPRESSION\\\"><block type=\\\"expression_var_read\\\" id=\\\"`Iy3UTRW;h=}3C[Cbj%Z\\\"><field name=\\\"NAME\\\" id=\\\"gzVvbq)|HMI.vYDDQku[\\\">i</field></block></value></block></next></block></xml>\"}"
+}

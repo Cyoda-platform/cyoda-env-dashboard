@@ -1,0 +1,129 @@
+{
+  "id": "6dd35670-2868-11ed-a0ac-0218eb079997",
+  "name": "Reg_US-LA_1_COMPANY_SEARCH_ID",
+  "lastUpdated": 1676583531170,
+  "dataType": "JSON",
+  "description": "Runs the report endpoint on the API but maps it as a search result. Knowing we only get 1 result back from the API in this case the result is mapped into the zero-th search result.",
+  "entityMappings": [
+    {
+      "id": {
+        "id": "ecc0afe0-4eed-11ed-bb6c-a66bb6e9b088"
+      },
+      "name": "generated-entity-mapping-1",
+      "entityClass": "com.cyoda.encompass.model.search.OrganisationSearchResult",
+      "entityRelationConfigs": [
+        {
+          "srcRelativeRootPath": "root:/"
+        }
+      ],
+      "columns": [
+        {
+          "srcColumnPath": "CharterDetails/CharterStatusDescription",
+          "dstCyodaColumnPath": "searchResult@com#cyoda#encompass#model#search#SearchResult.searchResult.[0]@com#encompasscorporation#edmservice#model#dto#search#OrganisationSearch.companyStatus",
+          "dstCyodaColumnPathType": "java.lang.String",
+          "dstCollectionElementSetModes": [],
+          "transformer": {
+            "type": "COMPOSITE",
+            "children": [
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.SourceObjectValueTransformer$ToString",
+                "parameters": []
+              },
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim",
+                "parameters": []
+              }
+            ]
+          }
+        },
+        {
+          "srcColumnPath": "CharterDetails/City",
+          "dstCyodaColumnPath": "searchResult@com#cyoda#encompass#model#search#SearchResult.searchResult.[0]@com#encompasscorporation#edmservice#model#dto#search#OrganisationSearch.address",
+          "dstCyodaColumnPathType": "java.lang.String",
+          "dstCollectionElementSetModes": [],
+          "transformer": {
+            "type": "COMPOSITE",
+            "children": [
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.SourceObjectValueTransformer$ToString",
+                "parameters": []
+              },
+              {
+                "type": "SINGLE",
+                "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim",
+                "parameters": []
+              }
+            ]
+          }
+        }
+      ],
+      "functionalMappings": [
+        {
+          "name": "Functional-Mapping-1",
+          "srcPaths": [
+            "CharterDetails/CharterName",
+            "EntityNumber"
+          ],
+          "statements": [
+            {
+              "type": "ASSIGN_VAR",
+              "variableName": "number",
+              "dstPath": "searchResult@com#cyoda#encompass#model#search#SearchResult.searchResult.[0]@com#encompasscorporation#edmservice#model#dto#search#OrganisationSearch.companyNumber",
+              "collectElemsSetModes": [],
+              "expression": {
+                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.IfElse",
+                "args": [
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.IsNotNull",
+                    "args": [
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.SrcValueReadExpressionConfigDto",
+                        "srcPath": "CharterDetails/CharterName"
+                      }
+                    ]
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.SrcValueReadExpressionConfigDto",
+                    "srcPath": "EntityNumber"
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.NullValueExpressionConfigDto"
+                  }
+                ]
+              }
+            },
+            {
+              "type": "SET_DST_VALUE",
+              "dstPath": "searchResult@com#cyoda#encompass#model#search#SearchResult.searchResult.[0]@com#encompasscorporation#edmservice#model#dto#search#OrganisationSearch.companyNumber",
+              "collectElemsSetModes": [],
+              "expression": {
+                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                "variableName": "number"
+              }
+            },
+            {
+              "type": "RETURN",
+              "collectElemsSetModes": [],
+              "expression": {
+                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.SrcValueReadExpressionConfigDto",
+                "srcPath": "CharterDetails/CharterName"
+              }
+            }
+          ],
+          "dstPath": "searchResult@com#cyoda#encompass#model#search#SearchResult.searchResult.[0]@com#encompasscorporation#edmservice#model#dto#search#OrganisationSearch.companyName",
+          "collectElemsSetModes": []
+        }
+      ],
+      "columnPathsForUniqueCheck": [],
+      "metadata": [],
+      "cobiCoreMetadata": []
+    }
+  ],
+  "sampleContent": "{\"EntityType\":\"Charter\",\"EntityNumber\":\"30018160F\",\"CharterDetails\":{\"CharterName\":\"EXXON MOBIL CORPORATION\",\"CharterStatusDescription\":\"Active\",\"CharterSubStatusDescription\":\"\",\"RegistrationDate\":\"1972-12-01\",\"FileDate\":\"1972-12-01\",\"CharterCategory\":\"F\",\"BusinessType\":\"Business Corporation (Non-Louisiana)\",\"City\":\"EWING\",\"AnnualReportStatus\":\"In Good Standing\",\"LastReportFiled\":\"2021-11-02\",\"Agents\":[{\"FirstName\":\"CORPORATION SERVICE COMPANY\",\"LastName\":\"\",\"Address1\":\"501 LOUISIANA AVENUE\",\"Address2\":\"\",\"City\":\"BATON ROUGE\",\"State\":\"LA \",\"Country\":\"United States\",\"ZipCode\":\"70802\",\"AppointmentDate\":\"1996-12-18\"}],\"Officers\":[{\"FirstName\":\"MICHAEL J\",\"LastName\":\"ANGELAKIS\",\"Address1\":\"5959 LAS COLINAS BOULEVARD\",\"Address2\":\"\",\"City\":\"IRVING\",\"State\":\"TX \",\"Country\":\"United States\",\"ZipCode\":\"750392298\",\"Titles\":[\"Director\"]},{\"FirstName\":\"SUSAN K\",\"LastName\":\"AVERY\",\"Address1\":\"5959 LAS COLINAS BOULEVARD\",\"Address2\":\"\",\"City\":\"IRVING\",\"State\":\"TX \",\"Country\":\"United States\",\"ZipCode\":\"750392298\",\"Titles\":[\"Director\"]},{\"FirstName\":\"ANGELA F\",\"LastName\":\"BRALY\",\"Address1\":\"5959 LAS COLINAS BOULEVARD\",\"Address2\":\"\",\"City\":\"IRVING\",\"State\":\"TX \",\"Country\":\"United States\",\"ZipCode\":\"750392298\",\"Titles\":[\"Director\"]},{\"FirstName\":\"URSULA M\",\"LastName\":\"BURNS\",\"Address1\":\"5959 LAS COLINAS BOULEVARD\",\"Address2\":\"\",\"City\":\"IRVING\",\"State\":\"TX \",\"Country\":\"United States\",\"ZipCode\":\"750392298\",\"Titles\":[\"Director\"]},{\"FirstName\":\"KENNETH C\",\"LastName\":\"FRAZIER\",\"Address1\":\"5959 LAS COLINAS BOULEVARD\",\"Address2\":\"\",\"City\":\"IRVING\",\"State\":\"TX \",\"Country\":\"United States\",\"ZipCode\":\"750392298\",\"Titles\":[\"Director\"]},{\"FirstName\":\"GREGORY J\",\"LastName\":\"GOFF\",\"Address1\":\"5959 LAS COLINAS BOULEVARD\",\"Address2\":\"\",\"City\":\"IRVING\",\"State\":\"TX \",\"Country\":\"United States\",\"ZipCode\":\"750392298\",\"Titles\":[\"Director\"]},{\"FirstName\":\"KAISA H\",\"LastName\":\"HIETALA\",\"Address1\":\"5959 LAS COLINAS BOULEVARD\",\"Address2\":\"\",\"City\":\"IRVING\",\"State\":\"TX \",\"Country\":\"United States\",\"ZipCode\":\"750392298\",\"Titles\":[\"Director\"]},{\"FirstName\":\"JOSEPH L\",\"LastName\":\"HOOLEY\",\"Address1\":\"5959 LAS COLINAS BOULEVARD\",\"Address2\":\"\",\"City\":\"IRVING\",\"State\":\"TX \",\"Country\":\"United States\",\"ZipCode\":\"750392298\",\"Titles\":[\"Director\"]},{\"FirstName\":\"STEVEN A\",\"LastName\":\"KANDARIAN\",\"Address1\":\"5959 LAS COLINAS BOULEVARD\",\"Address2\":\"\",\"City\":\"IRVING\",\"State\":\"TX \",\"Country\":\"United States\",\"ZipCode\":\"750392298\",\"Titles\":[\"Director\"]},{\"FirstName\":\"ALEXANDER A\",\"LastName\":\"KARSNER\",\"Address1\":\"5959 LAS COLINAS BOULEVARD\",\"Address2\":\"\",\"City\":\"IRVING\",\"State\":\"TX \",\"Country\":\"United States\",\"ZipCode\":\"750392298\",\"Titles\":[\"Director\"]},{\"FirstName\":\"JEFFREY W\",\"LastName\":\"UBBEN\",\"Address1\":\"5959 LAS COLINAS BOULEVARD\",\"Address2\":\"\",\"City\":\"IRVING\",\"State\":\"TX \",\"Country\":\"United States\",\"ZipCode\":\"750392298\",\"Titles\":[\"Director\"]},{\"FirstName\":\"DARREN W\",\"LastName\":\"WOODS\",\"Address1\":\"5959 LAS COLINAS BOULEVARD\",\"Address2\":\"\",\"City\":\"IRVING\",\"State\":\"TX \",\"Country\":\"United States\",\"ZipCode\":\"750392298\",\"Titles\":[\"President\",\"Director\",\"Officer\"]},{\"FirstName\":\"NEIL A\",\"LastName\":\"CHAPMAN\",\"Address1\":\"5959 LAS COLINAS BOULEVARD\",\"Address2\":\"\",\"City\":\"IRVING\",\"State\":\"TX \",\"Country\":\"United States\",\"ZipCode\":\"750392298\",\"Titles\":[\"Vice-President\"]},{\"FirstName\":\"JACK P\",\"LastName\":\"WILLIAMS JR\",\"Address1\":\"5959 LAS COLINAS BOULEVARD\",\"Address2\":\"\",\"City\":\"IRVING\",\"State\":\"TX \",\"Country\":\"United States\",\"ZipCode\":\"750392298\",\"Titles\":[\"Vice-President\"]},{\"FirstName\":\"F.Y. (JOE)\",\"LastName\":\"BLOMMAERT\",\"Address1\":\"5959 LAS COLINAS BOULEVARD\",\"Address2\":\"\",\"City\":\"IRVING\",\"State\":\"TX \",\"Country\":\"United States\",\"ZipCode\":\"750392298\",\"Titles\":[\"Vice-President\"]},{\"FirstName\":\"IAN S\",\"LastName\":\"CARR\",\"Address1\":\"5959 LAS COLINAS BOULEVARD\",\"Address2\":\"\",\"City\":\"IRVING\",\"State\":\"TX \",\"Country\":\"United States\",\"ZipCode\":\"750392298\",\"Titles\":[\"Vice-President\"]},{\"FirstName\":\"LINDA D\",\"LastName\":\"DUCHARME\",\"Address1\":\"5959 LAS COLINAS BOULEVARD\",\"Address2\":\"\",\"City\":\"IRVING\",\"State\":\"TX \",\"Country\":\"United States\",\"ZipCode\":\"750392298\",\"Titles\":[\"Vice-President\"]},{\"FirstName\":\"LEN M\",\"LastName\":\"FOX\",\"Address1\":\"5959 LAS COLINAS BOULEVARD\",\"Address2\":\"\",\"City\":\"IRVING\",\"State\":\"TX \",\"Country\":\"United States\",\"ZipCode\":\"750392298\",\"Titles\":[\"Vice-President\",\"Officer\"]},{\"FirstName\":\"TRACEY C\",\"LastName\":\"GUNNLAUGSSON\",\"Address1\":\"5959 LAS COLINAS BOULEVARD\",\"Address2\":\"\",\"City\":\"IRVING\",\"State\":\"TX \",\"Country\":\"United States\",\"ZipCode\":\"750392298\",\"Titles\":[\"Vice-President\"]},{\"FirstName\":\"STEPHEN A\",\"LastName\":\"LITTLETON\",\"Address1\":\"5959 LAS COLINAS BOULEVARD\",\"Address2\":\"\",\"City\":\"IRVING\",\"State\":\"TX \",\"Country\":\"United States\",\"ZipCode\":\"750392298\",\"Titles\":[\"Vice-President\",\"Secretary\"]},{\"FirstName\":\"LIAM MARTIN\",\"LastName\":\"MALLON\",\"Address1\":\"5959 LAS COLINAS BOULEVARD\",\"Address2\":\"\",\"City\":\"IRVING\",\"State\":\"TX \",\"Country\":\"United States\",\"ZipCode\":\"750392298\",\"Titles\":[\"Vice-President\"]},{\"FirstName\":\"SUZANNE M\",\"LastName\":\"MCCARRON\",\"Address1\":\"5959 LAS COLINAS BOULEVARD\",\"Address2\":\"\",\"City\":\"IRVING\",\"State\":\"TX \",\"Country\":\"United States\",\"ZipCode\":\"750392298\",\"Titles\":[\"Vice-President\"]},{\"FirstName\":\"KAREN T\",\"LastName\":\"MCKEE\",\"Address1\":\"5959 LAS COLINAS BOULEVARD\",\"Address2\":\"\",\"City\":\"IRVING\",\"State\":\"TX \",\"Country\":\"United States\",\"ZipCode\":\"750392298\",\"Titles\":[\"Vice-President\"]},{\"FirstName\":\"CRAIG S\",\"LastName\":\"MORFORD\",\"Address1\":\"5959 LAS COLINAS BOULEVARD\",\"Address2\":\"\",\"City\":\"IRVING\",\"State\":\"TX \",\"Country\":\"United States\",\"ZipCode\":\"750392298\",\"Titles\":[\"Vice-President\",\"Officer\"]},{\"FirstName\":\"JAMES M (JAIME)\",\"LastName\":\"SPELLINGS\",\"Address1\":\"5959 LAS COLINAS BOULEVARD\",\"Address2\":\"\",\"City\":\"IRVING\",\"State\":\"TX \",\"Country\":\"United States\",\"ZipCode\":\"750392298\",\"Titles\":[\"Vice-President\",\"Treasurer\",\"Officer\"]},{\"FirstName\":\"DENNIS G (JERRY)\",\"LastName\":\"WASCOM\",\"Address1\":\"5959 LAS COLINAS BOULEVARD\",\"Address2\":\"\",\"City\":\"IRVING\",\"State\":\"TX \",\"Country\":\"United States\",\"ZipCode\":\"750392298\",\"Titles\":[\"Vice-President\"]},{\"FirstName\":\"THEODORE J\",\"LastName\":\"WOJNAR JR\",\"Address1\":\"5959 LAS COLINAS BOULEVARD\",\"Address2\":\"\",\"City\":\"IRVING\",\"State\":\"TX \",\"Country\":\"United States\",\"ZipCode\":\"750392298\",\"Titles\":[\"Vice-President\"]},{\"FirstName\":\"JASON P\",\"LastName\":\"SIMON\",\"Address1\":\"5959 LAS COLINAS BOULEVARD\",\"Address2\":\"\",\"City\":\"IRVING\",\"State\":\"TX \",\"Country\":\"United States\",\"ZipCode\":\"750392298\",\"Titles\":[\"Officer\"]}],\"Addresses\":[{\"AddressType\":\"Mailing Address\",\"Address1\":\"5959 LAS COLINAS BOULEVARD\",\"Address2\":\"\",\"City\":\"IRVING\",\"State\":\"TX \",\"Country\":\"United States\",\"ZipCode\":\"750392298\"},{\"AddressType\":\"Domicile Address\",\"Address1\":\"100 PRINCETON SOUTH CORPORATE CENTER\",\"Address2\":\"SUITE 160\",\"City\":\"EWING\",\"State\":\"NJ \",\"Country\":\"United States\",\"ZipCode\":\"08628\"},{\"AddressType\":\"Principal Office Address\",\"Address1\":\"5959 LAS COLINAS BOULEVARD\",\"Address2\":\"\",\"City\":\"IRVING\",\"State\":\"TX \",\"Country\":\"United States\",\"ZipCode\":\"750392298\"},{\"AddressType\":\"Registered Office in Louisiana\",\"Address1\":\"501 LOUISIANA AVENUE\",\"Address2\":\"\",\"City\":\"BATON ROUGE\",\"State\":\"LA \",\"Country\":\"United States\",\"ZipCode\":\"70802\"},{\"AddressType\":\"Principal Business Establishment in Louisiana\",\"Address1\":\"501 LOUISIANA AVENUE\",\"Address2\":\"\",\"City\":\"BATON ROUGE\",\"State\":\"LA \",\"Country\":\"United States\",\"ZipCode\":\"70802\"}],\"PreviousNames\":[{\"Name\":\"EXXON CORPORATION\",\"ChangeDate\":\"1999-12-03\"}],\"Mergers\":[{\"FiledDate\":\"1973-01-03\",\"EffectiveDate\":\"1973-01-03\",\"MergerType\":\"MERGE\",\"CharterNumber\":\"30018160F \",\"CharterName\":\"EXXON MOBIL CORPORATION\",\"Role\":\"SURVIVOR\"},{\"FiledDate\":\"1973-01-03\",\"EffectiveDate\":\"1973-01-03\",\"MergerType\":\"MERGE\",\"CharterNumber\":\"24808190F \",\"CharterName\":\"HUMBLE OIL & REFINING COMPANY\",\"Role\":\"NON-SURVIVOR\"},{\"FiledDate\":\"1973-01-03\",\"EffectiveDate\":\"1973-01-03\",\"MergerType\":\"MERGE\",\"CharterNumber\":\"27301220F \",\"CharterName\":\"ENJAY CHEMICAL COMPANY\",\"Role\":\"NON-SURVIVOR\"},{\"FiledDate\":\"1973-05-14\",\"EffectiveDate\":\"1973-05-14\",\"MergerType\":\"MERGE\",\"CharterNumber\":\"30018160F \",\"CharterName\":\"EXXON MOBIL CORPORATION\",\"Role\":\"SURVIVOR\"},{\"FiledDate\":\"1981-01-26\",\"EffectiveDate\":\"1981-01-26\",\"MergerType\":\"MERGE\",\"CharterNumber\":\"30018160F \",\"CharterName\":\"EXXON MOBIL CORPORATION\",\"Role\":\"SURVIVOR\"},{\"FiledDate\":\"1981-01-26\",\"EffectiveDate\":\"1981-01-26\",\"MergerType\":\"MERGE\",\"CharterNumber\":\"32101070F \",\"CharterName\":\"EXXON ENTERPRISES INC.\",\"Role\":\"NON-SURVIVOR\"}],\"Amendments\":[{\"Description\":\"Merger\",\"DateFiled\":\"1973-01-03\"},{\"Description\":\"Merger\",\"DateFiled\":\"1973-05-14\"},{\"Description\":\"Amendment\",\"DateFiled\":\"1976-08-16\"},{\"Description\":\"Merger\",\"DateFiled\":\"1981-01-26\"},{\"Description\":\"Amendment\",\"DateFiled\":\"1981-11-09\"},{\"Description\":\"Stmt of Chg or Chg Prin Bus Off\",\"DateFiled\":\"1985-02-22\"},{\"Description\":\"Stmt of Chg or Chg Prin Bus Off\",\"DateFiled\":\"1986-04-01\"},{\"Description\":\"Stmt of Chg or Chg Prin Bus Off\",\"DateFiled\":\"1993-02-01\"},{\"Description\":\"Stmt of Chg or Chg Prin Bus Off\",\"DateFiled\":\"1996-12-18\"},{\"Description\":\"Name Change\",\"DateFiled\":\"1999-12-03\"},{\"Description\":\"Appointing, Change, or Resign of Officer\",\"DateFiled\":\"2013-12-02\"},{\"Description\":\"Stmt of Chg or Chg Prin Bus Off\",\"DateFiled\":\"2015-12-28\"},{\"Description\":\"Stmt of Chg or Chg Prin Bus Off\",\"DateFiled\":\"2017-01-13\"}]},\"NameReservationDetails\":null,\"TradeServiceDetails\":null,\"Status\":\"Success\",\"Message\":null,\"ErrorReferenceCode\":null,\"ResponseCode\":\"None\",\"TokenType\":\"Live\"}",
+  "metadata": "{\"searchResult@com#cyoda#encompass#model#search#SearchResult_searchResult_[0]@com#encompasscorporation#edmservice#model#dto#search#OrganisationSearch_companyName\":\"<xml xmlns=\\\"https://developers.google.com/blockly/xml\\\"><variables><variable id=\\\"5|V_h83.2K+g+p2yK]Co\\\">number</variable></variables><block type=\\\"statement_variables_set\\\" id=\\\"rRLp|f#5%W.w#?=x?A]9\\\" x=\\\"106\\\" y=\\\"11\\\"><field name=\\\"VAR\\\" id=\\\"5|V_h83.2K+g+p2yK]Co\\\">number</field><value name=\\\"VALUE\\\"><block type=\\\"function_simple_if_else\\\" id=\\\"(Z2A^^TkHX-YXt_QKx/|\\\"><value name=\\\"IF\\\"><block type=\\\"function_simple_isNotNull\\\" id=\\\"51S{K?7rM,)@N=;=pPxE\\\"><value name=\\\"param\\\"><block type=\\\"expression_src_value_read\\\" id=\\\"IsRm1_xP:ECO;1rNJWdN\\\"><field name=\\\"NAME\\\">CharterDetails/CharterName</field></block></value></block></value><value name=\\\"THEN\\\"><block type=\\\"expression_src_value_read\\\" id=\\\"?Cej[XlJ6U!ai_ESrkXp\\\"><field name=\\\"NAME\\\">EntityNumber</field></block></value><value name=\\\"ELSE\\\"><block type=\\\"expression_null\\\" id=\\\"Q/|xT.}6/7Yw^OmwpO~-\\\"></block></value></block></value><next><block type=\\\"statement_set_dst_value\\\" id=\\\"YfK2$-F2Z-?Nx~KtB*qz\\\"><field name=\\\"DST_PATH\\\">searchResult@com#cyoda#encompass#model#search#SearchResult.searchResult.[0]@com#encompasscorporation#edmservice#model#dto#search#OrganisationSearch.companyNumber</field><value name=\\\"VALUE\\\"><block type=\\\"expression_var_read\\\" id=\\\"rXl_Fxc1{2a$O7#mawIw\\\"><field name=\\\"NAME\\\" id=\\\"5|V_h83.2K+g+p2yK]Co\\\">number</field></block></value><next><block type=\\\"statement_return\\\" id=\\\"ZvyfT_#QxxeG}k{{{KY|\\\"><value name=\\\"EXPRESSION\\\"><block type=\\\"expression_src_value_read\\\" id=\\\"Xb6A$lv41jsp`{D!zWCq\\\"><field name=\\\"NAME\\\">CharterDetails/CharterName</field></block></value></block></next></block></next></block></xml>\"}"
+}

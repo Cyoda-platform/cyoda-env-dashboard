@@ -1,0 +1,23 @@
+{
+  "@bean": "com.cyoda.plugins.mapping.core.dtos.DataMappingConfigDto",
+  "id": "444f9b50-eada-11eb-8f15-f26ae95df855",
+  "dataType": "JSON",
+  "name": "test-name",
+  "description": "test-descr",
+  "entityMappings": [
+    {
+      "entityClass": "com.cyoda.encompass.model.OrganisationEntity",
+      "srcRelativeRootPath": "root:/embedded/companies/*",
+      "columns": [
+        {
+          "srcColumnPath": "name",
+          "dstCyodaColumnPath": "org@com#cyoda#encompass#datamodel#v1p1b#Organisation.fullName",
+          "transformer": {
+            "type": "SINGLE",
+            "transformerKey": "com.cyoda.plugins.mapping.core.parser.valuetransformers.SourceObjectValueTransformer$ToString"
+          }
+        }
+      ]
+    }
+  ]
+}

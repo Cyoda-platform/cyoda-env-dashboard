@@ -1,0 +1,165 @@
+{
+  "@bean": "com.cyoda.plugins.mapping.core.dtos.DataMappingConfigDto",
+  "id": "d2438e40-58cf-11ec-8c66-0242f1068b6f",
+  "dataType": "JSON",
+  "name": "oregon_company_report",
+  "description": "",
+  "entityMappings": [
+    {
+      "entityClass": "com.cyoda.encompass.model.OrganisationEntity",
+      "srcRelativeRootPath": "root:/",
+      "columns": [],
+      "functionalMappings": [
+        {
+          "srcPaths": ["*/address", "*/associated_name_type"],
+          "statements": [
+            {
+              "type": "ASSIGN_VAR",
+              "variableName": "associatedNameTypes",
+              "expression": {
+                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.AsMap",
+                "args": [
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                    "value": "address"
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.SrcValueReadExpressionConfigDto",
+                    "srcPath": "*/address"
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                    "value": "associated_name_type"
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.SrcValueReadExpressionConfigDto",
+                    "srcPath": "*/associated_name_type"
+                  }
+                ]
+              }
+            },
+            {
+              "type": "ASSIGN_VAR",
+              "variableName": "addressesList",
+              "expression": {
+                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.reduce.ToFilteredList",
+                "args": [
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                    "variableName": "associatedNameTypes"
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.Or",
+                    "args": [
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                        "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.Equals",
+                        "args": [
+                          {
+                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                            "value": "PRINCIPAL PLACE OF BUSINESS"
+                          },
+                          {
+                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                            "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.GetElementByKey",
+                            "args": [
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                                "variableName": "associatedNameTypes"
+                              },
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                "value": "associated_name_type"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                        "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.Equals",
+                        "args": [
+                          {
+                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                            "value": "MAILING ADDRESS"
+                          },
+                          {
+                            "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                            "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.GetElementByKey",
+                            "args": [
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                                "variableName": "associatedNameTypes"
+                              },
+                              {
+                                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                                "value": "associated_name_type"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "type": "ASSIGN_VAR",
+              "variableName": "addresses",
+              "expression": {
+                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.Cast",
+                "args": [
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.enlarge.EnlargeFromList",
+                    "args": [
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                        "value": "reg-agents"
+                      },
+                      {
+                        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                        "variableName": "addressesList"
+                      }
+                    ]
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                    "value": "Map"
+                  }
+                ]
+              }
+            },
+            {
+              "type": "RETURN",
+              "expression": {
+                "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+                "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.GetElementByKey",
+                "args": [
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.VarReadExpressionConfigDto",
+                    "variableName": "addresses"
+                  },
+                  {
+                    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+                    "value": "address"
+                  }
+                ]
+              }
+            }
+          ],
+          "dstPath": "org@com#encompasscorporation#edmservice#model#dto#Organisation.addresses.[*]@com#encompasscorporation#edmservice#model#dto#Address.addressLine1"
+        }
+      ],
+      "columnPathsForUniqueCheck": [],
+      "metadata": []
+    }
+  ],
+  "sampleContent": "[{\"registry_number\":\"56817894\",\"business_name\":\"WESTPORT ENERGY, LLC\",\"entity_type\":\"FOREIGN LIMITED LIABILITY COMPANY\",\"registry_date\":\"2008-12-30T00:00:00.000\",\"associated_name_type\":\"MAILING ADDRESS\",\"address\":\"1001 SW 5TH AVENUE\",\"address_continued\":\"SUITE 1100\",\"city\":\"PORTLAND\",\"state\":\"OR\",\"zip\":\"97204\",\"jurisdiction\":\"DE\",\"business_details\":{\"url\":\"http://egov.sos.state.or.us/br/pkg_web_name_srch_inq.do_name_srch?p_name=&p_regist_nbr=56817894&p_srch=PHASE1&p_print=FALSE&p_entity_status=ACTINA\"}},{\"registry_number\":\"56817894\",\"business_name\":\"WESTPORT ENERGY, LLC\",\"entity_type\":\"FOREIGN LIMITED LIABILITY COMPANY\",\"registry_date\":\"2008-12-30T00:00:00.000\",\"associated_name_type\":\"MAILING ADDRESS\",\"address\":\"1050 SW 6TH AVE STE 1100\",\"city\":\"PORTLAND\",\"state\":\"OR\",\"zip\":\"97204\",\"jurisdiction\":\"DE\",\"business_details\":{\"url\":\"http://egov.sos.state.or.us/br/pkg_web_name_srch_inq.do_name_srch?p_name=&p_regist_nbr=56817894&p_srch=PHASE1&p_print=FALSE&p_entity_status=ACTINA\"}},{\"registry_number\":\"56817894\",\"business_name\":\"WESTPORT ENERGY, LLC\",\"entity_type\":\"FOREIGN LIMITED LIABILITY COMPANY\",\"registry_date\":\"2008-12-30T00:00:00.000\",\"associated_name_type\":\"MAILING ADDRESS\",\"address\":\"1370 CROWLEY AVE SE\",\"city\":\"SALEM\",\"state\":\"OR\",\"zip\":\"97302\",\"jurisdiction\":\"DE\",\"business_details\":{\"url\":\"http://egov.sos.state.or.us/br/pkg_web_name_srch_inq.do_name_srch?p_name=&p_regist_nbr=56817894&p_srch=PHASE1&p_print=FALSE&p_entity_status=ACTINA\"}},{\"registry_number\":\"56817894\",\"business_name\":\"WESTPORT ENERGY, LLC\",\"entity_type\":\"FOREIGN LIMITED LIABILITY COMPANY\",\"registry_date\":\"2008-12-30T00:00:00.000\",\"associated_name_type\":\"PRINCIPAL PLACE OF BUSINESS\",\"address\":\"1001 SW 5TH AVENUE\",\"address_continued\":\"SUITE 1100\",\"city\":\"PORTLAND\",\"state\":\"OR\",\"zip\":\"97204\",\"jurisdiction\":\"DE\",\"business_details\":{\"url\":\"http://egov.sos.state.or.us/br/pkg_web_name_srch_inq.do_name_srch?p_name=&p_regist_nbr=56817894&p_srch=PHASE1&p_print=FALSE&p_entity_status=ACTINA\"}},{\"registry_number\":\"56817894\",\"business_name\":\"WESTPORT ENERGY, LLC\",\"entity_type\":\"FOREIGN LIMITED LIABILITY COMPANY\",\"registry_date\":\"2008-12-30T00:00:00.000\",\"associated_name_type\":\"PRINCIPAL PLACE OF BUSINESS\",\"address\":\"1050 SW 6TH AVE STE 1100\",\"city\":\"PORTLAND\",\"state\":\"OR\",\"zip\":\"97204\",\"jurisdiction\":\"DE\",\"business_details\":{\"url\":\"http://egov.sos.state.or.us/br/pkg_web_name_srch_inq.do_name_srch?p_name=&p_regist_nbr=56817894&p_srch=PHASE1&p_print=FALSE&p_entity_status=ACTINA\"}},{\"registry_number\":\"56817894\",\"business_name\":\"WESTPORT ENERGY, LLC\",\"entity_type\":\"FOREIGN LIMITED LIABILITY COMPANY\",\"registry_date\":\"2008-12-30T00:00:00.000\",\"associated_name_type\":\"PRINCIPAL PLACE OF BUSINESS\",\"address\":\"1370 CROWLEY AVE SE\",\"city\":\"SALEM\",\"state\":\"OR\",\"zip\":\"97302\",\"jurisdiction\":\"DE\",\"business_details\":{\"url\":\"http://egov.sos.state.or.us/br/pkg_web_name_srch_inq.do_name_srch?p_name=&p_regist_nbr=56817894&p_srch=PHASE1&p_print=FALSE&p_entity_status=ACTINA\"}},{\"registry_number\":\"56817894\",\"business_name\":\"WESTPORT ENERGY, LLC\",\"entity_type\":\"FOREIGN LIMITED LIABILITY COMPANY\",\"registry_date\":\"2008-12-30T00:00:00.000\",\"associated_name_type\":\"REGISTERED AGENT\",\"entity_of_record_reg_number\":\"58101891\",\"entity_of_record_name\":\"VCORP SERVICES, LLC\",\"address\":\"780 COMMERCIAL ST SE STE 100\",\"city\":\"SALEM\",\"state\":\"OR\",\"zip\":\"97301\",\"jurisdiction\":\"DE\",\"business_details\":{\"url\":\"http://egov.sos.state.or.us/br/pkg_web_name_srch_inq.do_name_srch?p_name=&p_regist_nbr=56817894&p_srch=PHASE1&p_print=FALSE&p_entity_status=ACTINA\"}},{\"registry_number\":\"56817894\",\"business_name\":\"WESTPORT ENERGY, LLC\",\"entity_type\":\"FOREIGN LIMITED LIABILITY COMPANY\",\"registry_date\":\"2008-12-30T00:00:00.000\",\"associated_name_type\":\"REGISTERED AGENT\",\"first_name\":\"JAMES\",\"last_name\":\"BRUCE\",\"address\":\"17040 PILKINGTON ROAD\",\"address_continued\":\"SUITE 200\",\"city\":\"LAKE OSWEGO\",\"state\":\"OR\",\"zip\":\"97035\",\"jurisdiction\":\"OR\",\"business_details\":{\"url\":\"http://egov.sos.state.or.us/br/pkg_web_name_srch_inq.do_name_srch?p_name=&p_regist_nbr=56817894&p_srch=PHASE1&p_print=FALSE&p_entity_status=ACTINA\"}}]",
+  "metadata": "{\"org@com#encompasscorporation#edmservice#model#dto#Organisation_addresses_[*]@com#encompasscorporation#edmservice#model#dto#Address_addressLine1\":\"<xml xmlns=\\\"https://developers.google.com/blockly/xml\\\"><variables><variable id=\\\"9]Lp_7nGBLUX/H$vCJim\\\">associatedNameTypes</variable><variable id=\\\"PzO2`AWtTy9;GdnA|3mY\\\">addressesList</variable><variable id=\\\"^0hp04V3-xIX0b)g$_;N\\\">addresses</variable></variables><block type=\\\"statement_variables_set\\\" id=\\\"j%AW+1:5MH,XPEX,?#|z\\\" x=\\\"-363\\\" y=\\\"187\\\"><field name=\\\"VAR\\\" id=\\\"9]Lp_7nGBLUX/H$vCJim\\\">associatedNameTypes</field><value name=\\\"VALUE\\\"><block type=\\\"function_simple_as_map\\\" id=\\\"Tg*;^$N|+jQJ?/gvQ?1I\\\"><mutation items=\\\"4\\\"></mutation><value name=\\\"ADD0\\\"><block type=\\\"expression_string\\\" id=\\\"8ncGiXYI=F/%4,F5VyV9\\\"><field name=\\\"NAME\\\">address</field></block></value><value name=\\\"ADD1\\\"><block type=\\\"expression_src_value_read\\\" id=\\\"LwKRYh16C/ST3FA~TKX^\\\"><field name=\\\"NAME\\\">*/address</field></block></value><value name=\\\"ADD2\\\"><block type=\\\"expression_string\\\" id=\\\"D@p~@Kw4$q(kDuTjn+Op\\\"><field name=\\\"NAME\\\">associated_name_type</field></block></value><value name=\\\"ADD3\\\"><block type=\\\"expression_src_value_read\\\" id=\\\"ht#NF,1CW7If^K[%8UHQ\\\"><field name=\\\"NAME\\\">*/associated_name_type</field></block></value></block></value><next><block type=\\\"statement_variables_set\\\" id=\\\"Q0t/b*P?h3C$HO,wL6Il\\\"><field name=\\\"VAR\\\" id=\\\"PzO2`AWtTy9;GdnA|3mY\\\">addressesList</field><value name=\\\"VALUE\\\"><block type=\\\"function_reduce_toFilteredList\\\" id=\\\"=_)Ml+@|msP(3zdaI6Z2\\\"><value name=\\\"element\\\"><block type=\\\"expression_var_read\\\" id=\\\"U@F4vMh{edxKLL]a3~FU\\\"><field name=\\\"NAME\\\" id=\\\"9]Lp_7nGBLUX/H$vCJim\\\">associatedNameTypes</field></block></value><value name=\\\"filterResult\\\"><block type=\\\"function_simple_or\\\" id=\\\"d0*8azd:y*I`7O~ZQ;Ui\\\"><value name=\\\"param1\\\"><block type=\\\"function_simple_equal\\\" id=\\\"5319,adn~olIV}*/B.)4\\\"><value name=\\\"A\\\"><block type=\\\"expression_string\\\" id=\\\"d|s$-8I`k!OQ=gZajH8b\\\"><field name=\\\"NAME\\\">PRINCIPAL PLACE OF BUSINESS</field></block></value><value name=\\\"B\\\"><block type=\\\"function_simple_get_element_by_key\\\" id=\\\"6(heQc:|uq4Zc8MP2YAB\\\"><value name=\\\"LIST\\\"><block type=\\\"expression_var_read\\\" id=\\\"Q.N58BZVn5X`w-izBaWR\\\"><field name=\\\"NAME\\\" id=\\\"9]Lp_7nGBLUX/H$vCJim\\\">associatedNameTypes</field></block></value><value name=\\\"KEY\\\"><block type=\\\"expression_string\\\" id=\\\"1$j3)DyM`e:E$xb4QQH4\\\"><field name=\\\"NAME\\\">associated_name_type</field></block></value></block></value></block></value><value name=\\\"param2\\\"><block type=\\\"function_simple_equal\\\" id=\\\"d9pALJyAPb.2+8`%NLr*\\\"><value name=\\\"A\\\"><block type=\\\"expression_string\\\" id=\\\"mcYA2Yxza~M=rMTiiYp+\\\"><field name=\\\"NAME\\\">MAILING ADDRESS</field></block></value><value name=\\\"B\\\"><block type=\\\"function_simple_get_element_by_key\\\" id=\\\")7ajc/Gr#PX6{=860j%5\\\"><value name=\\\"LIST\\\"><block type=\\\"expression_var_read\\\" id=\\\"cT=3sb))iFkTrx$tQcUS\\\"><field name=\\\"NAME\\\" id=\\\"9]Lp_7nGBLUX/H$vCJim\\\">associatedNameTypes</field></block></value><value name=\\\"KEY\\\"><block type=\\\"expression_string\\\" id=\\\"7tK^id[409c.AvzD$G$T\\\"><field name=\\\"NAME\\\">associated_name_type</field></block></value></block></value></block></value></block></value></block></value><next><block type=\\\"statement_variables_set\\\" id=\\\"8Lf]Ol)tlXsri?eQKccU\\\"><field name=\\\"VAR\\\" id=\\\"^0hp04V3-xIX0b)g$_;N\\\">addresses</field><value name=\\\"VALUE\\\"><block type=\\\"function_simple_cast\\\" id=\\\"R#t8T_n0@-_?b{s1yu{E\\\"><value name=\\\"value\\\"><block type=\\\"function_enlarge_enlargeFromList\\\" id=\\\"_KY.5=POf!jT,R861-09\\\"><value name=\\\"listName\\\"><block type=\\\"expression_string\\\" id=\\\"jF?6./M(0i1D0{Wl_P6a\\\"><field name=\\\"NAME\\\">reg-agents</field></block></value><value name=\\\"list\\\"><block type=\\\"expression_var_read\\\" id=\\\"tL[yDfc{;59Mc7}qj=mo\\\"><field name=\\\"NAME\\\" id=\\\"PzO2`AWtTy9;GdnA|3mY\\\">addressesList</field></block></value></block></value><value name=\\\"class-name\\\"><block type=\\\"expression_string\\\" id=\\\"]KEjHNsvH`,r-$e8n3I+\\\"><field name=\\\"NAME\\\">Map</field></block></value></block></value><next><block type=\\\"statement_return\\\" id=\\\"!g}.}HEc7*`0{,z{_j7D\\\"><value name=\\\"EXPRESSION\\\"><block type=\\\"function_simple_get_element_by_key\\\" id=\\\"?)Mm*mJ1/R%CY/lJf/GH\\\"><value name=\\\"LIST\\\"><block type=\\\"expression_var_read\\\" id=\\\"a$A*GkFAElBBfRl.8Ik!\\\"><field name=\\\"NAME\\\" id=\\\"^0hp04V3-xIX0b)g$_;N\\\">addresses</field></block></value><value name=\\\"KEY\\\"><block type=\\\"expression_string\\\" id=\\\"}GnpwotX(%i,^xp13x}^\\\"><field name=\\\"NAME\\\">address</field></block></value></block></value></block></next></block></next></block></next></block></xml>\"}"
+}

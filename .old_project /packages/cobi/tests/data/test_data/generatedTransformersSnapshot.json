@@ -1,0 +1,720 @@
+{
+  "transformer_stringvaluetransformer_padding": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+    "args": [
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Padding"
+      },
+      null,
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "padding.text"
+      },
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": ""
+      },
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "final.length"
+      },
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.IntegerConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": null
+      },
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "padding.side"
+      },
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "left"
+      }
+    ]
+  },
+  "transformer_int_value_transformer_math": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+    "args": [
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.IntValueTransformer$Pow"
+      },
+      null,
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "second.argument"
+      },
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.IntegerConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": null
+      }
+    ]
+  },
+  "transformer_string_value_transformer_to_selected_type": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+    "args": [
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$ToBoolean"
+      },
+      null
+    ]
+  },
+  "transformer_source_object_value_transformer_to_selected_type": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+    "args": [
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.SourceObjectValueTransformer$ToBoolean"
+      },
+      null
+    ]
+  },
+  "transformer_string_value_transformer_to_date_time_predefined_format": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+    "args": [
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$ToDatePredefinedFormat"
+      },
+      null,
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "format"
+      },
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "yyyy.MM.dd"
+      }
+    ]
+  },
+  "transformer_int_value_transformer_to_selected_type": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+    "args": [
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.IntValueTransformer$ToBigDecimal"
+      },
+      null
+    ]
+  },
+  "transformer_datatype": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+    "args": [
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.EnumValueTransformerto-com.cyoda.plugins.tdb.logic.DataType"
+      },
+      null
+    ]
+  },
+  "transformer_intvaluetransformer_abc": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+    "args": [
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.IntValueTransformer$Abc"
+      },
+      null
+    ]
+  },
+  "transformer_stringvaluetransformer_hardcodevalue": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+    "args": [
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$HardCodeValue"
+      },
+      null,
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "harcode.value"
+      },
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": ""
+      }
+    ]
+  },
+  "transformer_double_value_transformer_to_selected_type": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+    "args": [
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.DoubleValueTransformer$ToLong"
+      },
+      null
+    ]
+  },
+  "transformer_constantsource": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+    "args": [
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.EnumValueTransformerto-com.cyoda.plugins.mapping.core.model.functional.expressions.ConstantSource"
+      },
+      null
+    ]
+  },
+  "transformer_transactionlog_status": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+    "args": [
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.EnumValueTransformerto-com.cyoda.core.consistency.TransactionLog$Status"
+      },
+      null
+    ]
+  },
+  "transformer_stringvaluetransformer_split": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+    "args": [
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Split"
+      },
+      null,
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "delimiter"
+      },
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": ""
+      },
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "index"
+      },
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": ""
+      }
+    ]
+  },
+  "transformer_source_object_hard_code_transformer_to_hard_code": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+    "args": [
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.SourceObjectHardCodeTransformer$ToHardCodeString"
+      },
+      null,
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "harcode.value"
+      },
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": ""
+      }
+    ]
+  },
+  "transformer_valuetransformer_notransform": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+    "args": [
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.ValueTransformer$NoTransform"
+      },
+      null
+    ]
+  },
+  "transformer_stringvaluetransformer_replacewith": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+    "args": [
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$ReplaceWith"
+      },
+      null,
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "text"
+      },
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": ""
+      },
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "search.string"
+      },
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": ""
+      }
+    ]
+  },
+  "transformer_string_value_transformer_to_selected_type_by_predefined_format": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+    "args": [
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$ToBigDecimalByPredefinedFormat"
+      },
+      null,
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "pattern"
+      },
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "0.###E0"
+      }
+    ]
+  },
+  "transformer_string_value_transformer_to_date_time_arbitrary_format": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+    "args": [
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$ToDateArbitraryFormat"
+      },
+      null,
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "format"
+      },
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": ""
+      }
+    ]
+  },
+  "transformer_httpendpoint_method": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+    "args": [
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.EnumValueTransformerto-com.cyoda.plugins.datasource.entity.endpoint.HttpEndpoint$Method"
+      },
+      null
+    ]
+  },
+  "transformer_authtype": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+    "args": [
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.EnumValueTransformerto-com.cyoda.plugins.datasource.entity.connection.AuthType"
+      },
+      null
+    ]
+  },
+  "transformer_booleanvaluetransformer_tobooleanstring": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+    "args": [
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "net.cyoda.saas.model.logic.BooleanValueTransformer$ToBooleanString"
+      },
+      null
+    ]
+  },
+  "transformer_cachecontent_type": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+    "args": [
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.EnumValueTransformerto-com.cyoda.plugins.datasource.entity.connection.cache.CacheContent$Type"
+      },
+      null
+    ]
+  },
+  "transformer_string_value_transformer_to_selected_type_by_arbitrary_format": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+    "args": [
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$ToDoubleByArbitraryFormat"
+      },
+      null,
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "pattern"
+      },
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": ""
+      }
+    ]
+  },
+  "transformer_httpparameter_parametertype": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+    "args": [
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.EnumValueTransformerto-com.cyoda.plugins.datasource.entity.endpoint.HttpParameter$ParameterType"
+      },
+      null
+    ]
+  },
+  "transformer_stringvaluetransformer_applyregex": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+    "args": [
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$ApplyRegex"
+      },
+      null,
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "regex"
+      },
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": ""
+      },
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "index"
+      },
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.IntegerConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": null
+      }
+    ]
+  },
+  "transformer_stringvaluetransformer_trim": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+    "args": [
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$Trim"
+      },
+      null
+    ]
+  },
+  "transformer_stringvaluetransformer_tosubstring": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+    "args": [
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$ToSubString"
+      },
+      null,
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "from.index"
+      },
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.IntegerConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": 0
+      },
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "to.index"
+      },
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.IntegerConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": 1000
+      }
+    ]
+  },
+  "transformer_bytesvaluetransformer_tochunks": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+    "args": [
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.BytesValueTransformer$ToChunks"
+      },
+      null,
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "chunk.size"
+      },
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.IntegerConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": 65536
+      }
+    ]
+  },
+  "transformer_isolation": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+    "args": [
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.EnumValueTransformerto-com.cyoda.core.consistency.Isolation"
+      },
+      null
+    ]
+  },
+  "transformer_functionalstatementconfig_type": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+    "args": [
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.EnumValueTransformerto-com.cyoda.plugins.mapping.core.model.functional.FunctionalStatementConfig$Type"
+      },
+      null
+    ]
+  },
+  "transformer_sqltype": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+    "args": [
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.EnumValueTransformerto-com.cyoda.plugins.datasource.entity.endpoint.SqlType"
+      },
+      null
+    ]
+  },
+  "transformer_stringvaluetransformer_replaceallwithobject": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+    "args": [
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$ReplaceAllWithObject"
+      },
+      null,
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "regex"
+      },
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": ""
+      },
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "replacement"
+      },
+      null
+    ]
+  },
+  "transformer_scheduledtask_status": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+    "args": [
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.EnumValueTransformerto-com.cyoda.core.model.scheduling.ScheduledTask$Status"
+      },
+      null
+    ]
+  },
+  "transformer_datamappingconfig_datatype": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+    "args": [
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.EnumValueTransformerto-com.cyoda.plugins.mapping.core.model.DataMappingConfig$DataType"
+      },
+      null
+    ]
+  },
+  "transformer_string_value_transformer_by_case": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+    "args": [
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$ToUpperCase"
+      },
+      null
+    ]
+  },
+  "transformer_collectionelementsetmodeconfig_type": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+    "args": [
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.EnumValueTransformerto-com.cyoda.plugins.mapping.core.model.CollectionElementSetModeConfig$Type"
+      },
+      null
+    ]
+  },
+  "transformer_bytesvaluetransformer_tohexstring": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+    "args": [
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.BytesValueTransformer$ToHexString"
+      },
+      null
+    ]
+  },
+  "transformer_archivetype": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+    "args": [
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.EnumValueTransformerto-com.cyoda.plugins.datasource.entity.archive.ArchiveType"
+      },
+      null
+    ]
+  },
+  "transformer_bytesvaluetransformer_tobase64string": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+    "args": [
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.BytesValueTransformer$ToBase64String"
+      },
+      null
+    ]
+  },
+  "transformer_stringvaluetransformer_replaceall": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+    "args": [
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.StringValueTransformer$ReplaceAll"
+      },
+      null,
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "regex"
+      },
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": ""
+      },
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "replacement"
+      },
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": ""
+      }
+    ]
+  },
+  "transformer_httpstatus": {
+    "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.FunctionExpressionConfigDto",
+    "functionClass": "com.cyoda.plugins.mapping.core.parser.functions.impl.simple.TransformValue",
+    "args": [
+      {
+        "@bean": "com.cyoda.plugins.mapping.core.dtos.functional.StringConstantExpressionConfigDto",
+        "constantSource": "INPUT",
+        "value": "com.cyoda.plugins.mapping.core.parser.valuetransformers.EnumValueTransformerto-org.springframework.http.HttpStatus"
+      },
+      null
+    ]
+  }
+}
