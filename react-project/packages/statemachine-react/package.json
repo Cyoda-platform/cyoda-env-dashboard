@@ -1,0 +1,64 @@
+{
+  "name": "@cyoda/statemachine-react",
+  "version": "1.0.0",
+  "description": "Cyoda State Machine Management for React - Workflow and state management application",
+  "type": "module",
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "dev": "vite --port 3014",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "cd ../.. && vitest run --environment jsdom packages/statemachine-react/src",
+    "test:watch": "cd ../.. && vitest --environment jsdom packages/statemachine-react/src",
+    "test:ui": "cd ../.. && vitest --ui --environment jsdom packages/statemachine-react/src",
+    "test:coverage": "cd ../.. && vitest --coverage --environment jsdom packages/statemachine-react/src",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf dist node_modules"
+  },
+  "dependencies": {
+    "@cyoda/http-api-react": "^1.0.0",
+    "@cyoda/ui-lib-react": "^1.0.0",
+    "@tanstack/react-query": "^5.62.11",
+    "@tanstack/react-query-devtools": "^5.62.11",
+    "antd": "^5.20.0",
+    "axios": "^1.7.9",
+    "cytoscape": "^3.31.0",
+    "js-beautify": "^1.15.1",
+    "prismjs": "^1.29.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^7.9.4",
+    "zustand": "^5.0.2"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.0.0",
+    "@testing-library/user-event": "^14.5.2",
+    "@types/cytoscape": "^3.21.9",
+    "@types/js-beautify": "^1.14.3",
+    "@types/node": "^22.10.7",
+    "@types/prismjs": "^1.26.5",
+    "@types/react": "^18.3.1",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "eslint": "^9.18.0",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "eslint-plugin-react-refresh": "^0.4.16",
+    "jsdom": "^27.0.0",
+    "typescript": "^5.7.3",
+    "vite": "^6.0.11",
+    "vitest": "^3.0.3"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 8"
+  ]
+}
+

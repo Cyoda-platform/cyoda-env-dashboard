@@ -1,7 +1,7 @@
 {
-  "name": "@cyoda/ui-lib-react",
+  "name": "@cyoda/http-api-react",
   "version": "1.0.0",
-  "description": "Cyoda UI Library for React - Shared components and utilities",
+  "description": "Cyoda HTTP API Layer for React - API clients, hooks, and utilities",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -11,7 +11,18 @@
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
-    "./styles": "./dist/style.css"
+    "./api": {
+      "import": "./dist/api/index.js",
+      "types": "./dist/api/index.d.ts"
+    },
+    "./hooks": {
+      "import": "./dist/hooks/index.js",
+      "types": "./dist/hooks/index.d.ts"
+    },
+    "./utils": {
+      "import": "./dist/utils/index.js",
+      "types": "./dist/utils/index.d.ts"
+    }
   },
   "files": [
     "dist"
@@ -29,36 +40,31 @@
     "clean": "rm -rf dist node_modules"
   },
   "dependencies": {
-    "@ant-design/icons": "^6.1.0",
-    "@types/sortablejs": "^1.15.8",
-    "antd": "^5.20.0",
+    "@tanstack/react-query": "^5.62.11",
+    "@tanstack/react-query-devtools": "^5.62.11",
     "axios": "^1.7.9",
-    "classnames": "^2.5.1",
     "lodash": "^4.17.21",
-    "mark.js": "^8.11.1",
-    "moment": "^2.30.1",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-router-dom": "^7.9.4",
-    "sortablejs": "^1.15.6"
+    "qs": "^6.14.0",
+    "zustand": "^5.0.2"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.4.8",
     "@testing-library/react": "^16.0.0",
-    "@testing-library/user-event": "^14.6.1",
     "@types/lodash": "^4.17.14",
+    "@types/qs": "^6.9.18",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
     "@vitejs/plugin-react": "^4.3.1",
     "@vitest/ui": "^3.0.3",
+    "antd": "^5.20.0",
     "eslint": "^9.18.0",
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.16",
-    "happy-dom": "^20.0.0",
     "jsdom": "^27.0.0",
-    "sass": "^1.83.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "typescript": "^5.7.3",
     "vite": "^6.0.11",
     "vitest": "^3.0.3"
@@ -68,3 +74,4 @@
     "react-dom": "^18.3.1"
   }
 }
+
