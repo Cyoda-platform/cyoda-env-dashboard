@@ -12,6 +12,9 @@ import { WorkflowForm } from '../components/WorkflowForm';
 import { TransitionsList } from '../components/TransitionsList';
 import { ProcessesList } from '../components/ProcessesList';
 import { CriteriaList } from '../components/CriteriaList';
+import { GraphicalStateMachine } from '../components/GraphicalStateMachine';
+import { useWorkflow, useTransitions, useProcesses, useCriteria } from '../hooks/useStatemachine';
+import { useGraphicalStatemachineStore } from '../stores/graphicalStatemachineStore';
 import type { PersistedType } from '../types';
 
 type LayoutMode = 'tabular' | 'graphical' | 'config';
@@ -20,10 +23,19 @@ export const WorkflowDetail: React.FC = () => {
   const { workflowId } = useParams<{ workflowId: string }>();
   const [searchParams] = useSearchParams();
   const [layoutMode, setLayoutMode] = useState<LayoutMode>('tabular');
-  
+
   const persistedType = (searchParams.get('persistedType') || 'persisted') as PersistedType;
   const entityClassName = searchParams.get('entityClassName') || '';
-  
+
+  // Fetch data for graphical view
+  const { data: workflow } = useWorkflow(persistedType, workflowId || '', !!workflowId);
+  const { data: transitions = [] } = useTransitions(persistedType, workflowId || '', !!workflowId);
+  const { data: processes = [] } = useProcesses(persistedType, workflowId || '', !!workflowId);
+  const { data: criteria = [] } = useCriteria(persistedType, workflowId || '', !!workflowId);
+
+  // Graphical state machine store
+  const { positionsMap, updatePositionsMap } = useGraphicalStatemachineStore();
+
   if (!workflowId) {
     return <div>Workflow ID is required</div>;
   }
@@ -89,13 +101,15 @@ export const WorkflowDetail: React.FC = () => {
           
           {/* Graphical View */}
           {layoutMode === 'graphical' && (
-            <div style={{ padding: '20px', textAlign: 'center', color: '#999' }}>
-              <ApartmentOutlined style={{ fontSize: '48px', marginBottom: '16px' }} />
-              <div>Graphical state machine view coming soon...</div>
-              <div style={{ fontSize: '12px', marginTop: '8px' }}>
-                Will use Cytoscape for visualization
-              </div>
-            </div>
+            <GraphicalStateMachine
+              workflowId={workflowId}
+              transitions={transitions}
+              processes={processes}
+              criteria={criteria}
+              positionsMap={positionsMap}
+              onUpdatePositionsMap={updatePositionsMap}
+              minHeight="600px"
+            />
           )}
           
           {/* Config View */}

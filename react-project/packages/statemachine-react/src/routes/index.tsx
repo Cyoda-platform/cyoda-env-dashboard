@@ -8,6 +8,7 @@ import { RouteObject } from 'react-router-dom';
 import { Login, Home } from '@cyoda/ui-lib-react';
 import { Workflows } from '../pages/Workflows';
 import { Instances } from '../pages/Instances';
+import { InstanceDetail } from '../pages/InstanceDetail';
 import { WorkflowDetail } from '../pages/WorkflowDetail';
 import { State } from '../pages/State';
 import { Transition } from '../pages/Transition';
@@ -59,11 +60,10 @@ export const routes: RouteObject[] = [
     path: '/statemachine/process/:processId',
     element: <Process />,
   },
-  // TODO: Add remaining routes as components are created
-  // {
-  //   path: '/statemachine/instances/:instanceId',
-  //   element: <InstanceDetail />,
-  // },
+  {
+    path: '/statemachine/instances/:instanceId',
+    element: <InstanceDetail />,
+  },
 ];
 
 export default routes;

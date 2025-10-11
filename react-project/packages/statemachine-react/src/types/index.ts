@@ -152,11 +152,34 @@ export interface RangeCondition {
 }
 
 // Graphical State Machine Types
+export interface Position {
+  x: number;
+  y: number;
+}
+
 export interface PositionsMap {
-  [key: string]: {
-    x: number;
-    y: number;
+  [key: string]: Position;
+}
+
+export interface NodeConfig {
+  data: {
+    id: string;
+    entityId?: string;
+    title?: string;
+    fullTitle?: string;
+    persisted?: boolean;
+    type?: string;
+    source?: string;
+    target?: string;
+    parent?: string;
+    transitionId?: string;
   };
+  classes?: string;
+  position?: Position;
+  locked?: boolean;
+  group?: string;
+  grabbable?: boolean;
+  selectable?: boolean;
 }
 
 export interface GraphicalStatemachineState {

@@ -21,6 +21,7 @@ import {
   useDeleteWorkflow,
   useCopyWorkflow,
 } from '../hooks/useStatemachine';
+import { ExportImport } from '../components/ExportImport';
 import type { Workflow, WorkflowTableRow } from '../types';
 
 const { confirm } = Modal;
@@ -48,16 +49,16 @@ export const Workflows: React.FC = () => {
     return workflows
       .map((workflow: Workflow) => {
         let entityClassNameLabel = workflow.entityClassName;
-        
+
         // Find entity type info
         const entityRow = workflowEnabledTypes.find(
           (item: any) => item.name === workflow.entityClassName || item.value === workflow.entityClassName
         );
-        
+
         if (entityRow) {
           entityClassNameLabel = entityRow.label || entityRow.name || workflow.entityClassName;
         }
-        
+
         return {
           ...workflow,
           key: workflow.id,
@@ -73,6 +74,11 @@ export const Workflows: React.FC = () => {
         );
       });
   }, [workflows, workflowEnabledTypes, filter]);
+
+  // Get selected workflows for export
+  const selectedWorkflows = useMemo(() => {
+    return workflows.filter((w) => selectedRowKeys.includes(w.id));
+  }, [workflows, selectedRowKeys]);
   
   // Handlers
   const handleCreateNew = () => {
@@ -235,13 +241,19 @@ export const Workflows: React.FC = () => {
               style={{ maxWidth: 400 }}
               prefix={<SearchOutlined />}
             />
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={handleCreateNew}
-            >
-              Create new workflow
-            </Button>
+            <Space>
+              <ExportImport
+                selectedWorkflows={selectedWorkflows}
+                onImportSuccess={() => refetch()}
+              />
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={handleCreateNew}
+              >
+                Create new workflow
+              </Button>
+            </Space>
           </div>
           
           {/* Table */}

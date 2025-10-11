@@ -98,6 +98,7 @@ export * from './GraphicalStateMachinePanel'
 export * from './StateMachineLegend'
 export * from './StateForm'
 export * from './StateMachineMapControls'
+export * from './TransitionChangesTable'
 
 // Filter Builder
 export * from './QueryPlanDetailRaw'

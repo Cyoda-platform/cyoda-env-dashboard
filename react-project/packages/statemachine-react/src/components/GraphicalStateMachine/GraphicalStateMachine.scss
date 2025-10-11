@@ -1,0 +1,169 @@
+/**
+ * Graphical State Machine Styles
+ * Migrated from Vue component styles
+ */
+
+.graphical-statemachine-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+
+  &.fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9999;
+    background: white;
+  }
+}
+
+.graphical-statemachine {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .panel {
+    padding: 16px;
+    background: #f5f5f5;
+    border-bottom: 1px solid #d9d9d9;
+  }
+
+  .graph-wrapper {
+    position: relative;
+    flex: 1;
+    min-height: 600px;
+  }
+
+  .graph-container {
+    width: 100%;
+    height: 100%;
+    background: #fafafa;
+  }
+
+  .map-controls {
+    position: absolute;
+    right: 16px;
+    top: 16px;
+    z-index: 10;
+    background: white;
+    padding: 8px;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+
+    .ant-space {
+      gap: 4px !important;
+    }
+
+    button {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
+  .map-legend {
+    position: absolute;
+    left: 16px;
+    bottom: 16px;
+    z-index: 10;
+    max-width: 200px;
+
+    .ant-card {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .legend-circle {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      margin-right: 8px;
+      vertical-align: middle;
+
+      &.state {
+        background-color: #148751;
+      }
+
+      &.current-state {
+        background-color: #F7AD11;
+        border: 2px solid #148751;
+      }
+    }
+
+    .legend-diamond {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      margin-right: 8px;
+      vertical-align: middle;
+      background-color: #e8e8e8;
+      transform: rotate(45deg);
+    }
+
+    .legend-heptagon {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      margin-right: 8px;
+      vertical-align: middle;
+      background-color: #213063;
+      clip-path: polygon(50% 0%, 90% 20%, 100% 60%, 75% 100%, 25% 100%, 0% 60%, 10% 20%);
+    }
+
+    .legend-line {
+      display: inline-block;
+      width: 24px;
+      height: 3px;
+      margin-right: 8px;
+      vertical-align: middle;
+      position: relative;
+
+      &.automated {
+        background-color: #F7AD11;
+
+        &::after {
+          content: '';
+          position: absolute;
+          right: -4px;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 0;
+          height: 0;
+          border-left: 6px solid #912624;
+          border-top: 4px solid transparent;
+          border-bottom: 4px solid transparent;
+        }
+      }
+
+      &.manual {
+        background: repeating-linear-gradient(
+          to right,
+          #F7AD11,
+          #F7AD11 4px,
+          transparent 4px,
+          transparent 8px
+        );
+
+        &::after {
+          content: '';
+          position: absolute;
+          right: -4px;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 0;
+          height: 0;
+          border-left: 6px solid #912624;
+          border-top: 4px solid transparent;
+          border-bottom: 4px solid transparent;
+        }
+      }
+    }
+  }
+}
+
