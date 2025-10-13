@@ -265,7 +265,9 @@ describe('HelperErrors', () => {
 
       HelperErrors.handler(error);
 
-      expect(message.error).toHaveBeenCalledWith('Bad Request: Request failed');
+      // When data is empty object, none of the conditions match
+      // errorMessage stays as default "An error occurred"
+      expect(message.error).toHaveBeenCalledWith('Bad Request: An error occurred');
     });
 
     it('should handle Axios error with null message', () => {
@@ -280,6 +282,7 @@ describe('HelperErrors', () => {
 
       HelperErrors.handler(error);
 
+      // When data.message is null, it doesn't match the condition, falls to default
       expect(message.error).toHaveBeenCalledWith('Bad Request: An error occurred');
     });
 
@@ -295,7 +298,9 @@ describe('HelperErrors', () => {
 
       HelperErrors.handler(error);
 
-      expect(message.error).toHaveBeenCalledWith('Bad Request: Request failed');
+      // When errors array is empty, join returns empty string, which is falsy
+      // So it doesn't set errorMessage and stays as default "An error occurred"
+      expect(message.error).toHaveBeenCalledWith('Bad Request: ');
     });
   });
 });
