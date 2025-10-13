@@ -1,0 +1,41 @@
+{
+  "name": "@cyoda/demo-app",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Demo application showcasing all migrated React packages",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
+  },
+  "dependencies": {
+    "@cyoda/http-api-react": "workspace:*",
+    "@cyoda/tasks-react": "workspace:*",
+    "@cyoda/statemachine-react": "workspace:*",
+    "@cyoda/ui-lib-react": "workspace:*",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^7.1.1",
+    "antd": "^5.22.6",
+    "@ant-design/icons": "^5.5.2",
+    "@tanstack/react-query": "^5.62.11",
+    "@tanstack/react-query-devtools": "^5.62.11",
+    "zustand": "^5.0.2",
+    "axios": "^1.7.9"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "^5.7.3",
+    "vite": "^6.0.11",
+    "vitest": "^3.2.4",
+    "@testing-library/react": "^16.1.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "jsdom": "^25.0.1"
+  }
+}
+

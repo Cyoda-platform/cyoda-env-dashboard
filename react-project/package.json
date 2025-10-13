@@ -6,7 +6,8 @@
   "author": "Cyoda",
   "license": "PRIVATE",
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "apps/*"
   ],
   "scripts": {
     "dev": "npm run dev --workspaces --if-present",

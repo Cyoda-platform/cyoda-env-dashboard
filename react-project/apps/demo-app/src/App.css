@@ -1,0 +1,66 @@
+.app-layout {
+  min-height: 100vh;
+}
+
+.app-header {
+  background: #001529;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.app-logo {
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.app-content {
+  padding: 24px;
+  min-height: calc(100vh - 64px - 69px);
+  background: #f0f2f5;
+}
+
+.app-footer {
+  text-align: center;
+  background: #f0f2f5;
+}
+
+.home-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.home-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.home-title {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.home-subtitle {
+  font-size: 20px;
+  color: #666;
+}
+
+.package-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  margin-bottom: 48px;
+}
+
+.stats-section {
+  margin-top: 48px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
