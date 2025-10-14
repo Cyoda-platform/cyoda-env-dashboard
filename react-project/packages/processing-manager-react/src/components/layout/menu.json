@@ -1,0 +1,13 @@
+[
+  {
+    "link": "/processing-ui",
+    "name": "Dashboard",
+    "icon": "tachometer-alt"
+  },
+  {
+    "link": "/processing-ui/nodes",
+    "name": "Nodes",
+    "icon": "server"
+  }
+]
+

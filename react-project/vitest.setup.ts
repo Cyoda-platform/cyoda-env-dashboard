@@ -36,3 +36,33 @@ global.IntersectionObserver = class IntersectionObserver {
   unobserve() {}
 } as any
 
+// Mock localStorage
+const localStorageMock = (() => {
+  let store: Record<string, string> = {}
+
+  return {
+    getItem: (key: string) => store[key] || null,
+    setItem: (key: string, value: string) => {
+      store[key] = value.toString()
+    },
+    removeItem: (key: string) => {
+      delete store[key]
+    },
+    clear: () => {
+      store = {}
+    }
+  }
+})()
+
+Object.defineProperty(window, 'localStorage', {
+  value: localStorageMock
+})
+
+// Mock ResizeObserver
+global.ResizeObserver = class ResizeObserver {
+  constructor() {}
+  disconnect() {}
+  observe() {}
+  unobserve() {}
+} as any
+

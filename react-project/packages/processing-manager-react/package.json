@@ -1,0 +1,60 @@
+{
+  "name": "@cyoda/processing-manager-react",
+  "version": "1.0.0",
+  "description": "Processing Manager - Data processing and batch operations management",
+  "type": "module",
+  "main": "./dist/processing-manager-react.umd.js",
+  "module": "./dist/processing-manager-react.es.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/processing-manager-react.es.js",
+      "require": "./dist/processing-manager-react.umd.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./dist/style.css": "./dist/style.css"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@cyoda/ui-lib-react": "file:../ui-lib-react",
+    "@cyoda/http-api-react": "file:../http-api-react",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^7.1.1",
+    "@tanstack/react-query": "^5.62.11",
+    "zustand": "^5.0.2",
+    "antd": "^5.22.6",
+    "@ant-design/icons": "^5.5.2",
+    "chart.js": "^4.4.7",
+    "react-chartjs-2": "^5.3.0",
+    "axios": "^1.7.9",
+    "sass": "^1.83.4"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "^5.7.3",
+    "vite": "^6.0.11",
+    "vitest": "^3.2.4",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/user-event": "^14.6.1",
+    "msw": "^2.7.0"
+  },
+  "peerDependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  }
+}
+
