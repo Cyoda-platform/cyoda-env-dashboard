@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { Card, Typography, Table, Input, Select, Space, Breadcrumb, Spin, Alert, Tag } from 'antd';
 import { HomeOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
-import { BaseLayout } from '@cyoda/ui-lib-react';
+import { Layout } from '../components/layout';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEntityVersions } from '../hooks';
 import type { EntityVersion } from '../types';
@@ -114,7 +114,7 @@ export default function TransitionVersions() {
   ];
 
   return (
-    <BaseLayout>
+    <Layout>
       <div style={{ padding: '24px' }}>
         <Breadcrumb
           items={breadcrumbItems}
@@ -184,7 +184,7 @@ export default function TransitionVersions() {
           )}
         </Card>
       </div>
-    </BaseLayout>
+    </Layout>
   );
 }
 

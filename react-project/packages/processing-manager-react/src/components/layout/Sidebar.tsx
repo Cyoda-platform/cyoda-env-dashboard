@@ -4,7 +4,7 @@
  */
 
 import { Link, useLocation } from 'react-router-dom';
-import { MenuOutlined, DashboardOutlined, ServerOutlined } from '@ant-design/icons';
+import { MenuOutlined, DashboardOutlined, ClusterOutlined } from '@ant-design/icons';
 import { useAppStore } from '../../stores/appStore';
 import menuData from './menu.json';
 import './Sidebar.scss';
@@ -17,7 +17,7 @@ interface MenuItem {
 
 const iconMap: Record<string, React.ComponentType> = {
   'tachometer-alt': DashboardOutlined,
-  'server': ServerOutlined,
+  'server': ClusterOutlined,
 };
 
 export default function Sidebar() {

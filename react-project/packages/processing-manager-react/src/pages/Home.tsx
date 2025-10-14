@@ -4,13 +4,13 @@
  */
 
 import { Card, Typography } from 'antd';
-import { BaseLayout } from '@cyoda/ui-lib-react';
+import { Layout } from '../components/layout';
 
 const { Title, Paragraph } = Typography;
 
 export default function Home() {
   return (
-    <BaseLayout>
+    <Layout>
       <div style={{ padding: '24px' }}>
         <Card>
           <Title level={2}>Processing Manager</Title>
@@ -29,7 +29,7 @@ export default function Home() {
           </ul>
         </Card>
       </div>
-    </BaseLayout>
+    </Layout>
   );
 }
 

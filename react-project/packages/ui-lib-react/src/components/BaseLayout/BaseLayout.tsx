@@ -8,12 +8,13 @@ export interface BaseLayoutProps {
   footer?: React.ReactNode
   portals?: React.ReactNode
   className?: string
+  children?: React.ReactNode
 }
 
 /**
  * BaseLayout Component
  * Main application layout with sticky header and responsive padding
- * 
+ *
  * Migrated from Vue: .old_project/packages/cyoda-ui-lib/src/components-library/templates/BaseLayout/BaseLayout.vue
  */
 export const BaseLayout: React.FC<BaseLayoutProps> = ({
@@ -21,7 +22,8 @@ export const BaseLayout: React.FC<BaseLayoutProps> = ({
   main,
   footer,
   portals,
-  className = ''
+  className = '',
+  children
 }) => {
   const headerRef = useRef<HTMLElement>(null)
   const mainRef = useRef<HTMLElement>(null)
@@ -58,7 +60,7 @@ export const BaseLayout: React.FC<BaseLayoutProps> = ({
             {header}
           </header>
           <main className="main" ref={mainRef}>
-            {main}
+            {main || children}
           </main>
           <footer>
             {footer}

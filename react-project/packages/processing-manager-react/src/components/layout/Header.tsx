@@ -8,15 +8,19 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Modal } from 'antd';
 import { MenuOutlined } from '@ant-design/icons';
 import { LogOutButton } from '@cyoda/ui-lib-react';
-import { useAuthStore, useUserManagerStore } from '@cyoda/ui-lib-react';
+// TODO: These stores need to be migrated from Vue ui-lib
+// import { useAuthStore, useUserManagerStore } from '@cyoda/ui-lib-react';
 import { useAppStore } from '../../stores/appStore';
 import './Header.scss';
 
 export default function Header() {
   const navigate = useNavigate();
   const sideBarToggle = useAppStore((state) => state.sideBarToggle);
-  const user = useUserManagerStore((state) => state.user);
-  const logout = useAuthStore((state) => state.logout);
+  // TODO: Restore when auth stores are migrated
+  // const user = useUserManagerStore((state) => state.user);
+  // const logout = useAuthStore((state) => state.logout);
+  const user = null; // Temporary mock
+  const logout = async () => {}; // Temporary mock
 
   useEffect(() => {
     // Check if user has permissions

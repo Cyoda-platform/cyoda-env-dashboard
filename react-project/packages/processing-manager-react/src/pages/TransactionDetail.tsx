@@ -5,7 +5,7 @@
 
 import { Card, Typography, Tabs, Spin, Alert, Breadcrumb } from 'antd';
 import { HomeOutlined, DatabaseOutlined } from '@ant-design/icons';
-import { BaseLayout } from '@cyoda/ui-lib-react';
+import { Layout } from '../components/layout';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTransaction } from '../hooks';
 import {
@@ -23,17 +23,17 @@ export default function TransactionDetail() {
 
   if (isLoading) {
     return (
-      <BaseLayout>
+      <Layout>
         <div style={{ padding: '24px', textAlign: 'center' }}>
           <Spin size="large" tip="Loading transaction details..." />
         </div>
-      </BaseLayout>
+      </Layout>
     );
   }
 
   if (error || !transaction) {
     return (
-      <BaseLayout>
+      <Layout>
         <div style={{ padding: '24px' }}>
           <Alert
             message="Error"
@@ -42,7 +42,7 @@ export default function TransactionDetail() {
             showIcon
           />
         </div>
-      </BaseLayout>
+      </Layout>
     );
   }
 
@@ -93,7 +93,7 @@ export default function TransactionDetail() {
   ];
 
   return (
-    <BaseLayout>
+    <Layout>
       <div style={{ padding: '24px' }}>
         <Breadcrumb
           items={breadcrumbItems}
@@ -113,7 +113,7 @@ export default function TransactionDetail() {
           />
         </Card>
       </div>
-    </BaseLayout>
+    </Layout>
   );
 }
 

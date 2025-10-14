@@ -11,6 +11,8 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': resolve(__dirname, './src'),
+      '@cyoda/ui-lib-react': resolve(__dirname, '../ui-lib-react/src/index.ts'),
+      '@cyoda/http-api-react': resolve(__dirname, '../http-api-react/src/index.ts'),
     },
   },
   css: {

@@ -1,0 +1,28 @@
+.pm-shards-detail-tab-transactions-entities-filter {
+  .ant-form-item-label {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  .wrap-row {
+    position: relative;
+    align-items: flex-end;
+
+    .action-item {
+      position: absolute;
+      right: 0;
+      bottom: 22px;
+
+      .ant-form-item {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  hr {
+    margin-top: 20px;
+    border: none;
+    border-top: 1px solid #d9d9d9;
+  }
+}
+

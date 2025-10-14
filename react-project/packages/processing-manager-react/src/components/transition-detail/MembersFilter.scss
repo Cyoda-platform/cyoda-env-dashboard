@@ -1,0 +1,21 @@
+.members-filter {
+  .ant-form-item-label {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  .wrap-row {
+    position: relative;
+
+    .action-item {
+      position: relative;
+      left: 0;
+      top: 22px;
+
+      button {
+        width: 100%;
+      }
+    }
+  }
+}
+
