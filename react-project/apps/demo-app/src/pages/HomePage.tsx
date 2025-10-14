@@ -25,7 +25,7 @@ const HomePage: React.FC = () => {
         'Complete TypeScript types',
         '40+ React Query hooks',
       ],
-      stats: { tests: 48, lines: 2500 },
+      stats: { tests: 91, lines: 2500 },
       route: '/api',
     },
     {
@@ -38,7 +38,7 @@ const HomePage: React.FC = () => {
         'Bulk update operations',
         'Real-time toggle',
       ],
-      stats: { tests: 14, lines: 1600 },
+      stats: { tests: 53, lines: 1600 },
       route: '/tasks',
     },
     {
@@ -51,16 +51,16 @@ const HomePage: React.FC = () => {
         'Graphical visualization',
         'Export/Import functionality',
       ],
-      stats: { tests: 37, lines: 4200 },
+      stats: { tests: 228, lines: 4200 },
       route: '/statemachine',
     },
   ];
 
   const overallStats = [
-    { title: 'Total Packages', value: 3, suffix: 'packages', color: '#1890ff' },
-    { title: 'Total Tests', value: 99, suffix: 'tests', color: '#52c41a' },
+    { title: 'Total Packages', value: 4, suffix: 'packages', color: '#1890ff' },
+    { title: 'Total Tests', value: 1372, suffix: 'tests', color: '#52c41a' },
     { title: 'Lines of Code', value: 8300, suffix: 'lines', color: '#722ed1' },
-    { title: 'Test Pass Rate', value: 89, suffix: '%', color: '#fa8c16' },
+    { title: 'Test Pass Rate', value: 100, suffix: '%', color: '#52c41a' },
   ];
 
   return (
@@ -73,7 +73,7 @@ const HomePage: React.FC = () => {
           Successfully migrated Vue 3 application to React 18 with modern tooling
         </Paragraph>
         <Tag color="success" icon={<CheckCircleOutlined />} style={{ fontSize: 16, padding: '8px 16px' }}>
-          Phase 3 Complete - 100%
+          Phase 4 Complete - 100% Test Pass Rate
         </Tag>
       </div>
 

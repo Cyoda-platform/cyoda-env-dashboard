@@ -68,10 +68,11 @@ const TasksDemo: React.FC = () => {
             <div>
               <Title level={4}>✅ Testing</Title>
               <ul>
-                <li>14 comprehensive tests</li>
+                <li>53 comprehensive tests</li>
                 <li>100% test pass rate</li>
                 <li>Component tests with React Testing Library</li>
                 <li>Integration tests for workflows</li>
+                <li>Edge case tests for error handling</li>
               </ul>
             </div>
           </Space>
@@ -110,7 +111,7 @@ function App() {
               <Text strong>Lines of Code:</Text> ~1,600
             </div>
             <div>
-              <Text strong>Tests:</Text> 14 passing
+              <Text strong>Tests:</Text> 53 passing
             </div>
             <div>
               <Text strong>Components:</Text> 5

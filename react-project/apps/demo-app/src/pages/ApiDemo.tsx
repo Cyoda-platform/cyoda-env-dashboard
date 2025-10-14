@@ -90,10 +90,11 @@ const ApiDemo: React.FC = () => {
             <div>
               <Title level={4}>✅ Testing</Title>
               <ul>
-                <li>48 comprehensive tests</li>
+                <li>91 comprehensive tests</li>
                 <li>100% test pass rate</li>
                 <li>Tests for all utility functions</li>
                 <li>Mock API responses</li>
+                <li>Error handling tests for all HTTP status codes</li>
               </ul>
             </div>
           </Space>
@@ -206,7 +207,7 @@ function ReportsPage() {
               <Text strong>Lines of Code:</Text> ~2,500
             </div>
             <div>
-              <Text strong>Tests:</Text> 48 passing
+              <Text strong>Tests:</Text> 91 passing
             </div>
             <div>
               <Text strong>API Functions:</Text> 100+
