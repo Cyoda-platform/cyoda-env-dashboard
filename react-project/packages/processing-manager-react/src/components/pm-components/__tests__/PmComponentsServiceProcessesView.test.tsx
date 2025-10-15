@@ -153,9 +153,13 @@ describe('PmComponentsServiceProcessesView', () => {
     } as any);
 
     render(<PmComponentsServiceProcessesView />);
-    
-    expect(screen.getByText(/Ready Component - 0 items/)).toBeInTheDocument();
-    expect(screen.getByText(/None Ready Component - 0 items/)).toBeInTheDocument();
+
+    expect(screen.getByText((content, element) => {
+      return element?.textContent === 'Ready Component - 0 items';
+    })).toBeInTheDocument();
+    expect(screen.getByText((content, element) => {
+      return element?.textContent === 'None Ready Component - 0 items';
+    })).toBeInTheDocument();
   });
 
   it('should handle missing data.data', () => {
@@ -164,9 +168,13 @@ describe('PmComponentsServiceProcessesView', () => {
     } as any);
 
     render(<PmComponentsServiceProcessesView />);
-    
-    expect(screen.getByText(/Ready Component - 0 items/)).toBeInTheDocument();
-    expect(screen.getByText(/None Ready Component - 0 items/)).toBeInTheDocument();
+
+    expect(screen.getByText((content, element) => {
+      return element?.textContent === 'Ready Component - 0 items';
+    })).toBeInTheDocument();
+    expect(screen.getByText((content, element) => {
+      return element?.textContent === 'None Ready Component - 0 items';
+    })).toBeInTheDocument();
   });
 
   it('should handle missing ready field', () => {
