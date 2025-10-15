@@ -103,10 +103,12 @@ describe('TransitionDetailStatisticsTransactionMembers', () => {
         <TransitionDetailStatisticsTransactionMembers />
       </BrowserRouter>
     );
-    
-    // Pagination has Previous and Next buttons
-    expect(screen.getByRole('button', { name: /previous/i })).toBeInTheDocument();
+
+    // Pagination has First, Prev, Next, and Last buttons
+    expect(screen.getByRole('button', { name: /first/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /prev/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /next/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /last/i })).toBeInTheDocument();
   });
 
   it('should call useTransactionsViewMembers with correct parameters', () => {
@@ -157,10 +159,10 @@ describe('TransitionDetailStatisticsTransactionMembers', () => {
         <TransitionDetailStatisticsTransactionMembers />
       </BrowserRouter>
     );
-    
-    // When loading, the Load button should be disabled
+
+    // When loading, the Load button should have loading class
     const loadButton = screen.getByRole('button', { name: /load/i });
-    expect(loadButton).toBeDisabled();
+    expect(loadButton).toHaveClass('ant-btn-loading');
   });
 
   it('should pass isLoading to MembersTable', () => {
