@@ -4,17 +4,34 @@
  */
 
 import React from 'react';
-import { NetworkInfoServer as NetworkInfoServerComponent } from '@cyoda/http-api-react';
-import { usePlatformCommonNetInfoServer } from '../../hooks';
+import { Card, Descriptions, Spin } from 'antd';
+import { useNetworkServerInfo } from '../../hooks/usePlatformCommon';
 
 export const NetworkInfoServer: React.FC = () => {
-  const getNetInfoServerRequest = () => {
-    return usePlatformCommonNetInfoServer();
-  };
+  const { data: serverInfo, isLoading } = useNetworkServerInfo();
+
+  if (isLoading) {
+    return <Spin />;
+  }
 
   return (
     <div>
-      <NetworkInfoServerComponent getNetInfoServerRequestFn={getNetInfoServerRequest} />
+      <Card title="Server Information" bordered={false}>
+        <Descriptions column={2} bordered>
+          <Descriptions.Item label="Hostname">
+            {(serverInfo as any)?.hostname || '-'}
+          </Descriptions.Item>
+          <Descriptions.Item label="IP Address">
+            {(serverInfo as any)?.ip || '-'}
+          </Descriptions.Item>
+          <Descriptions.Item label="Port">
+            {(serverInfo as any)?.port || '-'}
+          </Descriptions.Item>
+          <Descriptions.Item label="Version">
+            {(serverInfo as any)?.version || '-'}
+          </Descriptions.Item>
+        </Descriptions>
+      </Card>
     </div>
   );
 };

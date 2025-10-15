@@ -192,6 +192,14 @@ export function getEntityCount(entityClass: string, params?: any) {
 }
 
 /**
+ * Get reporting fetch types (entity classes)
+ */
+export function getReportingFetchTypes(onlyDynamic = false) {
+  // For now, use the simpler endpoint. Can be enhanced with feature flags later.
+  return axios.get<string[]>(`/platform-api/entity-info/fetch/types?onlyDynamic=${onlyDynamic}`);
+}
+
+/**
  * Clone entity
  */
 export function cloneEntity(entityClass: string, entityId: string) {

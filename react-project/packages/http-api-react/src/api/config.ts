@@ -266,3 +266,124 @@ export function getCacheStats() {
   return axios.get('/platform-api/cache/stats');
 }
 
+// ============================================================================
+// Composite Indexes APIs
+// ============================================================================
+
+/**
+ * Get all composite indexes for an entity
+ */
+export function getAllCompositeIndexes(entity: string) {
+  return axios.get(`/platform-common/composite-indexes/list?entityClass=${entity}`);
+}
+
+/**
+ * Reindex a composite index
+ */
+export function postCompositeIndexesReindex(indexId: string) {
+  return axios.post(`/platform-common/composite-indexes/reindex`, [indexId]);
+}
+
+/**
+ * Create a composite index
+ */
+export function postCompositeIndexesCreate(data: any) {
+  return axios.post(`/platform-common/composite-indexes/create`, data);
+}
+
+/**
+ * Delete a composite index
+ */
+export function postCompositeIndexesDelete(indexId: string) {
+  return axios.post(`/platform-common/composite-indexes/delete`, [indexId]);
+}
+
+/**
+ * Export composite indexes by IDs
+ */
+export function postCompositeIndexesExportByIds(ids: string[]) {
+  return axios.post(`/platform-common/composite-indexes/export-by-ids`, ids);
+}
+
+/**
+ * Import composite indexes
+ */
+export function postCompositeIndexesImport(data: any) {
+  return axios.post(`/platform-common/composite-indexes/import`, data);
+}
+
+// ============================================================================
+// Cache Info APIs
+// ============================================================================
+
+/**
+ * Get caches list
+ */
+export function getCachesList() {
+  return axios.get(`/platform-common/cache-info/caches-list`);
+}
+
+/**
+ * Invalidate cache
+ */
+export function getInvalidateCache(cacheType: string) {
+  return axios.get(`/platform-common/cache-info/invalidate-cache?cacheType=${cacheType}`);
+}
+
+/**
+ * Get cache keys
+ */
+export function getCacheKeys(cacheType: string) {
+  return axios.get(`/platform-common/cache-info/cache-keys?cacheType=${encodeURIComponent(cacheType)}`);
+}
+
+// ============================================================================
+// Network Info APIs
+// ============================================================================
+
+/**
+ * Get network server info
+ */
+export function getNetInfoServer() {
+  return axios.get(`/platform-common/net-info/server`);
+}
+
+/**
+ * Get network clients
+ */
+export function getNetInfoClients() {
+  return axios.get(`/platform-common/net-info/clients`);
+}
+
+// ============================================================================
+// ZooKeeper Info APIs
+// ============================================================================
+
+/**
+ * Get current node info
+ */
+export function getZkInfoCurrNodeInfo() {
+  return axios.get(`/platform-common/zk-info/curr-node-info`);
+}
+
+/**
+ * Get loaded online nodes
+ */
+export function getZkInfoLoadedOnlineNodes() {
+  return axios.get(`/platform-common/zk-info/loaded-online-nodes`);
+}
+
+/**
+ * Get loaded shards distribution
+ */
+export function getZkInfoLoadedShardsDistribution() {
+  return axios.get(`/platform-common/zk-info/loaded-shards-distribution`);
+}
+
+/**
+ * Get cluster state
+ */
+export function getZkInfoClusterState() {
+  return axios.get(`/platform-common/zk-info/cluster-state`);
+}
+

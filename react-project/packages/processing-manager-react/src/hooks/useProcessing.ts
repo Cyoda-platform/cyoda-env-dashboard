@@ -941,6 +941,66 @@ export function usePlatformCommonZkInfoLoadedOnlineNodes() {
   });
 }
 
+// ============================================================================
+// Runnable Components
+// ============================================================================
+
+/**
+ * Load runnable components
+ */
+export function useLoadRunnableComponents(params?: any) {
+  return useQuery({
+    queryKey: [...processingKeys.all, 'runnable-components', params],
+    queryFn: async () => {
+      const { data } = await axiosProcessing.get(
+        HelperUrl.getLinkToServer('/platform-processing/runnable-components.do'),
+        { params }
+      );
+      return data;
+    },
+  });
+}
+
+/**
+ * Start runnable component
+ */
+export function useStartRunnableComponent() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (params: { id: string }) => {
+      const { data } = await axiosProcessing.post(
+        HelperUrl.getLinkToServer('/platform-processing/runnable-components/start.do'),
+        params
+      );
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [...processingKeys.all, 'runnable-components'] });
+    },
+  });
+}
+
+/**
+ * Stop runnable component
+ */
+export function useStopRunnableComponent() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (params: { id: string }) => {
+      const { data } = await axiosProcessing.post(
+        HelperUrl.getLinkToServer('/platform-processing/runnable-components/stop.do'),
+        params
+      );
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [...processingKeys.all, 'runnable-components'] });
+    },
+  });
+}
+
 /**
  * Get Platform Common ZooKeeper Info - Loaded Shards Distribution
  *
@@ -1021,6 +1081,9 @@ export default {
   useDoManualTransition,
   useProcessingQueueForceMarkProcessed,
   useLoadServiceProcessesStats,
+  useLoadRunnableComponents,
+  useStartRunnableComponent,
+  useStopRunnableComponent,
   usePlatformCommonNetInfoServer,
   usePlatformCommonNetInfoClients,
   usePlatformCommonZkInfoCurrNodeInfo,

@@ -4,4 +4,5 @@
  */
 
 export * from './useProcessing';
+export * from './usePlatformCommon';
 
