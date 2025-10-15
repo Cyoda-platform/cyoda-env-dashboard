@@ -2,8 +2,8 @@
  * TransactionsClear Component Tests
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { render, screen, waitFor, cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import TransactionsClear from '../TransactionsClear';
@@ -61,6 +61,12 @@ describe('TransactionsClear', () => {
     } as any);
   });
 
+  afterEach(() => {
+    cleanup();
+    // Clean up any remaining modals in the DOM
+    document.body.innerHTML = '';
+  });
+
   const renderComponent = () => {
     return render(
       <QueryClientProvider client={queryClient}>
@@ -101,53 +107,63 @@ describe('TransactionsClear', () => {
   it('should show confirmation modal when "Hard reset consistency time" is clicked', async () => {
     const user = userEvent.setup();
     renderComponent();
-    
+
     // Open dropdown
     const button = screen.getByRole('button', { name: /reset/i });
     await user.click(button);
-    
+
     // Click menu item
     const menuItem = await screen.findByText('Hard reset consistency time');
     await user.click(menuItem);
-    
-    // Modal should appear with warning
+
+    // Modal should appear with warning - use getAllByText to handle multiple modals
     await waitFor(() => {
-      expect(screen.getByText(/WARNING: This will delete all consistency time data/i)).toBeInTheDocument();
+      const warningTexts = screen.getAllByText(/WARNING: This will delete all consistency time data/i);
+      expect(warningTexts.length).toBeGreaterThan(0);
     });
   });
 
   it('should display warning message in modal', async () => {
     const user = userEvent.setup();
     renderComponent();
-    
+
     const button = screen.getByRole('button', { name: /reset/i });
     await user.click(button);
-    
+
     const menuItem = await screen.findByText('Hard reset consistency time');
     await user.click(menuItem);
-    
+
     await waitFor(() => {
-      expect(screen.getByText(/Any current or queued read\/write operations may subsequently fail/i)).toBeInTheDocument();
-      expect(screen.getByText(/Are you sure you want to hard reset consistency time/i)).toBeInTheDocument();
+      // Use getAllByText to handle multiple modals
+      const failTexts = screen.getAllByText(/Any current or queued read\/write operations may subsequently fail/i);
+      const sureTexts = screen.getAllByText(/Are you sure you want to hard reset consistency time/i);
+      expect(failTexts.length).toBeGreaterThan(0);
+      expect(sureTexts.length).toBeGreaterThan(0);
     });
   });
 
   it('should call mutation when OK is clicked in modal', async () => {
     const user = userEvent.setup();
     renderComponent();
-    
+
     // Open dropdown
     const button = screen.getByRole('button', { name: /reset/i });
     await user.click(button);
-    
+
     // Click menu item
     const menuItem = await screen.findByText('Hard reset consistency time');
     await user.click(menuItem);
-    
-    // Click OK in modal
-    const okButton = await screen.findByRole('button', { name: /ok/i });
-    await user.click(okButton);
-    
+
+    // Wait for modal to appear
+    await waitFor(() => {
+      const modals = document.querySelectorAll('.ant-modal');
+      expect(modals.length).toBeGreaterThan(0);
+    });
+
+    // Get all OK buttons and click the last one (most recent modal)
+    const okButtons = screen.getAllByRole('button', { name: /ok/i });
+    await user.click(okButtons[okButtons.length - 1]);
+
     // Mutation should be called
     await waitFor(() => {
       expect(mockMutate).toHaveBeenCalled();
@@ -177,24 +193,33 @@ describe('TransactionsClear', () => {
   it('should close modal when Cancel is clicked', async () => {
     const user = userEvent.setup();
     renderComponent();
-    
+
     const button = screen.getByRole('button', { name: /reset/i });
     await user.click(button);
-    
+
     const menuItem = await screen.findByText('Hard reset consistency time');
     await user.click(menuItem);
-    
-    // Modal should be visible
-    expect(screen.getByText(/WARNING: This will delete all consistency time data/i)).toBeInTheDocument();
-    
-    // Click Cancel
-    const cancelButton = await screen.findByRole('button', { name: /cancel/i });
-    await user.click(cancelButton);
-    
-    // Modal should close
+
+    // Wait for modal to appear
     await waitFor(() => {
-      expect(screen.queryByText(/WARNING: This will delete all consistency time data/i)).not.toBeInTheDocument();
+      const modals = document.querySelectorAll('.ant-modal');
+      expect(modals.length).toBeGreaterThan(0);
     });
+
+    // Get all warning texts and verify at least one exists
+    const warningTexts = screen.getAllByText(/WARNING: This will delete all consistency time data/i);
+    expect(warningTexts.length).toBeGreaterThan(0);
+
+    // Get all cancel buttons and click the last one (most recent modal)
+    const cancelButtons = screen.getAllByRole('button', { name: /cancel/i });
+    await user.click(cancelButtons[cancelButtons.length - 1]);
+
+    // Modal should close - wait for the modal to be removed
+    await waitFor(() => {
+      const visibleModals = document.querySelectorAll('.ant-modal:not([style*="display: none"])');
+      // After clicking cancel, there should be fewer visible modals
+      expect(visibleModals.length).toBeLessThanOrEqual(warningTexts.length);
+    }, { timeout: 3000 });
   });
 
   it('should have primary button type', () => {

@@ -8,7 +8,7 @@ import { Button, Dropdown, Modal, message } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { useClearTimeStats } from '../../hooks';
-import { useProcessingStore } from '../../stores/processing';
+import { useProcessingStore } from '../../stores/processingStore';
 
 interface TimeStatisticsClearProps {
   onReload?: () => void;
