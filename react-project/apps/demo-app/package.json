@@ -12,10 +12,10 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
   },
   "dependencies": {
-    "@cyoda/http-api-react": "workspace:*",
-    "@cyoda/tasks-react": "workspace:*",
-    "@cyoda/statemachine-react": "workspace:*",
-    "@cyoda/ui-lib-react": "workspace:*",
+    "@cyoda/http-api-react": "file:../../packages/http-api-react",
+    "@cyoda/tasks-react": "file:../../packages/tasks-react",
+    "@cyoda/statemachine-react": "file:../../packages/statemachine-react",
+    "@cyoda/ui-lib-react": "file:../../packages/ui-lib-react",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^7.1.1",

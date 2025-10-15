@@ -6,7 +6,14 @@
 
 import React, { useState } from 'react';
 import { Card, Tabs } from 'antd';
-import { PollingInfo, ProcessEventsStatistics, ProcessingEventsView } from '../processing-events';
+import {
+  PollingInfo,
+  ProcessEventsStatistics,
+  ProcessingEventsView,
+  ProcessingEventsErrorView,
+  ProcessingEventsEntitiesErrorListView,
+  SiftLoggerConfView
+} from '../processing-events';
 
 const { TabPane } = Tabs;
 
@@ -27,13 +34,13 @@ export const ShardsDetailTabProcessingEvents: React.FC = () => {
           <ProcessingEventsView />
         </TabPane>
         <TabPane tab="Processing events error view" key="4">
-          <div>Processing events error view - To be implemented</div>
+          <ProcessingEventsErrorView />
         </TabPane>
         <TabPane tab="Entities error list view" key="5">
-          <div>Entities error list view - To be implemented</div>
+          <ProcessingEventsEntitiesErrorListView />
         </TabPane>
         <TabPane tab="SIFT logger conf view" key="6">
-          <div>SIFT logger conf view - To be implemented</div>
+          <SiftLoggerConfView />
         </TabPane>
       </Tabs>
     </Card>

@@ -18,7 +18,7 @@ const App: React.FC = () => {
           <Route path="/" element={<HomePage />} />
           <Route path="/tasks/*" element={<TasksDemo />} />
           <Route path="/statemachine/*" element={<StateMachineDemo />} />
-          <Route path="/api" element={<ApiDemo />} />
+          <Route path="/api-demo" element={<ApiDemo />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AppLayout>

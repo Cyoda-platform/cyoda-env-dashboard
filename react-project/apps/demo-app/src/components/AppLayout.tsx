@@ -35,7 +35,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
       label: 'State Machine',
     },
     {
-      key: '/api',
+      key: '/api-demo',
       icon: <ApiOutlined />,
       label: 'API Demo',
     },
@@ -49,7 +49,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     const path = location.pathname;
     if (path.startsWith('/tasks')) return '/tasks';
     if (path.startsWith('/statemachine')) return '/statemachine';
-    if (path.startsWith('/api')) return '/api';
+    if (path.startsWith('/api-demo')) return '/api-demo';
     return '/';
   };
 

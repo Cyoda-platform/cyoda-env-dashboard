@@ -10,7 +10,7 @@ const ApiDemo: React.FC = () => {
     <div style={{ maxWidth: 1200, margin: '0 auto' }}>
       <Space direction="vertical" size="large" style={{ width: '100%' }}>
         <Card>
-          <Title level={2}>
+          <Title level={1}>
             <ApiOutlined /> HTTP API Package Demo
           </Title>
           <Paragraph>

@@ -4,12 +4,14 @@
  */
 
 import React from 'react';
-import { Card, Table, Spin, Alert } from 'antd';
+import { Card, Table, Spin, Alert, Typography } from 'antd';
 import { ClusterOutlined } from '@ant-design/icons';
 import { Layout } from '../components/layout';
 import { useClusterStats } from '../hooks';
 import { useNavigate } from 'react-router-dom';
 import type { ColumnsType } from 'antd/es/table';
+
+const { Title } = Typography;
 
 interface NodeData {
   name: string;
@@ -54,7 +56,8 @@ export default function Nodes() {
   return (
     <Layout>
       <div style={{ padding: '24px' }}>
-        <Card title="Nodes">
+        <Title level={1}>Nodes</Title>
+        <Card>
           {isLoading && <Spin size="large" />}
 
           {error && (

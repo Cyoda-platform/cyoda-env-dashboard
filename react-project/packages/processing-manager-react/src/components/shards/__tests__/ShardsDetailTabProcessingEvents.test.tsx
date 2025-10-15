@@ -12,6 +12,9 @@ vi.mock('../../processing-events', () => ({
   PollingInfo: () => <div data-testid="polling-info">Polling Info</div>,
   ProcessEventsStatistics: () => <div data-testid="process-events-stats">Process Events Statistics</div>,
   ProcessingEventsView: () => <div data-testid="processing-events-view">Processing Events View</div>,
+  ProcessingEventsErrorView: () => <div data-testid="processing-events-error-view">Processing Events Error View</div>,
+  ProcessingEventsEntitiesErrorListView: () => <div data-testid="entities-error-list-view">Entities Error List View</div>,
+  SiftLoggerConfView: () => <div data-testid="sift-logger-conf-view">SIFT Logger Conf View</div>,
 }));
 
 describe('ShardsDetailTabProcessingEvents', () => {
@@ -71,31 +74,31 @@ describe('ShardsDetailTabProcessingEvents', () => {
   it('should switch to Processing events error view tab when clicked', async () => {
     const user = userEvent.setup();
     render(<ShardsDetailTabProcessingEvents />);
-    
+
     const tab = screen.getByText('Processing events error view');
     await user.click(tab);
-    
-    expect(screen.getByText('Processing events error view - To be implemented')).toBeInTheDocument();
+
+    expect(screen.getByTestId('processing-events-error-view')).toBeInTheDocument();
   });
 
   it('should switch to Entities error list view tab when clicked', async () => {
     const user = userEvent.setup();
     render(<ShardsDetailTabProcessingEvents />);
-    
+
     const tab = screen.getByText('Entities error list view');
     await user.click(tab);
-    
-    expect(screen.getByText('Entities error list view - To be implemented')).toBeInTheDocument();
+
+    expect(screen.getByTestId('entities-error-list-view')).toBeInTheDocument();
   });
 
   it('should switch to SIFT logger conf view tab when clicked', async () => {
     const user = userEvent.setup();
     render(<ShardsDetailTabProcessingEvents />);
-    
+
     const tab = screen.getByText('SIFT logger conf view');
     await user.click(tab);
-    
-    expect(screen.getByText('SIFT logger conf view - To be implemented')).toBeInTheDocument();
+
+    expect(screen.getByTestId('sift-logger-conf-view')).toBeInTheDocument();
   });
 
   it('should render tabs component', () => {
@@ -129,7 +132,7 @@ describe('ShardsDetailTabProcessingEvents', () => {
 
     // Click fourth tab
     await user.click(screen.getByText('Processing events error view'));
-    expect(screen.getByText('Processing events error view - To be implemented')).toBeInTheDocument();
+    expect(screen.getByTestId('processing-events-error-view')).toBeInTheDocument();
 
     // Click first tab - use getAllByText to handle duplicate tab labels
     const tabs = screen.getAllByText('Process Events Statistics');
@@ -153,21 +156,21 @@ describe('ShardsDetailTabProcessingEvents', () => {
     expect(screen.getByTestId('processing-events-view')).toBeInTheDocument();
   });
 
-  it('should render placeholder for unimplemented tabs', async () => {
+  it('should render all implemented tabs with components', async () => {
     const user = userEvent.setup();
     render(<ShardsDetailTabProcessingEvents />);
-    
+
     // Fourth tab
     await user.click(screen.getByText('Processing events error view'));
-    expect(screen.getByText('Processing events error view - To be implemented')).toBeInTheDocument();
-    
+    expect(screen.getByTestId('processing-events-error-view')).toBeInTheDocument();
+
     // Fifth tab
     await user.click(screen.getByText('Entities error list view'));
-    expect(screen.getByText('Entities error list view - To be implemented')).toBeInTheDocument();
-    
+    expect(screen.getByTestId('entities-error-list-view')).toBeInTheDocument();
+
     // Sixth tab
     await user.click(screen.getByText('SIFT logger conf view'));
-    expect(screen.getByText('SIFT logger conf view - To be implemented')).toBeInTheDocument();
+    expect(screen.getByTestId('sift-logger-conf-view')).toBeInTheDocument();
   });
 });
 
