@@ -38,9 +38,9 @@ export const TimeStatisticsTimeStat: React.FC = () => {
   };
 
   const filteredData = useMemo(() => {
-    if (!data) return [];
+    if (!data || !Array.isArray(data)) return [];
     if (!searchText) return data;
-    
+
     return data.filter((row: TimeStatData) =>
       Object.values(row).some((value) =>
         value?.toString().toLowerCase().includes(searchText.toLowerCase())

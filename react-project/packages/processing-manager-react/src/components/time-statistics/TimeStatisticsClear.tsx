@@ -16,7 +16,7 @@ interface TimeStatisticsClearProps {
 
 export const TimeStatisticsClear: React.FC<TimeStatisticsClearProps> = ({ onReload }) => {
   const { mutateAsync: clearTimeStats } = useClearTimeStats();
-  const { nodes } = useProcessingStore();
+  const nodesProcessing = useProcessingStore((state) => state.nodesProcessing);
 
   const handleClear = async () => {
     Modal.confirm({
@@ -47,7 +47,7 @@ export const TimeStatisticsClear: React.FC<TimeStatisticsClearProps> = ({ onRelo
       cancelText: 'Cancel',
       onOk: async () => {
         try {
-          const listPromises = nodes.map((el: any) => clearTimeStats(el.baseUrl));
+          const listPromises = nodesProcessing.map((el: any) => clearTimeStats(el.baseUrl));
           await Promise.all(listPromises);
           message.success('Clear time stats (ALL nodes) completed');
           onReload?.();

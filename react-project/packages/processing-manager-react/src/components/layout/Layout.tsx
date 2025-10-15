@@ -18,11 +18,11 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   const params = useParams<{ name?: string }>();
-  const nodes = useProcessingStore((state) => state.nodes);
+  const nodes = useProcessingStore((state) => state.nodesProcessing);
   const setBaseUrl = useAppStore((state) => state.setBaseUrl);
 
   useEffect(() => {
-    if (params.name && nodes.length > 0) {
+    if (params.name && nodes && nodes.length > 0) {
       const node = nodes.find((el: any) => el.hostname === params.name);
       if (node) {
         setBaseUrl(node.baseUrl);

@@ -24,11 +24,13 @@ export const TransactionsExecuting: React.FC = () => {
   
   const { data, refetch } = useExecTransactionsInfo({ limit });
 
-  const tableData: TransactionData[] = data?.map((item: any, index: number) => ({
-    index: index + 1,
-    id: item.id,
-    time: item.time,
-  })) || [];
+  const tableData: TransactionData[] = Array.isArray(data)
+    ? data.map((item: any, index: number) => ({
+        index: index + 1,
+        id: item.id,
+        time: item.time,
+      }))
+    : [];
 
   const runInterval = () => {
     if (intervalRef.current) return;

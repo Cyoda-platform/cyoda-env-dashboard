@@ -6,6 +6,7 @@
 
 import React, { useState } from 'react';
 import { Card, Tabs } from 'antd';
+import { CurrNodeInfo, LoadedOnlineNodes, LoadedShardsDistribution } from '../zookeeper-info';
 
 const { TabPane } = Tabs;
 
@@ -17,13 +18,13 @@ export const ShardsDetailTabZKInfo: React.FC = () => {
       <h3>ZooKeeper Info</h3>
       <Tabs activeKey={activeKey} onChange={setActiveKey}>
         <TabPane tab="Current Node Info" key="1">
-          <div>Current node info - To be implemented</div>
+          <CurrNodeInfo />
         </TabPane>
         <TabPane tab="Loaded Online Nodes" key="2">
-          <div>Loaded online nodes - To be implemented</div>
+          <LoadedOnlineNodes />
         </TabPane>
         <TabPane tab="Loaded Shards Distribution" key="3">
-          <div>Loaded shards distribution - To be implemented</div>
+          <LoadedShardsDistribution />
         </TabPane>
       </Tabs>
     </Card>

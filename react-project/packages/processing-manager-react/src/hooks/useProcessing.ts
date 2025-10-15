@@ -711,6 +711,279 @@ export function useManualTransition() {
   });
 }
 
+/**
+ * Get SIFT Logger Configuration
+ *
+ * Fetches the SIFT logger configuration for a node.
+ *
+ * @returns Query result with SIFT logger data
+ */
+export function useSiftLogger() {
+  const { selectedNode } = useProcessingStore();
+
+  return useQuery({
+    queryKey: processingKeys.all.concat(['sift-logger', selectedNode]),
+    queryFn: async () => {
+      const { data } = await axiosProcessing.get(
+        HelperUrl.getLinkToServer(`/platform-api/sift-logger/${selectedNode}`)
+      );
+      return data;
+    },
+    enabled: !!selectedNode,
+  });
+}
+
+/**
+ * Update SIFT Logger Configuration
+ *
+ * Updates the SIFT logger configuration for a node.
+ *
+ * @param options - Mutation options
+ * @returns Mutation result
+ */
+export function useUpdateSiftLogger(options?: any) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ node, data }: { node?: string; data: any }) => {
+      const response = await axiosProcessing.put(
+        HelperUrl.getLinkToServer(`/platform-api/sift-logger/${node}`),
+        data
+      );
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: processingKeys.all });
+      options?.onSuccess?.();
+    },
+    ...options,
+  });
+}
+
+/**
+ * Clear Time Statistics
+ *
+ * Clears time statistics for a node.
+ *
+ * @returns Mutation result
+ */
+export function useClearTimeStats() {
+  const queryClient = useQueryClient();
+  const { selectedNode } = useProcessingStore();
+
+  return useMutation({
+    mutationFn: async () => {
+      const { data } = await axiosProcessing.delete(
+        HelperUrl.getLinkToServer(`/platform-api/stats/time/${selectedNode}`)
+      );
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: processingKeys.all });
+    },
+  });
+}
+
+/**
+ * Clear All Caches
+ *
+ * Clears all caches for a node.
+ *
+ * @returns Mutation result
+ */
+export function useDoClearAllCaches() {
+  const queryClient = useQueryClient();
+  const { selectedNode } = useProcessingStore();
+
+  return useMutation({
+    mutationFn: async () => {
+      const { data } = await axiosProcessing.post(
+        HelperUrl.getLinkToServer(`/platform-api/caches/clear/${selectedNode}`)
+      );
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: processingKeys.all });
+    },
+  });
+}
+
+/**
+ * Hard Reset Consistency Time
+ *
+ * Performs a hard reset of consistency time for a node.
+ *
+ * @returns Mutation result
+ */
+export function useDoHardResetConsistencyTime() {
+  const queryClient = useQueryClient();
+  const { selectedNode } = useProcessingStore();
+
+  return useMutation({
+    mutationFn: async () => {
+      const { data } = await axiosProcessing.post(
+        HelperUrl.getLinkToServer(`/platform-api/consistency/hard-reset/${selectedNode}`)
+      );
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: processingKeys.all });
+    },
+  });
+}
+
+/**
+ * Manual Transition (alias for useManualTransition)
+ */
+export function useDoManualTransition() {
+  return useManualTransition();
+}
+
+/**
+ * Force Mark Processed (alias for useForceMarkProcessed)
+ */
+export function useProcessingQueueForceMarkProcessed() {
+  return useForceMarkProcessed();
+}
+
+/**
+ * Load Service Processes Stats (alias for useServiceProcessesStats)
+ */
+export function useLoadServiceProcessesStats(params?: any) {
+  return useServiceProcessesStats(params);
+}
+
+/**
+ * Get Platform Common Network Info - Server
+ *
+ * Fetches network server information for a node.
+ *
+ * @returns Query result with network server data
+ */
+export function usePlatformCommonNetInfoServer() {
+  const { selectedNode } = useProcessingStore();
+
+  return useQuery({
+    queryKey: processingKeys.all.concat(['net-info-server', selectedNode]),
+    queryFn: async () => {
+      const { data } = await axiosProcessing.get(
+        HelperUrl.getLinkToServer(`/platform-api/net-info/server/${selectedNode}`)
+      );
+      return data;
+    },
+    enabled: !!selectedNode,
+  });
+}
+
+/**
+ * Get Platform Common Network Info - Clients
+ *
+ * Fetches network client information for a node.
+ *
+ * @returns Query result with network clients data
+ */
+export function usePlatformCommonNetInfoClients() {
+  const { selectedNode } = useProcessingStore();
+
+  return useQuery({
+    queryKey: processingKeys.all.concat(['net-info-clients', selectedNode]),
+    queryFn: async () => {
+      const { data } = await axiosProcessing.get(
+        HelperUrl.getLinkToServer(`/platform-api/net-info/clients/${selectedNode}`)
+      );
+      return data;
+    },
+    enabled: !!selectedNode,
+  });
+}
+
+/**
+ * Get Platform Common ZooKeeper Info - Current Node Info
+ *
+ * Fetches current ZooKeeper node information.
+ *
+ * @returns Query result with ZK node data
+ */
+export function usePlatformCommonZkInfoCurrNodeInfo() {
+  const { selectedNode } = useProcessingStore();
+
+  return useQuery({
+    queryKey: processingKeys.all.concat(['zk-info-curr-node', selectedNode]),
+    queryFn: async () => {
+      const { data } = await axiosProcessing.get(
+        HelperUrl.getLinkToServer(`/platform-api/zk-info/curr-node/${selectedNode}`)
+      );
+      return data;
+    },
+    enabled: !!selectedNode,
+  });
+}
+
+/**
+ * Get Platform Common ZooKeeper Info - Loaded Online Nodes
+ *
+ * Fetches loaded online nodes from ZooKeeper.
+ *
+ * @returns Query result with online nodes data
+ */
+export function usePlatformCommonZkInfoLoadedOnlineNodes() {
+  const { selectedNode } = useProcessingStore();
+
+  return useQuery({
+    queryKey: processingKeys.all.concat(['zk-info-online-nodes', selectedNode]),
+    queryFn: async () => {
+      const { data } = await axiosProcessing.get(
+        HelperUrl.getLinkToServer(`/platform-api/zk-info/online-nodes/${selectedNode}`)
+      );
+      return data;
+    },
+    enabled: !!selectedNode,
+  });
+}
+
+/**
+ * Get Platform Common ZooKeeper Info - Loaded Shards Distribution
+ *
+ * Fetches shards distribution from ZooKeeper.
+ *
+ * @returns Query result with shards distribution data
+ */
+export function usePlatformCommonZkInfoLoadedShardsDistribution() {
+  const { selectedNode } = useProcessingStore();
+
+  return useQuery({
+    queryKey: processingKeys.all.concat(['zk-info-shards-distribution', selectedNode]),
+    queryFn: async () => {
+      const { data } = await axiosProcessing.get(
+        HelperUrl.getLinkToServer(`/platform-api/zk-info/shards-distribution/${selectedNode}`)
+      );
+      return data;
+    },
+    enabled: !!selectedNode,
+  });
+}
+
+/**
+ * Get Transactions View (alias for useTransactions)
+ */
+export function useTransactionsView(params?: any) {
+  return useTransactions(params);
+}
+
+/**
+ * Get Transactions View Members (alias for useTransactionMembers)
+ */
+export function useTransactionsViewMembers(id: string, params?: any) {
+  return useTransactionMembers(id, params);
+}
+
+/**
+ * Get Transactions View Events (alias for useTransactionEvents)
+ */
+export function useTransactionsViewEvents(id: string, params?: any) {
+  return useTransactionEvents(id, params);
+}
+
 export default {
   useClusterStats,
   useSummary,
@@ -740,5 +1013,21 @@ export default {
   useGrafanaPanelsByUid,
   useForceMarkProcessed,
   useManualTransition,
+  useSiftLogger,
+  useUpdateSiftLogger,
+  useClearTimeStats,
+  useDoClearAllCaches,
+  useDoHardResetConsistencyTime,
+  useDoManualTransition,
+  useProcessingQueueForceMarkProcessed,
+  useLoadServiceProcessesStats,
+  usePlatformCommonNetInfoServer,
+  usePlatformCommonNetInfoClients,
+  usePlatformCommonZkInfoCurrNodeInfo,
+  usePlatformCommonZkInfoLoadedOnlineNodes,
+  usePlatformCommonZkInfoLoadedShardsDistribution,
+  useTransactionsView,
+  useTransactionsViewMembers,
+  useTransactionsViewEvents,
 };
 

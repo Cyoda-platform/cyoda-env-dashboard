@@ -34,13 +34,15 @@ export const TransactionsEntitiesFilter: React.FC<TransactionsEntitiesFilterProp
 
   const { data: entityClassesData } = useEntitiesListPossible();
 
-  const entityClassOptions = entityClassesData?.map((el: string) => ({
-    label: el,
-    value: el,
-  })) || [];
+  const entityClassOptions = Array.isArray(entityClassesData)
+    ? entityClassesData.map((el: string) => ({
+        label: el,
+        value: el,
+      }))
+    : [];
 
   useEffect(() => {
-    if (entityClassesData && entityClassesData.length > 0) {
+    if (Array.isArray(entityClassesData) && entityClassesData.length > 0) {
       const initialClass = entityClassesData[0];
       setForm((prev) => ({ ...prev, entityClass: initialClass }));
       onChange?.({ ...form, entityClass: initialClass });

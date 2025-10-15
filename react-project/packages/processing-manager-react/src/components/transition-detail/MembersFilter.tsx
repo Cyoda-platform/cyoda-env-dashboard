@@ -35,10 +35,12 @@ export const MembersFilter = forwardRef<MembersFilterRef, MembersFilterProps>(
 
     const { data: entityClassesData } = useEntitiesListPossible();
 
-    const entityClassOptions = entityClassesData?.map((el: string) => ({
-      label: el,
-      value: el,
-    })) || [];
+    const entityClassOptions = Array.isArray(entityClassesData)
+      ? entityClassesData.map((el: string) => ({
+          label: el,
+          value: el,
+        }))
+      : [];
 
     const actionTypeOptions = ['ALL', 'READ', 'UPDATE', 'REMOVE'];
 

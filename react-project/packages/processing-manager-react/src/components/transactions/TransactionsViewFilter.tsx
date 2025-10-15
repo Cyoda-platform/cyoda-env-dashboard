@@ -36,11 +36,12 @@ export const TransactionsViewFilter: React.FC<TransactionsViewFilterProps> = ({
 
   const { data: statusesData } = useTransactionStatuses();
 
-  const transactionStatusOptions =
-    statusesData?.map((status: string) => ({
-      label: status,
-      value: status,
-    })) || [];
+  const transactionStatusOptions = Array.isArray(statusesData)
+    ? statusesData.map((status: string) => ({
+        label: status,
+        value: status,
+      }))
+    : [];
 
   useEffect(() => {
     // Emit initial form values

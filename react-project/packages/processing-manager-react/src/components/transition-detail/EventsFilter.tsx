@@ -43,17 +43,21 @@ export const EventsFilter = forwardRef<EventsFilterRef, EventsFilterProps>(
     const { data: statusesData } = useTransactionEventStatusesList();
     const { data: queuesData } = useProcessingQueues();
 
-    const entityClassOptions = entityClassesData?.map((el: string) => ({
-      label: el,
-      value: el,
-    })) || [];
+    const entityClassOptions = Array.isArray(entityClassesData)
+      ? entityClassesData.map((el: string) => ({
+          label: el,
+          value: el,
+        }))
+      : [];
 
-    const transactionStatusOptions = statusesData?.map((el: string) => ({
-      label: el,
-      value: el,
-    })) || [];
+    const transactionStatusOptions = Array.isArray(statusesData)
+      ? statusesData.map((el: string) => ({
+          label: el,
+          value: el,
+        }))
+      : [];
 
-    const queueOptions = queuesData || [];
+    const queueOptions = (Array.isArray(queuesData) ? queuesData : []);
 
     useImperativeHandle(ref, () => ({
       form,

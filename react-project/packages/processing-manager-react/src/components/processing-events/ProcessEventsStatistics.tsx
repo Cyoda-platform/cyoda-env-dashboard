@@ -33,7 +33,7 @@ export const ProcessEventsStatistics: React.FC = () => {
   const [processorFilter, setProcessorFilter] = useState<string | undefined>(undefined);
 
   const tableData = useMemo(() => {
-    if (!statsData) return [];
+    if (!statsData || !Array.isArray(statsData)) return [];
     return statsData.map((el: any) => {
       const { key } = el;
       return {
@@ -47,7 +47,8 @@ export const ProcessEventsStatistics: React.FC = () => {
   }, [statsData]);
 
   const queueOptions = useMemo(() => {
-    return queuesData || [];
+    if (!queuesData || !Array.isArray(queuesData)) return [];
+    return queuesData;
   }, [queuesData]);
 
   const shardOptions = useMemo(() => {

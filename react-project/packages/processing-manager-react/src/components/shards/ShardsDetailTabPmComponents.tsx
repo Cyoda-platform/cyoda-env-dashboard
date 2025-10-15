@@ -5,6 +5,13 @@
 
 import { useState } from 'react';
 import { Card, Tabs } from 'antd';
+import {
+  PmComponentsExecutionQueuesInfo,
+  PmComponentsExecutionMonitors,
+  PmComponentsServiceProcessesView,
+  PmComponentsCyodaRunnableComponents,
+  PmComponentsClear,
+} from '../pm-components';
 import './ShardsDetailTabPmComponents.scss';
 
 const { TabPane } = Tabs;
@@ -19,27 +26,22 @@ export default function ShardsDetailTabPmComponents() {
           <div className="wrap-title flex">
             <h3>PM components</h3>
             <span>
-              {/* TODO: Add Clear button component */}
-              {/* <ShardsDetailTabPmComponentsClear /> */}
+              <PmComponentsClear />
             </span>
           </div>
 
           <Tabs activeKey={activeTab} onChange={setActiveTab}>
             <TabPane tab="Execution Queues Info" key="execution-queues">
-              {/* TODO: Add ExecutionQueuesInfo component */}
-              <div>Execution Queues Info - To be implemented</div>
+              <PmComponentsExecutionQueuesInfo />
             </TabPane>
             <TabPane tab="Execution Monitors" key="execution-monitors">
-              {/* TODO: Add ExecutionMonitors component */}
-              <div>Execution Monitors - To be implemented</div>
+              <PmComponentsExecutionMonitors />
             </TabPane>
             <TabPane tab="Service Processes View" key="service-processes">
-              {/* TODO: Add ServiceProcessesView component */}
-              <div>Service Processes View - To be implemented</div>
+              <PmComponentsServiceProcessesView />
             </TabPane>
             <TabPane tab="Cyoda Runnable Components" key="runnable-components">
-              {/* TODO: Add CyodaRunnableComponents component */}
-              <div>Cyoda Runnable Components - To be implemented</div>
+              <PmComponentsCyodaRunnableComponents />
             </TabPane>
           </Tabs>
         </Card>

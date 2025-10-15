@@ -53,7 +53,7 @@ export const ProcessingEventsView: React.FC = () => {
   const { data: queuesData } = useProcessingQueues({});
 
   const tableData: ProcessingEvent[] = useMemo(() => {
-    if (!eventsData) return [];
+    if (!eventsData || !Array.isArray(eventsData)) return [];
     return eventsData.map((el: any) => ({
       createTime: el.createTime,
       doneTime: el.doneTime,
@@ -72,7 +72,8 @@ export const ProcessingEventsView: React.FC = () => {
   }, [eventsData]);
 
   const queueOptions = useMemo(() => {
-    return queuesData || [];
+    if (!queuesData || !Array.isArray(queuesData)) return [];
+    return queuesData;
   }, [queuesData]);
 
   const shardOptions = useMemo(() => {

@@ -78,7 +78,7 @@ export const TimeStatisticsCountStat: React.FC = () => {
     <div>
       <Table
         columns={columns}
-        dataSource={data || []}
+        dataSource={Array.isArray(data) ? data : []}
         rowKey="key"
         loading={isLoading}
         bordered

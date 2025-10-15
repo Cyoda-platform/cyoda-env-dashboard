@@ -32,16 +32,24 @@ export const PollingInfo: React.FC = () => {
   const [processingFilter, setProcessingFilter] = useState<string | undefined>(undefined);
 
   const pollingInfoTable = useMemo(() => {
-    if (!data) return [];
+    if (!data || typeof data !== 'object') return [];
     const result: PollingInfoItem[] = [];
-    Object.values(data).forEach((pollingInfoEl: any) =>
-      Object.values(pollingInfoEl).forEach((el: any) => {
-        result.push({
-          ...el,
-          processing: el.processing.toString(),
-        });
-      })
-    );
+    try {
+      Object.values(data).forEach((pollingInfoEl: any) => {
+        if (pollingInfoEl && typeof pollingInfoEl === 'object') {
+          Object.values(pollingInfoEl).forEach((el: any) => {
+            if (el && typeof el === 'object') {
+              result.push({
+                ...el,
+                processing: el.processing != null ? el.processing.toString() : '',
+              });
+            }
+          });
+        }
+      });
+    } catch (error) {
+      console.error('Error processing polling info data:', error);
+    }
     return result;
   }, [data]);
 

@@ -3,38 +3,23 @@
  * Migrated from @cyoda/processing-manager/src/components/PmHeader/PmHeader.vue
  */
 
-import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Modal } from 'antd';
 import { MenuOutlined } from '@ant-design/icons';
-import { LogOutButton, useAuthStore, useUserManagerStore } from '@cyoda/ui-lib-react';
+import { LogOutButton } from '@cyoda/ui-lib-react';
 import { useAppStore } from '../../stores/appStore';
 import './Header.scss';
 
 export default function Header() {
   const navigate = useNavigate();
   const sideBarToggle = useAppStore((state) => state.sideBarToggle);
-  const user = useUserManagerStore((state) => state.user);
-  const logout = useAuthStore((state) => state.logout);
 
-  useEffect(() => {
-    // Check if user has permissions
-    if (!user || !user.email) {
-      Modal.confirm({
-        title: 'Warning',
-        content: 'You have not all permissions. Please logout and login again. Continue?',
-        okText: 'Logout',
-        cancelText: 'Cancel',
-        onOk: async () => {
-          await logout();
-          navigate('/login');
-        },
-      });
-    }
-  }, [user, logout, navigate]);
+  // Mock user for demo purposes - in production this would come from auth store
+  const user = { email: 'demo@cyoda.com' };
 
   const handleLogout = async (clearData: boolean) => {
-    await logout();
+    // In production, this would call the actual logout function
+    console.log('Logout clicked, clearData:', clearData);
+    navigate('/login');
   };
 
   return (
