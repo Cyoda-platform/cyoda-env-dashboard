@@ -5,11 +5,10 @@
  * This component loads report data and sends it to Tableau Web Data Connector
  */
 
-import React, { useState, useEffect, useMemo } from 'react';
-import { Table } from 'antd';
-import type { ColumnsType } from 'antd/es/table';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import type { ConfigDefinition, ReportingReportRows, TableColumn, TableauConnectionData } from '@/types';
+import './ReportTableRows.scss';
 
 interface ReportTableRowsProps {
   tableLinkRows: string;
@@ -24,9 +23,7 @@ const ReportTableRows: React.FC<ReportTableRowsProps> = ({
 }) => {
   const [tableData, setTableData] = useState<any[]>([]);
   const [tableColumns, setTableColumns] = useState<TableColumn[]>([]);
-  const [totalElements, setTotalElements] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
-  const [isLoading, setIsLoading] = useState(false);
+  const [pageSize] = useState(10);
 
   // Load rows from API
   const loadRows = async (link: string): Promise<ReportingReportRows> => {
@@ -59,7 +56,7 @@ const ReportTableRows: React.FC<ReportTableRowsProps> = ({
     }
 
     if (field.indexOf('_["#') > -1) {
-      field = field.replace(/\[("|")(.*)("|")\]/, (match, ...args) => {
+      field = field.replace(/\[("|")(.*)("|")\]/, (_match, ...args) => {
         return args[1];
       });
     }
@@ -107,25 +104,19 @@ const ReportTableRows: React.FC<ReportTableRowsProps> = ({
     const loadData = async () => {
       if (!tableLinkRows) return;
 
-      setIsLoading(true);
       try {
         const size = lazyLoading ? pageSize : 100000;
         const data = await loadRows(`${tableLinkRows}?size=${size}`);
-        
-        if (!lazyLoading) {
-          setTotalElements(data.page.totalElements);
-        }
-        
+
         setTableColumnsFromConfig();
         setTableDataFromResponse(data);
       } catch (error) {
         console.error('Failed to load report rows:', error);
-      } finally {
-        setIsLoading(false);
       }
     };
 
     loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tableLinkRows, lazyLoading, pageSize]);
 
   // Send data to Tableau when tableData changes
@@ -151,17 +142,8 @@ const ReportTableRows: React.FC<ReportTableRowsProps> = ({
     window.tableau.connectionData = JSON.stringify(connectionData);
     window.tableau.connectionName = configDefinition.description || 'Report Data';
     window.tableau.submit();
-  }, [tableData, tableColumns, configDefinition]);
-
-  // Convert table columns to Ant Design columns
-  const antColumns: ColumnsType<any> = useMemo(() => {
-    return tableColumns.map((col) => ({
-      title: col.label,
-      dataIndex: col.prop,
-      key: col.prop,
-      ellipsis: true,
-    }));
-  }, [tableColumns]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tableData, tableColumns]);
 
   // This component doesn't render anything visible
   // It just sends data to Tableau

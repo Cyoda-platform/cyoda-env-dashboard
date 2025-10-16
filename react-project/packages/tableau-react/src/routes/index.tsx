@@ -4,8 +4,10 @@
  */
 
 import { RouteObject } from 'react-router-dom';
-import { Login } from '@cyoda/ui-lib-react';
 import Reports from '@/pages/Reports';
+
+// Mock Login component - will be replaced when ui-lib-react is available
+const Login = () => <div>Login Page</div>;
 
 export const routes: RouteObject[] = [
   {

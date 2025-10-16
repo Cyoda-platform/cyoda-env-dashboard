@@ -23,9 +23,17 @@ export default defineConfig({
         '**/*.d.ts',
         '**/*.config.*',
         '**/mockData',
-        'vitest.setup.ts'
+        'vitest.setup.ts',
+        '**/e2e/**',
+        '**/*.spec.ts'
       ]
-    }
+    },
+    exclude: [
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/e2e/**',
+      '**/*.spec.ts'
+    ]
   },
   resolve: {
     alias: {

@@ -1,0 +1,15 @@
+#root {
+  width: 100%;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.ant-layout {
+  min-height: 100vh;
+}
+
+.ant-layout-content {
+  padding: 0;
+  background: #f0f2f5;
+}
+

@@ -3,7 +3,7 @@
  * Migrated from: .old_project/packages/tableau/src/components/HistoryTable.vue
  */
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Table, notification } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { useQuery } from '@tanstack/react-query';
@@ -14,11 +14,11 @@ import './HistoryTable.scss';
 
 interface HistoryTableProps {
   filter: HistoryFilter;
-  settings: HistorySettings;
+  settings?: HistorySettings;
   onChange: (data: { reportDefinition: ReportHistoryData; configDefinition: ConfigDefinition }) => void;
 }
 
-const HistoryTable: React.FC<HistoryTableProps> = ({ filter, settings, onChange }) => {
+const HistoryTable: React.FC<HistoryTableProps> = ({ filter, onChange }) => {
   const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
 
   // Fetch report history

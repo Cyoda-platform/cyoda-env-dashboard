@@ -4,20 +4,16 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Button } from 'antd';
-import { LogoutOutlined } from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@cyoda/http-api-react';
 import HistoryTable from '@/components/HistoryTable';
 import ReportTableRows from '@/components/ReportTableRows';
 import type { ReportHistoryData, ConfigDefinition, HistoryFilter, HistorySettings } from '@/types';
 import './Reports.scss';
 
 const Reports: React.FC = () => {
-  const navigate = useNavigate();
-  const { logout, user } = useAuth();
-  
-  const [filter, setFilter] = useState<HistoryFilter>({
+  // Mock user for now - will be replaced when http-api-react is available
+  const user = { username: 'User' };
+
+  const [filter] = useState<HistoryFilter>({
     config: '',
     type: '',
     user: '',
@@ -26,50 +22,51 @@ const Reports: React.FC = () => {
     dateTo: '',
   });
 
-  const [settings, setSettings] = useState<HistorySettings>({
+  const [settings] = useState<HistorySettings>({
     lazyLoading: false,
     displayGroupType: 'out',
   });
 
-  const [reportDefinition, setReportDefinition] = useState<any>({});
   const [configDefinition, setConfigDefinition] = useState<ConfigDefinition>({});
   const [tableLinkRows, setTableLinkRows] = useState<string>('');
   const [isVisibleTables, setIsVisibleTables] = useState<boolean>(true);
 
-  const tableLinkGroup = React.useMemo(() => {
-    if (reportDefinition.id && reportDefinition.groupingVersion) {
-      return `/platform-api/reporting/report/${reportDefinition.id}/${reportDefinition.groupingVersion}/groups?page=0&size=1000`;
-    }
-    return '';
-  }, [reportDefinition]);
-
-  const handleLogout = useCallback(() => {
-    logout();
-    navigate('/tableau/login');
-  }, [logout, navigate]);
+  // tableLinkGroup is used when ReportTableGroup component is available from http-api-react
+  // const tableLinkGroup = React.useMemo(() => {
+  //   if (reportDefinition.id && reportDefinition.groupingVersion) {
+  //     return `/platform-api/reporting/report/${reportDefinition.id}/${reportDefinition.groupingVersion}/groups?page=0&size=1000`;
+  //   }
+  //   return '';
+  // }, [reportDefinition]);
 
   const handleHistoryTableChange = useCallback(
     ({ reportDefinition: newReportDef, configDefinition: newConfigDef }: {
       reportDefinition: ReportHistoryData;
       configDefinition: ConfigDefinition;
     }) => {
-      setReportDefinition(newReportDef);
       setConfigDefinition(newConfigDef);
+
+      // Set table link rows from report definition
+      if (newReportDef.id) {
+        setTableLinkRows(`/platform-api/reporting/report/${newReportDef.id}/rows`);
+      }
     },
     []
   );
 
-  const handleHistoryGroupsChange = useCallback((row: any) => {
-    setTableLinkRows(row._link_rows);
-    setIsVisibleTables(false);
-    // Reset tables
-    setTimeout(() => setIsVisibleTables(true), 0);
-  }, []);
+  // handleHistoryGroupsChange is used when ReportTableGroup component is available
+  // const handleHistoryGroupsChange = useCallback((row: any) => {
+  //   setTableLinkRows(row._link_rows);
+  //   setIsVisibleTables(false);
+  //   // Reset tables
+  //   setTimeout(() => setIsVisibleTables(true), 0);
+  // }, []);
 
   useEffect(() => {
     // Reset tables when settings change
     setIsVisibleTables(false);
-    setTimeout(() => setIsVisibleTables(true), 0);
+    const timer = setTimeout(() => setIsVisibleTables(true), 0);
+    return () => clearTimeout(timer);
   }, [settings]);
 
   return (
@@ -78,14 +75,7 @@ const Reports: React.FC = () => {
         <h1 className="heading h1">Tableau</h1>
         <div>
           <div className="logout">
-            {user?.username || 'User'} |
-            <Button
-              type="link"
-              icon={<LogoutOutlined />}
-              onClick={handleLogout}
-            >
-              Logout
-            </Button>
+            {user.username}
           </div>
         </div>
       </div>

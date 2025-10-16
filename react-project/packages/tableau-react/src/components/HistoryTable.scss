@@ -1,0 +1,76 @@
+/**
+ * HistoryTable Component Styles
+ * Migrated from: .old_project/packages/tableau/src/components/HistoryTable.vue
+ */
+
+.history-table {
+  width: 100%;
+
+  // Table styling
+  .ant-table {
+    font-size: 14px;
+    border: 1px solid #bdc3c7;
+
+    .ant-table-thead > tr > th {
+      background: #f5f7f7;
+      color: rgba(0, 0, 0, 0.54);
+      font-weight: 600;
+      font-size: 12px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+      padding-top: 4px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid #bdc3c7;
+      border-right: 1px solid #bdc3c7;
+    }
+
+    .ant-table-tbody > tr {
+      cursor: pointer;
+      transition: background-color 0.2s;
+
+      &:hover {
+        background-color: #f5f5f5;
+      }
+
+      &.selected-row {
+        background-color: #e6f7ff;
+      }
+
+      &.row-disabled td {
+        opacity: 0.5;
+        background-color: transparent !important;
+      }
+    }
+  }
+
+  // Code and pre elements for syntax highlighting
+  .conditions-pre,
+  code {
+    white-space: pre-wrap !important;
+  }
+
+  // Info dialog styles
+  .info-dialog {
+    ul {
+      li {
+        margin-bottom: 5px;
+      }
+    }
+  }
+
+  // Copy icon styles
+  .copy-icon {
+    opacity: 0.5;
+    transition: opacity 0.5s;
+    cursor: pointer;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  // No wrap for cells
+  .no-wrap .cell {
+    white-space: nowrap !important;
+  }
+}
+

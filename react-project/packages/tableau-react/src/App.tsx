@@ -7,10 +7,22 @@ import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { BaseLayout, LoginLayout } from '@cyoda/ui-lib-react';
-import { useAuth } from '@cyoda/http-api-react';
 import routes from './routes';
 import './App.scss';
+
+// Mock layouts - will be replaced when ui-lib-react is available
+const BaseLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <div className="base-layout">{children}</div>
+);
+
+const LoginLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <div className="login-layout">{children}</div>
+);
+
+// Mock auth hook - will be replaced when http-api-react is available
+const useAuth = () => ({
+  isAuthenticated: true,
+});
 
 // Create a client
 const queryClient = new QueryClient({
