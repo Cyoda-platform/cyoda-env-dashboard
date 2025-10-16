@@ -1,0 +1,157 @@
+.mapping-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.mapping-canvas.active-relation {
+  cursor: crosshair;
+}
+
+.mapping-canvas path.line {
+  pointer-events: stroke;
+  cursor: pointer;
+  transition: stroke-width 0.2s ease;
+}
+
+.mapping-canvas path.line:hover {
+  stroke-width: 4px !important;
+}
+
+.mapping-canvas path.line.type-columnMapping {
+  stroke: #67c23a;
+}
+
+.mapping-canvas path.line.type-functionalMapping {
+  stroke: #E6A23C;
+}
+
+.mapping-canvas path.line.type-cobiCoreMetadata {
+  stroke: #409eff;
+}
+
+.mapping-canvas path.invisible-line {
+  pointer-events: stroke;
+  cursor: pointer;
+  stroke-width: 10px;
+  visibility: hidden;
+}
+
+/* Relation circles */
+.circle {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: #858484;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  z-index: 2;
+  pointer-events: all;
+}
+
+.circle:hover {
+  transform: scale(1.3);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+}
+
+.circle.circle-can-be-selected {
+  background-color: #409eff;
+}
+
+.circle.has-relation {
+  background-color: #67c23a;
+}
+
+.circle.active {
+  background-color: #f56c6c;
+  transform: scale(1.3);
+}
+
+/* Mapping container */
+.mapping-container {
+  position: relative;
+  display: flex;
+  width: 100%;
+  min-height: 600px;
+  overflow: auto;
+}
+
+.mapping-container .source-data-column,
+.mapping-container .target-data-column {
+  flex: 1;
+  padding: 20px;
+  position: relative;
+  z-index: 2;
+  pointer-events: all;
+}
+
+.mapping-container .source-data-column {
+  padding-right: 40px;
+}
+
+.mapping-container .target-data-column {
+  padding-left: 40px;
+}
+
+/* Data rows */
+.data-row {
+  display: flex;
+  align-items: center;
+  padding: 8px 0;
+  position: relative;
+}
+
+.data-row .circle {
+  margin-left: 8px;
+}
+
+.data-row.source-row .circle {
+  margin-left: auto;
+}
+
+.data-row.target-row .circle {
+  margin-right: auto;
+}
+
+/* Highlighted relations */
+.mapping-canvas path.line.highlighted {
+  stroke-width: 4px !important;
+  filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.3));
+}
+
+/* Active drag state */
+.is-active-drag {
+  cursor: crosshair;
+}
+
+.is-active-drag .circle-can-be-selected {
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.8;
+  }
+}
+
+/* Scrolling state */
+body.scroll .mapping-canvas {
+  pointer-events: none;
+}
+
+/* Error state for not-exist relations */
+.mapping-canvas path.line.not-exist {
+  stroke: #F56C6C;
+  stroke-dasharray: 5, 5;
+}
+

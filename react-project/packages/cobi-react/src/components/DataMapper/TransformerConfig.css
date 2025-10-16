@@ -1,0 +1,73 @@
+.transformer-config {
+  padding: 8px 0;
+}
+
+.transformer-config .dialog-title-info {
+  background-color: #f5f5f5;
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  font-size: 13px;
+}
+
+.transformer-config .dialog-title-info div {
+  margin-bottom: 4px;
+}
+
+.transformer-config .dialog-title-info div:last-child {
+  margin-bottom: 0;
+}
+
+.transformer-config .dialog-title-info strong {
+  font-weight: 600;
+  color: #333;
+}
+
+.transformer-item {
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  padding: 16px;
+  margin-bottom: 16px;
+  background-color: #fafafa;
+}
+
+.transformer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.transformer-header h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.transformer-config .ant-form-item {
+  margin-bottom: 16px;
+}
+
+.transformer-config .ant-divider {
+  margin: 16px 0;
+}
+
+.transformer-config .ant-empty {
+  margin: 24px 0;
+}
+
+.transformer-config .ant-alert {
+  font-size: 12px;
+}
+
+/* Parameter inputs */
+.transformer-config .ant-input,
+.transformer-config .ant-input-number {
+  width: 100%;
+}
+
+/* Transformer type select */
+.transformer-config .ant-select {
+  width: 100%;
+}
+
