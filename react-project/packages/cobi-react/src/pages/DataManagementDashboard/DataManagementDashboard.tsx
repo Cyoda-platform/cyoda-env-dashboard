@@ -3,15 +3,19 @@ import { Card, Input, Table, Button, Space, Tag } from 'antd';
 import { PlayCircleOutlined, ProjectOutlined } from '@ant-design/icons';
 import { useQuery } from '@tanstack/react-query';
 import dayjs from 'dayjs';
-import { getListAll } from '../../api/dataSourceConfigApi';
+import { getListAll, datasources } from '../../api/dataSourceConfigApi';
 import { getListAllDataMappings } from '../../api/dataMappingApi';
 import type { DataSourceConfigDto, MappingConfigDto } from '../../types';
 import DiagramDialog, { DiagramDialogRef } from './components/DiagramDialog';
+import DataSourceConfigDialogRequest, {
+  DataSourceConfigDialogRequestRef,
+} from './components/ExecuteDialog/DataSourceConfigDialogRequest';
 import './DataManagementDashboard.css';
 
 const DataManagementDashboard: React.FC = () => {
   const [filter, setFilter] = useState('');
   const diagramDialogRef = useRef<DiagramDialogRef>(null);
+  const executeDialogRef = useRef<DataSourceConfigDialogRequestRef>(null);
 
   // Fetch data source configurations
   const { data: dataSourceConfigs = [], isLoading } = useQuery({
@@ -28,6 +32,15 @@ const DataManagementDashboard: React.FC = () => {
     queryFn: async () => {
       const response = await getListAllDataMappings();
       return response.data || [];
+    },
+  });
+
+  // Fetch datasources with params
+  const { data: datasourcesData } = useQuery({
+    queryKey: ['datasources'],
+    queryFn: async () => {
+      const response = await datasources();
+      return response.data || {};
     },
   });
 
@@ -65,8 +78,18 @@ const DataManagementDashboard: React.FC = () => {
   };
 
   const handlePlay = (record: DataSourceConfigDto) => {
-    // TODO: Implement execution dialog
-    console.log('Execute:', record);
+    if (!datasourcesData || !datasourcesData.data_sources) {
+      console.error('Datasources not loaded');
+      return;
+    }
+
+    const dataSource = datasourcesData.data_sources.find((ds: any) => ds.id === record.id);
+    if (!dataSource) {
+      console.error('Data source not found');
+      return;
+    }
+
+    executeDialogRef.current?.openDialog(dataSource, record);
   };
 
   const handleViewDiagram = (record: DataSourceConfigDto) => {
@@ -205,6 +228,7 @@ const DataManagementDashboard: React.FC = () => {
         />
       </Card>
       <DiagramDialog ref={diagramDialogRef} />
+      <DataSourceConfigDialogRequest ref={executeDialogRef} />
     </div>
   );
 };

@@ -202,7 +202,7 @@ dist/index.js   2,536.95 kB │ gzip: 622.66 kB
 | Feature | Status | Notes |
 |---------|--------|-------|
 | Data Mapper | ✅ 100% | Full visual mapping with SVG.js |
-| Data Source Config | ✅ 90% | Core features complete |
+| Data Source Config | ✅ 100% | All core features complete |
 | Data Chaining | ✅ 100% | Full CRUD with mapping |
 | Dashboard | ✅ 100% | **Diagram visualization complete!** ← **NEW!** |
 | Tools | ✅ 100% | Blockly editor complete |

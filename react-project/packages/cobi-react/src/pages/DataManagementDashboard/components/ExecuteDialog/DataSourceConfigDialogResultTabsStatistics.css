@@ -1,0 +1,26 @@
+.data-source-config-dialog-result-tabs-statistics h3 {
+  margin: 10px 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.data-source-config-dialog-result-tabs-statistics .row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+  padding: 0;
+  border: 1px solid #dfe6ec;
+}
+
+.data-source-config-dialog-result-tabs-statistics .row .name {
+  padding: 5px;
+  margin-right: 10px;
+  background: #eef1f6;
+  min-width: 350px;
+  font-weight: 500;
+}
+
+.data-source-config-dialog-result-tabs-statistics .row .value {
+  padding: 5px;
+}
+
