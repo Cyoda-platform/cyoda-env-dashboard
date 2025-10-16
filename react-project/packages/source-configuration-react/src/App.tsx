@@ -5,10 +5,12 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ConfigProvider } from 'antd';
-import { BaseLayout } from '@cyoda/ui-lib-react';
+import { ConfigProvider, Layout } from 'antd';
 import SourceConfigRoutes from './routes';
+import ErrorBoundary from './components/ErrorBoundary';
 import './App.css';
+
+const { Content } = Layout;
 
 // Create a client
 const queryClient = new QueryClient({
@@ -23,22 +25,28 @@ const queryClient = new QueryClient({
 
 const App: React.FC = () => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <ConfigProvider
-        theme={{
-          token: {
-            colorPrimary: '#1890ff',
-            borderRadius: 4,
-          },
-        }}
-      >
-        <BrowserRouter basename="/source-configuration">
-          <BaseLayout title="Source Configuration">
-            <SourceConfigRoutes />
-          </BaseLayout>
-        </BrowserRouter>
-      </ConfigProvider>
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <ConfigProvider
+          theme={{
+            token: {
+              colorPrimary: '#1890ff',
+              borderRadius: 4,
+            },
+          }}
+        >
+          <BrowserRouter>
+            <Layout style={{ minHeight: '100vh' }}>
+              <Content style={{ padding: '24px' }}>
+                <ErrorBoundary>
+                  <SourceConfigRoutes />
+                </ErrorBoundary>
+              </Content>
+            </Layout>
+          </BrowserRouter>
+        </ConfigProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 };
 

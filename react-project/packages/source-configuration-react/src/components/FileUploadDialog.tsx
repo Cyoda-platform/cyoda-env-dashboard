@@ -62,7 +62,7 @@ const FileUploadDialog: React.FC = () => {
     );
   };
 
-  const selectedConfig = configs?.find((c) => c.id === selectedConfigId);
+  const selectedConfig = Array.isArray(configs) ? configs.find((c) => c.id === selectedConfigId) : undefined;
   const acceptedFileTypes = selectedConfig
     ? selectedConfig.fileType === 'CSV'
       ? ['text/csv', '.csv']
@@ -89,7 +89,7 @@ const FileUploadDialog: React.FC = () => {
             showSearch
             optionFilterProp="children"
           >
-            {configs?.map((config) => (
+            {Array.isArray(configs) && configs.map((config) => (
               <Select.Option key={config.id} value={config.id}>
                 {config.name} ({config.fileType})
               </Select.Option>

@@ -15,8 +15,9 @@ import {
   Table,
   message,
   Upload,
+  Tooltip,
 } from 'antd';
-import { PlusOutlined, DeleteOutlined, UploadOutlined } from '@ant-design/icons';
+import { PlusOutlined, DeleteOutlined, UploadOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import {
   useSaveConfig,
@@ -297,7 +298,14 @@ const ConfigForm: React.FC = () => {
         ),
       },
       {
-        title: 'Mapper',
+        title: (
+          <Space>
+            Mapper
+            <Tooltip title="Select a mapper class to transform the source data. Mappers can convert data types, format dates, parse strings, etc.">
+              <QuestionCircleOutlined />
+            </Tooltip>
+          </Space>
+        ),
         dataIndex: 'mapperClass',
         key: 'mapperClass',
         render: (text, record, index) => (
@@ -388,7 +396,14 @@ const ConfigForm: React.FC = () => {
         {fileType === 'XML' && (
           <Form.Item
             name="xmlBaseXPath"
-            label="Base XPath"
+            label={
+              <Space>
+                Base XPath
+                <Tooltip title="XPath expression to locate the base element in the XML file. Example: /root/records/record">
+                  <QuestionCircleOutlined />
+                </Tooltip>
+              </Space>
+            }
             rules={[{ required: true, message: 'Please enter base XPath' }]}
           >
             <Input placeholder="/root/element" />
