@@ -1,24 +1,179 @@
+/* Modal Styling */
 .functional-mapping-settings-modal .ant-modal-body {
-  max-height: 70vh;
+  max-height: 85vh;
   overflow-y: auto;
 }
 
-.blockly-toolbar {
-  padding: 12px;
-  background-color: #f5f5f5;
-  border: 1px solid #d9d9d9;
-  border-radius: 4px;
+/* Blockly Workspace Styling */
+.blockly-workspace {
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
   margin-bottom: 16px;
+  min-height: 700px;
+}
+
+/* Ensure Blockly workspace is visible */
+.blockly-workspace > div {
+  min-height: 700px;
+}
+
+.blockly-toolbar {
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 8px 8px 0 0;
+  margin-bottom: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.blockly-toolbar .ant-space-item button {
+  border-radius: 6px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.blockly-toolbar .ant-btn-primary {
+  background: #ffffff;
+  color: #667eea;
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.blockly-toolbar .ant-btn-primary:hover {
+  background: #f0f0f0;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.blockly-toolbar .ant-btn-default {
+  background: rgba(255, 255, 255, 0.9);
+  color: #333;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.blockly-toolbar .ant-btn-default:hover {
+  background: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .blockly-error-section {
   padding: 16px;
+  background-color: #fff7e6;
+  border-radius: 8px;
+  border: 1px solid #ffd591;
 }
 
 .blockly-editor-section {
   position: relative;
+  background-color: #fafafa;
+  border-radius: 8px;
+  padding: 16px;
 }
 
+/* Blockly Toolbox Custom Styling */
+.blocklyToolboxDiv {
+  background-color: #f8f9fa !important;
+  border-right: 2px solid #e0e0e0 !important;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05) !important;
+}
+
+.blocklyTreeRow {
+  padding: 8px 12px !important;
+  border-radius: 6px !important;
+  margin: 4px 8px !important;
+  transition: all 0.2s ease !important;
+}
+
+.blocklyTreeRow:hover {
+  background-color: #e8eaf6 !important;
+  transform: translateX(4px);
+}
+
+.blocklyTreeRowContentContainer {
+  display: flex !important;
+  align-items: center !important;
+}
+
+.blocklyTreeLabel {
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  color: #333 !important;
+}
+
+/* Category Colors - Enhanced */
+.blocklyTreeRow[data-id*="Statements"] {
+  background: linear-gradient(135deg, #5c80a6 0%, #4a6b8a 100%) !important;
+  color: white !important;
+}
+
+.blocklyTreeRow[data-id*="Statements"] .blocklyTreeLabel {
+  color: white !important;
+}
+
+.blocklyTreeRow[data-id*="Expressions"] {
+  background: linear-gradient(135deg, #5ba55b 0%, #4a8a4a 100%) !important;
+  color: white !important;
+}
+
+.blocklyTreeRow[data-id*="Expressions"] .blocklyTreeLabel {
+  color: white !important;
+}
+
+.blocklyTreeRow[data-id*="Transformers"] {
+  background: linear-gradient(135deg, #a5745b 0%, #8a5f4a 100%) !important;
+  color: white !important;
+}
+
+.blocklyTreeRow[data-id*="Transformers"] .blocklyTreeLabel {
+  color: white !important;
+}
+
+.blocklyTreeRow[data-id*="Functions"] {
+  background: linear-gradient(135deg, #a55b80 0%, #8a4a6b 100%) !important;
+  color: white !important;
+}
+
+.blocklyTreeRow[data-id*="Functions"] .blocklyTreeLabel {
+  color: white !important;
+}
+
+/* Blockly Flyout Styling */
+.blocklyFlyout {
+  background-color: #ffffff !important;
+  border-left: 2px solid #e0e0e0 !important;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1) !important;
+  fill: #ffffff !important;
+  fill-opacity: 0.95 !important;
+}
+
+/* Ensure flyout background is visible */
+.blocklyFlyoutBackground {
+  fill: #ffffff !important;
+  fill-opacity: 0.95 !important;
+  stroke: #e0e0e0 !important;
+  stroke-width: 2px !important;
+}
+
+/* Make sure flyout scrollbar is visible */
+.blocklyFlyoutScrollbar {
+  display: block !important;
+  opacity: 1 !important;
+}
+
+/* Blockly Blocks Enhanced Styling */
+.blocklyDraggable {
+  transition: all 0.2s ease !important;
+}
+
+.blocklyDraggable:hover {
+  filter: brightness(1.1) !important;
+  transform: scale(1.02) !important;
+}
+
+/* General Styling */
 .functional-mapping-settings {
   padding: 8px 0;
 }
@@ -59,6 +214,13 @@
   border-radius: 4px;
   padding: 12px;
   background-color: #fafafa;
+  transition: all 0.3s ease;
+}
+
+.statement-item:hover {
+  border-color: #667eea;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
+  transform: translateY(-2px);
 }
 
 .statement-header {
@@ -96,5 +258,168 @@
 .code-editor-modal .monaco-editor {
   border: 1px solid #d9d9d9;
   border-radius: 4px;
+}
+
+/* Code Preview Section */
+.code-preview-section {
+  background-color: #fafafa;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.code-preview-section pre {
+  background: #1e1e1e !important;
+  color: #d4d4d4 !important;
+  border: 1px solid #333 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Blockly Workspace Grid Enhancement */
+.blocklyMainBackground {
+  stroke-width: 1 !important;
+  stroke: #e0e0e0 !important;
+}
+
+/* Blockly Block Shadows */
+.blocklyPath {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  fill-opacity: 1 !important;
+  stroke-opacity: 1 !important;
+}
+
+/* Make sure blocks are visible in workspace */
+.blocklyBlockCanvas .blocklyPath {
+  fill-opacity: 1 !important;
+  stroke-opacity: 1 !important;
+}
+
+/* Ensure blocks in flyout are visible */
+.blocklyFlyout .blocklyBlockCanvas .blocklyPath {
+  fill-opacity: 1 !important;
+  stroke-opacity: 1 !important;
+  visibility: visible !important;
+  display: block !important;
+}
+
+/* Flyout blocks should be visible and interactive */
+.blocklyFlyout .blocklyBlockCanvas {
+  visibility: visible !important;
+  display: block !important;
+}
+
+/* Blockly text should be visible */
+.blocklyText {
+  fill: #ffffff !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  visibility: visible !important;
+}
+
+/* Ensure flyout labels are visible */
+.blocklyFlyout .blocklyText {
+  fill: #333333 !important;
+  visibility: visible !important;
+}
+
+/* Blockly Selected Block */
+.blocklySelected > .blocklyPath {
+  filter: drop-shadow(0 4px 8px rgba(102, 126, 234, 0.4));
+  stroke: #667eea !important;
+  stroke-width: 3px !important;
+}
+
+/* Blockly Dragging Block */
+.blocklyDragging > .blocklyPath {
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.3));
+  opacity: 0.8;
+}
+
+/* Blockly Trash Can */
+.blocklyTrash {
+  opacity: 0.7;
+  transition: all 0.3s ease;
+}
+
+.blocklyTrash:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+/* Blockly Zoom Controls */
+.blocklyZoom {
+  opacity: 0.8;
+  transition: all 0.3s ease;
+}
+
+.blocklyZoom:hover {
+  opacity: 1;
+}
+
+/* Enhanced Toolbox Item Hover */
+.blocklyFlyoutButton {
+  transition: all 0.2s ease !important;
+}
+
+.blocklyFlyoutButton:hover {
+  filter: brightness(1.1) !important;
+  transform: translateX(-4px) !important;
+}
+
+/* Blockly Field Inputs */
+.blocklyEditableText > rect {
+  fill: #ffffff !important;
+  stroke: #667eea !important;
+  stroke-width: 1px !important;
+}
+
+.blocklyEditableText > text {
+  fill: #333333 !important;
+  font-weight: 500 !important;
+}
+
+/* Blockly Dropdown */
+.blocklyDropDownDiv {
+  border-radius: 8px !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15) !important;
+  border: 1px solid #e0e0e0 !important;
+}
+
+/* Blockly Context Menu */
+.blocklyContextMenu {
+  border-radius: 8px !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15) !important;
+  border: 1px solid #e0e0e0 !important;
+}
+
+.blocklyMenuItem {
+  padding: 8px 16px !important;
+  transition: all 0.2s ease !important;
+}
+
+.blocklyMenuItem:hover {
+  background-color: #e8eaf6 !important;
+}
+
+/* Blockly Scrollbar */
+.blocklyScrollbarHandle {
+  fill: #cccccc !important;
+  transition: all 0.2s ease !important;
+}
+
+.blocklyScrollbarHandle:hover {
+  fill: #999999 !important;
+}
+
+/* Info Alert Styling */
+.ant-alert-info {
+  border-radius: 8px;
+}
+
+.ant-alert-info .ant-tag {
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 12px;
 }
 

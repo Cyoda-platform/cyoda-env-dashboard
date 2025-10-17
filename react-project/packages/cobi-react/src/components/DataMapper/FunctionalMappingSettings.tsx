@@ -90,18 +90,26 @@ const FunctionalMappingSettings: React.FC<FunctionalMappingSettingsProps> = ({
 
   const { getListAllFunctions, getListAllTransformers, getListAllDictionaries } = useDataMappingApi();
 
-  // Get toolbox configuration
+  // Get toolbox configuration with enhanced styling
   const getToolbox = () => {
     const statements = HelperFunctionalMapping.getStatements();
     const expressions = HelperFunctionalMapping.getExpressions();
     const functionsGrouped = HelperFunctionalMapping.getFunctions(listAllFunctionsRef.current || []);
     const transformersGrouped = HelperFunctionalMapping.getTransformers(listAllTransformersRef.current || []);
 
+    console.log('[Blockly] Building toolbox:', {
+      statements: statements.length,
+      expressions: expressions.length,
+      functionsGrouped: Object.keys(functionsGrouped).length,
+      transformersGrouped: Object.keys(transformersGrouped).length,
+    });
+
     const contents: any[] = [
       {
         kind: 'category',
-        name: 'Statements',
+        name: '📋 Statements',
         colour: '#5c80a6',
+        categorystyle: 'statement_category',
         contents: statements.map((statement) => ({
           kind: 'block',
           type: statement.value,
@@ -109,8 +117,9 @@ const FunctionalMappingSettings: React.FC<FunctionalMappingSettingsProps> = ({
       },
       {
         kind: 'category',
-        name: 'Expressions',
+        name: '🔢 Expressions',
         colour: '#5ba55b',
+        categorystyle: 'expression_category',
         contents: expressions.map((expression) => ({
           kind: 'block',
           type: expression.value,
@@ -122,11 +131,13 @@ const FunctionalMappingSettings: React.FC<FunctionalMappingSettingsProps> = ({
     if (Object.keys(transformersGrouped).length > 0) {
       contents.push({
         kind: 'category',
-        name: 'Transformers',
+        name: '🔄 Transformers',
         colour: '#a5745b',
+        categorystyle: 'transformer_category',
         contents: Object.keys(transformersGrouped).map((type) => ({
           kind: 'category',
-          name: type,
+          name: `${type}`,
+          colour: '#a5745b',
           contents: transformersGrouped[type].map((transformer: string) => ({
             kind: 'block',
             type: transformer,
@@ -139,11 +150,13 @@ const FunctionalMappingSettings: React.FC<FunctionalMappingSettingsProps> = ({
     if (Object.keys(functionsGrouped).length > 0) {
       contents.push({
         kind: 'category',
-        name: 'Functions',
+        name: '⚡ Functions',
         colour: '#a55b80',
+        categorystyle: 'function_category',
         contents: Object.keys(functionsGrouped).map((type) => ({
           kind: 'category',
-          name: type,
+          name: `${type}`,
+          colour: '#a55b80',
           contents: functionsGrouped[type].map((funcName: string) => ({
             kind: 'block',
             type: funcName,
@@ -156,11 +169,13 @@ const FunctionalMappingSettings: React.FC<FunctionalMappingSettingsProps> = ({
     if (listAllDictionariesRef.current && listAllDictionariesRef.current.length > 0) {
       contents.push({
         kind: 'category',
-        name: 'Dropdown expressions',
+        name: '📚 Dictionaries',
         colour: '#5b68a5',
+        categorystyle: 'dictionary_category',
         contents: listAllDictionariesRef.current.map((dictionary: any) => ({
           kind: 'category',
           name: dictionary.provider,
+          colour: '#5b68a5',
           contents: dictionary.entries.map((entry: any) => ({
             kind: 'block',
             type: HelperFunctionalMapping.getDictionaryName(dictionary, entry),
@@ -185,14 +200,92 @@ const FunctionalMappingSettings: React.FC<FunctionalMappingSettingsProps> = ({
 
       const options: any = {
         grid: {
-          spacing: 25,
+          spacing: 20,
           length: 3,
-          colour: '#ccc',
+          colour: '#e0e0e0',
+          snap: true,
         },
         zoom: {
           controls: true,
+          wheel: true,
+          startScale: 1.0,
+          maxScale: 3,
+          minScale: 0.3,
+          scaleSpeed: 1.2,
         },
+        move: {
+          scrollbars: {
+            horizontal: true,
+            vertical: true,
+          },
+          drag: true,
+          wheel: true,
+        },
+        trashcan: true,
         toolbox: getToolbox(),
+        renderer: 'zelos',
+        theme: {
+          name: 'custom',
+          blockStyles: {
+            statement_category: {
+              colourPrimary: '#5c80a6',
+              colourSecondary: '#4a6b8a',
+              colourTertiary: '#3a5570',
+            },
+            expression_category: {
+              colourPrimary: '#5ba55b',
+              colourSecondary: '#4a8a4a',
+              colourTertiary: '#3a7039',
+            },
+            transformer_category: {
+              colourPrimary: '#a5745b',
+              colourSecondary: '#8a5f4a',
+              colourTertiary: '#704a39',
+            },
+            function_category: {
+              colourPrimary: '#a55b80',
+              colourSecondary: '#8a4a6b',
+              colourTertiary: '#703956',
+            },
+            dictionary_category: {
+              colourPrimary: '#5b68a5',
+              colourSecondary: '#4a568a',
+              colourTertiary: '#394470',
+            },
+          },
+          categoryStyles: {
+            statement_category: {
+              colour: '#5c80a6',
+            },
+            expression_category: {
+              colour: '#5ba55b',
+            },
+            transformer_category: {
+              colour: '#a5745b',
+            },
+            function_category: {
+              colour: '#a55b80',
+            },
+            dictionary_category: {
+              colour: '#5b68a5',
+            },
+          },
+          componentStyles: {
+            workspaceBackgroundColour: '#ffffff',
+            toolboxBackgroundColour: '#f8f9fa',
+            toolboxForegroundColour: '#333333',
+            flyoutBackgroundColour: '#ffffff',
+            flyoutForegroundColour: '#333333',
+            flyoutOpacity: 0.95,
+            scrollbarColour: '#cccccc',
+            scrollbarOpacity: 0.5,
+          },
+          fontStyle: {
+            family: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+            weight: '500',
+            size: 13,
+          },
+        },
       };
 
       console.log('[Blockly] Toolbox configuration:', options.toolbox);
@@ -382,6 +475,17 @@ const FunctionalMappingSettings: React.FC<FunctionalMappingSettingsProps> = ({
       workspaceRef.current.clear();
       (JSONGenerator as any).vue.functionalMappingConfig = fm;
 
+      // If there are no statements, create a default root block
+      if (!fm.statements || fm.statements.length === 0) {
+        console.log('[Blockly] No statements found, creating default root block');
+        const defaultXml = '<xml xmlns="https://developers.google.com/blockly/xml"><block type="functional_mapping_config" x="20" y="20"></block></xml>';
+        const dom = Blockly.utils.xml.textToDom(defaultXml);
+        Blockly.Xml.domToWorkspace(dom, workspaceRef.current);
+        console.log('[Blockly] Default root block created');
+        updateGeneratedCode();
+        return;
+      }
+
       // Create a copy of the data mapping config with only this functional mapping
       const dataMappingCopy = JSON.parse(JSON.stringify(dataMappingConfig));
       const entityMappingCopy = JSON.parse(JSON.stringify(entityMapping));
@@ -415,6 +519,11 @@ const FunctionalMappingSettings: React.FC<FunctionalMappingSettingsProps> = ({
       if (error.message && error.message.indexOf('Unknown block type') > -1) {
         console.error('[Blockly] Unknown block type detected');
         message.error('Some block types are not recognized');
+        // Create default root block on error
+        workspaceRef.current.clear();
+        const defaultXml = '<xml xmlns="https://developers.google.com/blockly/xml"><block type="functional_mapping_config" x="20" y="20"></block></xml>';
+        const dom = Blockly.utils.xml.textToDom(defaultXml);
+        Blockly.Xml.domToWorkspace(dom, workspaceRef.current);
       } else if (error.message && (error.message.indexOf('Ignoring non-existent') > -1 || error.message.indexOf('is already in use') > -1)) {
         console.error('[Blockly] Non-existent parameters or duplicate IDs detected');
         setErrorBlocklyNonExistent(true);
@@ -680,28 +789,49 @@ const FunctionalMappingSettings: React.FC<FunctionalMappingSettingsProps> = ({
                     </Form>
 
                     <Divider style={{ margin: '12px 0' }} />
+
+                    {/* Block Statistics Info */}
+                    <Alert
+                      message={
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+                          <span style={{ fontWeight: 600 }}>📊 Available Blocks:</span>
+                          <Tag color="blue">📋 Statements: {HelperFunctionalMapping.getStatements().length}</Tag>
+                          <Tag color="green">🔢 Expressions: {HelperFunctionalMapping.getExpressions().length}</Tag>
+                          {Object.keys(HelperFunctionalMapping.getTransformers(listAllTransformersRef.current || [])).length > 0 && (
+                            <Tag color="orange">🔄 Transformers: {Object.values(HelperFunctionalMapping.getTransformers(listAllTransformersRef.current || [])).flat().length}</Tag>
+                          )}
+                          {Object.keys(HelperFunctionalMapping.getFunctions(listAllFunctionsRef.current || [])).length > 0 && (
+                            <Tag color="purple">⚡ Functions: {Object.values(HelperFunctionalMapping.getFunctions(listAllFunctionsRef.current || [])).flat().length}</Tag>
+                          )}
+                        </div>
+                      }
+                      type="info"
+                      showIcon={false}
+                      style={{ marginBottom: 16, background: 'linear-gradient(135deg, #e8eaf6 0%, #f3e5f5 100%)', border: '1px solid #b39ddb' }}
+                    />
+
                       {errorBlocklyNonExistent ? (
                         <div className="blockly-error-section">
                           <Alert
-                            message="Warning"
+                            message="⚠️ Warning: Non-Existent Parameters"
                             description="Error with Non Existent parameters. Recommended to re-generate this block or all blocks"
                             type="warning"
                             showIcon
                             style={{ marginBottom: 16 }}
                           />
                           <Space>
-                            <Button onClick={handleRegenerateBlockly}>
-                              <ReloadOutlined /> Regenerate current
+                            <Button onClick={handleRegenerateBlockly} type="primary">
+                              <ReloadOutlined /> Regenerate Current
                             </Button>
-                            <Button onClick={handleRegenerateBlocklyAll}>
-                              <ReloadOutlined /> Regenerate all blocks
+                            <Button onClick={handleRegenerateBlocklyAll} danger>
+                              <ReloadOutlined /> Regenerate All Blocks
                             </Button>
                           </Space>
                         </div>
                       ) : (
                         <>
                           <div className="blockly-toolbar">
-                            <Space wrap>
+                            <Space wrap size="middle">
                               <FunctionalMappingSearch
                                 key={searchKey}
                                 listAllFunctions={listAllFunctionsRef.current}
@@ -732,7 +862,7 @@ const FunctionalMappingSettings: React.FC<FunctionalMappingSettingsProps> = ({
                             ref={blocklyDivRef}
                             className="blockly-workspace blocklyDiv"
                             style={{
-                              height: '450px',
+                              height: '700px',
                               width: '100%',
                               textAlign: 'left'
                             }}
@@ -846,15 +976,67 @@ const FunctionalMappingSettings: React.FC<FunctionalMappingSettingsProps> = ({
                 },
               ]}
             />
-          </Form>
 
           <Divider />
 
+          {/* Quick Reference Guide */}
           <Alert
-            message="Functional Mapping Info"
-            description="Functional mappings allow you to use multiple source paths and custom JavaScript/Groovy code to transform data before mapping it to the target."
+            message={
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '16px' }}>💡</span>
+                <strong>Quick Reference Guide</strong>
+              </div>
+            }
+            description={
+              <div style={{ marginTop: '8px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '12px' }}>
+                  <div>
+                    <strong style={{ color: '#5c80a6' }}>📋 Statements:</strong>
+                    <ul style={{ margin: '4px 0', paddingLeft: '20px', fontSize: '12px' }}>
+                      <li>Assign Variable - Store values in variables</li>
+                      <li>Set Dst Value - Set destination field value</li>
+                      <li>Return - Return a value from mapping</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <strong style={{ color: '#5ba55b' }}>🔢 Expressions:</strong>
+                    <ul style={{ margin: '4px 0', paddingLeft: '20px', fontSize: '12px' }}>
+                      <li>String, Long, Double, Boolean - Constants</li>
+                      <li>Var Read - Read variable value</li>
+                      <li>Src Value Read - Read source data</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <strong style={{ color: '#a5745b' }}>🔄 Transformers:</strong>
+                    <ul style={{ margin: '4px 0', paddingLeft: '20px', fontSize: '12px' }}>
+                      <li>Transform data between formats</li>
+                      <li>Apply custom transformations</li>
+                      <li>Chain multiple transformers</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <strong style={{ color: '#a55b80' }}>⚡ Functions:</strong>
+                    <ul style={{ margin: '4px 0', paddingLeft: '20px', fontSize: '12px' }}>
+                      <li>Simple - Basic operations (concat, etc.)</li>
+                      <li>Reduce - Aggregate data</li>
+                      <li>Enlarge - Expand data structures</li>
+                    </ul>
+                  </div>
+                </div>
+                <Divider style={{ margin: '12px 0' }} />
+                <div style={{ fontSize: '12px', color: '#666' }}>
+                  <strong>💡 Tips:</strong> Drag blocks from the left toolbox to the canvas. Connect blocks by dragging them near each other.
+                  Right-click blocks for more options (copy, paste, delete). Use the zoom controls to navigate large workspaces.
+                </div>
+              </div>
+            }
             type="info"
-            showIcon
+            showIcon={false}
+            style={{
+              background: 'linear-gradient(135deg, #f0f4ff 0%, #fff4f0 100%)',
+              border: '1px solid #d0d7ff',
+              borderRadius: '8px'
+            }}
           />
         </div>
       </Modal>
