@@ -61,6 +61,21 @@ const DataMapperEdit: React.FC = () => {
         dataType: dataToLoad.dataType,
         description: dataToLoad.description,
       });
+
+      // Parse sample content to set source data
+      if (dataToLoad.sampleContent) {
+        try {
+          if (dataToLoad.dataType === 'JSON') {
+            setSourceData(JSON.parse(dataToLoad.sampleContent));
+          } else if (dataToLoad.dataType === 'XML') {
+            setSourceData(dataToLoad.sampleContent);
+          } else if (dataToLoad.dataType === 'CSV') {
+            setSourceData(dataToLoad.sampleContent);
+          }
+        } catch (error) {
+          console.error('Error parsing sample content:', error);
+        }
+      }
     }
   }, [existingMapping, initialDataFromState, form]);
 

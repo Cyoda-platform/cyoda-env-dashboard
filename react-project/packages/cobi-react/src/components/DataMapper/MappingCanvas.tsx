@@ -4,16 +4,7 @@ import type {
   EntityMappingConfigDto,
 } from '../../types';
 import './MappingCanvas.css';
-
-// Import SVG.js dynamically
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-let SVG: any;
-try {
-  // @ts-ignore
-  SVG = require('@svgdotjs/svg.js').SVG;
-} catch (e) {
-  console.error('Failed to load SVG.js:', e);
-}
+import { SVG } from '@svgdotjs/svg.js';
 
 // Relation colors (from HelperMapper)
 export const COLOR_RELATION_COLUMN_MAPPING = '#67c23a';
@@ -259,6 +250,7 @@ const MappingCanvas: React.FC<MappingCanvasProps> = ({
 
         if (!sourceDataColumn || !targetDataColumn) return;
 
+        // Use jsonPath for source (matches Vue implementation line 1099)
         const sourceRow = Array.from(
           sourceDataColumn.querySelectorAll(`[data-relation*="${encodeURIComponent(relation.column.jsonPath)}"]`)
         ).find((el) => {
@@ -267,6 +259,7 @@ const MappingCanvas: React.FC<MappingCanvasProps> = ({
             .includes(encodeURIComponent(relation.column.jsonPath));
         });
 
+        // Use dstColumnPath for target (matches Vue implementation line 1104)
         const targetRow = Array.from(
           targetDataColumn.querySelectorAll(`[data-relation*="${encodeURIComponent(relation.column.dstColumnPath)}"]`)
         ).find((el) => {

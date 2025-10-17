@@ -12,6 +12,9 @@ interface TargetDataNavigationProps {
   onPathSelect?: (path: string, fieldInfo: any) => void;
   searchString?: string;
   dragDropHandler?: any;
+  expandAll?: boolean;
+  collapseAll?: boolean;
+  onExpandCollapseComplete?: () => void;
 }
 
 interface ReportingInfoRow {
@@ -29,6 +32,9 @@ export const TargetDataNavigation: React.FC<TargetDataNavigationProps> = ({
   onPathSelect,
   searchString = '',
   dragDropHandler,
+  expandAll = false,
+  collapseAll = false,
+  onExpandCollapseComplete,
 }) => {
   const [expandedKeys, setExpandedKeys] = useState<React.Key[]>([]);
   const [selectedKeys, setSelectedKeys] = useState<React.Key[]>([]);
@@ -146,10 +152,12 @@ export const TargetDataNavigation: React.FC<TargetDataNavigationProps> = ({
       // Handle mouse up on circle (end drag from source)
       const handleCircleMouseUp = (e: React.MouseEvent) => {
         e.stopPropagation();
+        e.preventDefault();
         if (dragDropHandler && dragDropHandler.isDragging) {
           dragDropHandler.endDragLine({
-            el: e.currentTarget,
+            el: e.currentTarget as HTMLElement,
             path: row.columnPath,
+            srcPath: dragDropHandler.activeRelation?.column?.srcColumnPath,
             clazzType: row.clazzType,
           });
         }
@@ -270,6 +278,21 @@ export const TargetDataNavigation: React.FC<TargetDataNavigationProps> = ({
   const handleCollapseAll = () => {
     setExpandedKeys([]);
   };
+
+  // Handle expand/collapse from parent
+  useEffect(() => {
+    if (expandAll) {
+      handleExpandAll();
+      onExpandCollapseComplete?.();
+    }
+  }, [expandAll]);
+
+  useEffect(() => {
+    if (collapseAll) {
+      handleCollapseAll();
+      onExpandCollapseComplete?.();
+    }
+  }, [collapseAll]);
 
   // Handle mouse move for drag line
   useEffect(() => {

@@ -70,11 +70,26 @@
   font-size: 14px;
   font-weight: 500;
   color: #666;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .col-data-target-entity-title small {
   font-weight: 400;
   color: #999;
+}
+
+.col-data-target-entity-title .ant-badge {
+  line-height: 1;
+}
+
+.col-data-target-entity-title .ant-badge-count {
+  font-size: 11px;
+  height: 18px;
+  line-height: 18px;
+  padding: 0 6px;
+  border-radius: 9px;
 }
 
 /* Main Content */

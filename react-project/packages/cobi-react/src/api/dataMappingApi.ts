@@ -114,6 +114,27 @@ export function getEntityInfo(entityClass: string) {
 }
 
 /**
+ * Get reporting info (entity fields and types)
+ */
+export function getReportingInfo(
+  entityClass: string,
+  parentFldClass?: string,
+  columnPath?: string,
+  onlyRange?: boolean
+) {
+  const params: any = { entityClass };
+  if (parentFldClass) params.parentFldClass = encodeURIComponent(parentFldClass);
+  if (columnPath) params.columnPath = encodeURIComponent(columnPath);
+  if (onlyRange) params.onlyRange = onlyRange;
+
+  const query = Object.keys(params)
+    .map((key) => `${key}=${params[key]}`)
+    .join('&');
+
+  return axios.get(`/platform-api/entity-info/info?${query}`);
+}
+
+/**
  * Get column definitions
  */
 export function getCriteriaDefs(params: { rootClass: string; colPaths: string[] }) {

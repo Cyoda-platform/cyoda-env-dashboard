@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Form, Input, Select, Switch, Tabs, Divider, Button, TreeSelect } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
-import { useEntityTypes } from '../../hooks';
+import { useEntityTypes, useReportingInfo } from '../../hooks';
 import type { EntityMappingConfigDto, ParentRelationConfigDto, MappingConfigDto } from '../../types';
+import { FilterBuilder } from './FilterBuilder';
+import type { ColumnInfo, FilterGroup } from './FilterBuilder/types';
 import './EntitySelection.css';
 
 interface EntitySelectionProps {
@@ -234,6 +236,28 @@ export const EntitySelection: React.FC<EntitySelectionProps> = ({
   });
 
   const [_showErrors, _setShowErrors] = useState(false);
+
+  // Fetch reporting info for filter builder
+  const { data: reportingInfo } = useReportingInfo(
+    entityMapping.entityClass,
+    undefined,
+    undefined,
+    false
+  );
+
+  // Convert reporting info to columns for filter builder
+  const filterBuilderCols: ColumnInfo[] = useMemo(() => {
+    if (!reportingInfo || !Array.isArray(reportingInfo)) {
+      return [];
+    }
+
+    return reportingInfo.map((field: any) => ({
+      alias: field.alias || field.columnPath || '',
+      type: field.type || 'String',
+      typeShort: field.typeShort || field.type || 'String',
+      label: field.label || field.alias || '',
+    }));
+  }, [reportingInfo]);
 
   // Get entity options
   const entityOptions: EntityOption[] = React.useMemo(() => {
@@ -524,83 +548,22 @@ export const EntitySelection: React.FC<EntitySelectionProps> = ({
                 <div style={{ padding: 16 }}>
                   <div style={{ marginBottom: 16 }}>
                     <h4>Entity Filter Configuration</h4>
-                    <p style={{ color: '#666', fontSize: '14px' }}>
-                      Filter conditions to limit which entities are processed during data mapping.
-                    </p>
                   </div>
 
                   {entityMapping.entityFilter && (
-                    <div>
-                      <div style={{
-                        padding: 16,
-                        background: '#f5f5f5',
-                        borderRadius: 4,
-                        border: '1px solid #d9d9d9',
-                        marginBottom: 16
-                      }}>
-                        <div style={{ marginBottom: 8 }}>
-                          <strong>@bean:</strong> <code style={{ fontSize: '11px', background: '#fff', padding: '2px 6px', borderRadius: 3 }}>{entityMapping.entityFilter['@bean']}</code>
-                        </div>
-                        <div style={{ marginBottom: 8 }}>
-                          <strong>Operator:</strong> <span style={{
-                            background: entityMapping.entityFilter.operator === 'AND' ? '#52c41a' : '#1890ff',
-                            color: 'white',
-                            padding: '2px 8px',
-                            borderRadius: 3,
-                            fontSize: '12px',
-                            fontWeight: 'bold'
-                          }}>{entityMapping.entityFilter.operator || 'AND'}</span>
-                        </div>
-                        <div>
-                          <strong>Conditions:</strong> {entityMapping.entityFilter.conditions?.length || 0} condition(s)
-                        </div>
-                      </div>
-
-                      {entityMapping.entityFilter.conditions && entityMapping.entityFilter.conditions.length > 0 && (
-                        <div>
-                          <h5 style={{ marginBottom: 12 }}>Condition Details:</h5>
-                          {entityMapping.entityFilter.conditions.map((cond: any, idx: number) => (
-                            <div key={idx} style={{
-                              marginBottom: 12,
-                              padding: 12,
-                              background: '#fafafa',
-                              border: '1px solid #e8e8e8',
-                              borderRadius: 4
-                            }}>
-                              <div style={{ fontWeight: 'bold', marginBottom: 6, color: '#1890ff' }}>
-                                Condition #{idx + 1}
-                              </div>
-                              {cond['@bean'] && (
-                                <div style={{ fontSize: '11px', marginBottom: 4 }}>
-                                  <strong>Bean:</strong> <code>{cond['@bean']}</code>
-                                </div>
-                              )}
-                              {cond.fieldName && (
-                                <div style={{ fontSize: '12px', marginBottom: 4 }}>
-                                  <strong>Field:</strong> {cond.fieldName}
-                                </div>
-                              )}
-                              {cond.operation && (
-                                <div style={{ fontSize: '12px', marginBottom: 4 }}>
-                                  <strong>Operation:</strong> {cond.operation}
-                                </div>
-                              )}
-                              {cond.value && (
-                                <div style={{ fontSize: '12px' }}>
-                                  <strong>Value:</strong> {JSON.stringify(cond.value)}
-                                </div>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
+                    <FilterBuilder
+                      entityFilter={entityMapping.entityFilter as FilterGroup}
+                      cols={filterBuilderCols}
+                      showErrors={_showErrors}
+                      readOnly={false}
+                      onChange={(updatedFilter) => {
+                        entityMapping.entityFilter = updatedFilter;
+                        if (onEntityMappingChange) {
+                          onEntityMappingChange(entityMapping);
+                        }
+                      }}
+                    />
                   )}
-
-                  <div style={{ marginTop: 16, padding: 12, background: '#e6f7ff', borderRadius: 4 }}>
-                    <strong>ℹ️ Note:</strong> Advanced filter builder UI will be available in a future update.
-                    For now, filters can be configured via the JSON editor or API.
-                  </div>
                 </div>
               ),
             },

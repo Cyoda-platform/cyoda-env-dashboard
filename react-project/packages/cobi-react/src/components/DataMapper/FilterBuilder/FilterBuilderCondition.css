@@ -1,0 +1,55 @@
+.builder-condition-row {
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.builder-condition-row:before {
+  content: "";
+  height: calc(50% + 20px);
+  border-color: #e0e0e0;
+  border-style: dotted;
+  border-width: 0 0 2px 2px;
+  left: 10px;
+  position: absolute;
+  width: 10px;
+  top: -18px;
+}
+
+.builder-condition-row:after {
+  height: 25px;
+  top: calc(50% - 3px);
+  content: "";
+  border-color: #e0e0e0;
+  border-style: dotted;
+  border-width: 0 0 0 2px;
+  width: 10px;
+  left: 10px;
+  position: absolute;
+}
+
+.builder-condition-row.last::after {
+  display: none;
+}
+
+.builder-condition-row .col-err .ant-select-selector {
+  border-color: #ff4d4f !important;
+}
+
+.builder-condition-row .col-err .ant-input {
+  border-color: #ff4d4f !important;
+}
+
+.builder-condition-row .col-err .ant-input-number {
+  border-color: #ff4d4f !important;
+}
+
+.builder-condition-row .col-err .ant-picker {
+  border-color: #ff4d4f !important;
+}
+
+.builder-condition-row .error-validate {
+  color: #ff4d4f;
+  font-size: 12px;
+  margin-top: 5px;
+}
+

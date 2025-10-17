@@ -1,5 +1,5 @@
-import React, { useState, useRef, useCallback } from 'react';
-import { Button, Divider, Empty, Spin } from 'antd';
+import React, { useState, useRef, useCallback, useMemo } from 'react';
+import { Button, Divider, Empty, Spin, Modal, message, Badge } from 'antd';
 import {
   ExpandOutlined,
   ShrinkOutlined,
@@ -17,9 +17,17 @@ import SourceDataNavigation from './SourceDataNavigation';
 import TargetDataNavigation from './TargetDataNavigation';
 import EntityNavigation from './EntityNavigation';
 import MappingCanvas from './MappingCanvas';
+import SearchPathsDialog from './SearchPathsDialog';
 import { useDragDropHandler } from './DragDropHandler';
 import { ScriptEditorDialog, ScriptEditorDialogRef } from './ScriptEditor';
 import { DryRunSettingsDialog, DryRunResultDialog, DryRunSettingsDialogRef, DryRunResultDialogRef } from './DryRun';
+import { ContentEditorDialog, ContentEditorDialogRef } from './ContentEditor';
+import EntityMappingDialog, { EntityMappingDialogRef } from './EntityMappingDialog';
+import ValidationErrorAlert from './ValidationErrorAlert';
+import NotExistRelationsAlert from './NotExistRelationsAlert';
+import ActiveRelationInformation from './ActiveRelationInformation';
+import AssignMode from './AssignMode';
+import MetaParams from './MetaParams';
 import type {
   MappingConfigDto,
   EntityMappingConfigDto,
@@ -56,11 +64,18 @@ const DataMapper: React.FC<DataMapperProps> = ({
   const [selectedEntityMappingIndex, setSelectedEntityMappingIndex] = useState(0);
   const [isLoadingTargetData] = useState(false);
   const [relationsUpdateTrigger, setRelationsUpdateTrigger] = useState(0);
+  const [searchPathsVisible, setSearchPathsVisible] = useState(false);
+  const [expandAllTrigger, setExpandAllTrigger] = useState(false);
+  const [collapseAllTrigger, setCollapseAllTrigger] = useState(false);
+  const [isSaveButtonTouched, setIsSaveButtonTouched] = useState(false);
+  const [assignMode, setAssignMode] = useState<'single' | 'multiple'>('multiple');
 
   const canvasRef = useRef<HTMLDivElement>(null);
   const scriptEditorRef = useRef<ScriptEditorDialogRef>(null);
   const dryRunSettingsRef = useRef<DryRunSettingsDialogRef>(null);
   const dryRunResultRef = useRef<DryRunResultDialogRef>(null);
+  const contentEditorRef = useRef<ContentEditorDialogRef>(null);
+  const entityMappingDialogRef = useRef<EntityMappingDialogRef>(null);
 
   const selectedEntityMapping = dataMappingConfig.entityMappings[selectedEntityMappingIndex];
 
@@ -73,6 +88,7 @@ const DataMapper: React.FC<DataMapperProps> = ({
       ),
     };
     if (onSave) {
+      setIsSaveButtonTouched(true);
       onSave(updatedConfig);
     }
   }, [dataMappingConfig, selectedEntityMappingIndex, onSave]);
@@ -104,14 +120,24 @@ const DataMapper: React.FC<DataMapperProps> = ({
 
     const relations: any[] = [];
 
+    // Helper to find jsonPath from cobiPathsRelations
+    const findJsonPath = (srcPath: string, dstPath: string): string => {
+      if (!selectedEntityMapping.cobiPathsRelations) return srcPath;
+      const relation = selectedEntityMapping.cobiPathsRelations.find(
+        (rel: any) => rel.srcColumnPath === srcPath && rel.dstColumnPath === dstPath
+      );
+      return relation?.jsonPath || srcPath;
+    };
+
     // Column mappings
     selectedEntityMapping.columns.forEach((column: any) => {
+      const jsonPath = findJsonPath(column.srcColumnPath, column.dstCyodaColumnPath);
       relations.push({
         type: 'columnMapping',
         column: {
           srcColumnPath: column.srcColumnPath,
           dstColumnPath: column.dstCyodaColumnPath,
-          jsonPath: column.srcColumnPath, // TODO: Get from cobiPathsRelations
+          jsonPath: jsonPath,
         },
       });
     });
@@ -119,12 +145,13 @@ const DataMapper: React.FC<DataMapperProps> = ({
     // Functional mappings
     selectedEntityMapping.functionalMappings.forEach((funcMapping: any) => {
       funcMapping.srcPaths.forEach((srcPath: string) => {
+        const jsonPath = findJsonPath(srcPath, funcMapping.dstPath);
         relations.push({
           type: 'functionalMapping',
           column: {
             srcColumnPath: srcPath,
             dstColumnPath: funcMapping.dstPath,
-            jsonPath: srcPath,
+            jsonPath: jsonPath,
           },
         });
       });
@@ -133,12 +160,13 @@ const DataMapper: React.FC<DataMapperProps> = ({
     // Core metadata
     if (selectedEntityMapping.cobiCoreMetadata) {
       selectedEntityMapping.cobiCoreMetadata.forEach((metadata: any) => {
+        const jsonPath = findJsonPath(metadata.name, metadata.dstCyodaColumnPath);
         relations.push({
           type: 'cobiCoreMetadata',
           column: {
             srcColumnPath: metadata.name,
             dstColumnPath: metadata.dstCyodaColumnPath,
-            jsonPath: metadata.name,
+            jsonPath: jsonPath,
           },
         });
       });
@@ -152,13 +180,16 @@ const DataMapper: React.FC<DataMapperProps> = ({
 
   // Expand/collapse all handlers
   const handleExpandAll = () => {
-    // TODO: Implement expand all logic
-    console.log('Expand all');
+    setExpandAllTrigger(true);
   };
 
   const handleCollapseAll = () => {
-    // TODO: Implement collapse all logic
-    console.log('Collapse all');
+    setCollapseAllTrigger(true);
+  };
+
+  const handleExpandCollapseComplete = () => {
+    setExpandAllTrigger(false);
+    setCollapseAllTrigger(false);
   };
 
   // Entity navigation handlers
@@ -166,15 +197,31 @@ const DataMapper: React.FC<DataMapperProps> = ({
     setSelectedEntityMappingIndex(index);
   };
 
-  const handleEditEntity = () => {
-    if (selectedEntityMapping && onEntityEdit) {
-      onEntityEdit(selectedEntityMapping);
-    }
-  };
-
   const handleDeleteEntity = () => {
-    if (selectedEntityMapping && onEntityDelete) {
-      onEntityDelete(selectedEntityMapping);
+    if (selectedEntityMapping) {
+      Modal.confirm({
+        title: 'Delete Entity Mapping',
+        content: `Are you sure you want to delete the entity mapping "${selectedEntityMapping.name}"?`,
+        okText: 'Delete',
+        okType: 'danger',
+        cancelText: 'Cancel',
+        onOk: () => {
+          const updatedConfig = {
+            ...dataMappingConfig,
+            entityMappings: dataMappingConfig.entityMappings.filter(
+              (em, idx) => idx !== selectedEntityMappingIndex
+            ),
+          };
+          onSave?.(updatedConfig);
+
+          // Also call the prop if provided
+          onEntityDelete?.(selectedEntityMapping);
+
+          // Reset to first entity
+          setSelectedEntityMappingIndex(0);
+          message.success('Entity mapping deleted successfully');
+        },
+      });
     }
   };
 
@@ -205,6 +252,66 @@ const DataMapper: React.FC<DataMapperProps> = ({
     console.log('Script saved:', entityMapping);
   };
 
+  // Content Editor handler
+  const handleEditContent = () => {
+    if (dataMappingConfig.sampleContent) {
+      contentEditorRef.current?.open(dataMappingConfig.sampleContent, dataMappingConfig.dataType);
+    }
+  };
+
+  const handleContentEditorSave = (content: string) => {
+    // Update the sample content
+    const updatedConfig = {
+      ...dataMappingConfig,
+      sampleContent: content,
+    };
+    onSave?.(updatedConfig);
+
+    // Call the parent's onEditContent if provided
+    onEditContent?.();
+  };
+
+  // Entity Mapping Dialog handlers
+  const handleEditEntity = () => {
+    if (selectedEntityMapping) {
+      entityMappingDialogRef.current?.editEntity(selectedEntityMapping);
+    }
+  };
+
+  const handleAddEntity = () => {
+    entityMappingDialogRef.current?.createNew();
+  };
+
+  const handleEntityMappingSave = (entityMapping: EntityMappingConfigDto) => {
+    // Add new entity mapping
+    const updatedConfig = {
+      ...dataMappingConfig,
+      entityMappings: [...dataMappingConfig.entityMappings, entityMapping],
+    };
+    onSave?.(updatedConfig);
+  };
+
+  const handleEntityMappingEdit = (data: { entityMapping: EntityMappingConfigDto; index: number }) => {
+    // Update existing entity mapping
+    const updatedEntityMappings = [...dataMappingConfig.entityMappings];
+    updatedEntityMappings[data.index] = data.entityMapping;
+    const updatedConfig = {
+      ...dataMappingConfig,
+      entityMappings: updatedEntityMappings,
+    };
+    onSave?.(updatedConfig);
+    handleRelationsUpdate();
+  };
+
+  // Search Paths handler
+  const handleOpenSearchPaths = () => {
+    setSearchPathsVisible(true);
+  };
+
+  const handleCloseSearchPaths = () => {
+    setSearchPathsVisible(false);
+  };
+
   // Dry Run handlers
   const handleOpenDryRunSettings = () => {
     dryRunSettingsRef.current?.open();
@@ -228,8 +335,85 @@ const DataMapper: React.FC<DataMapperProps> = ({
 
   const isCanBeUploadedFile = ['JSON', 'XML', 'CSV'].includes(dataMappingConfig.dataType || '');
 
+  // Get all target field paths for validation
+  const getAllTargetFields = (): string[] => {
+    // This should be populated from the entity schema
+    // For now, return empty array - will be populated when entity data is loaded
+    return noneMappingFields || [];
+  };
+
+  // Handle deletion of non-existent relations
+  const handleDeleteNotExistRelation = useCallback((relation: any) => {
+    if (!selectedEntityMapping) return;
+
+    const updatedMapping = { ...selectedEntityMapping };
+
+    if (relation.type === 'columnMapping') {
+      updatedMapping.columns = updatedMapping.columns.filter(
+        (col) => col !== relation.data
+      );
+    } else if (relation.type === 'functionalMapping') {
+      updatedMapping.functionalMappings = updatedMapping.functionalMappings.filter(
+        (fm) => fm !== relation.data
+      );
+    } else if (relation.type === 'metadata') {
+      updatedMapping.cobiCoreMetadata = updatedMapping.cobiCoreMetadata?.filter(
+        (meta) => meta !== relation.data
+      ) || [];
+    }
+
+    handleMappingChange(updatedMapping);
+    message.success('Relation deleted successfully');
+  }, [selectedEntityMapping, handleMappingChange]);
+
+  // Check if source data root is an array
+  const isRootElementIsArray = useMemo(() => {
+    if (!sourceData) return false;
+    const rootPath = selectedEntityMapping?.sourceRelativeRootPath || '';
+    if (!rootPath) return Array.isArray(sourceData);
+
+    // Navigate to the root path
+    const parts = rootPath.split('/').filter(p => p);
+    let current = sourceData;
+    for (const part of parts) {
+      if (current && typeof current === 'object' && part in current) {
+        current = current[part];
+      } else {
+        return false;
+      }
+    }
+    return Array.isArray(current);
+  }, [sourceData, selectedEntityMapping?.sourceRelativeRootPath]);
+
+  // Get meta params (if any)
+  const metaParams = useMemo(() => {
+    // This would come from the entity schema or configuration
+    // For now, return empty array
+    return [];
+  }, []);
+
   return (
     <div className="data-mapper">
+      {/* Active Relation Information */}
+      <ActiveRelationInformation
+        isActive={!!dragDropHandler.activeLine}
+        onCancel={() => dragDropHandler.stopDrag()}
+      />
+
+      {/* Validation Error Alert */}
+      <ValidationErrorAlert
+        entityMapping={selectedEntityMapping}
+        isSaveButtonTouched={isSaveButtonTouched}
+      />
+
+      {/* Not Exist Relations Alert */}
+      <NotExistRelationsAlert
+        entityMapping={selectedEntityMapping}
+        sourceData={sourceData}
+        targetFields={getAllTargetFields()}
+        onDeleteRelation={handleDeleteNotExistRelation}
+      />
+
       {/* Navigation Actions */}
       <div className="mapping-navigation">
         <div className="mapping-navigation-actions">
@@ -259,10 +443,10 @@ const DataMapper: React.FC<DataMapperProps> = ({
               >
                 Delete Entity
               </Button>
-              <Button type="primary" icon={<PlusOutlined />} onClick={onEntityAdd}>
+              <Button type="primary" icon={<PlusOutlined />} onClick={handleAddEntity}>
                 Add Entity
               </Button>
-              <Button type="primary" icon={<SearchOutlined />}>
+              <Button type="primary" icon={<SearchOutlined />} onClick={handleOpenSearchPaths}>
                 Search Paths
               </Button>
             </>
@@ -294,10 +478,22 @@ const DataMapper: React.FC<DataMapperProps> = ({
         <div className="col-data col-data-source">
           <div className="wrap-title">
             <h2>Source</h2>
+            {isRootElementIsArray && selectedEntityMapping && (
+              <AssignMode
+                value={assignMode}
+                onChange={(mode) => {
+                  setAssignMode(mode);
+                  handleRelationsUpdate();
+                }}
+                allDataRelations={allDataRelations}
+                isRoot={true}
+                selectedEntityMapping={selectedEntityMapping}
+              />
+            )}
           </div>
           {dataMappingConfig.sampleContent && isCanBeUploadedFile && (
             <div className="header-actions">
-              <Button icon={<CodeOutlined />} onClick={onEditContent} title="Edit content">
+              <Button icon={<CodeOutlined />} onClick={handleEditContent} title="Edit content">
                 Edit
               </Button>
               <Button icon={<UploadOutlined />} onClick={onUploadFile} title="Upload new file">
@@ -319,7 +515,16 @@ const DataMapper: React.FC<DataMapperProps> = ({
             <>
               <h2>Target</h2>
               <h3 className="col-data-target-entity-title">
-                <small>Entity:</small> {selectedEntityMapping.entityClass || 'Not selected'}
+                <small>Entity:</small>{' '}
+                {selectedEntityMapping.filter ? (
+                  <Badge count="Filter" style={{ backgroundColor: '#faad14' }}>
+                    <span style={{ marginRight: 8 }}>
+                      {selectedEntityMapping.entityClass || 'Not selected'}
+                    </span>
+                  </Badge>
+                ) : (
+                  <span>{selectedEntityMapping.entityClass || 'Not selected'}</span>
+                )}
               </h3>
             </>
           )}
@@ -337,6 +542,9 @@ const DataMapper: React.FC<DataMapperProps> = ({
                 selectedEntityMapping={selectedEntityMapping}
                 allDataRelations={allDataRelations}
                 dragDropHandler={dragDropHandler}
+                expandAll={expandAllTrigger}
+                collapseAll={collapseAllTrigger}
+                onExpandCollapseComplete={handleExpandCollapseComplete}
               />
             ) : (
               <Empty description="Data not found. Perhaps an incorrect path to the data is specified in the Source Relative Root Path field.">
@@ -344,6 +552,16 @@ const DataMapper: React.FC<DataMapperProps> = ({
                   Entity Settings
                 </Button>
               </Empty>
+            )}
+
+            {/* Meta Params */}
+            {metaParams.length > 0 && selectedEntityMapping && (
+              <MetaParams
+                metaParams={metaParams}
+                allDataRelations={allDataRelations}
+                selectedEntityMapping={selectedEntityMapping}
+                onRelationsUpdate={handleRelationsUpdate}
+              />
             )}
           </div>
 
@@ -367,6 +585,9 @@ const DataMapper: React.FC<DataMapperProps> = ({
                   allDataRelations={allDataRelations}
                   noneMappingFields={noneMappingFields}
                   dragDropHandler={dragDropHandler}
+                  expandAll={expandAllTrigger}
+                  collapseAll={collapseAllTrigger}
+                  onExpandCollapseComplete={handleExpandCollapseComplete}
                 />
               </Spin>
             ) : (
@@ -378,6 +599,21 @@ const DataMapper: React.FC<DataMapperProps> = ({
 
       {/* Dialogs */}
       <ScriptEditorDialog ref={scriptEditorRef} onSave={handleScriptEditorSave} />
+      <ContentEditorDialog ref={contentEditorRef} onSave={handleContentEditorSave} />
+      <EntityMappingDialog
+        ref={entityMappingDialogRef}
+        dataMappingConfigDto={dataMappingConfig}
+        sourceData={sourceData}
+        noneMappingFields={noneMappingFields}
+        isFirst={dataMappingConfig.entityMappings.length === 0}
+        onSave={handleEntityMappingSave}
+        onEdit={handleEntityMappingEdit}
+      />
+      <SearchPathsDialog
+        visible={searchPathsVisible}
+        entityMapping={selectedEntityMapping}
+        onClose={handleCloseSearchPaths}
+      />
       <DryRunSettingsDialog ref={dryRunSettingsRef} onSave={handleRunDryRun} />
       <DryRunResultDialog ref={dryRunResultRef} />
     </div>

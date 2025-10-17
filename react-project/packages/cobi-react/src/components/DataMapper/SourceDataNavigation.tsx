@@ -12,6 +12,9 @@ interface SourceDataNavigationProps {
   onPathSelect?: (path: string) => void;
   searchString?: string;
   dragDropHandler?: any;
+  expandAll?: boolean;
+  collapseAll?: boolean;
+  onExpandCollapseComplete?: () => void;
 }
 
 export const SourceDataNavigation: React.FC<SourceDataNavigationProps> = ({
@@ -21,10 +24,15 @@ export const SourceDataNavigation: React.FC<SourceDataNavigationProps> = ({
   onPathSelect,
   searchString = '',
   dragDropHandler,
+  expandAll = false,
+  collapseAll = false,
+  onExpandCollapseComplete,
 }) => {
   const [expandedKeys, setExpandedKeys] = useState<React.Key[]>([]);
   const [selectedKeys, setSelectedKeys] = useState<React.Key[]>([]);
   const [treeRenderKey, setTreeRenderKey] = useState(0);
+
+
 
   // Get type of data
   const getTypeOfData = (value: any): string => {
@@ -72,9 +80,10 @@ export const SourceDataNavigation: React.FC<SourceDataNavigationProps> = ({
       // Handle mouse down on circle
       const handleCircleMouseDown = (e: React.MouseEvent) => {
         e.stopPropagation();
+        e.preventDefault();
         if (dragDropHandler && isLeaf) {
           dragDropHandler.startDragLine({
-            el: e.currentTarget,
+            el: e.currentTarget as HTMLElement,
             path: currentPath,
             jsonPath: currentPath,
             type: 'columnMapping',
@@ -104,7 +113,11 @@ export const SourceDataNavigation: React.FC<SourceDataNavigationProps> = ({
               </Tooltip>
               <div
                 className={`circle ${hasRel ? 'has-relation' : ''} ${relationCount > 0 ? 'selected' : ''}`}
-                onMouseDown={handleCircleMouseDown}
+                onMouseDownCapture={handleCircleMouseDown}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                }}
                 data-path={currentPath}
               >
                 {relationCount > 1 && <span>{relationCount}</span>}
@@ -134,7 +147,7 @@ export const SourceDataNavigation: React.FC<SourceDataNavigationProps> = ({
   const treeData = useMemo(() => {
     if (!sourceData) return [];
     return buildTreeData(sourceData);
-  }, [sourceData, allDataRelations, selectedEntityMapping.isPolymorphicList]);
+  }, [sourceData, allDataRelations, selectedEntityMapping.isPolymorphicList, dragDropHandler]);
 
   // Handle node expand
   const handleExpand = (expandedKeysValue: React.Key[]) => {
@@ -170,6 +183,21 @@ export const SourceDataNavigation: React.FC<SourceDataNavigationProps> = ({
   const handleCollapseAll = () => {
     setExpandedKeys([]);
   };
+
+  // Handle expand/collapse from parent
+  useEffect(() => {
+    if (expandAll) {
+      handleExpandAll();
+      onExpandCollapseComplete?.();
+    }
+  }, [expandAll]);
+
+  useEffect(() => {
+    if (collapseAll) {
+      handleCollapseAll();
+      onExpandCollapseComplete?.();
+    }
+  }, [collapseAll]);
 
   // Filter tree by search string
   const filterTreeData = (nodes: DataNode[]): DataNode[] => {

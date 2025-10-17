@@ -1,0 +1,70 @@
+.builder-condition-group {
+  position: relative;
+}
+
+.builder-condition-group:before {
+  content: "";
+  height: 40px;
+  border-color: #e0e0e0;
+  border-style: dotted;
+  border-width: 0 0 2px 2px;
+  left: 10px;
+  position: absolute;
+  width: 10px;
+  top: -18px;
+}
+
+.builder-condition-group:after {
+  height: calc(100% - 17px);
+  top: 17px;
+  content: "";
+  border-color: #e0e0e0;
+  border-style: dotted;
+  border-width: 0 0 0 2px;
+  width: 10px;
+  left: 10px;
+  position: absolute;
+}
+
+.builder-condition-group.first:before {
+  display: none;
+}
+
+.builder-condition-group.first:after {
+  display: none;
+}
+
+.builder-condition-group .button-add {
+  margin-left: 10px;
+}
+
+.builder-condition-group .button-delete {
+  margin-left: 10px !important;
+}
+
+.builder-condition-group .wrap-actions,
+.builder-condition-group .inner-fields {
+  padding-left: 20px;
+}
+
+.builder-condition-group .group-actions {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.builder-condition-group:last-child.wrap-actions.inner-fields:after {
+  display: none;
+}
+
+.builder-condition-group .ant-picker {
+  width: 100% !important;
+}
+
+.builder-condition-group .ant-select {
+  width: 100% !important;
+}
+
+.builder-condition-group .ant-input-number {
+  width: 100% !important;
+}
+

@@ -195,6 +195,29 @@ export function useEntitySchema(
 }
 
 /**
+ * Hook to get reporting info (entity fields and types for filter builder)
+ */
+export function useReportingInfo(
+  entityClass: string | null,
+  parentFldClass?: string,
+  columnPath?: string,
+  onlyRange?: boolean,
+  options?: Omit<UseQueryOptions<any>, 'queryKey' | 'queryFn'>
+) {
+  return useQuery({
+    queryKey: ['dataMapping', 'reportingInfo', entityClass, parentFldClass, columnPath, onlyRange],
+    queryFn: async () => {
+      if (!entityClass) return null;
+      const response = await dataMappingApi.getReportingInfo(entityClass, parentFldClass, columnPath, onlyRange);
+      return response.data;
+    },
+    enabled: !!entityClass,
+    staleTime: 10 * 60 * 1000, // 10 minutes
+    ...options,
+  });
+}
+
+/**
  * Hook to get COBI meta parameters
  */
 export function useCobiMetaParams(options?: Omit<UseQueryOptions<any>, 'queryKey' | 'queryFn'>) {

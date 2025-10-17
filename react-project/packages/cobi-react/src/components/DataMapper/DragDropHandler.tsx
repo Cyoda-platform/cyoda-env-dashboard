@@ -1,15 +1,6 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import type { EntityMappingConfigDto } from '../../types';
-
-// Import SVG.js dynamically
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-let SVG: any;
-try {
-  // @ts-ignore
-  SVG = require('@svgdotjs/svg.js').SVG;
-} catch (e) {
-  console.error('Failed to load SVG.js:', e);
-}
+import { SVG } from '@svgdotjs/svg.js';
 
 interface ActiveRelation {
   column: {
@@ -45,16 +36,31 @@ export const useDragDropHandler = ({
   const [activeRelation, setActiveRelation] = useState<ActiveRelation | null>(null);
   const [reassignRelation, setReassignRelation] = useState<any>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [startPoint, setStartPointState] = useState<{ x: number; y: number } | null>(null);
+
+  // Use ref to track isDragging for event handlers to avoid stale closures
+  const isDraggingRef = useRef(false);
 
   // Make SVG box
   const makeSvgBox = useCallback(() => {
-    if (!SVG) return null;
+    if (!SVG) {
+      console.error('SVG.js is not loaded');
+      return null;
+    }
+    const canvas = document.getElementById('canvas');
+    if (!canvas) {
+      console.error('Canvas element not found');
+      return null;
+    }
     return SVG().addTo('#canvas').group();
   }, []);
 
   // Make new line
   const makeNewLine = useCallback((type: string | null = null, width = 2) => {
-    if (!SVG) return null;
+    if (!SVG) {
+      console.error('SVG.js is not loaded in makeNewLine');
+      return null;
+    }
 
     let stroke = COLOR_RELATION_DEFAULT;
     if (type === 'columnMapping') {
@@ -76,20 +82,19 @@ export const useDragDropHandler = ({
   }, []);
 
   // Set start point for drag
-  const setStartPoint = useCallback((el: HTMLElement, line: any, direction = 'fromSource') => {
-    if (!line) return;
-
+  const setStartPoint = useCallback((el: HTMLElement, direction = 'fromSource') => {
     const canvas = document.getElementById('canvas');
-    if (!canvas) return;
+    if (!canvas) return null;
 
     const canvasPos = canvas.getBoundingClientRect();
     const circlePosition = el.getBoundingClientRect();
     const circleHeight = el.offsetHeight / 2 + 1;
-    const x1 = direction === 'fromTarget' 
-      ? circlePosition.left - canvasPos.left 
+    const x = direction === 'fromTarget'
+      ? circlePosition.left - canvasPos.left
       : circlePosition.right - canvasPos.left;
+    const y = circlePosition.top + circleHeight - canvasPos.top;
 
-    line.attr('x1', x1).attr('y1', circlePosition.top + circleHeight - canvasPos.top);
+    return { x, y };
   }, []);
 
   // Start drag
@@ -111,14 +116,26 @@ export const useDragDropHandler = ({
     notExistRelation?: boolean;
   }) => {
     setIsDragging(true);
+    isDraggingRef.current = true;
     const svgBox = makeSvgBox();
     const line = makeNewLine(type);
-    
-    if (!svgBox || !line) return;
+
+    if (!svgBox || !line) {
+      console.error('Failed to create SVG elements');
+      return;
+    }
 
     line.attr('data-active-relation', 'true');
     svgBox.add(line);
-    setStartPoint(el, line, direction);
+
+    // Store start point
+    const point = setStartPoint(el, direction);
+    if (point) {
+      setStartPointState(point);
+      // Draw initial path at start position
+      const initialPath = `M ${point.x} ${point.y} L ${point.x} ${point.y}`;
+      line.plot(initialPath);
+    }
 
     setActiveSvgBox(svgBox);
     setActiveLine(line);
@@ -139,23 +156,24 @@ export const useDragDropHandler = ({
 
   // Update drag line position
   const updateDragLine = useCallback((e: MouseEvent) => {
-    if (!activeLine || !isDragging) return;
+    if (!activeLine || !isDragging || !startPoint) {
+      return;
+    }
 
     const canvas = document.getElementById('canvas');
-    if (!canvas) return;
+    if (!canvas) {
+      console.error('Canvas not found');
+      return;
+    }
 
     const canvasPos = canvas.getBoundingClientRect();
     const x2 = e.clientX - canvasPos.left;
     const y2 = e.clientY - canvasPos.top;
 
-    // Get start position
-    const x1 = parseFloat(activeLine.attr('x1') || 0);
-    const y1 = parseFloat(activeLine.attr('y1') || 0);
-
-    // Create curved path
-    const path = createCurvedPath(x1, y1, x2, y2);
+    // Create curved path from start point to current mouse position
+    const path = createCurvedPath(startPoint.x, startPoint.y, x2, y2);
     activeLine.plot(path);
-  }, [activeLine, isDragging]);
+  }, [activeLine, isDragging, startPoint]);
 
   // Create curved horizontal path
   const createCurvedPath = (x1: number, y1: number, x2: number, y2: number): string => {
@@ -178,6 +196,8 @@ export const useDragDropHandler = ({
     setActiveRelation(null);
     setReassignRelation(null);
     setIsDragging(false);
+    isDraggingRef.current = false;
+    setStartPointState(null);
   }, [activeSvgBox]);
 
   // End drag
@@ -311,13 +331,22 @@ export const useDragDropHandler = ({
   // Mouse move and mouse up handlers
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      if (isDragging) {
+      if (isDraggingRef.current) {
         updateDragLine(e);
       }
     };
 
-    const handleMouseUp = () => {
-      if (isDragging) {
+    const handleMouseUp = (e: MouseEvent) => {
+      if (isDraggingRef.current) {
+        // Check if mouseup happened on a circle element (valid drop target)
+        const target = e.target as HTMLElement;
+        const circle = target.closest('.circle');
+
+        if (circle) {
+          // Don't cancel - let the target's onMouseUp handler call endDragLine
+          return;
+        }
+
         cancelDragLine();
       }
     };
@@ -329,7 +358,7 @@ export const useDragDropHandler = ({
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [isDragging, updateDragLine, cancelDragLine]);
+  }, [updateDragLine, cancelDragLine]);
 
   return {
     startDragLine,
