@@ -286,6 +286,15 @@ export function useStatisticsForChild() {
 }
 
 /**
+ * Hook to export all COBI
+ */
+export function useExportAllCobi() {
+  return useMutation({
+    mutationFn: () => dataSourceConfigApi.exportAllCobi(),
+  });
+}
+
+/**
  * Hook to import COBI configuration
  */
 export function useImportCobiConfig() {

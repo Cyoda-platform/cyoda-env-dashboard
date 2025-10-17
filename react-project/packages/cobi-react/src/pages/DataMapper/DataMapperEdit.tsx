@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Typography, Steps, Button, Space, Select, Form, Input, Radio, message } from 'antd';
-import { useNavigate } from 'react-router-dom';
+import { Card, Typography, Steps, Button, Space, Select, Form, Input, Radio, message, Spin } from 'antd';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import UploadFile from '../../components/DataMapper/UploadFile';
 import EntitySelection from '../../components/DataMapper/EntitySelection';
 import DataMapper from '../../components/DataMapper/DataMapper';
 import { useEntityTypes } from '../../hooks';
+import { useSaveDataMapping, useDataMapping } from '../../hooks/useDataMapping';
 import type { MappingConfigDto, EntityMappingConfigDto } from '../../types';
 
 const { Title, Paragraph } = Typography;
@@ -12,11 +13,22 @@ const { Option } = Select;
 
 const DataMapperEdit: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { id } = useParams<{ id: string }>();
   const [currentStep, setCurrentStep] = useState(0);
   const [form] = Form.useForm();
 
+  // Get initial data from location state (for copy functionality)
+  const initialDataFromState = (location.state as any)?.initialData;
+
   // Fetch entity types
   const { data: entityTypes = [], isLoading: isLoadingEntityTypes } = useEntityTypes(false);
+
+  // Fetch existing mapping if editing
+  const { data: existingMapping, isLoading: isLoadingMapping } = useDataMapping(id || null);
+
+  // Save mutation
+  const saveMutation = useSaveDataMapping();
 
   // Initialize data mapping config
   const [dataMappingConfig, setDataMappingConfig] = useState<MappingConfigDto>({
@@ -37,6 +49,20 @@ const DataMapperEdit: React.FC = () => {
 
   // Source data parsed from uploaded file
   const [sourceData, setSourceData] = useState<any>(null);
+
+  // Load existing mapping data when editing or copying
+  useEffect(() => {
+    const dataToLoad = existingMapping || initialDataFromState;
+    if (dataToLoad) {
+      setDataMappingConfig(dataToLoad);
+      // Set form values
+      form.setFieldsValue({
+        name: dataToLoad.name,
+        dataType: dataToLoad.dataType,
+        description: dataToLoad.description,
+      });
+    }
+  }, [existingMapping, initialDataFromState, form]);
 
   // Initialize entity mapping when moving to Step 3
   useEffect(() => {
@@ -170,8 +196,8 @@ const DataMapperEdit: React.FC = () => {
         return;
       }
 
-      // TODO: Call API to save the mapping configuration
-      // For now, just show success message
+      // Save the mapping configuration
+      await saveMutation.mutateAsync(dataMappingConfig);
       message.success('Data mapping configuration saved successfully!');
 
       // Navigate back to the list
@@ -184,11 +210,22 @@ const DataMapperEdit: React.FC = () => {
     }
   };
 
+  // Show loading spinner while fetching existing mapping
+  if (id && isLoadingMapping) {
+    return (
+      <div style={{ padding: '24px', textAlign: 'center' }}>
+        <Spin size="large" tip="Loading mapping configuration..." />
+      </div>
+    );
+  }
+
   return (
     <div style={{ padding: '24px' }}>
       <Card>
         <div style={{ marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Title level={2} style={{ margin: 0 }}>Data Mapper Configuration</Title>
+          <Title level={2} style={{ margin: 0 }}>
+            {id ? 'Edit Data Mapper Configuration' : 'Create Data Mapper Configuration'}
+          </Title>
           <Button onClick={() => navigate('/data-mapper')}>Back to List</Button>
         </div>
 

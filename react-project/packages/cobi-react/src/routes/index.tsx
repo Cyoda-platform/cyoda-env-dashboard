@@ -21,6 +21,7 @@ const AppRoutes: React.FC = () => {
       {/* Data Mapper Routes */}
       <Route path="/data-mapper" element={<DataMapperIndex />} />
       <Route path="/data-mapper/configuration" element={<DataMapperEdit />} />
+      <Route path="/data-mapper/configuration/:id" element={<DataMapperEdit />} />
 
       {/* Data Source Configuration Routes */}
       <Route path="/data-mapper/data-source-config-creation" element={<DataSourceConfigIndex />} />

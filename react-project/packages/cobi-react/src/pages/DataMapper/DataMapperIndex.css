@@ -1,0 +1,33 @@
+.data-mapper-index {
+  padding: 24px;
+}
+
+.data-mapper-index .header-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.data-mapper-index .header-actions h4 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.data-mapper-index .ant-table-expanded-row > .ant-table-cell {
+  padding: 16px;
+  background-color: #fafafa;
+}
+
+/* Ensure pagination is visible */
+.data-mapper-index .ant-table-pagination {
+  margin-top: 16px !important;
+  margin-bottom: 16px !important;
+}
+
+.data-mapper-index .ant-pagination {
+  display: flex !important;
+  justify-content: center !important;
+}
+
