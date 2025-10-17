@@ -11,6 +11,20 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': resolve(__dirname, './src'),
+      // Polyfill Node.js modules for browser
+      buffer: 'buffer',
+    },
+  },
+  define: {
+    // Polyfill global for Node.js packages
+    global: 'globalThis',
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+      // Node.js global to browser globalThis
+      define: {
+        global: 'globalThis',
+      },
     },
   },
   css: {

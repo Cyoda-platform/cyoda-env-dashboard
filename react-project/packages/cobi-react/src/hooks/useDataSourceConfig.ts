@@ -285,3 +285,17 @@ export function useStatisticsForChild() {
   });
 }
 
+/**
+ * Hook to import COBI configuration
+ */
+export function useImportCobiConfig() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (params: { data: any; params?: any }) => dataSourceConfigApi.importCobiConfig(params),
+    onSuccess: () => {
+      // Invalidate and refetch data source configs
+      queryClient.invalidateQueries({ queryKey: ['dataSourceConfig'] });
+    },
+  });
+}

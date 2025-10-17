@@ -1,0 +1,18 @@
+.metadata-dialog-header h4 {
+  margin: 0 0 10px 0;
+}
+
+.metadata-dialog-info {
+  overflow-wrap: break-word;
+  font-size: 13px;
+  font-weight: normal;
+}
+
+.metadata-dialog-info div {
+  margin-bottom: 5px;
+}
+
+.metadata-dialog-info strong {
+  font-weight: 600;
+}
+

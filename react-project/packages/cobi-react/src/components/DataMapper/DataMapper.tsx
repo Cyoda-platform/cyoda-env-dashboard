@@ -10,11 +10,15 @@ import {
   CodeOutlined,
   UploadOutlined,
   FileTextOutlined,
+  ExperimentOutlined,
+  PlayCircleOutlined,
 } from '@ant-design/icons';
 import SourceDataNavigation from './SourceDataNavigation';
 import TargetDataNavigation from './TargetDataNavigation';
 import EntityNavigation from './EntityNavigation';
 import MappingCanvas from './MappingCanvas';
+import { ScriptEditorDialog, ScriptEditorDialogRef } from './ScriptEditor';
+import { DryRunSettingsDialog, DryRunResultDialog, DryRunSettingsDialogRef, DryRunResultDialogRef } from './DryRun';
 import type {
   MappingConfigDto,
   EntityMappingConfigDto,
@@ -51,6 +55,9 @@ const DataMapper: React.FC<DataMapperProps> = ({
   const [isLoadingTargetData] = useState(false);
 
   const canvasRef = useRef<HTMLDivElement>(null);
+  const scriptEditorRef = useRef<ScriptEditorDialogRef>(null);
+  const dryRunSettingsRef = useRef<DryRunSettingsDialogRef>(null);
+  const dryRunResultRef = useRef<DryRunResultDialogRef>(null);
 
   const selectedEntityMapping = dataMappingConfig.entityMappings[selectedEntityMappingIndex];
 
@@ -153,6 +160,44 @@ const DataMapper: React.FC<DataMapperProps> = ({
     // TODO: Highlight hovered relations
   };
 
+  // Script Editor handler
+  const handleOpenScriptEditor = () => {
+    if (selectedEntityMapping) {
+      scriptEditorRef.current?.open(
+        selectedEntityMapping,
+        dataMappingConfig,
+        selectedEntityMappingIndex
+      );
+    }
+  };
+
+  const handleScriptEditorSave = (entityMapping: EntityMappingConfigDto) => {
+    // Update the entity mapping in the config
+    dataMappingConfig.entityMappings[selectedEntityMappingIndex] = entityMapping;
+    console.log('Script saved:', entityMapping);
+  };
+
+  // Dry Run handlers
+  const handleOpenDryRunSettings = () => {
+    dryRunSettingsRef.current?.open();
+  };
+
+  const handleRunDryRun = async (settings: any) => {
+    console.log('Running dry run with settings:', settings);
+    // TODO: Call actual dry run API
+    // For now, show mock result
+    const mockResult = {
+      mappedData: { sample: 'data' },
+      entities: [{ id: 1, name: 'Entity 1' }],
+      parseStatistic: { totalRecords: 100, successfulRecords: 95 },
+      tracerEvents: [
+        { level: 'INFO', timestamp: new Date().toISOString(), message: 'Dry run started' },
+        { level: 'INFO', timestamp: new Date().toISOString(), message: 'Processing completed' },
+      ],
+    };
+    dryRunResultRef.current?.open(mockResult);
+  };
+
   const isCanBeUploadedFile = ['JSON', 'XML', 'CSV'].includes(dataMappingConfig.dataType || '');
 
   return (
@@ -194,6 +239,23 @@ const DataMapper: React.FC<DataMapperProps> = ({
               </Button>
             </>
           )}
+          <Divider type="vertical" />
+          <Button
+            type="default"
+            icon={<ExperimentOutlined />}
+            onClick={handleOpenScriptEditor}
+            title="Open Script Editor"
+          >
+            Script Editor
+          </Button>
+          <Button
+            type="default"
+            icon={<PlayCircleOutlined />}
+            onClick={handleOpenDryRunSettings}
+            title="Run Dry Run Test"
+          >
+            Dry Run
+          </Button>
         </div>
       </div>
 
@@ -280,6 +342,11 @@ const DataMapper: React.FC<DataMapperProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Dialogs */}
+      <ScriptEditorDialog ref={scriptEditorRef} onSave={handleScriptEditorSave} />
+      <DryRunSettingsDialog ref={dryRunSettingsRef} onSave={handleRunDryRun} />
+      <DryRunResultDialog ref={dryRunResultRef} />
     </div>
   );
 };

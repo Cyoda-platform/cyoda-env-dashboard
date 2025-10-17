@@ -19,3 +19,12 @@ export { default as ExportImportDialog } from './ExportImportDialog';
 export { default as SearchPathsDialog } from './SearchPathsDialog';
 export { useDragDropHandler } from './DragDropHandler';
 
+// Script Editor
+export * from './ScriptEditor';
+
+// Dry Run
+export * from './DryRun';
+
+// Metadata
+export * from './Metadata';
+

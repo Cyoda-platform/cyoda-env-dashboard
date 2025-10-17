@@ -2,19 +2,24 @@ import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { Layout } from 'antd';
 import AppRoutes from './routes';
+import ErrorBoundary from './components/ErrorBoundary';
 import './App.css';
 
 const { Content } = Layout;
 
 const App: React.FC = () => {
   return (
-    <BrowserRouter>
-      <Layout style={{ minHeight: '100vh' }}>
-        <Content>
-          <AppRoutes />
-        </Content>
-      </Layout>
-    </BrowserRouter>
+    <ErrorBoundary>
+      <BrowserRouter>
+        <Layout style={{ minHeight: '100vh' }}>
+          <Content>
+            <ErrorBoundary>
+              <AppRoutes />
+            </ErrorBoundary>
+          </Content>
+        </Layout>
+      </BrowserRouter>
+    </ErrorBoundary>
   );
 };
 

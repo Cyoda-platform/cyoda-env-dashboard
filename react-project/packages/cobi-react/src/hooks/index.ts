@@ -7,4 +7,5 @@ export * from './useDataMapping';
 export * from './useDataSourceConfig';
 export * from './useChainingConfig';
 export * from './useProcessing';
+export * from './useEntityTypes';
 
