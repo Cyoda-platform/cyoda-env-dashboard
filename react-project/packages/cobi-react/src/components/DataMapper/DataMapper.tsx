@@ -28,9 +28,12 @@ import NotExistRelationsAlert from './NotExistRelationsAlert';
 import ActiveRelationInformation from './ActiveRelationInformation';
 import AssignMode from './AssignMode';
 import MetaParams from './MetaParams';
+import MappingLegend from './MappingLegend';
+import FunctionalMappingSettings from './FunctionalMappingSettings';
 import type {
   MappingConfigDto,
   EntityMappingConfigDto,
+  FunctionalMappingConfigDto,
 } from '../../types';
 import './DataMapper.css';
 
@@ -68,6 +71,8 @@ const DataMapper: React.FC<DataMapperProps> = ({
   const [expandAllTrigger, setExpandAllTrigger] = useState(false);
   const [collapseAllTrigger, setCollapseAllTrigger] = useState(false);
   const [isSaveButtonTouched, setIsSaveButtonTouched] = useState(false);
+  const [functionalMappingDialogVisible, setFunctionalMappingDialogVisible] = useState(false);
+  const [selectedFunctionalMapping, setSelectedFunctionalMapping] = useState<FunctionalMappingConfigDto | null>(null);
   const [assignMode, setAssignMode] = useState<'single' | 'multiple'>('multiple');
 
   const canvasRef = useRef<HTMLDivElement>(null);
@@ -235,11 +240,58 @@ const DataMapper: React.FC<DataMapperProps> = ({
   // Relation handlers
   const handleRelationClick = (relations: any[]) => {
     console.log('Relation clicked:', relations);
-    // TODO: Show relation settings dialog
+
+    if (relations.length === 0) return;
+
+    // Check if it's a functional mapping
+    const functionalMappingRelation = relations.find(r => r.type === 'functionalMapping');
+
+    if (functionalMappingRelation && selectedEntityMapping) {
+      // Find the functional mapping by destination path
+      const dstPath = functionalMappingRelation.column.dstColumnPath;
+      const functionalMapping = selectedEntityMapping.functionalMappings.find(
+        fm => fm.dstPath === dstPath
+      );
+
+      if (functionalMapping) {
+        setSelectedFunctionalMapping(functionalMapping);
+        setFunctionalMappingDialogVisible(true);
+      }
+    }
   };
 
   const handleRelationHover = (_relations: any[]) => {
     // TODO: Highlight hovered relations
+  };
+
+  // Functional Mapping handlers
+  const handleFunctionalMappingSave = (updatedFunctionalMapping: FunctionalMappingConfigDto) => {
+    if (!selectedEntityMapping) return;
+
+    // Find and update the functional mapping
+    const functionalMappingIndex = selectedEntityMapping.functionalMappings.findIndex(
+      fm => fm.dstPath === updatedFunctionalMapping.dstPath
+    );
+
+    if (functionalMappingIndex !== -1) {
+      const updatedFunctionalMappings = [...selectedEntityMapping.functionalMappings];
+      updatedFunctionalMappings[functionalMappingIndex] = updatedFunctionalMapping;
+
+      const updatedEntityMapping = {
+        ...selectedEntityMapping,
+        functionalMappings: updatedFunctionalMappings,
+      };
+
+      handleMappingChange(updatedEntityMapping);
+    }
+
+    setFunctionalMappingDialogVisible(false);
+    setSelectedFunctionalMapping(null);
+  };
+
+  const handleFunctionalMappingCancel = () => {
+    setFunctionalMappingDialogVisible(false);
+    setSelectedFunctionalMapping(null);
   };
 
   // Script Editor handler
@@ -374,9 +426,38 @@ const DataMapper: React.FC<DataMapperProps> = ({
 
   // Get all target field paths for validation
   const getAllTargetFields = (): string[] => {
-    // This should be populated from the entity schema
-    // For now, return empty array - will be populated when entity data is loaded
-    return noneMappingFields || [];
+    // Get all fields from the target entity schema
+    // This includes both mapped and unmapped fields
+    const targetElement = document.querySelector('.target-data-column');
+    if (!targetElement) return [];
+
+    const allPaths: string[] = [];
+    const pathElements = targetElement.querySelectorAll('[data-path]');
+    pathElements.forEach((el) => {
+      const path = (el as HTMLElement).dataset.path;
+      if (path) {
+        allPaths.push(path);
+      }
+    });
+
+    return allPaths;
+  };
+
+  // Get all source field paths
+  const getAllSourcePaths = (): string[] => {
+    const sourceElement = document.querySelector('.source-data-column');
+    if (!sourceElement) return [];
+
+    const allPaths: string[] = [];
+    const pathElements = sourceElement.querySelectorAll('[data-path]');
+    pathElements.forEach((el) => {
+      const path = (el as HTMLElement).dataset.path;
+      if (path) {
+        allPaths.push(path);
+      }
+    });
+
+    return allPaths;
   };
 
   // Handle deletion of non-existent relations
@@ -567,6 +648,9 @@ const DataMapper: React.FC<DataMapperProps> = ({
 
       <Divider className="divider" />
 
+      {/* Mapping Legend */}
+      <MappingLegend />
+
       {/* Headers */}
       <div className="data-mapper-headers">
         <div className="col-data col-data-source">
@@ -712,6 +796,15 @@ const DataMapper: React.FC<DataMapperProps> = ({
       />
       <DryRunSettingsDialog ref={dryRunSettingsRef} onSave={handleRunDryRun} />
       <DryRunResultDialog ref={dryRunResultRef} />
+      <FunctionalMappingSettings
+        visible={functionalMappingDialogVisible}
+        functionalMapping={selectedFunctionalMapping}
+        entityMapping={selectedEntityMapping}
+        dataMappingConfig={dataMappingConfig}
+        availableSourcePaths={getAllSourcePaths()}
+        onSave={handleFunctionalMappingSave}
+        onCancel={handleFunctionalMappingCancel}
+      />
     </div>
   );
 };

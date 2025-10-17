@@ -138,7 +138,8 @@ export const TargetDataNavigation: React.FC<TargetDataNavigationProps> = ({
       // Handle mouse down on circle (start drag from target)
       const handleCircleMouseDown = (e: React.MouseEvent) => {
         e.stopPropagation();
-        if (dragDropHandler && isLeaf) {
+        // Only start drag if NOT already dragging (i.e., starting FROM target)
+        if (dragDropHandler && isLeaf && !dragDropHandler.isDragging) {
           dragDropHandler.startDragLine({
             el: e.currentTarget,
             path: row.columnPath,

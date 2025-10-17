@@ -78,7 +78,7 @@ const MappingCanvas: React.FC<MappingCanvasProps> = ({
   };
 
   // Create new SVG line
-  const makeNewLine = (type: string | null = null, width = 2) => {
+  const makeNewLine = (type: string | null = null, width = 2, isNotExist = false) => {
     let stroke = COLOR_RELATION_DEFAULT;
     if (type === 'columnMapping') {
       stroke = COLOR_RELATION_COLUMN_MAPPING;
@@ -88,7 +88,12 @@ const MappingCanvas: React.FC<MappingCanvasProps> = ({
       stroke = COLOR_RELATION_CORE_METADATA;
     }
 
-    return SVG()
+    // Override stroke for non-existent relations
+    if (isNotExist) {
+      stroke = COLOR_RELATION_NOT_EXIST;
+    }
+
+    const line = SVG()
       .path()
       .attr('stroke-width', width)
       .attr('stroke', stroke)
@@ -96,6 +101,14 @@ const MappingCanvas: React.FC<MappingCanvasProps> = ({
       .attr('pointer-events', 'stroke')
       .attr('fill', 'transparent')
       .addClass(`line type-${type}`);
+
+    // Add dashed style for non-existent relations
+    if (isNotExist) {
+      line.attr('stroke-dasharray', '5,5');
+      line.addClass('not-exist');
+    }
+
+    return line;
   };
 
   // Create SVG group
@@ -138,17 +151,17 @@ const MappingCanvas: React.FC<MappingCanvasProps> = ({
 
   // Create invisible line for hover/click detection
   const makeInvisibleLineForLine = () => {
-    const invisibleLine = makeNewLine(null, 10);
+    const invisibleLine = makeNewLine(null, 15); // Wider for easier clicking
     invisibleLine.attr('visibility', 'hidden');
     invisibleLine.attr('class', 'invisible-line');
     return invisibleLine;
   };
 
   // Add event listeners to invisible line
-  const addEventListenerForInvisibleLine = (invisibleLine: any) => {
+  const addEventListenerForInvisibleLine = (invisibleLine: any, visibleLine: any) => {
     SVG(invisibleLine).on('click', () => {
       if (activeRelation) return;
-      
+
       const line = invisibleLine.node.closest('g')?.querySelector('.line');
       if (line && line.dataset.allRelationLinks) {
         const allRelationLinks = JSON.parse(line.dataset.allRelationLinks);
@@ -167,6 +180,9 @@ const MappingCanvas: React.FC<MappingCanvasProps> = ({
     SVG(invisibleLine).on('mouseover', function (this: any) {
       if (activeRelation) return;
 
+      // Add highlighted class to visible line
+      visibleLine.addClass('highlighted');
+
       const line = this.node.closest('g')?.querySelector('.line');
       if (line && line.dataset.allRelationLinks) {
         const allRelationLinks = JSON.parse(line.dataset.allRelationLinks);
@@ -184,6 +200,10 @@ const MappingCanvas: React.FC<MappingCanvasProps> = ({
 
     SVG(invisibleLine).on('mouseleave', () => {
       if (activeRelation) return;
+
+      // Remove highlighted class from visible line
+      visibleLine.removeClass('highlighted');
+
       onRelationHover?.([]);
     });
   };
@@ -279,13 +299,10 @@ const MappingCanvas: React.FC<MappingCanvasProps> = ({
           const svgBox = makeSvgBox();
           if (!svgBox) return;
 
-          const line = makeNewLine(relation.type);
-
           // Check if relation doesn't exist
           const isNotExistRelation = checkIfPathNotExist([relation]);
-          if (isNotExistRelation) {
-            line.attr('stroke', COLOR_RELATION_NOT_EXIST);
-          }
+
+          const line = makeNewLine(relation.type, 2, isNotExistRelation);
 
           const invisibleLine = makeInvisibleLineForLine();
           svgBox.add(line);
@@ -297,7 +314,7 @@ const MappingCanvas: React.FC<MappingCanvasProps> = ({
 
           setRelationToLink(relation.column, line);
           setAllRelationsToLink(relation.column, line);
-          addEventListenerForInvisibleLine(invisibleLine);
+          addEventListenerForInvisibleLine(invisibleLine, line);
 
           allExistDataRelations.push({ sourceCircle, targetCircle, line });
         } else if (isExistRelation && isExistRelation.line) {

@@ -115,6 +115,8 @@ export const useDragDropHandler = ({
     jsonPath?: string;
     notExistRelation?: boolean;
   }) => {
+    console.log('🚀 startDragLine called:', { path, jsonPath, type, direction });
+
     setIsDragging(true);
     isDraggingRef.current = true;
     const svgBox = makeSvgBox();
@@ -143,6 +145,8 @@ export const useDragDropHandler = ({
     const column = direction === 'fromTarget'
       ? { srcColumnPath: '', jsonPath: '', dstColumnPath: path }
       : { srcColumnPath: path, dstColumnPath: '', jsonPath: jsonPath || path };
+
+    console.log('📦 Active relation set:', { column, type, direction });
 
     setActiveRelation({
       column,
@@ -214,6 +218,8 @@ export const useDragDropHandler = ({
     clazzType?: string;
     jsonPath?: string;
   }) => {
+    console.log('🎯 endDragLine called:', { path, srcPath, jsonPath, activeRelation });
+
     if (!activeRelation) {
       cancelDragLine();
       return;
@@ -234,6 +240,8 @@ export const useDragDropHandler = ({
     const finalDstPath = activeRelation.direction === 'fromSource'
       ? path
       : activeRelation.column.dstColumnPath;
+
+    console.log('📍 Final paths:', { finalSrcPath, finalDstPath, jsonPath: activeRelation.jsonPath });
 
     // Handle different relation types
     if (activeRelation.type === 'columnMapping') {

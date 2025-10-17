@@ -1,5 +1,5 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { Tree, Button, Tooltip, Badge } from 'antd';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
+import { Tree, Button, Tooltip, Badge, Popover } from 'antd';
 import type { DataNode } from 'antd/es/tree';
 import { RightOutlined, DownOutlined } from '@ant-design/icons';
 import type { EntityMappingConfigDto, ColumnMappingConfigDto } from '../../types';
@@ -31,6 +31,10 @@ export const SourceDataNavigation: React.FC<SourceDataNavigationProps> = ({
   const [expandedKeys, setExpandedKeys] = useState<React.Key[]>([]);
   const [selectedKeys, setSelectedKeys] = useState<React.Key[]>([]);
   const [treeRenderKey, setTreeRenderKey] = useState(0);
+  const [popoverVisible, setPopoverVisible] = useState<{ [key: string]: boolean }>({});
+
+  // Store circle element refs by path
+  const circleRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
 
 
@@ -59,7 +63,7 @@ export const SourceDataNavigation: React.FC<SourceDataNavigationProps> = ({
   // Build tree data from source data
   const buildTreeData = (
     data: any,
-    parentPath: string = 'root:',
+    parentPath: string = '',
     level: number = 0
   ): DataNode[] => {
     if (!data || typeof data !== 'object') {
@@ -71,26 +75,59 @@ export const SourceDataNavigation: React.FC<SourceDataNavigationProps> = ({
 
     return keys.map((key) => {
       const value = data[key];
-      const currentPath = `${parentPath}/${key}`;
+      // Build path like Vue version: parentPath + "/" + key
+      const currentPath = parentPath ? `${parentPath}/${key}` : key;
       const typeOfData = getTypeOfData(value);
       const isLeaf = typeOfData !== 'object' && typeOfData !== 'array';
       const relationCount = getRelationCount(currentPath);
       const hasRel = hasRelations(currentPath);
 
-      // Handle mouse down on circle
-      const handleCircleMouseDown = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        e.preventDefault();
-        if (dragDropHandler && isLeaf) {
-          dragDropHandler.startDragLine({
-            el: e.currentTarget as HTMLElement,
-            path: currentPath,
-            jsonPath: currentPath,
-            type: 'columnMapping',
-            direction: 'fromSource',
-          });
-        }
+      // Handle starting drag line with specific type
+      const handleStartDragLine = (type: 'columnMapping' | 'functionalMapping') => {
+        // Close popover first
+        setPopoverVisible({ ...popoverVisible, [currentPath]: false });
+
+        // Wait a bit for popover to close, then start drag
+        setTimeout(() => {
+          const circleElement = circleRefs.current[currentPath];
+
+          if (dragDropHandler && isLeaf && circleElement) {
+            console.log('Starting drag line:', { type, currentPath, element: circleElement });
+
+            dragDropHandler.startDragLine({
+              el: circleElement,
+              path: currentPath,
+              jsonPath: currentPath,
+              type,
+              direction: 'fromSource',
+            });
+          } else {
+            console.error('Cannot start drag:', {
+              hasDragDropHandler: !!dragDropHandler,
+              isLeaf,
+              hasCircleElement: !!circleElement,
+              currentPath,
+              allRefs: Object.keys(circleRefs.current)
+            });
+          }
+        }, 50);
       };
+
+      // Popover content with action buttons
+      const popoverContent = (
+        <div className="source-circle-actions">
+          <div className="action">
+            <Button type="link" onClick={() => handleStartDragLine('columnMapping')}>
+              Column Mapping
+            </Button>
+          </div>
+          <div className="action">
+            <Button type="link" onClick={() => handleStartDragLine('functionalMapping')}>
+              Functional Mapping
+            </Button>
+          </div>
+        </div>
+      );
 
       // Build title with type, relation indicator, and draggable circle
       const title = (
@@ -111,17 +148,32 @@ export const SourceDataNavigation: React.FC<SourceDataNavigationProps> = ({
               <Tooltip title={String(value)}>
                 <span className="node-value">{String(value).substring(0, 50)}</span>
               </Tooltip>
-              <div
-                className={`circle ${hasRel ? 'has-relation' : ''} ${relationCount > 0 ? 'selected' : ''}`}
-                onMouseDownCapture={handleCircleMouseDown}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                }}
-                data-path={currentPath}
+              <Popover
+                content={popoverContent}
+                title="Actions"
+                trigger="click"
+                placement="topLeft"
+                open={popoverVisible[currentPath]}
+                onOpenChange={(visible) =>
+                  setPopoverVisible({ ...popoverVisible, [currentPath]: visible })
+                }
               >
-                {relationCount > 1 && <span>{relationCount}</span>}
-              </div>
+                <div
+                  ref={(el) => {
+                    if (el) {
+                      circleRefs.current[currentPath] = el;
+                    }
+                  }}
+                  className={`circle ${hasRel ? 'has-relation' : ''} ${relationCount > 0 ? 'selected' : ''}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                  }}
+                  data-path={currentPath}
+                >
+                  {relationCount > 1 && <span>{relationCount}</span>}
+                </div>
+              </Popover>
             </>
           )}
         </div>

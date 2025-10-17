@@ -1,0 +1,27 @@
+.functional-mapping-search {
+  width: 300px;
+}
+
+.functional-mapping-search-popup .ant-cascader-menu-item {
+  height: auto !important;
+  white-space: normal;
+  line-height: normal;
+  padding: 10px 12px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.functional-mapping-search-popup .ant-cascader-menu-item-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.functional-mapping-search-popup .item-description {
+  width: 400px;
+  margin-top: 5px;
+  color: #a0a0a1;
+  font-size: 12px;
+  white-space: pre-line;
+  line-height: 1.4;
+}
+

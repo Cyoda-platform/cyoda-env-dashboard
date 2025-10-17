@@ -120,6 +120,27 @@
   border-color: #409eff;
 }
 
+/* Source circle actions popover */
+.source-circle-actions {
+  min-width: 150px;
+}
+
+.source-circle-actions .action {
+  padding: 8px 0;
+}
+
+.source-circle-actions .action .ant-btn {
+  width: 100%;
+  text-align: left;
+  padding: 4px 0;
+  height: auto;
+  color: #1890ff;
+}
+
+.source-circle-actions .action .ant-btn:hover {
+  color: #40a9ff;
+}
+
 .source-data-node .circle.has-relation {
   opacity: 1;
 }
