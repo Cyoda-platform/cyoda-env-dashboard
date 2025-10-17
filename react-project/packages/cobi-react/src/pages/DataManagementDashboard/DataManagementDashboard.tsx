@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useRef } from 'react';
-import { Card, Input, Table, Button, Space, Tag } from 'antd';
+import { Card, Input, Table, Button, Space, Tag, Divider } from 'antd';
 import { PlayCircleOutlined, ProjectOutlined } from '@ant-design/icons';
 import { useQuery } from '@tanstack/react-query';
 import dayjs from 'dayjs';
@@ -10,6 +10,7 @@ import DiagramDialog, { DiagramDialogRef } from './components/DiagramDialog';
 import DataSourceConfigDialogRequest, {
   DataSourceConfigDialogRequestRef,
 } from './components/ExecuteDialog/DataSourceConfigDialogRequest';
+import ConnectionExecutions from './components/ConnectionExecutions';
 import './DataManagementDashboard.css';
 
 const DataManagementDashboard: React.FC = () => {
@@ -227,6 +228,14 @@ const DataManagementDashboard: React.FC = () => {
           bordered
         />
       </Card>
+
+      <Divider />
+
+      <Card>
+        <h4>List of Connection Executions</h4>
+        <ConnectionExecutions />
+      </Card>
+
       <DiagramDialog ref={diagramDialogRef} />
       <DataSourceConfigDialogRequest ref={executeDialogRef} />
     </div>

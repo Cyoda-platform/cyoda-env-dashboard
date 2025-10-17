@@ -168,17 +168,36 @@ export const useDragDropHandler = ({
     return `M ${x1} ${y1} C ${cx1} ${cy1}, ${cx2} ${cy2}, ${x2} ${y2}`;
   };
 
+  // Cancel drag
+  const cancelDragLine = useCallback(() => {
+    if (activeSvgBox) {
+      activeSvgBox.remove();
+    }
+    setActiveLine(null);
+    setActiveSvgBox(null);
+    setActiveRelation(null);
+    setReassignRelation(null);
+    setIsDragging(false);
+  }, [activeSvgBox]);
+
   // End drag
   const endDragLine = useCallback(async ({
+    el,
     path,
+    srcPath,
+    clazzType,
+    jsonPath,
   }: {
-    el: HTMLElement;
+    el?: HTMLElement;
     path: string;
-    srcPath: string;
+    srcPath?: string;
     clazzType?: string;
     jsonPath?: string;
   }) => {
-    if (!activeRelation) return;
+    if (!activeRelation) {
+      cancelDragLine();
+      return;
+    }
 
     // Check if reassigning
     if (reassignRelation) {
@@ -188,17 +207,25 @@ export const useDragDropHandler = ({
 
     const updatedMapping = { ...selectedEntityMapping };
 
+    // Determine source and destination based on direction
+    const finalSrcPath = activeRelation.direction === 'fromSource'
+      ? activeRelation.column.srcColumnPath
+      : (srcPath || path);
+    const finalDstPath = activeRelation.direction === 'fromSource'
+      ? path
+      : activeRelation.column.dstColumnPath;
+
     // Handle different relation types
     if (activeRelation.type === 'columnMapping') {
       // Remove existing mappings to this target
       updatedMapping.columns = updatedMapping.columns.filter(
-        (col: any) => col.dstCyodaColumnPath !== path
+        (col: any) => col.dstCyodaColumnPath !== finalDstPath
       );
 
       // Add new column mapping
       updatedMapping.columns.push({
-        srcColumnPath: activeRelation.column.srcColumnPath,
-        dstCyodaColumnPath: path,
+        srcColumnPath: finalSrcPath,
+        dstCyodaColumnPath: finalDstPath,
         transformer: {
           type: 'COMPOSITE' as const,
           children: [],
@@ -207,24 +234,24 @@ export const useDragDropHandler = ({
     } else if (activeRelation.type === 'functionalMapping') {
       // Remove existing column mappings
       updatedMapping.columns = updatedMapping.columns.filter(
-        (col: any) => col.dstCyodaColumnPath !== path
+        (col: any) => col.dstCyodaColumnPath !== finalDstPath
       );
 
       // Find or create functional mapping
       const existingFunctionalMapping = updatedMapping.functionalMappings.find(
-        (fm: any) => fm.dstPath === path
+        (fm: any) => fm.dstPath === finalDstPath
       );
 
       if (existingFunctionalMapping) {
-        if (!existingFunctionalMapping.srcPaths.includes(activeRelation.column.srcColumnPath)) {
-          existingFunctionalMapping.srcPaths.push(activeRelation.column.srcColumnPath);
+        if (!existingFunctionalMapping.srcPaths.includes(finalSrcPath)) {
+          existingFunctionalMapping.srcPaths.push(finalSrcPath);
         }
       } else {
         const newFunctionalMapping = {
-          srcPaths: [activeRelation.column.srcColumnPath],
+          srcPaths: [finalSrcPath],
           name: null,
           statements: [],
-          dstPath: path,
+          dstPath: finalDstPath,
           collectElemsSetModes: [],
           metaPaths: [],
         } as any;
@@ -237,16 +264,16 @@ export const useDragDropHandler = ({
 
       // Remove existing mappings
       updatedMapping.columns = updatedMapping.columns.filter(
-        (col: any) => col.dstCyodaColumnPath !== path
+        (col: any) => col.dstCyodaColumnPath !== finalDstPath
       );
       updatedMapping.functionalMappings = updatedMapping.functionalMappings.filter(
-        (fm: any) => fm.dstPath !== path
+        (fm: any) => fm.dstPath !== finalDstPath
       );
 
       // Add metadata mapping
       updatedMapping.cobiCoreMetadata.push({
-        name: activeRelation.column.srcColumnPath,
-        dstCyodaColumnPath: path,
+        name: finalSrcPath,
+        dstCyodaColumnPath: finalDstPath,
       });
     }
 
@@ -257,15 +284,15 @@ export const useDragDropHandler = ({
 
     const existingRelation = updatedMapping.cobiPathsRelations.find(
       (rel: any) =>
-        rel.srcColumnPath === activeRelation.column.srcColumnPath &&
-        rel.dstColumnPath === path
+        rel.srcColumnPath === finalSrcPath &&
+        rel.dstColumnPath === finalDstPath
     );
 
     if (!existingRelation) {
       updatedMapping.cobiPathsRelations.push({
-        jsonPath: activeRelation.jsonPath || activeRelation.column.srcColumnPath,
-        srcColumnPath: activeRelation.column.srcColumnPath,
-        dstColumnPath: path,
+        jsonPath: jsonPath || finalSrcPath,
+        srcColumnPath: finalSrcPath,
+        dstColumnPath: finalDstPath,
       });
     }
 
@@ -279,21 +306,9 @@ export const useDragDropHandler = ({
     setTimeout(() => {
       onRelationsUpdate();
     }, 100);
-  }, [activeRelation, reassignRelation, selectedEntityMapping, onMappingChange, onRelationsUpdate]);
+  }, [activeRelation, reassignRelation, selectedEntityMapping, onMappingChange, onRelationsUpdate, cancelDragLine]);
 
-  // Cancel drag
-  const cancelDragLine = useCallback(() => {
-    if (activeSvgBox) {
-      activeSvgBox.remove();
-    }
-    setActiveLine(null);
-    setActiveSvgBox(null);
-    setActiveRelation(null);
-    setReassignRelation(null);
-    setIsDragging(false);
-  }, [activeSvgBox]);
-
-  // Mouse move handler
+  // Mouse move and mouse up handlers
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (isDragging) {
@@ -320,8 +335,12 @@ export const useDragDropHandler = ({
     startDragLine,
     endDragLine,
     cancelDragLine,
+    updateDragLine,
     isDragging,
     activeRelation,
+    activeLine,
+    reassignRelation,
+    setReassignRelation,
   };
 };
 

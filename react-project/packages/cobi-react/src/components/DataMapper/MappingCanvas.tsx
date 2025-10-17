@@ -28,6 +28,9 @@ interface MappingCanvasProps {
   notExistRelations?: any[];
   onRelationClick?: (relations: any[]) => void;
   onRelationHover?: (relations: any[]) => void;
+  activeLine?: any;
+  activeRelation?: any;
+  relationsUpdateTrigger?: number;
 }
 
 interface ActiveRelation {
@@ -48,11 +51,15 @@ const MappingCanvas: React.FC<MappingCanvasProps> = ({
   notExistRelations = [],
   onRelationClick,
   onRelationHover,
+  activeLine: externalActiveLine,
+  activeRelation: externalActiveRelation,
+  relationsUpdateTrigger = 0,
 }) => {
   const canvasRef = useRef<SVGSVGElement>(null);
-  const [activeLine] = useState<any>(null);
-  const [activeRelation] = useState<ActiveRelation | null>(null);
   const updateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const activeLine = externalActiveLine;
+  const activeRelation = externalActiveRelation;
 
   // Curved horizontal line path generator
   const curvedHorizontal = (startX: number, startY: number, endX: number, endY: number): string => {
@@ -310,7 +317,7 @@ const MappingCanvas: React.FC<MappingCanvasProps> = ({
   // Update relations when dependencies change
   useEffect(() => {
     updateRelations();
-  }, [updateRelations]);
+  }, [updateRelations, relationsUpdateTrigger]);
 
   // Handle window resize
   useEffect(() => {

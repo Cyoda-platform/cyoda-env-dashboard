@@ -90,3 +90,26 @@ export function useDeleteChainingConfig() {
   });
 }
 
+/**
+ * Hook to export all COBI
+ */
+export function useExportAllCobi() {
+  return useMutation({
+    mutationFn: () => chainingConfigApi.exportAllCobi(),
+  });
+}
+
+/**
+ * Hook to import COBI configuration
+ */
+export function useImportCobiConfig() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (params: { data: any; params?: any }) => chainingConfigApi.importCobiConfig(params),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['chainingConfig', 'list'] });
+    },
+  });
+}
+

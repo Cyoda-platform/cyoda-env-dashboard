@@ -50,3 +50,25 @@ export function getHistoryByTimeUid(params: { id: string; timeId: string }) {
   return axios.get(`/chaining-config/get-by-id/${params.id}/history/${params.timeId}`);
 }
 
+/**
+ * Export all COBI configurations
+ */
+export function exportAllCobi() {
+  return axios.get('/chaining-config/export-all-cobi');
+}
+
+/**
+ * Export COBI for specific keys
+ */
+export function exportCobiForKeys(data: any) {
+  return axios.post('/chaining-config/export-cobi-for-keys', data);
+}
+
+/**
+ * Import COBI configuration
+ */
+export function importCobiConfig(params: { data: any; params?: any }) {
+  return axios.post('/chaining-config/import-cobi-config', params.data, {
+    params: params.params,
+  });
+}

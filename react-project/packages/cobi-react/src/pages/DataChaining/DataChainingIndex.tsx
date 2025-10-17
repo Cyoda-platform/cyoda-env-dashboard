@@ -1,10 +1,11 @@
 import React, { useState, useMemo } from 'react';
-import { Card, Button, Input, Table, Space, Modal, message } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Card, Button, Input, Table, Space, Modal, message, Tooltip, Upload } from 'antd';
+import { PlusOutlined, EditOutlined, DeleteOutlined, DownloadOutlined, UploadOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import { getListAll, deleteById } from '../../api/chainingConfigApi';
+import { useExportAllCobi, useImportCobiConfig } from '../../hooks/useChainingConfig';
 import type { ChainingConfigDto } from '../../types';
 import './DataChainingIndex.css';
 
@@ -15,7 +16,7 @@ const DataChainingIndex: React.FC = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
   // Fetch chaining configurations
-  const { data: chainingConfigs = [], isLoading } = useQuery({
+  const { data: chainingConfigs = [], isLoading, refetch } = useQuery({
     queryKey: ['chainingConfigs'],
     queryFn: async () => {
       const response = await getListAll();
@@ -34,6 +35,10 @@ const DataChainingIndex: React.FC = () => {
       message.error('Failed to delete configuration');
     },
   });
+
+  // Export/Import mutations
+  const exportMutation = useExportAllCobi();
+  const importMutation = useImportCobiConfig();
 
   // Filter configurations
   const filteredData = useMemo(() => {
@@ -75,6 +80,47 @@ const DataChainingIndex: React.FC = () => {
         setSelectedRowKeys([]);
       },
     });
+  };
+
+  const handleExport = async () => {
+    try {
+      const response = await exportMutation.mutateAsync();
+
+      // Download the exported file
+      const blob = new Blob([JSON.stringify(response.data, null, 2)], { type: 'application/json' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `chaining-config-export-${new Date().toISOString().split('T')[0]}.json`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+
+      message.success('Chaining configurations exported successfully');
+    } catch (error) {
+      console.error('Export error:', error);
+      message.error('Failed to export chaining configurations');
+    }
+  };
+
+  const handleImport = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      try {
+        const content = e.target?.result as string;
+        const data = JSON.parse(content);
+
+        await importMutation.mutateAsync({ data });
+        message.success('Chaining configurations imported successfully');
+        refetch();
+      } catch (error) {
+        console.error('Import error:', error);
+        message.error('Failed to import chaining configurations. Please check the file format.');
+      }
+    };
+    reader.readAsText(file);
+    return false; // Prevent auto upload
   };
 
   const columns = [
@@ -138,6 +184,29 @@ const DataChainingIndex: React.FC = () => {
             >
               Delete Selected
             </Button>
+            <Tooltip title="Export all chaining configurations">
+              <Button
+                icon={<DownloadOutlined />}
+                onClick={handleExport}
+                loading={exportMutation.isPending}
+              >
+                Export
+              </Button>
+            </Tooltip>
+            <Tooltip title="Import chaining configurations from file">
+              <Upload
+                accept=".json"
+                beforeUpload={handleImport}
+                showUploadList={false}
+              >
+                <Button
+                  icon={<UploadOutlined />}
+                  loading={importMutation.isPending}
+                >
+                  Import
+                </Button>
+              </Upload>
+            </Tooltip>
             <Button type="primary" icon={<PlusOutlined />} onClick={handleCreate}>
               Create Configuration
             </Button>

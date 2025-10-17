@@ -178,3 +178,42 @@ export function getHistoryByTimeUid(params: { id: string; timeId: string }) {
   return axios.get(`/data-source-config/get-by-id/${params.id}/history/${params.timeId}`);
 }
 
+/**
+ * Get statistics search with pagination and filters
+ */
+export function getStatisticsSearch(params: { pagination: any; filter: any }) {
+  const { pagination, filter } = params;
+  return axios.get(`/data-source/request/statistics/search?size=${pagination.pageSize}&page=${pagination.page - 1}`, {
+    params: filter,
+  });
+}
+
+/**
+ * Get statistics by ID
+ */
+export function getStatisticsById(rawRequestId: string) {
+  return axios.get(`/data-source/request/statistics/${rawRequestId}`);
+}
+
+/**
+ * Get statistics mapping
+ */
+export function getStatisticsMapping(params: { rootRawRequestId: string; mappingConfigId: string }) {
+  return axios.get(`/data-source/request/statistics/mapping?mappingConfigId=${params.mappingConfigId}&rawRequestId=${params.rootRawRequestId}`);
+}
+
+/**
+ * Get statistics search by raw request ID
+ */
+export function getStatisticsSearchByRawRequestId(params: { pagination: any; rootRawRequestId: string }) {
+  const { pagination, rootRawRequestId } = params;
+  return axios.get(`/data-source/request/statistics/${rootRawRequestId}/search?size=${pagination.pageSize}&page=${pagination.page - 1}`);
+}
+
+/**
+ * Delete request by ID
+ */
+export function deleteRequestDeleteById(rootRawRequestId: string) {
+  return axios.delete(`/data-source/request/delete/${rootRawRequestId}`);
+}
+

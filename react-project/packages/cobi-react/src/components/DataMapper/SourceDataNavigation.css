@@ -50,6 +50,7 @@
   align-items: center;
   gap: 8px;
   padding: 2px 0;
+  position: relative;
 }
 
 .source-data-node .node-key {
@@ -82,6 +83,40 @@
 
 .source-data-node .relation-badge {
   margin-left: 4px;
+}
+
+.source-data-node .circle {
+  position: absolute;
+  right: -17px;
+  min-width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background-color: #67c23a;
+  border: 2px solid #67c23a;
+  cursor: pointer;
+  opacity: 0.3;
+  transition: opacity 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: #fff;
+  font-weight: bold;
+  z-index: 10;
+}
+
+.source-data-node:hover .circle {
+  opacity: 1;
+}
+
+.source-data-node .circle.selected {
+  opacity: 1;
+  background-color: #409eff;
+  border-color: #409eff;
+}
+
+.source-data-node .circle.has-relation {
+  opacity: 1;
 }
 
 .navigation-footer {

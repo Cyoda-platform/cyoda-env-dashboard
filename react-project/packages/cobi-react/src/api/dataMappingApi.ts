@@ -93,6 +93,20 @@ export function deleteDataMapping(id: string) {
 }
 
 /**
+ * Alias for getDataMapping (for consistency with other APIs)
+ */
+export function getById(id: string) {
+  return getDataMapping(id);
+}
+
+/**
+ * Alias for deleteDataMapping (for consistency with other APIs)
+ */
+export function deleteById(id: string) {
+  return deleteDataMapping(id);
+}
+
+/**
  * Get entity info
  */
 export function getEntityInfo(entityClass: string) {

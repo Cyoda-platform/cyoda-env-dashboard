@@ -11,6 +11,7 @@ interface TargetDataNavigationProps {
   noneMappingFields?: string[];
   onPathSelect?: (path: string, fieldInfo: any) => void;
   searchString?: string;
+  dragDropHandler?: any;
 }
 
 interface ReportingInfoRow {
@@ -27,11 +28,13 @@ export const TargetDataNavigation: React.FC<TargetDataNavigationProps> = ({
   noneMappingFields = [],
   onPathSelect,
   searchString = '',
+  dragDropHandler,
 }) => {
   const [expandedKeys, setExpandedKeys] = useState<React.Key[]>([]);
   const [selectedKeys, setSelectedKeys] = useState<React.Key[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [reportingInfoRows, setReportingInfoRows] = useState<ReportingInfoRow[]>([]);
+  const [treeRenderKey, setTreeRenderKey] = useState(0);
 
   // Load entity schema
   useEffect(() => {
@@ -124,10 +127,41 @@ export const TargetDataNavigation: React.FC<TargetDataNavigationProps> = ({
       const hasRel = hasRelations(row.columnPath);
       const simpleType = getSimpleTypeName(row.clazzType);
       const hasChildren = row.children && row.children.length > 0;
+      const isLeaf = !hasChildren;
 
-      // Build title with field info
+      // Handle mouse down on circle (start drag from target)
+      const handleCircleMouseDown = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (dragDropHandler && isLeaf) {
+          dragDropHandler.startDragLine({
+            el: e.currentTarget,
+            path: row.columnPath,
+            type: 'columnMapping',
+            direction: 'fromTarget',
+            clazzType: row.clazzType,
+          });
+        }
+      };
+
+      // Handle mouse up on circle (end drag from source)
+      const handleCircleMouseUp = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (dragDropHandler && dragDropHandler.isDragging) {
+          dragDropHandler.endDragLine({
+            el: e.currentTarget,
+            path: row.columnPath,
+            clazzType: row.clazzType,
+          });
+        }
+      };
+
+      // Build title with field info and draggable circle
       const title = (
-        <div className="target-data-node">
+        <div
+          className="target-data-node"
+          data-relation={isLeaf ? encodeURIComponent(row.columnPath) : ''}
+          data-path={row.columnPath}
+        >
           <span className={`node-key ${hasRel ? 'has-relation' : ''} ${row.required ? 'required' : ''}`}>
             {row.columnName}
             {row.required && <StarFilled className="required-icon" />}
@@ -138,13 +172,23 @@ export const TargetDataNavigation: React.FC<TargetDataNavigationProps> = ({
           {relationCount > 0 && (
             <Badge count={relationCount} className="relation-badge" />
           )}
+          {isLeaf && (
+            <div
+              className={`circle ${hasRel ? 'has-relation' : ''} ${relationCount > 0 ? 'selected' : ''}`}
+              onMouseDown={handleCircleMouseDown}
+              onMouseUp={handleCircleMouseUp}
+              data-path={row.columnPath}
+            >
+              {relationCount > 1 && <span>{relationCount}</span>}
+            </div>
+          )}
         </div>
       );
 
       const node: DataNode = {
         key: row.columnPath,
         title,
-        isLeaf: !hasChildren,
+        isLeaf,
         className: `${hasRel ? 'has-relation' : ''} ${row.required ? 'required' : ''}`,
       };
 
@@ -226,6 +270,30 @@ export const TargetDataNavigation: React.FC<TargetDataNavigationProps> = ({
   const handleCollapseAll = () => {
     setExpandedKeys([]);
   };
+
+  // Handle mouse move for drag line
+  useEffect(() => {
+    if (!dragDropHandler) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (dragDropHandler.isDragging && dragDropHandler.updateDragLine) {
+        dragDropHandler.updateDragLine(e);
+      }
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+    };
+  }, [dragDropHandler]);
+
+  // Force re-render when drag state changes
+  useEffect(() => {
+    if (dragDropHandler) {
+      setTreeRenderKey((prev) => prev + 1);
+    }
+  }, [dragDropHandler?.isDragging]);
 
   // Filter tree by search string
   const filterTreeData = (nodes: DataNode[]): DataNode[] => {

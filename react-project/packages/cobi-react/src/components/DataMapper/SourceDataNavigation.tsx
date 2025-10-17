@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Tree, Button, Tooltip, Badge } from 'antd';
 import type { DataNode } from 'antd/es/tree';
 import { RightOutlined, DownOutlined } from '@ant-design/icons';
@@ -11,6 +11,7 @@ interface SourceDataNavigationProps {
   allDataRelations?: ColumnMappingConfigDto[];
   onPathSelect?: (path: string) => void;
   searchString?: string;
+  dragDropHandler?: any;
 }
 
 export const SourceDataNavigation: React.FC<SourceDataNavigationProps> = ({
@@ -19,9 +20,11 @@ export const SourceDataNavigation: React.FC<SourceDataNavigationProps> = ({
   allDataRelations = [],
   onPathSelect,
   searchString = '',
+  dragDropHandler,
 }) => {
   const [expandedKeys, setExpandedKeys] = useState<React.Key[]>([]);
   const [selectedKeys, setSelectedKeys] = useState<React.Key[]>([]);
+  const [treeRenderKey, setTreeRenderKey] = useState(0);
 
   // Get type of data
   const getTypeOfData = (value: any): string => {
@@ -66,9 +69,27 @@ export const SourceDataNavigation: React.FC<SourceDataNavigationProps> = ({
       const relationCount = getRelationCount(currentPath);
       const hasRel = hasRelations(currentPath);
 
-      // Build title with type and relation indicator
+      // Handle mouse down on circle
+      const handleCircleMouseDown = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (dragDropHandler && isLeaf) {
+          dragDropHandler.startDragLine({
+            el: e.currentTarget,
+            path: currentPath,
+            jsonPath: currentPath,
+            type: 'columnMapping',
+            direction: 'fromSource',
+          });
+        }
+      };
+
+      // Build title with type, relation indicator, and draggable circle
       const title = (
-        <div className="source-data-node">
+        <div
+          className="source-data-node"
+          data-relation={isLeaf ? encodeURIComponent(currentPath) : ''}
+          data-path={currentPath}
+        >
           <span className={`node-key ${hasRel ? 'has-relation' : ''}`}>
             {isArray && selectedEntityMapping.isPolymorphicList ? `[${key}]` : key}
           </span>
@@ -77,9 +98,18 @@ export const SourceDataNavigation: React.FC<SourceDataNavigationProps> = ({
             <Badge count={relationCount} className="relation-badge" />
           )}
           {isLeaf && (
-            <Tooltip title={String(value)}>
-              <span className="node-value">{String(value).substring(0, 50)}</span>
-            </Tooltip>
+            <>
+              <Tooltip title={String(value)}>
+                <span className="node-value">{String(value).substring(0, 50)}</span>
+              </Tooltip>
+              <div
+                className={`circle ${hasRel ? 'has-relation' : ''} ${relationCount > 0 ? 'selected' : ''}`}
+                onMouseDown={handleCircleMouseDown}
+                data-path={currentPath}
+              >
+                {relationCount > 1 && <span>{relationCount}</span>}
+              </div>
+            </>
           )}
         </div>
       );
@@ -168,6 +198,38 @@ export const SourceDataNavigation: React.FC<SourceDataNavigationProps> = ({
   const filteredTreeData = useMemo(() => {
     return filterTreeData(treeData);
   }, [treeData, searchString]);
+
+  // Handle mouse move for drag line
+  useEffect(() => {
+    if (!dragDropHandler) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (dragDropHandler.isDragging && dragDropHandler.updateDragLine) {
+        dragDropHandler.updateDragLine(e);
+      }
+    };
+
+    const handleMouseUp = () => {
+      if (dragDropHandler.isDragging && dragDropHandler.cancelDragLine) {
+        dragDropHandler.cancelDragLine();
+      }
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [dragDropHandler]);
+
+  // Force re-render when drag state changes
+  useEffect(() => {
+    if (dragDropHandler) {
+      setTreeRenderKey((prev) => prev + 1);
+    }
+  }, [dragDropHandler?.isDragging]);
 
   if (!sourceData) {
     return (

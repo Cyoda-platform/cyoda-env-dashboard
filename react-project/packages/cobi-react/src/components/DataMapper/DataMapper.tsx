@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { Button, Divider, Empty, Spin } from 'antd';
 import {
   ExpandOutlined,
@@ -17,6 +17,7 @@ import SourceDataNavigation from './SourceDataNavigation';
 import TargetDataNavigation from './TargetDataNavigation';
 import EntityNavigation from './EntityNavigation';
 import MappingCanvas from './MappingCanvas';
+import { useDragDropHandler } from './DragDropHandler';
 import { ScriptEditorDialog, ScriptEditorDialogRef } from './ScriptEditor';
 import { DryRunSettingsDialog, DryRunResultDialog, DryRunSettingsDialogRef, DryRunResultDialogRef } from './DryRun';
 import type {
@@ -43,6 +44,7 @@ const DataMapper: React.FC<DataMapperProps> = ({
   dataMappingConfig,
   sourceData,
   noneMappingFields = [],
+  onSave,
   onEntityEdit,
   onEntityDelete,
   onEntityAdd,
@@ -53,6 +55,7 @@ const DataMapper: React.FC<DataMapperProps> = ({
 }) => {
   const [selectedEntityMappingIndex, setSelectedEntityMappingIndex] = useState(0);
   const [isLoadingTargetData] = useState(false);
+  const [relationsUpdateTrigger, setRelationsUpdateTrigger] = useState(0);
 
   const canvasRef = useRef<HTMLDivElement>(null);
   const scriptEditorRef = useRef<ScriptEditorDialogRef>(null);
@@ -60,6 +63,31 @@ const DataMapper: React.FC<DataMapperProps> = ({
   const dryRunResultRef = useRef<DryRunResultDialogRef>(null);
 
   const selectedEntityMapping = dataMappingConfig.entityMappings[selectedEntityMappingIndex];
+
+  // Handle mapping changes
+  const handleMappingChange = useCallback((updatedMapping: EntityMappingConfigDto) => {
+    const updatedConfig = {
+      ...dataMappingConfig,
+      entityMappings: dataMappingConfig.entityMappings.map((em, idx) =>
+        idx === selectedEntityMappingIndex ? updatedMapping : em
+      ),
+    };
+    if (onSave) {
+      onSave(updatedConfig);
+    }
+  }, [dataMappingConfig, selectedEntityMappingIndex, onSave]);
+
+  // Trigger relations update
+  const handleRelationsUpdate = useCallback(() => {
+    setRelationsUpdateTrigger((prev) => prev + 1);
+  }, []);
+
+  // Initialize drag-drop handler
+  const dragDropHandler = useDragDropHandler({
+    selectedEntityMapping,
+    onMappingChange: handleMappingChange,
+    onRelationsUpdate: handleRelationsUpdate,
+  });
 
   // Get source data for selected entity
   const getSourceDataForEntity = (): any => {
@@ -308,6 +336,7 @@ const DataMapper: React.FC<DataMapperProps> = ({
                 sourceData={sourceDataForEntity}
                 selectedEntityMapping={selectedEntityMapping}
                 allDataRelations={allDataRelations}
+                dragDropHandler={dragDropHandler}
               />
             ) : (
               <Empty description="Data not found. Perhaps an incorrect path to the data is specified in the Source Relative Root Path field.">
@@ -324,6 +353,9 @@ const DataMapper: React.FC<DataMapperProps> = ({
             allDataRelations={allDataRelations}
             onRelationClick={handleRelationClick}
             onRelationHover={handleRelationHover}
+            activeLine={dragDropHandler.activeLine}
+            activeRelation={dragDropHandler.activeRelation}
+            relationsUpdateTrigger={relationsUpdateTrigger}
           />
 
           {/* Target Data Column */}
@@ -334,6 +366,7 @@ const DataMapper: React.FC<DataMapperProps> = ({
                   selectedEntityMapping={selectedEntityMapping}
                   allDataRelations={allDataRelations}
                   noneMappingFields={noneMappingFields}
+                  dragDropHandler={dragDropHandler}
                 />
               </Spin>
             ) : (

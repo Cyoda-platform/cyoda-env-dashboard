@@ -1,16 +1,18 @@
 import React, { useState, useMemo } from 'react';
-import { Card, Table, Button, Input, Space, Tag, Modal, message, Tooltip } from 'antd';
+import { Card, Table, Button, Input, Space, Tag, Modal, message, Tooltip, Upload } from 'antd';
 import {
   PlusOutlined,
   EditOutlined,
   DeleteOutlined,
   CopyOutlined,
   PlayCircleOutlined,
-  ExclamationCircleOutlined
+  ExclamationCircleOutlined,
+  DownloadOutlined,
+  UploadOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import type { ColumnsType } from 'antd/es/table';
-import { useDataSourceConfigs, useDeleteDataSourceConfig } from '../../hooks/useDataSourceConfig';
+import { useDataSourceConfigs, useDeleteDataSourceConfig, useExportAllCobi, useImportCobiConfig } from '../../hooks/useDataSourceConfig';
 import type { DataSourceConfigDto } from '../../types';
 import { AIGenerateButton } from '../../components/AIGenerate';
 import dayjs from 'dayjs';
@@ -24,8 +26,12 @@ const DataSourceConfigIndex: React.FC = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
   // Fetch data source configurations
-  const { data: configs = [], isLoading } = useDataSourceConfigs();
+  const { data: configs = [], isLoading, refetch } = useDataSourceConfigs();
   const deleteConfig = useDeleteDataSourceConfig();
+
+  // Export/Import mutations
+  const exportMutation = useExportAllCobi();
+  const importMutation = useImportCobiConfig();
 
   // Filter configurations
   const filteredConfigs = useMemo(() => {
@@ -120,6 +126,47 @@ const DataSourceConfigIndex: React.FC = () => {
   // Handle run/play
   const handleRun = (_config: DataSourceConfigDto) => {
     message.info('Run configuration feature coming soon');
+  };
+
+  const handleExport = async () => {
+    try {
+      const response = await exportMutation.mutateAsync();
+
+      // Download the exported file
+      const blob = new Blob([JSON.stringify(response.data, null, 2)], { type: 'application/json' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `data-source-config-export-${new Date().toISOString().split('T')[0]}.json`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+
+      message.success('Data source configurations exported successfully');
+    } catch (error) {
+      console.error('Export error:', error);
+      message.error('Failed to export data source configurations');
+    }
+  };
+
+  const handleImport = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      try {
+        const content = e.target?.result as string;
+        const data = JSON.parse(content);
+
+        await importMutation.mutateAsync({ data });
+        message.success('Data source configurations imported successfully');
+        refetch();
+      } catch (error) {
+        console.error('Import error:', error);
+        message.error('Failed to import data source configurations. Please check the file format.');
+      }
+    };
+    reader.readAsText(file);
+    return false; // Prevent auto upload
   };
 
   // Table columns
@@ -288,6 +335,29 @@ const DataSourceConfigIndex: React.FC = () => {
             >
               Delete Selected
             </Button>
+            <Tooltip title="Export all data source configurations">
+              <Button
+                icon={<DownloadOutlined />}
+                onClick={handleExport}
+                loading={exportMutation.isPending}
+              >
+                Export
+              </Button>
+            </Tooltip>
+            <Tooltip title="Import data source configurations from file">
+              <Upload
+                accept=".json"
+                beforeUpload={handleImport}
+                showUploadList={false}
+              >
+                <Button
+                  icon={<UploadOutlined />}
+                  loading={importMutation.isPending}
+                >
+                  Import
+                </Button>
+              </Upload>
+            </Tooltip>
             <AIGenerateButton type="dataSource" onSuccess={handleAIGenerateSuccess} />
             <Button
               type="primary"
