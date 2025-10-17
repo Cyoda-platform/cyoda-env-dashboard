@@ -87,11 +87,18 @@ const DataMapper: React.FC<DataMapperProps> = ({
         idx === selectedEntityMappingIndex ? updatedMapping : em
       ),
     };
+
+    // Call onEntityEdit to update the specific entity mapping
+    if (onEntityEdit) {
+      onEntityEdit(updatedMapping);
+    }
+
+    // Also call onSave if provided (for full config updates)
     if (onSave) {
       setIsSaveButtonTouched(true);
       onSave(updatedConfig);
     }
-  }, [dataMappingConfig, selectedEntityMappingIndex, onSave]);
+  }, [dataMappingConfig, selectedEntityMappingIndex, onSave, onEntityEdit]);
 
   // Trigger relations update
   const handleRelationsUpdate = useCallback(() => {
@@ -312,6 +319,36 @@ const DataMapper: React.FC<DataMapperProps> = ({
     setSearchPathsVisible(false);
   };
 
+  const handleFindSourcePath = (path: string) => {
+    // Find and scroll to the source field
+    const sourceElement = document.querySelector(
+      `.source-data-column [data-path="${path}"]`
+    );
+    if (sourceElement) {
+      sourceElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      sourceElement.classList.add('highlight-field');
+      setTimeout(() => sourceElement.classList.remove('highlight-field'), 3000);
+      message.success(`Found source field: ${path}`);
+    } else {
+      message.warning(`Source field not found: ${path}`);
+    }
+  };
+
+  const handleFindTargetPath = (path: string) => {
+    // Find and scroll to the target field
+    const targetElement = document.querySelector(
+      `.target-data-column [data-path="${path}"]`
+    );
+    if (targetElement) {
+      targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      targetElement.classList.add('highlight-field');
+      setTimeout(() => targetElement.classList.remove('highlight-field'), 3000);
+      message.success(`Found target field: ${path}`);
+    } else {
+      message.warning(`Target field not found: ${path}`);
+    }
+  };
+
   // Dry Run handlers
   const handleOpenDryRunSettings = () => {
     dryRunSettingsRef.current?.open();
@@ -346,25 +383,81 @@ const DataMapper: React.FC<DataMapperProps> = ({
   const handleDeleteNotExistRelation = useCallback((relation: any) => {
     if (!selectedEntityMapping) return;
 
+    console.log('Deleting relation:', relation);
+    console.log('Current mapping:', selectedEntityMapping);
+
     const updatedMapping = { ...selectedEntityMapping };
 
     if (relation.type === 'columnMapping') {
+      // Filter by comparing actual field values, not object reference
+      const beforeCount = updatedMapping.columns.length;
       updatedMapping.columns = updatedMapping.columns.filter(
-        (col) => col !== relation.data
+        (col) => !(
+          col.srcColumnPath === relation.srcPath &&
+          col.dstCyodaColumnPath === relation.dstPath
+        )
       );
+      const afterCount = updatedMapping.columns.length;
+      console.log(`Column mappings: ${beforeCount} -> ${afterCount}`);
     } else if (relation.type === 'functionalMapping') {
+      // Filter by comparing destination path
+      const beforeCount = updatedMapping.functionalMappings.length;
       updatedMapping.functionalMappings = updatedMapping.functionalMappings.filter(
-        (fm) => fm !== relation.data
+        (fm) => fm.dstPath !== relation.dstPath
       );
+      const afterCount = updatedMapping.functionalMappings.length;
+      console.log(`Functional mappings: ${beforeCount} -> ${afterCount}`);
     } else if (relation.type === 'metadata') {
+      // Filter by comparing destination path
+      const beforeCount = updatedMapping.cobiCoreMetadata?.length || 0;
       updatedMapping.cobiCoreMetadata = updatedMapping.cobiCoreMetadata?.filter(
-        (meta) => meta !== relation.data
+        (meta) => meta.dstCyodaColumnPath !== relation.dstPath
       ) || [];
+      const afterCount = updatedMapping.cobiCoreMetadata?.length || 0;
+      console.log(`Metadata: ${beforeCount} -> ${afterCount}`);
     }
 
+    console.log('Updated mapping:', updatedMapping);
     handleMappingChange(updatedMapping);
     message.success('Relation deleted successfully');
   }, [selectedEntityMapping, handleMappingChange]);
+
+  // Handle repair of non-existent relations
+  const handleRepairNotExistRelation = useCallback((relation: any) => {
+    console.log('Repairing relation:', relation);
+
+    // Scroll to and highlight the field in the mapper
+    // This will help users find and re-map the broken relation
+
+    // Try to find and scroll to the source field
+    if (relation.srcPath) {
+      const sourceElement = document.querySelector(
+        `.source-data-column [data-path="${relation.srcPath}"]`
+      );
+      if (sourceElement) {
+        sourceElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        sourceElement.classList.add('highlight-field');
+        setTimeout(() => sourceElement.classList.remove('highlight-field'), 3000);
+      }
+    }
+
+    // Try to find and scroll to the target field
+    if (relation.dstPath) {
+      const targetElement = document.querySelector(
+        `.target-data-column [data-path="${relation.dstPath}"]`
+      );
+      if (targetElement) {
+        targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        targetElement.classList.add('highlight-field');
+        setTimeout(() => targetElement.classList.remove('highlight-field'), 3000);
+      }
+    }
+
+    message.info(
+      `Highlighted field: ${relation.srcPath || ''} → ${relation.dstPath}. ` +
+      `Delete the broken relation and create a new mapping.`
+    );
+  }, []);
 
   // Check if source data root is an array
   const isRootElementIsArray = useMemo(() => {
@@ -412,6 +505,7 @@ const DataMapper: React.FC<DataMapperProps> = ({
         sourceData={sourceData}
         targetFields={getAllTargetFields()}
         onDeleteRelation={handleDeleteNotExistRelation}
+        onRepairRelation={handleRepairNotExistRelation}
       />
 
       {/* Navigation Actions */}
@@ -613,6 +707,8 @@ const DataMapper: React.FC<DataMapperProps> = ({
         visible={searchPathsVisible}
         entityMapping={selectedEntityMapping}
         onClose={handleCloseSearchPaths}
+        onFindSourcePath={handleFindSourcePath}
+        onFindTargetPath={handleFindTargetPath}
       />
       <DryRunSettingsDialog ref={dryRunSettingsRef} onSave={handleRunDryRun} />
       <DryRunResultDialog ref={dryRunResultRef} />

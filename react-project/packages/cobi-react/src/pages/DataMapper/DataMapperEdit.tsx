@@ -76,8 +76,13 @@ const DataMapperEdit: React.FC = () => {
           console.error('Error parsing sample content:', error);
         }
       }
+
+      // If editing existing mapping (has ID), skip to the mapper view
+      if (id && dataToLoad.id) {
+        setCurrentStep(4); // Go directly to Step 4 (Data Mapping)
+      }
     }
-  }, [existingMapping, initialDataFromState, form]);
+  }, [existingMapping, initialDataFromState, form, id]);
 
   // Initialize entity mapping when moving to Step 3
   useEffect(() => {
@@ -234,6 +239,9 @@ const DataMapperEdit: React.FC = () => {
     );
   }
 
+  // Determine if we're in edit mode (editing existing config)
+  const isEditMode = id && existingMapping;
+
   return (
     <div style={{ padding: '24px' }}>
       <Card>
@@ -244,14 +252,82 @@ const DataMapperEdit: React.FC = () => {
           <Button onClick={() => navigate('/data-mapper')}>Back to List</Button>
         </div>
 
-        <Steps
-          current={currentStep}
-          items={steps}
-          style={{ marginTop: '24px', marginBottom: '32px' }}
-        />
+        {/* Only show steps when creating new configuration AND not on the mapping canvas */}
+        {!isEditMode && currentStep < 4 && (
+          <Steps
+            current={currentStep}
+            items={steps}
+            style={{ marginTop: '24px', marginBottom: '32px' }}
+          />
+        )}
 
-        {/* Step 0: Default Settings */}
-        {currentStep === 0 && (
+        {/* When editing, show DataMapper directly */}
+        {isEditMode ? (
+          <div style={{ width: '100%' }}>
+            <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <Title level={4} style={{ margin: 0 }}>Data Mapping Configuration</Title>
+                <Paragraph type="secondary" style={{ margin: 0 }}>
+                  Edit your data mapping configuration.
+                </Paragraph>
+              </div>
+              <Space>
+                <Button onClick={() => navigate('/data-mapper')}>Cancel</Button>
+                <Button type="primary" onClick={handleSaveMapping}>
+                  Save Changes
+                </Button>
+              </Space>
+            </div>
+
+            <DataMapper
+              dataMappingConfig={dataMappingConfig}
+              sourceData={sourceData}
+              noneMappingFields={[]}
+              onEntityEdit={(entityMapping: EntityMappingConfigDto) => {
+                // Update entity mapping
+                const index = dataMappingConfig.entityMappings.findIndex(
+                  em => em.id.uiId === entityMapping.id.uiId
+                );
+                if (index !== -1) {
+                  const newEntityMappings = [...dataMappingConfig.entityMappings];
+                  newEntityMappings[index] = entityMapping;
+                  setDataMappingConfig(prev => ({
+                    ...prev,
+                    entityMappings: newEntityMappings,
+                  }));
+                }
+              }}
+              onEntityDelete={(entityMapping: EntityMappingConfigDto) => {
+                // Remove entity mapping
+                setDataMappingConfig(prev => ({
+                  ...prev,
+                  entityMappings: prev.entityMappings.filter(
+                    em => em.id.uiId !== entityMapping.id.uiId
+                  ),
+                }));
+              }}
+              onEntityAdd={() => {
+                // Add new entity mapping
+                message.info('Add entity mapping functionality will be implemented');
+              }}
+              onUploadFile={() => {
+                message.info('Cannot upload file when editing existing configuration');
+              }}
+              onEditContent={() => {
+                message.info('Edit content functionality will be implemented');
+              }}
+              onEditCSVSettings={() => {
+                message.info('Cannot edit CSV settings when editing existing configuration');
+              }}
+              onEditScript={() => {
+                message.info('Edit script functionality will be implemented');
+              }}
+            />
+          </div>
+        ) : (
+          <>
+            {/* Step 0: Default Settings */}
+            {currentStep === 0 && (
           <div style={{ maxWidth: '600px', margin: '0 auto' }}>
             <Title level={4}>Default Settings</Title>
             <Form
@@ -525,6 +601,8 @@ const DataMapperEdit: React.FC = () => {
               }}
             />
           </div>
+        )}
+        </>
         )}
       </Card>
     </div>

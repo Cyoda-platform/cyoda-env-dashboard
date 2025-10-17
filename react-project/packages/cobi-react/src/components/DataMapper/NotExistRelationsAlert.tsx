@@ -1,6 +1,6 @@
 import React from 'react';
-import { Alert, Button, Space } from 'antd';
-import { DeleteOutlined, WarningOutlined } from '@ant-design/icons';
+import { Alert, Button, Space, message } from 'antd';
+import { DeleteOutlined, WarningOutlined, ToolOutlined } from '@ant-design/icons';
 import type { EntityMappingConfigDto } from '../../types';
 import './NotExistRelationsAlert.css';
 
@@ -17,6 +17,7 @@ interface NotExistRelationsAlertProps {
   sourceData: any;
   targetFields: string[];
   onDeleteRelation: (relation: NotExistRelation) => void;
+  onRepairRelation?: (relation: NotExistRelation) => void;
 }
 
 const NotExistRelationsAlert: React.FC<NotExistRelationsAlertProps> = ({
@@ -24,6 +25,7 @@ const NotExistRelationsAlert: React.FC<NotExistRelationsAlertProps> = ({
   sourceData,
   targetFields,
   onDeleteRelation,
+  onRepairRelation,
 }) => {
   const findNotExistRelations = (): NotExistRelation[] => {
     if (!entityMapping) return [];
@@ -145,6 +147,19 @@ const NotExistRelationsAlert: React.FC<NotExistRelationsAlertProps> = ({
     }
   };
 
+  const canRepair = (relation: NotExistRelation): boolean => {
+    // Can repair if the relation has a source path (can't repair metadata or script paths)
+    return !!relation.srcPath;
+  };
+
+  const handleRepair = (relation: NotExistRelation) => {
+    if (onRepairRelation) {
+      onRepairRelation(relation);
+    } else {
+      message.info('Repair functionality: This will highlight the field in the mapper for re-mapping');
+    }
+  };
+
   return (
     <Alert
       message={
@@ -169,15 +184,28 @@ const NotExistRelationsAlert: React.FC<NotExistRelationsAlertProps> = ({
                   <span className="relation-path">{shortNamePath(relation.dstPath)}</span>
                   <span className="relation-reason">({relation.reason})</span>
                 </div>
-                <Button
-                  type="link"
-                  danger
-                  size="small"
-                  icon={<DeleteOutlined />}
-                  onClick={() => onDeleteRelation(relation)}
-                >
-                  Delete
-                </Button>
+                <Space size="small">
+                  {canRepair(relation) && (
+                    <Button
+                      type="link"
+                      size="small"
+                      icon={<ToolOutlined />}
+                      onClick={() => handleRepair(relation)}
+                      title="Repair this relation by re-mapping"
+                    >
+                      Repair
+                    </Button>
+                  )}
+                  <Button
+                    type="link"
+                    danger
+                    size="small"
+                    icon={<DeleteOutlined />}
+                    onClick={() => onDeleteRelation(relation)}
+                  >
+                    Delete
+                  </Button>
+                </Space>
               </div>
             ))}
           </div>

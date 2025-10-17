@@ -35,3 +35,24 @@
   font-size: 13px;
 }
 
+.search-paths-dialog .statements-expanded {
+  margin: 0 20px;
+  border: 1px solid #f0f0f0;
+  background: #fafafa;
+}
+
+.search-paths-dialog .statements-expanded .ant-table {
+  background: transparent;
+}
+
+.search-paths-dialog .ant-table-expanded-row > td {
+  padding: 12px 0 !important;
+}
+
+.search-paths-dialog .ant-btn-link {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+.search-paths-dialog .ant-table-row-expand-icon {
+  color: #1890ff;
+}

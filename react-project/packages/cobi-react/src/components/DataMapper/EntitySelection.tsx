@@ -5,6 +5,7 @@ import { useEntityTypes, useReportingInfo } from '../../hooks';
 import type { EntityMappingConfigDto, ParentRelationConfigDto, MappingConfigDto } from '../../types';
 import { FilterBuilder } from './FilterBuilder';
 import type { ColumnInfo, FilterGroup } from './FilterBuilder/types';
+import EntityFieldsBrowser from './EntityFieldsBrowser';
 import './EntitySelection.css';
 
 interface EntitySelectionProps {
@@ -572,163 +573,11 @@ export const EntitySelection: React.FC<EntitySelectionProps> = ({
               label: 'Fields',
               children: (
                 <div style={{ padding: 16 }}>
-                  <div style={{ marginBottom: 16 }}>
-                    <h4>Entity Mapping Details</h4>
-                    <p style={{ color: '#666', fontSize: '14px' }}>
-                      {entityMapping.entityClass
-                        ? `Complete mapping configuration for: ${entityMapping.entityClass.split('.').pop()}`
-                        : 'Select an entity class to view mapping details'}
-                    </p>
-                  </div>
-
-                  {entityMapping.entityClass ? (
-                    <div>
-                      {/* Entity Information */}
-                      <div style={{
-                        padding: 16,
-                        background: '#f5f5f5',
-                        borderRadius: 4,
-                        border: '1px solid #d9d9d9',
-                        marginBottom: 16
-                      }}>
-                        <h5 style={{ marginTop: 0, marginBottom: 12 }}>Entity Information</h5>
-                        <div style={{ marginBottom: 6, fontSize: '13px' }}>
-                          <strong>ID:</strong> {entityMapping.id?.id || 'null'} (UI ID: {entityMapping.id?.uiId})
-                        </div>
-                        <div style={{ marginBottom: 6, fontSize: '13px' }}>
-                          <strong>Name:</strong> {entityMapping.name || '(not set)'}
-                        </div>
-                        <div style={{ marginBottom: 6, fontSize: '13px' }}>
-                          <strong>Entity Class:</strong> <code style={{ fontSize: '11px' }}>{entityMapping.entityClass}</code>
-                        </div>
-                        <div style={{ marginBottom: 6, fontSize: '13px' }}>
-                          <strong>Show Non-Mapping Fields:</strong> {entityMapping.isShowNoneMappingFields ? '✓ Yes' : '✗ No'}
-                        </div>
-                        <div style={{ fontSize: '13px' }}>
-                          <strong>Polymorphic List:</strong> {entityMapping.isPolymorphicList ? '✓ Yes' : '✗ No'}
-                        </div>
-                      </div>
-
-                      {/* Column Mappings */}
-                      <div style={{ marginBottom: 16 }}>
-                        <h5>Column Mappings ({entityMapping.columns?.length || 0})</h5>
-                        {entityMapping.columns && entityMapping.columns.length > 0 ? (
-                          <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
-                            {entityMapping.columns.map((col: any, idx: number) => (
-                              <div key={idx} style={{
-                                marginBottom: 8,
-                                padding: 10,
-                                background: '#fafafa',
-                                border: '1px solid #e8e8e8',
-                                borderRadius: 4,
-                                fontSize: '12px'
-                              }}>
-                                <div style={{ fontWeight: 'bold', color: '#1890ff', marginBottom: 4 }}>
-                                  Mapping #{idx + 1}
-                                </div>
-                                <div style={{ marginBottom: 3 }}>
-                                  <strong>Source:</strong> <code>{col.srcColumnPath}</code>
-                                </div>
-                                <div style={{ marginBottom: 3 }}>
-                                  <strong>Destination:</strong> <code>{col.dstCyodaColumnPath}</code>
-                                </div>
-                                <div style={{ marginBottom: 3 }}>
-                                  <strong>Type:</strong> {col.dstCyodaColumnPathType || 'N/A'}
-                                </div>
-                                {col.transformer && (
-                                  <div>
-                                    <strong>Transformer:</strong> {col.transformer.type} ({col.transformer.children?.length || 0} children)
-                                  </div>
-                                )}
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <div style={{ padding: 12, background: '#fafafa', borderRadius: 4, color: '#999', fontSize: '13px' }}>
-                            No column mappings configured yet. Add mappings in Step 4.
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Functional Mappings */}
-                      <div style={{ marginBottom: 16 }}>
-                        <h5>Functional Mappings ({entityMapping.functionalMappings?.length || 0})</h5>
-                        {entityMapping.functionalMappings && entityMapping.functionalMappings.length > 0 ? (
-                          <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
-                            {entityMapping.functionalMappings.map((fm: any, idx: number) => (
-                              <div key={idx} style={{
-                                marginBottom: 8,
-                                padding: 10,
-                                background: '#fff7e6',
-                                border: '1px solid #ffd591',
-                                borderRadius: 4,
-                                fontSize: '12px'
-                              }}>
-                                <div style={{ fontWeight: 'bold', color: '#fa8c16', marginBottom: 4 }}>
-                                  Functional Mapping #{idx + 1}
-                                </div>
-                                <div style={{ marginBottom: 3 }}>
-                                  <strong>Name:</strong> {fm.name || '(unnamed)'}
-                                </div>
-                                <div style={{ marginBottom: 3 }}>
-                                  <strong>Source Paths:</strong> {fm.srcPaths?.join(', ') || 'N/A'}
-                                </div>
-                                <div style={{ marginBottom: 3 }}>
-                                  <strong>Destination:</strong> <code>{fm.dstPath}</code>
-                                </div>
-                                <div>
-                                  <strong>Statements:</strong> {fm.statements?.length || 0}
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <div style={{ padding: 12, background: '#fafafa', borderRadius: 4, color: '#999', fontSize: '13px' }}>
-                            No functional mappings configured.
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Additional Configuration */}
-                      <div style={{
-                        padding: 16,
-                        background: '#f0f5ff',
-                        borderRadius: 4,
-                        border: '1px solid #adc6ff'
-                      }}>
-                        <h5 style={{ marginTop: 0, marginBottom: 12 }}>Additional Configuration</h5>
-                        <div style={{ marginBottom: 6, fontSize: '13px' }}>
-                          <strong>Metadata Configs:</strong> {entityMapping.metadata?.length || 0}
-                        </div>
-                        <div style={{ marginBottom: 6, fontSize: '13px' }}>
-                          <strong>COBI Core Metadata:</strong> {entityMapping.cobiCoreMetadata?.length || 0}
-                        </div>
-                        <div style={{ marginBottom: 6, fontSize: '13px' }}>
-                          <strong>COBI Paths Relations:</strong> {entityMapping.cobiPathsRelations?.length || 0}
-                        </div>
-                        <div style={{ marginBottom: 6, fontSize: '13px' }}>
-                          <strong>Unique Check Paths:</strong> {entityMapping.columnPathsForUniqueCheck?.length || 0}
-                        </div>
-                        <div style={{ marginBottom: 6, fontSize: '13px' }}>
-                          <strong>Entity Relation Configs:</strong> {entityMapping.entityRelationConfigs?.length || 0}
-                        </div>
-                        {entityMapping.script && (
-                          <div style={{ fontSize: '13px' }}>
-                            <strong>Script:</strong> {entityMapping.script.body ? `${entityMapping.script.body.length} chars` : 'Empty'}
-                          </div>
-                        )}
-                      </div>
-
-                      <div style={{ marginTop: 16, padding: 12, background: '#e6f7ff', borderRadius: 4 }}>
-                        <strong>ℹ️ Note:</strong> Advanced entity field browser will be available in a future update.
-                        Field mappings are created in Step 4 (Data Mapping) using the visual mapper.
-                      </div>
-                    </div>
-                  ) : (
-                    <div style={{ padding: 32, textAlign: 'center', color: '#999' }}>
-                      Please select an entity class above to view mapping details
-                    </div>
-                  )}
+                  <EntityFieldsBrowser
+                    entityMapping={entityMapping}
+                    readOnly={false}
+                    showAliases={false}
+                  />
                 </div>
               ),
             },
