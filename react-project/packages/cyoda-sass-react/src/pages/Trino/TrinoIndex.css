@@ -1,0 +1,27 @@
+.trino-index {
+  padding: 24px;
+}
+
+.trino-index h4 {
+  font-size: 18px;
+  margin-bottom: 16px;
+}
+
+.trino-index-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  gap: 16px;
+}
+
+.trino-index-filter {
+  flex-grow: 1;
+}
+
+.trino-index-actions {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+

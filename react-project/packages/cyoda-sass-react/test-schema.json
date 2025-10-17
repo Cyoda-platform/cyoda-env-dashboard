@@ -1,0 +1,324 @@
+{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "schemaName": "test_customer_schema",
+  "timestamp": 1697558400000,
+  "tables": [
+    {
+      "metadataClassId": "customer-class-001",
+      "tableName": "customers",
+      "uniformedPath": "data.customers",
+      "hidden": false,
+      "fields": [
+        {
+          "fieldName": "customer_id",
+          "fieldType": "bigint",
+          "fieldCategory": "DATA",
+          "hidden": false,
+          "flatten": false
+        },
+        {
+          "fieldName": "first_name",
+          "fieldType": "varchar",
+          "fieldCategory": "DATA",
+          "hidden": false,
+          "flatten": false
+        },
+        {
+          "fieldName": "last_name",
+          "fieldType": "varchar",
+          "fieldCategory": "DATA",
+          "hidden": false,
+          "flatten": false
+        },
+        {
+          "fieldName": "email",
+          "fieldType": "varchar",
+          "fieldCategory": "DATA",
+          "hidden": false,
+          "flatten": false
+        },
+        {
+          "fieldName": "phone_number",
+          "fieldType": "varchar",
+          "fieldCategory": "DATA",
+          "hidden": false,
+          "flatten": false
+        },
+        {
+          "fieldName": "date_of_birth",
+          "fieldType": "date",
+          "fieldCategory": "DATA",
+          "hidden": false,
+          "flatten": false
+        },
+        {
+          "fieldName": "created_at",
+          "fieldType": "timestamp",
+          "fieldCategory": "METADATA",
+          "hidden": false,
+          "flatten": false
+        },
+        {
+          "fieldName": "updated_at",
+          "fieldType": "timestamp",
+          "fieldCategory": "METADATA",
+          "hidden": false,
+          "flatten": false
+        },
+        {
+          "fieldName": "addresses",
+          "fieldType": "array",
+          "fieldCategory": "DATA",
+          "hidden": false,
+          "flatten": true,
+          "arrayFields": [
+            {
+              "fieldName": "street",
+              "fieldType": "varchar",
+              "fieldCategory": "DATA",
+              "hidden": false,
+              "flatten": false
+            },
+            {
+              "fieldName": "city",
+              "fieldType": "varchar",
+              "fieldCategory": "DATA",
+              "hidden": false,
+              "flatten": false
+            },
+            {
+              "fieldName": "state",
+              "fieldType": "varchar",
+              "fieldCategory": "DATA",
+              "hidden": false,
+              "flatten": false
+            },
+            {
+              "fieldName": "zip_code",
+              "fieldType": "varchar",
+              "fieldCategory": "DATA",
+              "hidden": false,
+              "flatten": false
+            },
+            {
+              "fieldName": "country",
+              "fieldType": "varchar",
+              "fieldCategory": "DATA",
+              "hidden": false,
+              "flatten": false
+            },
+            {
+              "fieldName": "address_type",
+              "fieldType": "varchar",
+              "fieldCategory": "DATA",
+              "hidden": false,
+              "flatten": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "metadataClassId": "order-class-001",
+      "tableName": "orders",
+      "uniformedPath": "data.orders",
+      "hidden": false,
+      "fields": [
+        {
+          "fieldName": "order_id",
+          "fieldType": "bigint",
+          "fieldCategory": "DATA",
+          "hidden": false,
+          "flatten": false
+        },
+        {
+          "fieldName": "customer_id",
+          "fieldType": "bigint",
+          "fieldCategory": "DATA",
+          "hidden": false,
+          "flatten": false
+        },
+        {
+          "fieldName": "order_date",
+          "fieldType": "timestamp",
+          "fieldCategory": "DATA",
+          "hidden": false,
+          "flatten": false
+        },
+        {
+          "fieldName": "total_amount",
+          "fieldType": "decimal",
+          "fieldCategory": "DATA",
+          "hidden": false,
+          "flatten": false
+        },
+        {
+          "fieldName": "status",
+          "fieldType": "varchar",
+          "fieldCategory": "DATA",
+          "hidden": false,
+          "flatten": false
+        },
+        {
+          "fieldName": "shipping_address",
+          "fieldType": "varchar",
+          "fieldCategory": "DATA",
+          "hidden": false,
+          "flatten": false
+        },
+        {
+          "fieldName": "order_items",
+          "fieldType": "array",
+          "fieldCategory": "DATA",
+          "hidden": false,
+          "flatten": true,
+          "arrayFields": [
+            {
+              "fieldName": "product_id",
+              "fieldType": "bigint",
+              "fieldCategory": "DATA",
+              "hidden": false,
+              "flatten": false
+            },
+            {
+              "fieldName": "product_name",
+              "fieldType": "varchar",
+              "fieldCategory": "DATA",
+              "hidden": false,
+              "flatten": false
+            },
+            {
+              "fieldName": "quantity",
+              "fieldType": "int",
+              "fieldCategory": "DATA",
+              "hidden": false,
+              "flatten": false
+            },
+            {
+              "fieldName": "unit_price",
+              "fieldType": "decimal",
+              "fieldCategory": "DATA",
+              "hidden": false,
+              "flatten": false
+            },
+            {
+              "fieldName": "discount",
+              "fieldType": "decimal",
+              "fieldCategory": "DATA",
+              "hidden": false,
+              "flatten": false
+            }
+          ]
+        },
+        {
+          "fieldName": "created_at",
+          "fieldType": "timestamp",
+          "fieldCategory": "METADATA",
+          "hidden": false,
+          "flatten": false
+        },
+        {
+          "fieldName": "updated_at",
+          "fieldType": "timestamp",
+          "fieldCategory": "METADATA",
+          "hidden": false,
+          "flatten": false
+        }
+      ]
+    },
+    {
+      "metadataClassId": "product-class-001",
+      "tableName": "products",
+      "uniformedPath": "data.products",
+      "hidden": false,
+      "fields": [
+        {
+          "fieldName": "product_id",
+          "fieldType": "bigint",
+          "fieldCategory": "DATA",
+          "hidden": false,
+          "flatten": false
+        },
+        {
+          "fieldName": "product_name",
+          "fieldType": "varchar",
+          "fieldCategory": "DATA",
+          "hidden": false,
+          "flatten": false
+        },
+        {
+          "fieldName": "description",
+          "fieldType": "varchar",
+          "fieldCategory": "DATA",
+          "hidden": false,
+          "flatten": false
+        },
+        {
+          "fieldName": "category",
+          "fieldType": "varchar",
+          "fieldCategory": "DATA",
+          "hidden": false,
+          "flatten": false
+        },
+        {
+          "fieldName": "price",
+          "fieldType": "decimal",
+          "fieldCategory": "DATA",
+          "hidden": false,
+          "flatten": false
+        },
+        {
+          "fieldName": "stock_quantity",
+          "fieldType": "int",
+          "fieldCategory": "DATA",
+          "hidden": false,
+          "flatten": false
+        },
+        {
+          "fieldName": "sku",
+          "fieldType": "varchar",
+          "fieldCategory": "DATA",
+          "hidden": false,
+          "flatten": false
+        },
+        {
+          "fieldName": "is_active",
+          "fieldType": "boolean",
+          "fieldCategory": "DATA",
+          "hidden": false,
+          "flatten": false
+        },
+        {
+          "fieldName": "created_at",
+          "fieldType": "timestamp",
+          "fieldCategory": "METADATA",
+          "hidden": false,
+          "flatten": false
+        }
+      ]
+    },
+    {
+      "metadataClassId": "hidden-table-001",
+      "tableName": "archived_data",
+      "uniformedPath": "data.archived",
+      "hidden": true,
+      "fields": [
+        {
+          "fieldName": "archive_id",
+          "fieldType": "bigint",
+          "fieldCategory": "DATA",
+          "hidden": false,
+          "flatten": false
+        },
+        {
+          "fieldName": "archived_date",
+          "fieldType": "timestamp",
+          "fieldCategory": "METADATA",
+          "hidden": false,
+          "flatten": false
+        }
+      ]
+    }
+  ]
+}
+
