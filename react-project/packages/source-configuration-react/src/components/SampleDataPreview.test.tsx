@@ -22,11 +22,12 @@ describe('SampleDataPreview', () => {
     };
 
     render(<SampleDataPreview data={data} />);
-    
+
     expect(screen.getByText('Sample Data Preview')).toBeInTheDocument();
-    expect(screen.getByText('Name')).toBeInTheDocument();
-    expect(screen.getByText('Age')).toBeInTheDocument();
-    expect(screen.getByText('City')).toBeInTheDocument();
+    // Use getAllByText for column headers that appear multiple times in Ant Design tables
+    expect(screen.getAllByText('Name')[0]).toBeInTheDocument();
+    expect(screen.getAllByText('Age')[0]).toBeInTheDocument();
+    expect(screen.getAllByText('City')[0]).toBeInTheDocument();
     expect(screen.getByText('John')).toBeInTheDocument();
     expect(screen.getByText('Jane')).toBeInTheDocument();
   });
@@ -38,11 +39,12 @@ describe('SampleDataPreview', () => {
     ];
 
     render(<SampleDataPreview data={data} />);
-    
+
     expect(screen.getByText('Sample Data Preview')).toBeInTheDocument();
-    expect(screen.getByText('name')).toBeInTheDocument();
-    expect(screen.getByText('age')).toBeInTheDocument();
-    expect(screen.getByText('city')).toBeInTheDocument();
+    // Use getAllByText for column headers that appear multiple times in Ant Design tables
+    expect(screen.getAllByText('name')[0]).toBeInTheDocument();
+    expect(screen.getAllByText('age')[0]).toBeInTheDocument();
+    expect(screen.getAllByText('city')[0]).toBeInTheDocument();
   });
 
   it('should limit rows to maxRows', () => {

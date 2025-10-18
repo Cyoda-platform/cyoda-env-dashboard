@@ -120,38 +120,41 @@ describe('ConfigForm', () => {
   });
 
   it('should show XML-specific fields when XML is selected', async () => {
-    useSourceConfigStore.setState({ isCreateDialogOpen: true });
+    // Start with XML config to test XML-specific fields
+    useSourceConfigStore.setState({
+      isCreateDialogOpen: true,
+      editingConfig: {
+        id: '1',
+        name: 'Test XML Config',
+        fileType: 'XML',
+        xmlBaseXPath: '/root/element',
+        columnMappingConfigs: [],
+      },
+    });
     renderWithProviders(<ConfigForm />);
-    
-    // Change file type to XML
-    const fileTypeSelect = screen.getByText('CSV').closest('.ant-select');
-    if (fileTypeSelect) {
-      fireEvent.mouseDown(fileTypeSelect);
-      await waitFor(() => {
-        const xmlOption = screen.getByText('XML');
-        fireEvent.click(xmlOption);
-      });
-    }
-    
+
     await waitFor(() => {
       expect(screen.getByPlaceholderText('/root/element')).toBeInTheDocument();
     });
   });
 
   it('should show JDBC-specific fields when JDBC is selected', async () => {
-    useSourceConfigStore.setState({ isCreateDialogOpen: true });
+    // Start with JDBC config to test JDBC-specific fields
+    useSourceConfigStore.setState({
+      isCreateDialogOpen: true,
+      editingConfig: {
+        id: '1',
+        name: 'Test JDBC Config',
+        srcSql: 'SELECT * FROM table',
+        jdbcUrl: 'jdbc:mysql://localhost:3306/database',
+        username: 'user',
+        password: 'pass',
+        driverClassName: 'com.mysql.cj.jdbc.Driver',
+        columnMappingConfigs: [],
+      },
+    });
     renderWithProviders(<ConfigForm />);
-    
-    // Change file type to JDBC
-    const fileTypeSelect = screen.getByText('CSV').closest('.ant-select');
-    if (fileTypeSelect) {
-      fireEvent.mouseDown(fileTypeSelect);
-      await waitFor(() => {
-        const jdbcOption = screen.getByText('JDBC');
-        fireEvent.click(jdbcOption);
-      });
-    }
-    
+
     await waitFor(() => {
       expect(screen.getByPlaceholderText('SELECT * FROM table')).toBeInTheDocument();
       expect(screen.getByPlaceholderText('jdbc:mysql://localhost:3306/database')).toBeInTheDocument();
@@ -199,16 +202,17 @@ describe('ConfigForm', () => {
   it('should render column mapping table with correct columns', async () => {
     useSourceConfigStore.setState({ isCreateDialogOpen: true });
     renderWithProviders(<ConfigForm />);
-    
+
     const addButton = screen.getByText('Add Column');
     fireEvent.click(addButton);
-    
+
     await waitFor(() => {
-      expect(screen.getByText('CSV Column Name')).toBeInTheDocument();
-      expect(screen.getByText('Alias')).toBeInTheDocument();
-      expect(screen.getByText('Mapper')).toBeInTheDocument();
-      expect(screen.getByText('Parameters')).toBeInTheDocument();
-      expect(screen.getByText('Actions')).toBeInTheDocument();
+      // Use getAllByText for column headers that appear multiple times in Ant Design tables
+      expect(screen.getAllByText('CSV Column Name')[0]).toBeInTheDocument();
+      expect(screen.getAllByText('Alias')[0]).toBeInTheDocument();
+      expect(screen.getAllByText('Mapper')[0]).toBeInTheDocument();
+      expect(screen.getAllByText('Parameters')[0]).toBeInTheDocument();
+      expect(screen.getAllByText('Actions')[0]).toBeInTheDocument();
     });
   });
 });

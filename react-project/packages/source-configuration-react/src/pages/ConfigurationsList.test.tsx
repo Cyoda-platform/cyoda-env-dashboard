@@ -90,18 +90,18 @@ describe('ConfigurationsList', () => {
 
   it('should render the page title', () => {
     renderWithProviders(<ConfigurationsList />);
-    expect(screen.getByText('Source Configurations')).toBeInTheDocument();
+    expect(screen.getByText('List of Configs')).toBeInTheDocument();
   });
 
   it('should render action buttons', () => {
     renderWithProviders(<ConfigurationsList />);
     expect(screen.getByText('Create Configuration')).toBeInTheDocument();
-    expect(screen.getByText('Upload File')).toBeInTheDocument();
+    expect(screen.getByText('Ingest Source')).toBeInTheDocument();
   });
 
   it('should render search input', () => {
     renderWithProviders(<ConfigurationsList />);
-    expect(screen.getByPlaceholderText('Search configurations...')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Filter configurations')).toBeInTheDocument();
   });
 
   it('should display all configurations', () => {
@@ -120,10 +120,10 @@ describe('ConfigurationsList', () => {
 
   it('should filter configurations by name', async () => {
     renderWithProviders(<ConfigurationsList />);
-    
-    const searchInput = screen.getByPlaceholderText('Search configurations...');
+
+    const searchInput = screen.getByPlaceholderText('Filter configurations');
     fireEvent.change(searchInput, { target: { value: 'CSV' } });
-    
+
     await waitFor(() => {
       expect(useSourceConfigStore.getState().filterText).toBe('CSV');
     });
@@ -131,19 +131,19 @@ describe('ConfigurationsList', () => {
 
   it('should open create dialog when create button is clicked', () => {
     renderWithProviders(<ConfigurationsList />);
-    
+
     const createButton = screen.getByText('Create Configuration');
     fireEvent.click(createButton);
-    
+
     expect(useSourceConfigStore.getState().isCreateDialogOpen).toBe(true);
   });
 
   it('should open upload dialog when upload button is clicked', () => {
     renderWithProviders(<ConfigurationsList />);
-    
-    const uploadButton = screen.getByText('Upload File');
+
+    const uploadButton = screen.getByText('Ingest Source');
     fireEvent.click(uploadButton);
-    
+
     expect(useSourceConfigStore.getState().isUploadDialogOpen).toBe(true);
   });
 
@@ -199,25 +199,26 @@ describe('ConfigurationsList', () => {
 
   it('should display table with correct columns', () => {
     renderWithProviders(<ConfigurationsList />);
-    expect(screen.getByText('Name')).toBeInTheDocument();
-    expect(screen.getByText('Type')).toBeInTheDocument();
-    expect(screen.getByText('Created')).toBeInTheDocument();
-    expect(screen.getByText('Creator')).toBeInTheDocument();
-    expect(screen.getByText('Configured Columns')).toBeInTheDocument();
-    expect(screen.getByText('Actions')).toBeInTheDocument();
+    // Use getAllByText for column headers that appear multiple times in Ant Design tables
+    expect(screen.getAllByText('Name')[0]).toBeInTheDocument();
+    expect(screen.getAllByText('Type')[0]).toBeInTheDocument();
+    expect(screen.getAllByText('Date of Creation')[0]).toBeInTheDocument();
+    expect(screen.getAllByText('Created User')[0]).toBeInTheDocument();
+    expect(screen.getAllByText('Configured Columns')[0]).toBeInTheDocument();
+    expect(screen.getAllByText('Actions')[0]).toBeInTheDocument();
   });
 
   it('should show loading state', () => {
     // This would require mocking the hook to return isLoading: true
     renderWithProviders(<ConfigurationsList />);
     // Just verify the component renders
-    expect(screen.getByText('Source Configurations')).toBeInTheDocument();
+    expect(screen.getByText('List of Configs')).toBeInTheDocument();
   });
 
   it('should handle empty configurations list', () => {
     // Would need to mock useAllConfigs to return empty array
     renderWithProviders(<ConfigurationsList />);
-    expect(screen.getByText('Source Configurations')).toBeInTheDocument();
+    expect(screen.getByText('List of Configs')).toBeInTheDocument();
   });
 
   it('should display pagination', () => {

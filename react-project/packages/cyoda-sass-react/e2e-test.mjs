@@ -6,17 +6,18 @@
 import { chromium } from 'playwright';
 
 const BASE_URL = 'http://localhost:3009';
+const LOGIN_URL = 'http://localhost:3009/cyoda-sass/login';
 
 async function runTests() {
   console.log('🚀 Starting E2E tests for cyoda-sass-react...\n');
-  
+
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext();
   const page = await context.newPage();
-  
+
   let testsPassed = 0;
   let testsFailed = 0;
-  
+
   try {
     // Test 1: Application loads
     console.log('Test 1: Application loads');
@@ -24,22 +25,24 @@ async function runTests() {
     const title = await page.title();
     console.log(`  ✓ Page title: "${title}"`);
     testsPassed++;
-    
+
+    // Navigate to login page for login tests
+    await page.goto(LOGIN_URL, { waitUntil: 'networkidle' });
+
     // Test 2: Login page renders
     console.log('\nTest 2: Login page renders');
-    const loginHeading = await page.locator('h1, h2, .ant-typography').first();
-    if (await loginHeading.count() > 0) {
-      const headingText = await loginHeading.textContent();
-      console.log(`  ✓ Found heading: "${headingText}"`);
+    const loginForm = await page.locator('form').first();
+    if (await loginForm.count() > 0) {
+      console.log('  ✓ Login form found');
       testsPassed++;
     } else {
-      console.log('  ✗ No heading found');
+      console.log('  ✗ Login form not found');
       testsFailed++;
     }
-    
+
     // Test 3: Email input exists
     console.log('\nTest 3: Email input field exists');
-    const emailInput = await page.locator('input[type="email"], input[placeholder*="email" i], input[id*="email" i]').first();
+    const emailInput = await page.locator('input[placeholder*="Email" i]').first();
     if (await emailInput.count() > 0) {
       console.log('  ✓ Email input field found');
       testsPassed++;
@@ -47,7 +50,7 @@ async function runTests() {
       console.log('  ✗ Email input field not found');
       testsFailed++;
     }
-    
+
     // Test 4: Password input exists
     console.log('\nTest 4: Password input field exists');
     const passwordInput = await page.locator('input[type="password"]').first();
@@ -58,10 +61,10 @@ async function runTests() {
       console.log('  ✗ Password input field not found');
       testsFailed++;
     }
-    
+
     // Test 5: Login button exists
     console.log('\nTest 5: Login button exists');
-    const loginButton = await page.locator('button:has-text("Log"), button:has-text("Login"), button[type="submit"]').first();
+    const loginButton = await page.locator('button:has-text("Login"), button[type="submit"]').first();
     if (await loginButton.count() > 0) {
       const buttonText = await loginButton.textContent();
       console.log(`  ✓ Login button found: "${buttonText}"`);
