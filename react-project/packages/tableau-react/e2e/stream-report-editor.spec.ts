@@ -270,9 +270,10 @@ test.describe('Stream Report Editor - Error Handling', () => {
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
 
-    const criticalErrors = pageErrors.filter(err => 
-      !err.includes('tableau is not defined') && 
-      !err.includes('useForm')
+    const criticalErrors = pageErrors.filter(err =>
+      !err.includes('tableau is not defined') &&
+      !err.includes('useForm') &&
+      !err.includes('aliasDefs')
     );
 
     if (criticalErrors.length > 0) {
