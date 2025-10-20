@@ -43,6 +43,9 @@
     "node": ">=22.0.0",
     "yarn": ">=4.6.0"
   },
+  "overrides": {
+    "dompurify": "^3.2.4"
+  },
   "dependencies": {
     "cytoscape": "^3.33.1",
     "event-source-polyfill": "^1.0.31",
