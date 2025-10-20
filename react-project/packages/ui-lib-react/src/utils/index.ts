@@ -4,3 +4,8 @@
 export * from './formatters'
 export * from './validators'
 
+// Helper classes
+export { default as HelperDictionary } from './HelperDictionary'
+export { default as HelperStorage } from './HelperStorage'
+export { default as HelperFormat } from './HelperFormat'
+

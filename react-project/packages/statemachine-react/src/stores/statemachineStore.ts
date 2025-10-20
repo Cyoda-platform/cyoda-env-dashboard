@@ -6,7 +6,7 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import axios from '@cyoda/http-api-react';
+import { axios } from '@cyoda/http-api-react';
 import type {
   Workflow,
   WorkflowForm,

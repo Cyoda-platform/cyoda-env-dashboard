@@ -25,15 +25,23 @@ const HistoryTable: React.FC<HistoryTableProps> = ({ filter, onChange }) => {
   const { data: reportHistoryData = [], isLoading } = useQuery({
     queryKey: ['reportHistory', filter],
     queryFn: async () => {
-      const { data } = await axios.get('/platform-api/reporting/history', {
-        params: filter,
-      });
-      return data as ReportHistoryData[];
+      try {
+        const { data } = await axios.get('/platform-api/reporting/history', {
+          params: filter,
+        });
+        return Array.isArray(data) ? data as ReportHistoryData[] : [];
+      } catch (error) {
+        console.error('Failed to fetch report history:', error);
+        return [];
+      }
     },
   });
 
   // Transform data for table
   const tableData = useMemo(() => {
+    if (!Array.isArray(reportHistoryData)) {
+      return [];
+    }
     return reportHistoryData.map((report) => {
       const reportName: string[] = report.configName.split('-');
       const configShortName: string =

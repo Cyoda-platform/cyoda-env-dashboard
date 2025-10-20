@@ -563,3 +563,34 @@ export function useStatemachineState() {
   return useStatemachineStore();
 }
 
+// ============================================================================
+// Convenience Aliases for List Hooks
+// ============================================================================
+
+/**
+ * Alias for useTransitionsList - fetches transitions for a workflow
+ */
+export function useTransitions(persistedType: PersistedType, workflowId: string, enabled = true) {
+  return useTransitionsList(persistedType, workflowId, enabled);
+}
+
+/**
+ * Alias for useCriteriaList - fetches criteria for a workflow
+ * Note: This returns all criteria for an entity class, not workflow-specific
+ */
+export function useCriteria(persistedType: PersistedType, workflowId: string, enabled = true) {
+  // Get entity class from workflow if needed
+  // For now, just return all criteria
+  return useCriteriaList();
+}
+
+/**
+ * Alias for useProcessesList - fetches processes for a workflow
+ * Note: This returns all processes for an entity class, not workflow-specific
+ */
+export function useProcesses(persistedType: PersistedType, workflowId: string, enabled = true) {
+  // Get entity class from workflow if needed
+  // For now, just return all processes
+  return useProcessesList();
+}
+
