@@ -1,0 +1,29 @@
+/**
+ * HistoryFilter Styles
+ * Migrated from: .old_project/packages/http-api/src/views/History/HistoryFilter.vue
+ */
+
+.history-filter {
+  padding: 20px;
+  background: #fff;
+  border-radius: 4px;
+  margin-bottom: 20px;
+
+  h2 {
+    margin-bottom: 20px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+  }
+
+  .ant-form-item-label > label {
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .ant-select,
+  .ant-picker {
+    width: 100%;
+  }
+}
+

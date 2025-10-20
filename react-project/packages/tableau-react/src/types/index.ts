@@ -63,6 +63,38 @@ export interface ConfigDefinition {
   [key: string]: any;
 }
 
+export interface ReportColumn {
+  '@bean': string;
+  name: string;
+  alias?: string;
+  type?: string;
+  typeShort?: string;
+  fullPath?: string;
+  [key: string]: any;
+}
+
+export interface ReportDefinition {
+  '@bean'?: string;
+  id?: string;
+  name?: string;
+  description?: string;
+  requestClass?: string;
+  columns?: ReportColumn[];
+  colDefs?: any[];
+  sorting?: Array<{
+    column: ReportColumn;
+    reverse: boolean;
+  }>;
+  grouping?: ReportColumn[];
+  summary?: Array<[ReportColumn, string[]]>;
+  condition?: any;
+  hierarhyEnable?: boolean;
+  reportVersion?: number;
+  singletonReport?: boolean;
+  pointTime?: string;
+  [key: string]: any;
+}
+
 export interface ReportingReportRows {
   _embedded: {
     reportRows: Array<{

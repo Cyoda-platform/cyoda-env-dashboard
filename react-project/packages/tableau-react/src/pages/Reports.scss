@@ -1,61 +1,38 @@
 /**
- * Reports Page Styles
- * Migrated from: .old_project/packages/tableau/src/views/ReportsView.vue
+ * Reports Page Styles with Tabs
+ * Migrated from: .old_project/packages/http-api/src/views/ConfigEditor.vue
  */
 
-.reports-view {
-  width: 100%;
-  min-height: 100vh;
-  padding: 20px;
-  background-color: #f5f5f5;
+.config-editor {
+  padding: 16px;
 
-  // Header section
-  .header {
+  .reports-tabs {
+    .ant-tabs-nav {
+      margin-bottom: 16px;
+    }
+  }
+}
+
+.history-view-reports {
+  .history-report-quick-run-flex {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    margin-bottom: 30px;
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 4px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    gap: 16px;
+    margin-bottom: 16px;
 
-    .heading {
-      margin: 0;
-      font-size: 28px;
-      font-weight: 600;
-      color: #1890ff;
-
-      &.h1 {
-        font-size: 32px;
-      }
+    .history-report-quick-run {
+      flex: 1;
     }
 
-    .logout {
+    .button-box {
       display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 14px;
-      color: #666;
-
-      .ant-btn-link {
-        padding: 0;
-        height: auto;
-        line-height: 1;
-      }
     }
   }
 
-  // Container for filters
-  .container {
-    margin-bottom: 20px;
-
-    .wrap-history-filter {
-      background-color: #fff;
-      padding: 20px;
-      border-radius: 4px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
+  .wrap-history-filter {
+    margin-bottom: 16px;
   }
 
   // Report table section

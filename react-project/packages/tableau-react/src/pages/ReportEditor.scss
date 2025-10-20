@@ -1,0 +1,44 @@
+.report-editor {
+  padding: 24px;
+  background: #fff;
+  min-height: calc(100vh - 64px);
+
+  &__title {
+    margin-bottom: 24px;
+    font-size: 24px;
+    font-weight: 600;
+    color: #262626;
+  }
+
+  &__tabs {
+    margin-bottom: 24px;
+
+    .ant-tabs-content {
+      padding: 24px;
+      background: #fafafa;
+      border: 1px solid #d9d9d9;
+      border-top: none;
+      min-height: 400px;
+    }
+
+    .has-error {
+      color: #ff4d4f;
+      font-weight: 600;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    gap: 12px;
+    padding: 16px 0;
+    border-top: 1px solid #d9d9d9;
+  }
+
+  &-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+  }
+}
+

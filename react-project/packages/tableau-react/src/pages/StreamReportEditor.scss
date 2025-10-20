@@ -1,0 +1,43 @@
+/**
+ * StreamReportEditor Page Styles
+ */
+
+.stream-report-editor-page {
+  padding: 24px;
+
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+
+    .header-left {
+      display: flex;
+      align-items: center;
+
+      h1 {
+        margin: 0;
+        font-size: 24px;
+        font-weight: 600;
+      }
+    }
+  }
+
+  .stream-report-editor-tabs {
+    background: #fff;
+    padding: 16px;
+    border-radius: 4px;
+
+    .ant-tabs-content {
+      padding: 16px 0;
+    }
+  }
+}
+
+.stream-report-editor-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+

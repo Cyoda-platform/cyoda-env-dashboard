@@ -9,11 +9,12 @@ import type { ColumnsType } from 'antd/es/table';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import moment from 'moment';
-import type { ReportHistoryData, TableDataRow, HistoryFilter, HistorySettings, ConfigDefinition } from '@/types';
+import type { ReportHistoryData, TableDataRow, HistorySettings, ConfigDefinition } from '@/types';
+import type { HistoryFilterForm } from '../utils/HelperReportDefinition';
 import './HistoryTable.scss';
 
 interface HistoryTableProps {
-  filter: HistoryFilter;
+  filter: HistoryFilterForm | any; // Accept both old and new filter formats
   settings?: HistorySettings;
   onChange: (data: { reportDefinition: ReportHistoryData; configDefinition: ConfigDefinition }) => void;
 }

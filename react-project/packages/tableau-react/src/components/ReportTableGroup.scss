@@ -1,0 +1,34 @@
+/**
+ * ReportTableGroup Styles
+ * Migrated from: .old_project/packages/http-api/src/components/ReportTable/ReportTableGroup.vue
+ */
+
+.report-table-group {
+  .ant-table {
+    font-size: 12px;
+
+    .ant-table-thead > tr > th {
+      background: #fafafa;
+      font-weight: 600;
+      padding: 8px;
+    }
+
+    .ant-table-tbody > tr > td {
+      padding: 8px;
+    }
+
+    .ant-table-tbody > tr.selected-row {
+      background-color: #e6f7ff;
+    }
+
+    .ant-table-tbody > tr:hover {
+      cursor: pointer;
+    }
+  }
+
+  .inner-group-table {
+    margin: 10px 0;
+    padding-left: 20px;
+  }
+}
+
