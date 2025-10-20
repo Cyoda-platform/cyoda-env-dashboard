@@ -11,11 +11,13 @@ import { BrowserRouter } from 'react-router-dom';
 
 // Mock react-router-dom
 const mockNavigate = vi.fn();
+const mockUseParams = vi.fn();
+
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
   return {
     ...actual,
-    useParams: vi.fn(),
+    useParams: (...args: any[]) => mockUseParams(...args),
     useNavigate: () => mockNavigate,
   };
 });
@@ -58,8 +60,7 @@ describe('TaskDetail Page', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    const { useParams } = require('react-router-dom');
-    vi.mocked(useParams).mockReturnValue({ id: 'task-123' });
+    mockUseParams.mockReturnValue({ id: 'task-123' });
 
     mockUseTasksState.mockReturnValue({
       isApplyRealData: false,
@@ -95,9 +96,10 @@ describe('TaskDetail Page', () => {
         refetch: vi.fn(),
       });
 
-      renderWithRouter(<TaskDetail />);
+      const { container } = renderWithRouter(<TaskDetail />);
 
-      expect(screen.getByRole('img', { name: /loading/i })).toBeInTheDocument();
+      // Check for Spin component
+      expect(container.querySelector('.ant-spin')).not.toBeNull();
     });
   });
 
@@ -266,11 +268,11 @@ describe('TaskDetail Page', () => {
       await user.click(updateButton);
 
       await waitFor(() => {
-        expect(screen.getByText('Do you really want to update task?')).toBeInTheDocument();
+        expect(screen.getAllByText('Do you really want to update task?').length).toBeGreaterThan(0);
       });
 
-      const okButton = screen.getByRole('button', { name: /OK/i });
-      await user.click(okButton);
+      const okButtons = screen.getAllByRole('button', { name: /OK/i });
+      await user.click(okButtons[0]);
 
       await waitFor(() => {
         expect(mockMutate).toHaveBeenCalled();

@@ -90,18 +90,11 @@ describe('ErrorBoundary', () => {
     it('should reset error state when Try Again is clicked', async () => {
       const user = userEvent.setup();
 
-      // Create a component that can toggle error state
-      const TestComponent = () => {
-        const [shouldThrow, setShouldThrow] = React.useState(true);
-
-        return (
-          <ErrorBoundary>
-            {shouldThrow ? <ThrowError shouldThrow={true} /> : <div>No error</div>}
-          </ErrorBoundary>
-        );
-      };
-
-      render(<TestComponent />);
+      render(
+        <ErrorBoundary>
+          <ThrowError shouldThrow={true} />
+        </ErrorBoundary>
+      );
 
       expect(screen.getByText('Something went wrong')).toBeInTheDocument();
 
@@ -109,10 +102,10 @@ describe('ErrorBoundary', () => {
       const tryAgainButton = screen.getByRole('button', { name: /Try Again/i });
       await user.click(tryAgainButton);
 
-      // After clicking Try Again, the error boundary resets but the child still throws
-      // So we should still see the error (this is expected behavior)
-      // The real test is that the button works and doesn't crash
-      expect(tryAgainButton).toBeInTheDocument();
+      // After clicking Try Again, the error boundary resets and tries to render children again
+      // Since the child still throws, we should see the error again
+      // The test verifies that clicking the button doesn't crash the app
+      expect(screen.getByText('Something went wrong')).toBeInTheDocument();
     });
   });
 

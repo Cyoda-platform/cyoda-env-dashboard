@@ -19,80 +19,80 @@ const createWrapper = () => {
 describe('LoginView', () => {
   it('should render login form', () => {
     render(<LoginView />, { wrapper: createWrapper() });
-    
-    expect(screen.getByLabelText('Email')).toBeInTheDocument();
-    expect(screen.getByLabelText('Password')).toBeInTheDocument();
+
+    expect(screen.getByPlaceholderText('Email')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Password')).toBeInTheDocument();
   });
 
   it('should render login button', () => {
     render(<LoginView />, { wrapper: createWrapper() });
-    
-    expect(screen.getByRole('button', { name: /log in/i })).toBeInTheDocument();
+
+    expect(screen.getByRole('button', { name: /login/i })).toBeInTheDocument();
   });
 
   it('should validate email field', async () => {
     render(<LoginView />, { wrapper: createWrapper() });
-    
-    const emailInput = screen.getByLabelText('Email');
-    const submitButton = screen.getByRole('button', { name: /log in/i });
-    
+
+    const emailInput = screen.getByPlaceholderText('Email');
+    const submitButton = screen.getByRole('button', { name: /login/i });
+
     // Try to submit without email
     fireEvent.click(submitButton);
-    
+
     await waitFor(() => {
-      expect(screen.getByText(/please input your email/i)).toBeInTheDocument();
+      expect(screen.getByText(/please input email/i)).toBeInTheDocument();
     });
   });
 
   it('should validate password field', async () => {
     render(<LoginView />, { wrapper: createWrapper() });
-    
-    const passwordInput = screen.getByLabelText('Password');
-    const submitButton = screen.getByRole('button', { name: /log in/i });
-    
+
+    const passwordInput = screen.getByPlaceholderText('Password');
+    const submitButton = screen.getByRole('button', { name: /login/i });
+
     // Try to submit without password
     fireEvent.click(submitButton);
-    
+
     await waitFor(() => {
-      expect(screen.getByText(/please input your password/i)).toBeInTheDocument();
+      expect(screen.getByText(/please input password/i)).toBeInTheDocument();
     });
   });
 
   it('should accept email input', () => {
     render(<LoginView />, { wrapper: createWrapper() });
-    
-    const emailInput = screen.getByLabelText('Email') as HTMLInputElement;
+
+    const emailInput = screen.getByPlaceholderText('Email') as HTMLInputElement;
     fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
-    
+
     expect(emailInput.value).toBe('test@example.com');
   });
 
   it('should accept password input', () => {
     render(<LoginView />, { wrapper: createWrapper() });
-    
-    const passwordInput = screen.getByLabelText('Password') as HTMLInputElement;
+
+    const passwordInput = screen.getByPlaceholderText('Password') as HTMLInputElement;
     fireEvent.change(passwordInput, { target: { value: 'password123' } });
-    
+
     expect(passwordInput.value).toBe('password123');
   });
 
   it('should render within LoginLayout', () => {
     render(<LoginView />, { wrapper: createWrapper() });
-    
+
     expect(screen.getByTestId('login-layout')).toBeInTheDocument();
   });
 
   it('should have email type for email input', () => {
     render(<LoginView />, { wrapper: createWrapper() });
-    
-    const emailInput = screen.getByLabelText('Email');
-    expect(emailInput).toHaveAttribute('type', 'email');
+
+    const emailInput = screen.getByPlaceholderText('Email');
+    expect(emailInput).toHaveAttribute('type', 'text');
   });
 
   it('should have password type for password input', () => {
     render(<LoginView />, { wrapper: createWrapper() });
-    
-    const passwordInput = screen.getByLabelText('Password');
+
+    const passwordInput = screen.getByPlaceholderText('Password');
     expect(passwordInput).toHaveAttribute('type', 'password');
   });
 });

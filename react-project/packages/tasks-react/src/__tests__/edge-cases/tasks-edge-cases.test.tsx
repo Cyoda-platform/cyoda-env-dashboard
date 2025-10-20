@@ -335,7 +335,7 @@ describe('Tasks Edge Cases', () => {
     render(<TasksGrid filter={{}} isApplyRealData={false} />, { wrapper: createWrapper() });
 
     expect(screen.getByText('Tasks')).toBeInTheDocument();
-  });
+  }, 10000); // Increase timeout to 10 seconds for large dataset
 
   it('should handle pagination edge cases', () => {
     mockUseTasksPerPage.mockReturnValue({

@@ -4,9 +4,9 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import HistoryTable from '@/components/HistoryTable';
-import ReportTableRows from '@/components/ReportTableRows';
-import type { ReportHistoryData, ConfigDefinition, HistoryFilter, HistorySettings } from '@/types';
+import HistoryTable from '../components/HistoryTable';
+import ReportTableRows from '../components/ReportTableRows';
+import type { ReportHistoryData, ConfigDefinition, HistoryFilter, HistorySettings } from '../types';
 import './Reports.scss';
 
 const Reports: React.FC = () => {

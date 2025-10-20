@@ -8,15 +8,12 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
 import { useAllConfigs, useEncompassConfigs, useJdbcConfigs } from './useSourceConfig';
 
-// Mock axios instance
-const mockAxios = {
-  get: vi.fn(),
-  post: vi.fn(),
-};
-
-// Mock the http-api-react module
+// Mock the http-api-react module with a factory function
 vi.mock('@cyoda/http-api-react', () => ({
-  instance: mockAxios,
+  axios: {
+    get: vi.fn(),
+    post: vi.fn(),
+  },
 }));
 
 // Mock antd message
@@ -42,8 +39,13 @@ const createWrapper = () => {
 };
 
 describe('useSourceConfig hooks', () => {
-  beforeEach(() => {
+  let mockAxios: any;
+
+  beforeEach(async () => {
     vi.clearAllMocks();
+    // Get the mocked axios from the module
+    const httpApiReact = await import('@cyoda/http-api-react');
+    mockAxios = httpApiReact.axios;
   });
 
   describe('useEncompassConfigs', () => {

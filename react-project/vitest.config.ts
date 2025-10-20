@@ -42,6 +42,7 @@ export default defineConfig({
       '@cyoda/ui-lib-react': resolve(__dirname, './packages/ui-lib-react/src/index.ts'),
       '@cyoda/tasks-react': resolve(__dirname, './packages/tasks-react/src/index.ts'),
       '@cyoda/statemachine-react': resolve(__dirname, './packages/statemachine-react/src/index.ts'),
+      '@cyoda/tableau-react': resolve(__dirname, './packages/tableau-react/src/index.ts'),
     }
   }
 })

@@ -6,8 +6,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import Reports from './Reports';
 
-// Mock components using @ alias
-vi.mock('@/components/HistoryTable', () => ({
+// Mock the components
+vi.mock('../components/HistoryTable', () => ({
   default: ({ filter, settings, onChange }: any) => (
     <div data-testid="history-table">
       <div>Filter: {JSON.stringify(filter)}</div>
@@ -22,7 +22,7 @@ vi.mock('@/components/HistoryTable', () => ({
   ),
 }));
 
-vi.mock('@/components/ReportTableRows', () => ({
+vi.mock('../components/ReportTableRows', () => ({
   default: ({ lazyLoading, configDefinition, tableLinkRows }: any) => (
     <div data-testid="report-table-rows">
       <div>Lazy Loading: {lazyLoading ? 'Yes' : 'No'}</div>
