@@ -1,9 +1,13 @@
 /**
  * Nodes Detail Page
  * Migrated from @cyoda/processing-manager/src/views/NodesDetail.vue
+ *
+ * Improvements:
+ * - Lazy loading for tabs (only active tab renders)
+ * - Tab state persistence using localStorage
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, Typography, Tabs } from 'antd';
 import { Layout } from '../components/layout';
 import { useParams } from 'react-router-dom';
@@ -24,48 +28,69 @@ import {
 const { Title } = Typography;
 const { TabPane } = Tabs;
 
+const TAB_STORAGE_KEY = 'nodesDetailTab';
+
 export default function NodesDetail() {
   const { name } = useParams<{ name: string }>();
-  const [activeKey, setActiveKey] = useState('1');
+
+  // Load initial tab from localStorage, default to '1'
+  const [activeKey, setActiveKey] = useState<string>(() => {
+    try {
+      return localStorage.getItem(TAB_STORAGE_KEY) || '1';
+    } catch (error) {
+      console.warn('Failed to load tab state from localStorage:', error);
+      return '1';
+    }
+  });
+
+  // Save tab state to localStorage when it changes
+  const handleTabChange = (key: string) => {
+    setActiveKey(key);
+    try {
+      localStorage.setItem(TAB_STORAGE_KEY, key);
+    } catch (error) {
+      console.warn('Failed to save tab state to localStorage:', error);
+    }
+  };
 
   return (
     <Layout>
       <div style={{ padding: '24px' }}>
         <Card>
           <Title level={2}>Node Detail: {name}</Title>
-          <Tabs activeKey={activeKey} onChange={setActiveKey}>
+          <Tabs activeKey={activeKey} onChange={handleTabChange}>
             <TabPane tab="Processing Manager" key="1">
-              <ShardsDetailTabProcessingManager />
+              {activeKey === '1' && <ShardsDetailTabProcessingManager />}
             </TabPane>
             <TabPane tab="Server Summary" key="2">
-              <ShardsDetailTabSummary />
+              {activeKey === '2' && <ShardsDetailTabSummary />}
             </TabPane>
             <TabPane tab="Cassandra" key="3">
-              <ShardsDetailTabCassandra />
+              {activeKey === '3' && <ShardsDetailTabCassandra />}
             </TabPane>
             <TabPane tab="Processing Events" key="4">
-              <ShardsDetailTabProcessingEvents />
+              {activeKey === '4' && <ShardsDetailTabProcessingEvents />}
             </TabPane>
             <TabPane tab="Time Statistics" key="5">
-              <ShardsDetailTabTimeStatistics />
+              {activeKey === '5' && <ShardsDetailTabTimeStatistics />}
             </TabPane>
             <TabPane tab="Transactions" key="6">
-              <ShardsDetailTabTransactions />
+              {activeKey === '6' && <ShardsDetailTabTransactions />}
             </TabPane>
             <TabPane tab="PM components" key="7">
-              <ShardsDetailTabPmComponents />
+              {activeKey === '7' && <ShardsDetailTabPmComponents />}
             </TabPane>
             <TabPane tab="Composite indexes" key="8">
-              <ShardsDetailTabCompositeIndexes />
+              {activeKey === '8' && <ShardsDetailTabCompositeIndexes />}
             </TabPane>
             <TabPane tab="Caches List" key="9">
-              <ShardsDetailTabCachesList />
+              {activeKey === '9' && <ShardsDetailTabCachesList />}
             </TabPane>
             <TabPane tab="Network info" key="10">
-              <ShardsDetailTabNetworkInfo />
+              {activeKey === '10' && <ShardsDetailTabNetworkInfo />}
             </TabPane>
             <TabPane tab="ZooKeeper info" key="11">
-              <ShardsDetailTabZKInfo />
+              {activeKey === '11' && <ShardsDetailTabZKInfo />}
             </TabPane>
           </Tabs>
         </Card>

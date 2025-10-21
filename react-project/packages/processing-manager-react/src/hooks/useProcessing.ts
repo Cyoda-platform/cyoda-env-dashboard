@@ -448,6 +448,35 @@ export function useEntitiesListPossible(params?: any) {
   });
 }
 
+/**
+ * Load Transaction Event Statuses List
+ *
+ * Fetches available event status filters for transactions.
+ * Note: This endpoint exists in the API but was not used in the Vue version.
+ * Added for 100% API parity.
+ *
+ * @param params - Query parameters
+ * @returns Query result with list of status strings
+ *
+ * @example
+ * ```typescript
+ * const { data: statuses } = useTransactionEventStatusesList({ transactionId: '123' });
+ * ```
+ */
+export function useTransactionEventStatusesList(params?: any) {
+  return useQuery({
+    queryKey: [...processingKeys.all, 'transaction-event-statuses', params],
+    queryFn: async () => {
+      const { data } = await axiosProcessing.get<string[]>(
+        HelperUrl.getLinkToServer('/platform-processing/transactions/event-ref-status-filters'),
+        { params }
+      );
+      return data;
+    },
+    enabled: !!params, // Only fetch if params are provided
+  });
+}
+
 // ============================================================================
 // Entity Versions & Changes
 // ============================================================================
@@ -1059,6 +1088,7 @@ export default {
   useTransactionEvents,
   useTransactionsEntitiesList,
   useEntitiesListPossible,
+  useTransactionEventStatusesList,
   useEntityVersions,
   useEntityChanges,
   useEntityStateMachine,
