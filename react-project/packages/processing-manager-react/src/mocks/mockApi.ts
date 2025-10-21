@@ -203,11 +203,38 @@ function setupMockInterceptors(axios: AxiosInstance) {
         return { ...response, data: mockRunnableComponents };
       }
 
+      // Entity types (for composite indexes dropdown)
+      if (url.includes('/platform-api/entity-info/fetch/types')) {
+        console.log('🧪 Returning mock entity types');
+        return {
+          ...response,
+          data: [
+            'Transaction',
+            'Event',
+            'ProcessingTask',
+            'CassandraEntity',
+            'ZooKeeperNode',
+            'CacheEntry',
+          ]
+        };
+      }
+
       // Composite indexes
       if (url.includes('/platform-processing/composite-indexes') ||
           url.includes('/platform-common/composite-indexes')) {
         console.log('🧪 Returning mock composite indexes');
-        return { ...response, data: mockCompositeIndexes };
+
+        // Extract entityClass from URL query params
+        const urlObj = new URL(url, 'http://localhost');
+        const entityClass = urlObj.searchParams.get('entityClass');
+
+        // Filter indexes by entity class if specified
+        const filteredIndexes = entityClass
+          ? mockCompositeIndexes.filter(idx => idx.entityClass === entityClass)
+          : mockCompositeIndexes;
+
+        console.log(`🧪 Filtered ${filteredIndexes.length} indexes for entity: ${entityClass || 'all'}`);
+        return { ...response, data: filteredIndexes };
       }
 
       // Caches list
