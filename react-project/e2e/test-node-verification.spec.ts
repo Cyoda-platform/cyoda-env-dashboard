@@ -39,18 +39,13 @@ test.describe('Test Node with Mock Data', () => {
     await expect(page.locator('code', { hasText: 'test-node-01' })).toBeVisible();
   });
 
-  test.skip('should display test node in nodes list when mock enabled', async ({ page }) => {
-    // SKIPPED: This test requires the mock API to intercept the cluster stats call
-    // on the nodes list page. The mock API works for node detail pages, but the
-    // nodes list page loads before the mock API can intercept the call.
-    // The core functionality (direct navigation to test node) works perfectly.
-
-    // Enable test mode
+  test('should display test node in nodes list when mock enabled', async ({ page }) => {
+    // Enable test mode FIRST
     const toggle = page.locator('[role="switch"]');
     await toggle.click();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(1000); // Wait for mock API to be enabled and persisted
 
-    // Navigate to nodes page
+    // Navigate to nodes page (mock API should now be enabled via localStorage)
     await page.goto(`${BASE_URL}/processing-ui/nodes`);
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000); // Wait for data to load
@@ -218,48 +213,35 @@ test.describe('Test Node with Mock Data', () => {
     }
   });
 
-  test.skip('should show mock API logs in console', async ({ page }) => {
-    // SKIPPED: Playwright console log capture has timing issues with React's
-    // console.log calls. The mock API does log correctly in the browser console,
-    // but Playwright doesn't always capture them in time.
-    // Manual verification shows the logs work correctly.
-
-    const consoleLogs: string[] = [];
-
-    // Capture console logs BEFORE any navigation
-    page.on('console', (msg) => {
-      const text = msg.text();
-      if (text.includes('🧪')) {
-        consoleLogs.push(text);
-        console.log('Captured log:', text);
-      }
-    });
-
-    // Navigate to the app first
-    await page.goto(`${BASE_URL}/processing-ui`);
-    await page.waitForLoadState('networkidle');
+  test('should show mock API is working by verifying data', async ({ page }) => {
+    // Instead of checking console logs (which Playwright has trouble capturing),
+    // we verify the mock API is working by checking that mock data is returned
 
     // Enable test mode
     const toggle = page.locator('[role="switch"]');
     await toggle.click();
     await page.waitForTimeout(1000);
 
-    // Check for mock API enabled log
-    const hasEnabledLog = consoleLogs.some(log => log.includes('Mock API enabled'));
-    console.log(`Has enabled log: ${hasEnabledLog}, Total logs: ${consoleLogs.length}`);
-    expect(hasEnabledLog).toBeTruthy();
-
     // Navigate to test node
     await page.goto(`${BASE_URL}/processing-ui/nodes/test-node-01`);
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
 
-    // Check for mock API request logs
-    const hasRequestLog = consoleLogs.some(log => log.includes('Mock API Request') || log.includes('Returning mock'));
-    console.log(`\n📊 Captured ${consoleLogs.length} mock API logs`);
-    consoleLogs.forEach(log => console.log(log));
+    // Verify mock data is displayed (this proves the mock API is working)
+    // Check for test node name in the page heading
+    await expect(page.getByRole('heading', { name: /Node Detail.*test-node-01/ })).toBeVisible();
 
-    expect(hasRequestLog).toBeTruthy();
+    // Verify the test mode alert is showing (proves mock API is enabled)
+    await expect(page.getByText('All API calls will return mock data')).toBeVisible();
+
+    // Switch to Transactions tab and verify it loads (mock API provides data)
+    await page.getByRole('tab', { name: 'Transactions', exact: true }).first().click();
+    await page.waitForTimeout(2000);
+
+    // If we can see the Transactions tab content area, the mock API is working
+    // (because without mock API, the page would show an error or loading state)
+    const transactionsContent = page.locator('[role="tabpanel"]').filter({ hasText: /Executing transactions|Transactions view/ });
+    await expect(transactionsContent).toBeVisible({ timeout: 10000 });
   });
 
   test('should toggle mock API on and off', async ({ page }) => {
@@ -286,17 +268,13 @@ test.describe('Test Node with Mock Data', () => {
     await expect(page.locator('text=Mock API Enabled')).toBeVisible();
   });
 
-  test.skip('should navigate from nodes list to test node', async ({ page }) => {
-    // SKIPPED: Same issue as "should display test node in nodes list when mock enabled"
-    // The nodes list page loads before the mock API can intercept the cluster stats call.
-    // Direct navigation to test node works perfectly (tested in other tests).
-
-    // Enable test mode
+  test('should navigate from nodes list to test node', async ({ page }) => {
+    // Enable test mode FIRST
     const toggle = page.locator('[role="switch"]');
     await toggle.click();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(1000); // Wait for mock API to be enabled and persisted
 
-    // Navigate to nodes page
+    // Navigate to nodes page (mock API should now be enabled via localStorage)
     await page.goto(`${BASE_URL}/processing-ui/nodes`);
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000); // Wait for data to load
@@ -305,9 +283,8 @@ test.describe('Test Node with Mock Data', () => {
     const nodeCell = page.locator('td').filter({ hasText: 'test-node-01' });
     await expect(nodeCell).toBeVisible({ timeout: 10000 });
 
-    // Click on the row (click on the cell's parent tr)
-    const nodeRow = nodeCell.locator('..'); // Get parent tr
-    await nodeRow.click();
+    // Click on the row
+    await nodeCell.click();
     await page.waitForTimeout(1000);
 
     // Verify we're on the node detail page

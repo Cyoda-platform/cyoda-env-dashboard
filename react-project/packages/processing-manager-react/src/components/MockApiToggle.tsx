@@ -4,7 +4,7 @@
  * Provides a UI control to enable/disable mock API for testing
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Switch, Card, Typography, Space, Tag, Alert } from 'antd';
 import { ExperimentOutlined, ApiOutlined } from '@ant-design/icons';
 import { enableMockApi, disableMockApi, isMockApiEnabled, TEST_NODE_NAME } from '../mocks';
@@ -13,6 +13,11 @@ const { Text, Title } = Typography;
 
 export function MockApiToggle() {
   const [enabled, setEnabled] = useState(isMockApiEnabled());
+
+  // Sync state with mock API on mount
+  useEffect(() => {
+    setEnabled(isMockApiEnabled());
+  }, []);
 
   const handleToggle = (checked: boolean) => {
     if (checked) {

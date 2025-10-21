@@ -23,7 +23,16 @@ import {
   TEST_NODE_NAME,
 } from './testNodeData';
 
-let mockEnabled = false;
+const MOCK_API_STORAGE_KEY = 'processing-manager-mock-api-enabled';
+
+// Check localStorage on initialization
+const getInitialMockState = (): boolean => {
+  if (typeof window === 'undefined') return false;
+  const stored = localStorage.getItem(MOCK_API_STORAGE_KEY);
+  return stored === 'true';
+};
+
+let mockEnabled = getInitialMockState();
 let requestInterceptorId: number | null = null;
 let responseInterceptorId: number | null = null;
 
@@ -35,6 +44,11 @@ export function enableMockApi() {
 
   console.log('🧪 Mock API enabled for Processing Manager testing');
   mockEnabled = true;
+
+  // Persist to localStorage
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(MOCK_API_STORAGE_KEY, 'true');
+  }
 
   setupMockInterceptors(axiosProcessing);
 
@@ -54,6 +68,11 @@ export function disableMockApi() {
 
   console.log('🧪 Mock API disabled');
   mockEnabled = false;
+
+  // Remove from localStorage
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem(MOCK_API_STORAGE_KEY);
+  }
 
   // Remove interceptors
   if (requestInterceptorId !== null) {
@@ -313,3 +332,15 @@ export function toggleMockApi(): boolean {
   return mockEnabled;
 }
 
+// Auto-enable mock API if it was previously enabled
+if (mockEnabled) {
+  setupMockInterceptors(axiosProcessing);
+  console.log('🧪 Mock API auto-enabled from previous session');
+}
+
+// Make functions available globally for testing
+if (typeof window !== 'undefined') {
+  (window as any).enableMockApi = enableMockApi;
+  (window as any).disableMockApi = disableMockApi;
+  (window as any).isMockApiEnabled = isMockApiEnabled;
+}
