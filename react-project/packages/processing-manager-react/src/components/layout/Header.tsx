@@ -40,7 +40,7 @@ export default function Header() {
       </button>
       <ul className="c-header-nav d-md-down-none">
         <li className="c-header-nav-item px-3">
-          <Link className="c-header-nav-link" to="/dashboard">
+          <Link className="c-header-nav-link" to="/processing-ui">
             Dashboard
           </Link>
         </li>

@@ -8,6 +8,7 @@ import { useParams } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Header from './Header';
 import Footer from './Footer';
+import { MockApiToggle } from '../MockApiToggle';
 import { useProcessingStore } from '../../stores/processingStore';
 import { useAppStore } from '../../stores/appStore';
 import './Layout.scss';
@@ -44,6 +45,7 @@ export default function Layout({ children }: LayoutProps) {
         </div>
         <Footer />
       </div>
+      <MockApiToggle />
     </div>
   );
 }

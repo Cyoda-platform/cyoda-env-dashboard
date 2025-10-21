@@ -23,7 +23,7 @@ export default function Nodes() {
   const navigate = useNavigate();
 
   const handleRowClick = (record: NodeData) => {
-    navigate(`/nodes/${record.name}`);
+    navigate(`/processing-ui/nodes/${record.name}`);
   };
 
   const columns: ColumnsType<NodeData> = [
@@ -55,10 +55,16 @@ export default function Nodes() {
 
   return (
     <Layout>
-      <div style={{ padding: '24px' }}>
-        <Title level={1}>Nodes</Title>
+      <div style={{ padding: '24px', minHeight: '100vh' }}>
+        <Title level={1} style={{ marginBottom: '24px', marginTop: '0' }}>
+          Nodes
+        </Title>
         <Card>
-          {isLoading && <Spin size="large" />}
+          {isLoading && (
+            <div style={{ textAlign: 'center', padding: '50px' }}>
+              <Spin size="large" />
+            </div>
+          )}
 
           {error && (
             <Alert
@@ -66,6 +72,7 @@ export default function Nodes() {
               description="Failed to load cluster statistics"
               type="error"
               showIcon
+              style={{ marginBottom: '16px' }}
             />
           )}
 
@@ -79,7 +86,11 @@ export default function Nodes() {
                 onClick: () => handleRowClick(record),
                 style: { cursor: 'pointer' },
               })}
-              pagination={false}
+              pagination={{
+                pageSize: 10,
+                showSizeChanger: true,
+                showTotal: (total) => `Total ${total} nodes`,
+              }}
             />
           )}
         </Card>
