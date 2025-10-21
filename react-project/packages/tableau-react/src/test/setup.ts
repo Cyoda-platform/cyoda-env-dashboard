@@ -3,7 +3,7 @@
  * Configure testing environment
  */
 
-import { expect, afterEach } from 'vitest';
+import { expect, afterEach, vi } from 'vitest';
 import { cleanup } from '@testing-library/react';
 import * as matchers from '@testing-library/jest-dom/matchers';
 
@@ -35,4 +35,30 @@ global.window.tableau = {
   language: 'en',
   version: '2020.1',
 };
+
+// Mock @monaco-editor/react
+vi.mock('@monaco-editor/react', () => ({
+  default: ({ value, onChange, language, height }: any) => (
+    <div data-testid="monaco-editor">
+      <textarea
+        data-language={language}
+        style={{ height }}
+        value={value}
+        onChange={(e) => onChange?.(e.target.value)}
+      />
+    </div>
+  ),
+}));
+
+// Mock monaco-editor
+vi.mock('monaco-editor', () => ({
+  editor: {
+    create: vi.fn(),
+    createDiffEditor: vi.fn(),
+  },
+  languages: {
+    register: vi.fn(),
+    setMonarchTokensProvider: vi.fn(),
+  },
+}));
 

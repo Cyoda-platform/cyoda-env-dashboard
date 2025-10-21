@@ -38,6 +38,7 @@ interface RunningReport {
 interface ReportDefinition {
   gridConfigFields: {
     id: string;
+    name?: string;
     description: string;
     type: string;
     groupingVersion?: string;
@@ -80,11 +81,10 @@ const QuickRunReport: React.FC<QuickRunReportProps> = ({
   // Convert definitions to options
   const configOptions = useMemo(() => {
     return definitions.map((report) => {
-      const name = report.gridConfigFields.id.split('-').slice(2).join('-');
       return {
         id: report.gridConfigFields.id,
         groupingVersion: report.gridConfigFields.groupingVersion,
-        name: name,
+        name: report.gridConfigFields.name || report.gridConfigFields.id,
         entity: report.gridConfigFields.type,
       };
     });
@@ -120,10 +120,12 @@ const QuickRunReport: React.FC<QuickRunReportProps> = ({
         if (onRunReport) {
           onRunReport(selectedConfig.id, showResult);
         } else {
-          // Default implementation
-          await axios.post(`/platform-api/reporting/report/${selectedConfig.id}/run`);
+          // Default implementation - use the correct endpoint
+          const { data } = await axios.post(`/platform-api/pre?gridConfig=${encodeURIComponent(selectedConfig.id)}`);
           message.success('Report execution started');
-          
+
+          console.log('Report started:', data);
+
           // Refetch to update running status
           queryClient.invalidateQueries({ queryKey: ['reports', 'history'] });
         }
@@ -135,7 +137,7 @@ const QuickRunReport: React.FC<QuickRunReportProps> = ({
         }
       } catch (error: any) {
         console.error('Failed to run report:', error);
-        message.error(error.message || 'Failed to run report');
+        message.error(error.response?.data?.error || error.message || 'Failed to run report');
       }
     },
     [selectedConfig, onRunReport, queryClient]

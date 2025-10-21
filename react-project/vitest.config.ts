@@ -43,6 +43,7 @@ export default defineConfig({
       '@cyoda/tasks-react': resolve(__dirname, './packages/tasks-react/src/index.ts'),
       '@cyoda/statemachine-react': resolve(__dirname, './packages/statemachine-react/src/index.ts'),
       '@cyoda/tableau-react': resolve(__dirname, './packages/tableau-react/src/index.ts'),
+      'monaco-editor': resolve(__dirname, './vitest.monaco-mock.ts'),
     }
   }
 })

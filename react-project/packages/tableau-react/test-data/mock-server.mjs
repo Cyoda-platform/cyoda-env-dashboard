@@ -22,6 +22,12 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Request logging middleware
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.url}`);
+  next();
+});
+
 // In-memory storage for entities
 const entityStore = {
   'com.cyoda.tms.model.entities.Transaction': [],
@@ -60,6 +66,22 @@ function loadTestData() {
 // Health check
 app.get('/actuator/health', (req, res) => {
   res.json({ status: 'UP' });
+});
+
+// Get users list
+app.post('/platform-api/users/list', (req, res) => {
+  const userIds = req.body;
+
+  // Mock user data
+  const users = userIds.map(userId => ({
+    userId: userId,
+    username: userId,
+    firstName: 'User',
+    lastName: userId,
+    email: `${userId}@example.com`,
+  }));
+
+  res.json(users);
 });
 
 // Get entity types
@@ -129,20 +151,40 @@ app.get('/platform-api/entity-info/model-info/related/paths', (req, res) => {
   res.json(mockRelatedPaths);
 });
 
+// In-memory storage for catalog items (aliases)
+if (!global.catalogItems) {
+  global.catalogItems = {};
+}
+
 // Get catalog items
 app.get('/platform-api/catalog/item/class', (req, res) => {
   const { entityClass } = req.query;
 
-  // Mock catalog items (aliases)
-  const mockCatalogItems = [];
+  // Get catalog items for this entity class
+  const items = Object.values(global.catalogItems).filter(
+    (item) => item.entityClass === entityClass
+  );
 
-  res.json(mockCatalogItems);
+  res.json(items);
 });
 
 // Create catalog item
 app.post('/platform-api/catalog/item', (req, res) => {
   const catalogItem = req.body;
   const itemId = `CAT-${Date.now()}`;
+
+  console.log('Received catalog item:', JSON.stringify(catalogItem, null, 2));
+
+  // Extract the alias name from the structure
+  const aliasName = catalogItem.name || catalogItem.aliasDef?.name || catalogItem.alias;
+
+  global.catalogItems[itemId] = {
+    ...catalogItem,
+    itemId,
+    alias: aliasName, // Store the alias name for easy access
+  };
+
+  console.log(`✓ Created alias: ${aliasName || 'unnamed'} (${itemId})`);
 
   res.json(itemId);
 });
@@ -152,12 +194,26 @@ app.put('/platform-api/catalog/item', (req, res) => {
   const { itemId } = req.query;
   const catalogItem = req.body;
 
+  if (global.catalogItems[itemId]) {
+    global.catalogItems[itemId] = {
+      ...global.catalogItems[itemId],
+      ...catalogItem,
+    };
+    console.log(`✓ Updated alias: ${catalogItem.alias}`);
+  }
+
   res.json({ success: true });
 });
 
 // Delete catalog item
 app.delete('/platform-api/catalog/item', (req, res) => {
   const { itemId } = req.query;
+
+  if (global.catalogItems[itemId]) {
+    const alias = global.catalogItems[itemId].alias;
+    delete global.catalogItems[itemId];
+    console.log(`✓ Deleted alias: ${alias}`);
+  }
 
   res.json({ success: true });
 });
@@ -176,6 +232,57 @@ app.get('/platform-api/catalog/mappers', (req, res) => {
 
 // Stream Report Definitions
 let streamDefinitions = [];
+
+// Initialize report definitions with sample data
+if (!global.reportDefinitions) {
+  global.reportDefinitions = {
+    'RPT-001': {
+      id: 'RPT-001',
+      name: 'Customer Report',
+      description: 'List of all customers',
+      type: 'STANDARD',
+      entityClass: 'com.cyoda.tms.model.entities.Customer',
+      userId: 'admin',
+      creationDate: new Date('2024-01-15').toISOString(),
+      modificationDate: new Date('2024-01-15').toISOString(),
+      columns: [
+        { columnPath: 'id', label: 'ID' },
+        { columnPath: 'name', label: 'Name' },
+        { columnPath: 'email', label: 'Email' }
+      ]
+    },
+    'RPT-002': {
+      id: 'RPT-002',
+      name: 'Transaction Report',
+      description: 'List of all transactions',
+      type: 'STANDARD',
+      entityClass: 'com.cyoda.tms.model.entities.Transaction',
+      userId: 'admin',
+      creationDate: new Date('2024-01-16').toISOString(),
+      modificationDate: new Date('2024-01-16').toISOString(),
+      columns: [
+        { columnPath: 'id', label: 'ID' },
+        { columnPath: 'amount', label: 'Amount' },
+        { columnPath: 'date', label: 'Date' }
+      ]
+    },
+    'RPT-003': {
+      id: 'RPT-003',
+      name: 'Product Report',
+      description: 'List of all products',
+      type: 'STANDARD',
+      entityClass: 'com.cyoda.tms.model.entities.Product',
+      userId: 'admin',
+      creationDate: new Date('2024-01-17').toISOString(),
+      modificationDate: new Date('2024-01-17').toISOString(),
+      columns: [
+        { columnPath: 'id', label: 'ID' },
+        { columnPath: 'name', label: 'Product Name' },
+        { columnPath: 'price', label: 'Price' }
+      ]
+    }
+  };
+}
 
 // Get all stream report definitions
 app.get('/platform-api/reporting/stream-definitions', (req, res) => {
@@ -363,9 +470,15 @@ app.post('/platform-api/entity/:entityClass/import', (req, res) => {
 });
 
 // Create report definition
-app.post('/platform-api/reporting/definitions/:name', (req, res) => {
-  const { name } = req.params;
+app.post('/platform-api/reporting/definitions', (req, res) => {
+  const { name } = req.query;
   const definition = req.body;
+
+  console.log('Received report definition:', JSON.stringify({ name, definition }, null, 2));
+
+  if (!name) {
+    return res.status(400).json({ error: 'Name is required as query parameter' });
+  }
 
   // Generate a unique ID for the report
   const reportId = `RPT-${Date.now()}`;
@@ -374,11 +487,22 @@ app.post('/platform-api/reporting/definitions/:name', (req, res) => {
   if (!global.reportDefinitions) {
     global.reportDefinitions = {};
   }
+
+  const now = new Date().toISOString();
   global.reportDefinitions[reportId] = {
     ...definition,
     id: reportId,
     name: name,
+    userId: definition.userId || 'admin',
+    creationDate: now,
+    modificationDate: now,
+    type: definition.type || 'STANDARD',
+    description: definition.description || '',
+    entityClass: definition.requestClass || definition.entityClass,
   };
+
+  console.log(`✓ Created report: ${name} (${reportId})`);
+  console.log(`Total reports: ${Object.keys(global.reportDefinitions).length}`);
 
   res.status(201).json({
     success: true,
@@ -392,8 +516,25 @@ app.get('/platform-api/reporting/definitions', (req, res) => {
   const definitions = global.reportDefinitions || {};
   const definitionsList = Object.values(definitions);
 
+  // Format the response to match what the frontend expects
+  const gridConfigFieldsViews = definitionsList.map(def => ({
+    gridConfigFields: {
+      id: def.id, // Use the real ID
+      name: def.name,
+      description: def.description || '',
+      type: def.entityClass || def.type || 'STANDARD',
+      userId: def.userId || 'admin',
+      creationDate: def.creationDate,
+      modificationDate: def.modificationDate,
+      entityClass: def.entityClass,
+      columns: def.columns || [],
+    }
+  }));
+
   res.json({
-    content: definitionsList,
+    _embedded: {
+      gridConfigFieldsViews: gridConfigFieldsViews
+    },
     page: {
       size: definitionsList.length,
       totalElements: definitionsList.length,
@@ -420,11 +561,18 @@ app.put('/platform-api/reporting/definitions/:id', (req, res) => {
   const { id } = req.params;
   const updates = req.body;
 
+  console.log(`Updating report ${id}:`, JSON.stringify(updates, null, 2));
+
   if (global.reportDefinitions?.[id]) {
     global.reportDefinitions[id] = {
       ...global.reportDefinitions[id],
       ...updates,
+      modificationDate: new Date().toISOString(),
     };
+
+    console.log(`✓ Updated report: ${global.reportDefinitions[id].name} (${id})`);
+    console.log(`  - Aliases: ${updates.aliasDefs?.length || 0}`);
+
     res.json({
       success: true,
       message: 'Report definition updated successfully'
@@ -447,6 +595,100 @@ app.delete('/platform-api/reporting/definitions/:id', (req, res) => {
   } else {
     res.status(404).json({ error: 'Report definition not found' });
   }
+});
+
+// Run report from predefined config
+app.post('/platform-api/pre', (req, res) => {
+  const { gridConfig } = req.query;
+
+  if (!gridConfig) {
+    return res.status(400).json({ error: 'gridConfig parameter is required' });
+  }
+
+  console.log(`Running report from config: ${gridConfig}`);
+
+  // Get the report definition
+  const definitions = global.reportDefinitions || {};
+  const definition = definitions[gridConfig];
+
+  if (!definition) {
+    console.error(`Report definition not found: ${gridConfig}`);
+    return res.status(404).json({ error: 'Report definition not found' });
+  }
+
+  // Get entities for this report
+  const entityClass = definition.entityClass || definition.requestClass;
+  const entities = entityStore[entityClass] || [];
+
+  console.log(`Found ${entities.length} entities for ${entityClass}`);
+
+  // Generate a report ID
+  const reportId = `REPORT-${Date.now()}`;
+
+  // Store the running report
+  if (!global.runningReports) {
+    global.runningReports = {};
+  }
+
+  global.runningReports[reportId] = {
+    id: reportId,
+    configId: gridConfig,
+    configName: definition.name,
+    status: 'RUNNING',
+    createTime: new Date().toISOString(),
+    entityClass: entityClass,
+    totalRows: entities.length,
+  };
+
+  console.log(`✓ Started report: ${reportId} for config ${gridConfig}`);
+
+  // Simulate async execution - complete after 2 seconds
+  setTimeout(() => {
+    if (global.runningReports[reportId]) {
+      global.runningReports[reportId].status = 'COMPLETED';
+      global.runningReports[reportId].finishTime = new Date().toISOString();
+      console.log(`✓ Completed report: ${reportId}`);
+    }
+  }, 2000);
+
+  res.json({
+    content: reportId,
+    message: 'Report execution started'
+  });
+});
+
+// Query plan endpoint
+app.post('/platform-api/stream-data/query-plan', (req, res) => {
+  const { condition, entityClass, aliasDefs } = req.body;
+
+  console.log(`Generating query plan for ${entityClass}`);
+
+  // Mock query plan - check if conditions use indexed fields
+  const hasIndexedConditions = condition?.conditions?.some(c => {
+    // Simulate: id, createdDate, and status are indexed
+    return c.fieldName && ['id', 'createdDate', 'status'].includes(c.fieldName);
+  });
+
+  const optimizedPlan = hasIndexedConditions
+    ? {
+        type: 'INDEX_SCAN',
+        index: 'PRIMARY',
+        estimatedRows: 100,
+        conditions: condition,
+      }
+    : {
+        type: 'ALL',
+        estimatedRows: 10000,
+        conditions: condition,
+      };
+
+  res.json({
+    optimized: optimizedPlan,
+    original: {
+      type: 'FULL_SCAN',
+      conditions: condition,
+    },
+  });
 });
 
 // Execute report (mock)

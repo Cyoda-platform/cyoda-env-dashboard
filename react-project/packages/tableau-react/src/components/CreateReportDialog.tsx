@@ -192,30 +192,27 @@ const CreateReportDialog = forwardRef<CreateReportDialogRef, CreateReportDialogP
             wrapperCol={{ span: 18 }}
             className="create-report-form"
           >
-            {currentStep === 0 && (
-              <>
+            <div style={{ display: currentStep === 0 ? 'block' : 'none' }}>
+              <Form.Item
+                label="Name"
+                name="name"
+                rules={[{ required: true, message: 'Please input Name' }]}
+              >
+                <Input onChange={handleNameChange} placeholder="Enter report name" />
+              </Form.Item>
+
+              {hideFields.description !== false && (
                 <Form.Item
-                  label="Name"
-                  name="name"
-                  rules={[{ required: true, message: 'Please input Name' }]}
+                  label="Description"
+                  name="description"
+                  rules={[{ required: true, message: 'Please input Description' }]}
                 >
-                  <Input onChange={handleNameChange} placeholder="Enter report name" />
+                  <TextArea rows={4} placeholder="Enter report description" />
                 </Form.Item>
+              )}
+            </div>
 
-                {hideFields.description !== false && (
-                  <Form.Item
-                    label="Description"
-                    name="description"
-                    rules={[{ required: true, message: 'Please input Description' }]}
-                  >
-                    <TextArea rows={4} placeholder="Enter report description" />
-                  </Form.Item>
-                )}
-              </>
-            )}
-
-            {currentStep === 1 && (
-              <>
+            <div style={{ display: currentStep === 1 ? 'block' : 'none' }}>
                 <Form.Item label="Entity Type" style={{ marginBottom: 16 }}>
                   <Select
                     value={entityType}
@@ -242,8 +239,7 @@ const CreateReportDialog = forwardRef<CreateReportDialogRef, CreateReportDialogP
                     options={entityOptions}
                   />
                 </Form.Item>
-              </>
-            )}
+            </div>
           </Form>
         </div>
       </Modal>

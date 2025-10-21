@@ -113,12 +113,11 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
   const tableData = useMemo((): ReportConfigRow[] => {
     let data = definitions.map((report: any) => {
       const runningReport = runningReports.find((el) => el.configName === report.gridConfigFields.id);
-      const name = report.gridConfigFields.id.split('-').slice(2).join('-');
 
       return {
         id: report.gridConfigFields.id,
         groupingVersion: runningReport?.groupingVersion,
-        name,
+        name: report.gridConfigFields.name || report.gridConfigFields.id,
         entity: report.gridConfigFields.type,
         entityClassNameLabel: report.gridConfigFields.type,
         username: report.gridConfigFields.user?.username || '',
@@ -177,7 +176,7 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
       };
 
       const { data } = await axios.post(
-        `/platform-api/reporting/definitions/${formData.name}`,
+        `/platform-api/reporting/definitions?name=${encodeURIComponent(formData.name)}`,
         configDefinition
       );
       return data;
@@ -235,16 +234,16 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
 
   // Run report mutation
   const runReportMutation = useMutation({
-    mutationFn: async (reportId: string) => {
-      const { data } = await axios.post(`/platform-api/reporting/report/${reportId}/run`);
+    mutationFn: async (configId: string) => {
+      const { data } = await axios.post(`/platform-api/pre?gridConfig=${encodeURIComponent(configId)}`);
       return data;
     },
-    onSuccess: (data, reportId) => {
+    onSuccess: (data, configId) => {
       message.success('Report execution started');
       // Add to running reports
       setRunningReports((prev) => [
         ...prev,
-        { configName: reportId, reportId: data.reportId, status: 'RUNNING' },
+        { configName: configId, reportId: data.content, status: 'RUNNING' },
       ]);
       queryClient.invalidateQueries({ queryKey: ['reports', 'history'] });
     },
