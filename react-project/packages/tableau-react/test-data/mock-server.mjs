@@ -1206,6 +1206,102 @@ const getReportRows = (req, res) => {
 app.get('/platform-api/report/:reportId/rows', getReportRows);
 app.get('/platform-api/reporting/report/:reportId/rows', getReportRows);
 
+// Export report definitions by IDs
+app.get('/platform-api/reporting/export-by-ids', (req, res) => {
+  const { includeIds } = req.query;
+
+  if (!includeIds) {
+    return res.status(400).json({ error: 'includeIds parameter is required' });
+  }
+
+  const ids = includeIds.split(',');
+  const definitions = global.reportDefinitions || {};
+
+  console.log(`📤 Exporting report definitions: ${ids.join(', ')}`);
+
+  // Collect the definitions to export
+  const exportData = {
+    data: {
+      value: []
+    }
+  };
+
+  ids.forEach(id => {
+    const definition = definitions[id];
+    if (definition) {
+      exportData.data.value.push({
+        id: definition.id,
+        name: definition.name,
+        description: definition.description || '',
+        type: definition.type || 'STANDARD',
+        entityClass: definition.entityClass,
+        userId: definition.userId || 'admin',
+        creationDate: definition.creationDate,
+        modificationDate: definition.modificationDate,
+        columns: definition.columns || [],
+        condition: definition.condition || {
+          '@bean': 'com.cyoda.core.conditions.GroupCondition',
+          operator: 'OR',
+          conditions: []
+        },
+        '@bean': 'com.cyoda.service.api.beans.ReportDefinition'
+      });
+    }
+  });
+
+  console.log(`✓ Exported ${exportData.data.value.length} report definitions`);
+  res.json(exportData);
+});
+
+// Import report definitions
+app.post('/platform-api/reporting/import', (req, res) => {
+  const importData = req.body;
+
+  console.log('📥 Importing report definitions...');
+
+  if (!importData || !importData.data || !importData.data.value) {
+    return res.status(400).json({ error: 'Invalid import data format' });
+  }
+
+  const definitions = global.reportDefinitions || {};
+  const imported = [];
+  const errors = [];
+
+  importData.data.value.forEach(def => {
+    try {
+      // Generate new ID if not exists or if it conflicts
+      const id = def.id || `RPT-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
+      const now = new Date().toISOString();
+      definitions[id] = {
+        ...def,
+        id: id,
+        creationDate: def.creationDate || now,
+        modificationDate: now,
+        userId: def.userId || 'admin'
+      };
+
+      imported.push(id);
+      console.log(`  ✓ Imported: ${def.name} (${id})`);
+    } catch (error) {
+      errors.push({ name: def.name, error: error.message });
+      console.error(`  ✗ Failed to import: ${def.name}`, error);
+    }
+  });
+
+  global.reportDefinitions = definitions;
+
+  console.log(`✓ Import complete: ${imported.length} successful, ${errors.length} failed`);
+
+  res.json({
+    success: true,
+    imported: imported.length,
+    failed: errors.length,
+    errors: errors,
+    message: `Successfully imported ${imported.length} report definition(s)`
+  });
+});
+
 // Start server
 app.listen(PORT, () => {
   console.log('=========================================');
@@ -1230,6 +1326,8 @@ app.listen(PORT, () => {
   console.log('  GET  /platform-api/reporting/status/:reportId');
   console.log('  GET  /platform-api/reporting/results/:reportId');
   console.log('  GET  /platform-api/reporting/history');
+  console.log('  GET  /platform-api/reporting/export-by-ids?includeIds={ids}');
+  console.log('  POST /platform-api/reporting/import');
   console.log('  POST /platform-api/stream-data/query-plan');
   console.log('');
   console.log('Entity data loaded:');

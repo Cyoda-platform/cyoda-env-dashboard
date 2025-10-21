@@ -147,6 +147,20 @@ export function importCatalogItems(container: CatalogItemExportImportContainer) 
 }
 
 /**
+ * Export report definitions by IDs
+ */
+export function exportReportsByIds(ids: string[]) {
+  return axios.get(`/platform-api/reporting/export-by-ids?includeIds=${ids.join(',')}`);
+}
+
+/**
+ * Import report definitions
+ */
+export function importReports(data: any, params?: any) {
+  return axios.post('/platform-api/reporting/import', data, { params });
+}
+
+/**
  * Get server info
  */
 export function getServerInfo() {

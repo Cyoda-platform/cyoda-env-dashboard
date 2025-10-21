@@ -28,6 +28,7 @@ import CreateReportDialog from '../components/CreateReportDialog';
 import HistoryFilter from '../components/HistoryFilter';
 import ReportTemplates from '../components/ReportTemplates';
 import ReportScheduling from '../components/ReportScheduling';
+import ReportsNavigation from '../components/ReportsNavigation';
 import { ConfigEditorStreamGrid, ConfigEditorStreamGridRef } from '@cyoda/ui-lib-react';
 import { HelperStorage } from '@cyoda/ui-lib-react';
 import type { HistoryFilterForm } from '../utils/HelperReportDefinition';
@@ -460,6 +461,7 @@ export const ReportConfigsStream: React.FC = () => {
 
   return (
     <div className="report-configs-stream">
+      <ReportsNavigation />
       <div className="report-configs-stream__actions">
         <Space>
           <Button type="primary" icon={<PlusOutlined />} onClick={handleCreateNew}>

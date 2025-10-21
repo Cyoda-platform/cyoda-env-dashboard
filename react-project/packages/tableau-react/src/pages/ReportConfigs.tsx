@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useRef, useMemo, useCallback } from 'react';
-import { Table, Button, Tooltip, Modal, message, Space, Divider } from 'antd';
+import { Table, Button, Tooltip, Modal, message, Space, Divider, Upload } from 'antd';
 import {
   PlusOutlined,
   EditOutlined,
@@ -13,12 +13,15 @@ import {
   StopOutlined,
   DeleteOutlined,
   ReloadOutlined,
+  UploadOutlined,
+  DownloadOutlined,
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import moment from 'moment';
+import { exportReportsByIds, importReports } from '@cyoda/http-api-react';
 import CreateReportDialog, { type CreateReportDialogRef, type CreateReportFormData } from '../components/CreateReportDialog';
 import CloneReportDialog, { type CloneReportDialogRef } from '../components/CloneReportDialog';
 import ConfigEditorReportsFilter from '../components/ConfigEditorReportsFilter';
@@ -76,6 +79,8 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
   const [filterForm, setFilterForm] = useState<FilterForm>({});
   const [runningReports, setRunningReports] = useState<RunningReport[]>([]);
   const [showTemplates, setShowTemplates] = useState(false);
+  const [exportLoading, setExportLoading] = useState(false);
+  const [importLoading, setImportLoading] = useState(false);
 
   // Load report definitions
   const { data: definitions = [], isLoading, refetch } = useQuery({
@@ -354,6 +359,60 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
     cloneDialogRef.current?.open(row.id, row.name, row.description);
   }, []);
 
+  const handleExport = useCallback(async () => {
+    if (selectedRowKeys.length === 0) {
+      message.warning('Please select at least one report to export');
+      return;
+    }
+
+    try {
+      setExportLoading(true);
+      const { data } = await exportReportsByIds(selectedRowKeys);
+
+      // Download as JSON file
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `export_${selectedRowKeys.map(id => id.toLowerCase()).join('-AND-')}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      message.success('Reports exported successfully');
+    } catch (error: any) {
+      console.error('Export failed:', error);
+      message.error(error.message || 'Failed to export reports');
+    } finally {
+      setExportLoading(false);
+    }
+  }, [selectedRowKeys]);
+
+  const handleImport = useCallback(async (file: File) => {
+    try {
+      setImportLoading(true);
+
+      // Read file content
+      const text = await file.text();
+      const data = JSON.parse(text);
+
+      // Import reports
+      await importReports(data);
+
+      message.success('Reports imported successfully');
+      refetch();
+    } catch (error: any) {
+      console.error('Import failed:', error);
+      message.error(error.message || 'Failed to import reports');
+    } finally {
+      setImportLoading(false);
+    }
+
+    // Prevent upload
+    return false;
+  }, [refetch]);
+
   const handleResetState = useCallback(() => {
     setFilterForm({});
     storage.remove('tableSaveState:configEditorReports:table');
@@ -476,6 +535,39 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
           >
             Create from Template
           </Button>
+
+          <Divider type="vertical" />
+
+          <Tooltip title="Export selected reports">
+            <Button
+              type="primary"
+              icon={<UploadOutlined />}
+              onClick={handleExport}
+              loading={exportLoading}
+              disabled={selectedRowKeys.length === 0}
+            >
+              Export
+            </Button>
+          </Tooltip>
+
+          <Tooltip title="Import previously exported reports">
+            <Upload
+              accept=".json"
+              showUploadList={false}
+              beforeUpload={handleImport}
+            >
+              <Button
+                type="default"
+                icon={<DownloadOutlined />}
+                loading={importLoading}
+              >
+                Import
+              </Button>
+            </Upload>
+          </Tooltip>
+
+          <Divider type="vertical" />
+
           <Button icon={<ReloadOutlined />} onClick={handleResetState}>
             Reset State
           </Button>

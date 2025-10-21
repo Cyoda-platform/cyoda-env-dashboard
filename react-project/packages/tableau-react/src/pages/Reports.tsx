@@ -13,6 +13,7 @@ import ReportTableGroup from '../components/ReportTableGroup';
 import ReportTableRows from '../components/ReportTableRows';
 import QuickRunReport from '../components/QuickRunReport';
 import ReportConfigs from './ReportConfigs';
+import ReportsNavigation from '../components/ReportsNavigation';
 import { HelperStorage } from '@cyoda/ui-lib-react';
 import type { ReportHistoryData, ConfigDefinition, HistorySettings } from '../types';
 import type { HistoryFilterForm } from '../utils/HelperReportDefinition';
@@ -171,6 +172,7 @@ const Reports: React.FC = () => {
 
   return (
     <div className="config-editor">
+      <ReportsNavigation />
       <Tabs
         activeKey={activeTab}
         onChange={handleTabChange}
