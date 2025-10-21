@@ -1,13 +1,15 @@
 /**
  * ReportTableRows Component
  * Migrated from: .old_project/packages/tableau/src/components/ReportTable/ReportTableRows.vue
- * 
+ *
  * This component loads report data and sends it to Tableau Web Data Connector
  */
 
 import React, { useState, useEffect } from 'react';
+import { Table } from 'antd';
 import axios from 'axios';
 import type { ConfigDefinition, ReportingReportRows, TableColumn, TableauConnectionData } from '@/types';
+import EntityDetailModal from './EntityDetailModal';
 import './ReportTableRows.scss';
 
 interface ReportTableRowsProps {
@@ -24,6 +26,8 @@ const ReportTableRows: React.FC<ReportTableRowsProps> = ({
   const [tableData, setTableData] = useState<any[]>([]);
   const [tableColumns, setTableColumns] = useState<TableColumn[]>([]);
   const [pageSize] = useState(10);
+  const [selectedRow, setSelectedRow] = useState<any>(null);
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   // Load rows from API
   const loadRows = async (link: string): Promise<ReportingReportRows> => {
@@ -145,22 +149,59 @@ const ReportTableRows: React.FC<ReportTableRowsProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tableData, tableColumns]);
 
-  // This component doesn't render anything visible
-  // It just sends data to Tableau
-  return null;
+  // Handle row double click
+  const handleRowDoubleClick = (record: any) => {
+    setSelectedRow(record);
+    setIsModalVisible(true);
+  };
 
-  // Optionally, you can render a hidden table for debugging:
-  // return (
-  //   <div style={{ display: 'none' }}>
-  //     <Table
-  //       columns={antColumns}
-  //       dataSource={tableData}
-  //       loading={isLoading}
-  //       rowKey={(record, index) => index?.toString() || '0'}
-  //       pagination={false}
-  //     />
-  //   </div>
-  // );
+  // Handle modal close
+  const handleModalClose = () => {
+    setIsModalVisible(false);
+    setSelectedRow(null);
+  };
+
+  // Create Ant Design columns from table columns
+  const antColumns = tableColumns.map((col) => ({
+    title: col.label,
+    dataIndex: col.prop,
+    key: col.prop,
+    ellipsis: true,
+  }));
+
+  // Render the table with data
+  return (
+    <div className="report-table-rows">
+      <div style={{ marginBottom: 16 }}>
+        <strong>Report Results:</strong> {tableData.length} rows
+      </div>
+      <Table
+        columns={antColumns}
+        dataSource={tableData}
+        loading={!tableLinkRows || tableData.length === 0}
+        rowKey={(record, index) => index?.toString() || '0'}
+        pagination={{
+          pageSize: 50,
+          showSizeChanger: true,
+          showTotal: (total) => `Total ${total} rows`,
+        }}
+        scroll={{ x: 'max-content', y: 400 }}
+        bordered
+        size="small"
+        onRow={(record) => ({
+          onDoubleClick: () => handleRowDoubleClick(record),
+        })}
+      />
+
+      {/* Entity Detail Modal */}
+      <EntityDetailModal
+        visible={isModalVisible}
+        selectedRow={selectedRow}
+        configDefinition={configDefinition}
+        onClose={handleModalClose}
+      />
+    </div>
+  );
 };
 
 export default ReportTableRows;

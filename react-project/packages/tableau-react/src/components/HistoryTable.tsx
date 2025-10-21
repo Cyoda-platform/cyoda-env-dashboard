@@ -36,6 +36,7 @@ const HistoryTable: React.FC<HistoryTableProps> = ({ filter, onChange }) => {
         return [];
       }
     },
+    refetchInterval: 3000, // Auto-refresh every 3 seconds to catch new reports
   });
 
   // Transform data for table

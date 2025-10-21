@@ -126,8 +126,9 @@ const QuickRunReport: React.FC<QuickRunReportProps> = ({
 
           console.log('Report started:', data);
 
-          // Refetch to update running status
+          // Refetch to update running status - invalidate both query keys
           queryClient.invalidateQueries({ queryKey: ['reports', 'history'] });
+          queryClient.invalidateQueries({ queryKey: ['reportHistory'] });
         }
 
         // If showResult is true, we'll need to poll for completion

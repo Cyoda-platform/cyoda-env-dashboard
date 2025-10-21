@@ -58,6 +58,14 @@ function loadTestData() {
       entityStore['com.cyoda.tms.model.entities.Customer'] = customers;
       console.log(`✓ Loaded ${customers.length} customers`);
     }
+
+    // Load products
+    const productsPath = path.join(__dirname, 'sample-products.json');
+    if (fs.existsSync(productsPath)) {
+      const products = JSON.parse(fs.readFileSync(productsPath, 'utf8'));
+      entityStore['com.cyoda.tms.model.entities.Product'] = products;
+      console.log(`✓ Loaded ${products.length} products`);
+    }
   } catch (error) {
     console.error('Error loading test data:', error);
   }
@@ -98,6 +106,27 @@ app.get('/platform-api/reporting/types/fetch', (req, res) => {
     type: 'BUSINESS', // Default to BUSINESS type
   }));
   res.json(types);
+});
+
+// Get reporting types (for HistoryFilter)
+app.get('/platform-api/reporting/types', (req, res) => {
+  const types = Object.keys(entityStore)
+    .filter(entityClass => entityStore[entityClass].length > 0)
+    .map(entityClass => ({
+      name: entityClass,
+      label: entityClass.split('.').pop(),
+      type: 'BUSINESS',
+    }));
+
+  res.json({
+    content: types,
+    page: {
+      size: types.length,
+      totalElements: types.length,
+      totalPages: 1,
+      number: 0,
+    },
+  });
 });
 
 // Get entity model info (for CyodaModelling)
@@ -246,9 +275,17 @@ if (!global.reportDefinitions) {
       creationDate: new Date('2024-01-15').toISOString(),
       modificationDate: new Date('2024-01-15').toISOString(),
       columns: [
-        { columnPath: 'id', label: 'ID' },
-        { columnPath: 'name', label: 'Name' },
-        { columnPath: 'email', label: 'Email' }
+        { name: 'id', label: 'ID' },
+        { name: 'customerId', label: 'Customer ID' },
+        { name: 'firstName', label: 'First Name' },
+        { name: 'lastName', label: 'Last Name' },
+        { name: 'email', label: 'Email' },
+        { name: 'phone', label: 'Phone' },
+        { name: 'country', label: 'Country' },
+        { name: 'city', label: 'City' },
+        { name: 'status', label: 'Status' },
+        { name: 'accountBalance', label: 'Account Balance' },
+        { name: 'customerType', label: 'Customer Type' }
       ]
     },
     'RPT-002': {
@@ -261,9 +298,15 @@ if (!global.reportDefinitions) {
       creationDate: new Date('2024-01-16').toISOString(),
       modificationDate: new Date('2024-01-16').toISOString(),
       columns: [
-        { columnPath: 'id', label: 'ID' },
-        { columnPath: 'amount', label: 'Amount' },
-        { columnPath: 'date', label: 'Date' }
+        { name: 'id', label: 'ID' },
+        { name: 'transactionId', label: 'Transaction ID' },
+        { name: 'amount', label: 'Amount' },
+        { name: 'currency', label: 'Currency' },
+        { name: 'status', label: 'Status' },
+        { name: 'description', label: 'Description' },
+        { name: 'customerId', label: 'Customer ID' },
+        { name: 'transactionType', label: 'Type' },
+        { name: 'paymentMethod', label: 'Payment Method' }
       ]
     },
     'RPT-003': {
@@ -276,9 +319,15 @@ if (!global.reportDefinitions) {
       creationDate: new Date('2024-01-17').toISOString(),
       modificationDate: new Date('2024-01-17').toISOString(),
       columns: [
-        { columnPath: 'id', label: 'ID' },
-        { columnPath: 'name', label: 'Product Name' },
-        { columnPath: 'price', label: 'Price' }
+        { name: 'id', label: 'ID' },
+        { name: 'productId', label: 'Product ID' },
+        { name: 'name', label: 'Product Name' },
+        { name: 'category', label: 'Category' },
+        { name: 'price', label: 'Price' },
+        { name: 'currency', label: 'Currency' },
+        { name: 'stock', label: 'Stock' },
+        { name: 'status', label: 'Status' },
+        { name: 'manufacturer', label: 'Manufacturer' }
       ]
     }
   };
@@ -432,10 +481,152 @@ app.get('/platform-api/entity/:entityClass/:entityId', (req, res) => {
   const entity = entities.find(e => e.entityId === entityId);
 
   if (entity) {
-    res.json(entity);
+    // Convert entity values array to flat object
+    const flatEntity = {
+      id: entityId,
+      entityClass: entityClass,
+      state: 'VALIDATED',
+      previousTransition: null,
+      creationDate: new Date('2024-04-19T09:25:08.035+00:00').toISOString(),
+      lastUpdateTime: new Date('2024-04-22T12:01:22.394+00:00').toISOString(),
+    };
+
+    // Add all values from the entity
+    entity.values.forEach(v => {
+      flatEntity[v.columnPath] = v.value;
+    });
+
+    res.json(flatEntity);
   } else {
     res.status(404).json({ error: 'Entity not found' });
   }
+});
+
+// Get entity transactions (for Data Lineage)
+app.get('/platform-api/fetch/transactions', (req, res) => {
+  const { entityClass, entityId } = req.query;
+
+  // Mock transaction history
+  const transactions = [
+    {
+      transactionId: 'TX-001',
+      dateTime: '21-10-2025 10:30:15.123',
+      changeCount: 3,
+      timestamp: new Date('2025-10-21T10:30:15.123Z').getTime(),
+    },
+    {
+      transactionId: 'TX-002',
+      dateTime: '20-10-2025 14:22:45.456',
+      changeCount: 5,
+      timestamp: new Date('2025-10-20T14:22:45.456Z').getTime(),
+    },
+    {
+      transactionId: 'TX-003',
+      dateTime: '19-10-2025 09:15:30.789',
+      changeCount: 2,
+      timestamp: new Date('2025-10-19T09:15:30.789Z').getTime(),
+    },
+    {
+      transactionId: 'TX-004',
+      dateTime: '18-10-2025 16:45:12.234',
+      changeCount: 4,
+      timestamp: new Date('2025-10-18T16:45:12.234Z').getTime(),
+    },
+  ];
+
+  res.json(transactions);
+});
+
+// Get entity changes (for Audit tab)
+app.get('/platform-processing/transactions/view/entity-changes', (req, res) => {
+  const { type, id } = req.query;
+
+  // Mock entity change history
+  const changes = [
+    {
+      transactionId: 'TX-001',
+      timeUUID: 'uuid-001',
+      creationDate: '2025-10-21 10:30:15',
+      user: 'admin',
+      operation: 'UPDATE',
+      changedFieldValues: [
+        { columnPath: 'state', prevValue: 'PENDING', currValue: 'VALIDATED' },
+        { columnPath: 'price', prevValue: '1199.99', currValue: '1299.99' },
+        { columnPath: 'stock', prevValue: '50', currValue: '45' },
+      ],
+    },
+    {
+      transactionId: 'TX-002',
+      timeUUID: 'uuid-002',
+      creationDate: '2025-10-20 14:22:45',
+      user: 'john.doe',
+      operation: 'UPDATE',
+      changedFieldValues: [
+        { columnPath: 'name', prevValue: 'Laptop', currValue: 'Premium Laptop' },
+        { columnPath: 'category', prevValue: 'Computers', currValue: 'Electronics' },
+        { columnPath: 'manufacturer', prevValue: 'GenericCorp', currValue: 'TechCorp' },
+        { columnPath: 'weight', prevValue: '1.8', currValue: '1.5' },
+        { columnPath: 'sku', prevValue: 'LAP-001', currValue: 'TECH-LAP-001' },
+      ],
+    },
+    {
+      transactionId: 'TX-003',
+      timeUUID: 'uuid-003',
+      creationDate: '2025-10-19 09:15:30',
+      user: 'admin',
+      operation: 'UPDATE',
+      changedFieldValues: [
+        { columnPath: 'price', prevValue: '999.99', currValue: '1199.99' },
+        { columnPath: 'currency', prevValue: 'EUR', currValue: 'USD' },
+      ],
+    },
+    {
+      transactionId: 'TX-004',
+      timeUUID: 'uuid-004',
+      creationDate: '2025-10-18 16:45:12',
+      user: 'jane.smith',
+      operation: 'CREATE',
+      changedFieldValues: [
+        { columnPath: 'state', prevValue: null, currValue: 'PENDING' },
+        { columnPath: 'status', prevValue: null, currValue: 'ACTIVE' },
+        { columnPath: 'stock', prevValue: null, currValue: '50' },
+        { columnPath: 'price', prevValue: null, currValue: '999.99' },
+      ],
+    },
+  ];
+
+  res.json(changes);
+});
+
+// Get transaction diff (for comparing versions)
+app.get('/platform-api/transactions/diff', (req, res) => {
+  const { entityClass, entityId, firstTx, lastTx } = req.query;
+
+  // Mock diff data
+  const diff = {
+    changedFields: [
+      {
+        columnPath: 'price',
+        columnPathContainer: {
+          elements: [{ columnName: 'price', type: 'DOUBLE' }],
+          shortPath: 'price',
+          prevValue: '999.99',
+          currValue: '1299.99',
+        },
+      },
+      {
+        columnPath: 'state',
+        columnPathContainer: {
+          elements: [{ columnName: 'state', type: 'STRING' }],
+          shortPath: 'state',
+          prevValue: 'PENDING',
+          currValue: 'VALIDATED',
+        },
+      },
+    ],
+  };
+
+  res.json(diff);
 });
 
 // Create entity
@@ -633,7 +824,7 @@ app.post('/platform-api/pre', (req, res) => {
   global.runningReports[reportId] = {
     id: reportId,
     configId: gridConfig,
-    configName: definition.name,
+    configName: `grid-config-${definition.name}`,
     status: 'RUNNING',
     createTime: new Date().toISOString(),
     entityClass: entityClass,
@@ -642,18 +833,64 @@ app.post('/platform-api/pre', (req, res) => {
 
   console.log(`✓ Started report: ${reportId} for config ${gridConfig}`);
 
-  // Simulate async execution - complete after 2 seconds
+  // Simulate async execution - complete after 2 seconds and generate results
   setTimeout(() => {
     if (global.runningReports[reportId]) {
+      // Generate report results
+      const results = entities.map(entity => {
+        const row = {};
+        entity.values.forEach(v => {
+          row[v.columnPath] = v.value;
+        });
+        return row;
+      });
+
       global.runningReports[reportId].status = 'COMPLETED';
       global.runningReports[reportId].finishTime = new Date().toISOString();
-      console.log(`✓ Completed report: ${reportId}`);
+      global.runningReports[reportId].results = results;
+      console.log(`✓ Completed report: ${reportId} with ${results.length} rows`);
     }
   }, 2000);
 
   res.json({
     content: reportId,
     message: 'Report execution started'
+  });
+});
+
+// Get report status and results
+app.get('/platform-api/reporting/status/:reportId', (req, res) => {
+  const { reportId } = req.params;
+  const report = global.runningReports?.[reportId];
+
+  if (!report) {
+    return res.status(404).json({ error: 'Report not found' });
+  }
+
+  res.json(report);
+});
+
+// Get report results (for completed reports)
+app.get('/platform-api/reporting/results/:reportId', (req, res) => {
+  const { reportId } = req.params;
+  const report = global.runningReports?.[reportId];
+
+  if (!report) {
+    return res.status(404).json({ error: 'Report not found' });
+  }
+
+  if (report.status !== 'COMPLETED') {
+    return res.status(400).json({ error: 'Report is not completed yet', status: report.status });
+  }
+
+  res.json({
+    reportId: reportId,
+    status: 'COMPLETED',
+    results: report.results || [],
+    totalRows: report.results?.length || 0,
+    createTime: report.createTime,
+    finishTime: report.finishTime,
+    configName: report.configName,
   });
 });
 
@@ -714,27 +951,110 @@ app.post('/platform-api/reporting/execute', (req, res) => {
   });
 });
 
-// Get report history (mock)
+// Get report history
 app.get('/platform-api/reporting/history', (req, res) => {
+  const runningReports = global.runningReports || {};
+  const reports = Object.values(runningReports).map(report => ({
+    id: report.id,
+    configId: report.configId,
+    configName: report.configName,
+    status: report.status,
+    createTime: report.createTime,
+    finishTime: report.finishTime || report.createTime,
+    totalRowsCount: report.totalRows || 0,
+    reportFailed: report.status === 'FAILED',
+    type: 'STANDARD',
+    user: {
+      username: 'admin',
+      firstName: 'Admin',
+      lastName: 'User',
+    },
+    groupingColumns: [],
+    groupingVersion: 0,
+    hierarhyEnable: false,
+    regroupingPossible: true,
+  }));
+
+  res.json(reports);
+});
+
+// Get report definition by report ID
+app.get('/platform-api/reporting/report/:reportId', (req, res) => {
+  const { reportId } = req.params;
+  const report = global.runningReports?.[reportId];
+
+  if (!report) {
+    return res.status(404).json({ error: 'Report not found' });
+  }
+
   res.json({
-    content: [
-      {
-        id: 'REPORT-001',
-        name: 'Sample Report',
-        status: 'COMPLETED',
-        executionTime: 1234,
-        createdDate: new Date().toISOString(),
-        rowCount: 5
-      }
-    ],
-    page: {
-      size: 1,
-      totalElements: 1,
-      totalPages: 1,
-      number: 0
-    }
+    id: report.id,
+    configId: report.configId,
+    configName: report.configName,
+    status: report.status,
+    createTime: report.createTime,
+    finishTime: report.finishTime,
+    totalRows: report.totalRows,
   });
 });
+
+// Get config definition by config ID
+app.get('/platform-api/reporting/config/:configId', (req, res) => {
+  const { configId } = req.params;
+  const definitions = global.reportDefinitions || {};
+  const definition = definitions[configId];
+
+  if (!definition) {
+    return res.status(404).json({ error: 'Config definition not found' });
+  }
+
+  res.json(definition);
+});
+
+// Get report rows (both paths for compatibility)
+const getReportRows = (req, res) => {
+  const { reportId } = req.params;
+  const { size = 100 } = req.query;
+  const report = global.runningReports?.[reportId];
+
+  console.log(`GET report rows for ${reportId}, size=${size}`);
+
+  if (!report) {
+    console.log(`Report ${reportId} not found`);
+    return res.status(404).json({ error: 'Report not found' });
+  }
+
+  if (report.status !== 'COMPLETED') {
+    console.log(`Report ${reportId} is ${report.status}, not COMPLETED`);
+    return res.status(400).json({ error: 'Report is not completed yet' });
+  }
+
+  const results = report.results || [];
+  const pageSize = parseInt(size);
+  const pagedResults = results.slice(0, pageSize);
+
+  console.log(`Returning ${pagedResults.length} rows for report ${reportId}`);
+
+  // Format data as expected by ReportTableRows component
+  const reportRows = pagedResults.map(row => ({
+    content: row,
+  }));
+
+  res.json({
+    _embedded: {
+      reportRows: reportRows,
+    },
+    page: {
+      size: pagedResults.length,
+      totalElements: results.length,
+      totalPages: Math.ceil(results.length / pageSize),
+      number: 0,
+    },
+  });
+};
+
+app.get('/platform-api/report/:reportId/rows', getReportRows);
+app.get('/platform-api/reporting/report/:reportId/rows', getReportRows);
 
 // Start server
 app.listen(PORT, () => {
@@ -756,7 +1076,11 @@ app.listen(PORT, () => {
   console.log('  POST /platform-api/entity/:entityClass/import');
   console.log('  GET  /platform-api/entity/:entityClass/count');
   console.log('  POST /platform-api/reporting/execute');
+  console.log('  POST /platform-api/pre?gridConfig={id}');
+  console.log('  GET  /platform-api/reporting/status/:reportId');
+  console.log('  GET  /platform-api/reporting/results/:reportId');
   console.log('  GET  /platform-api/reporting/history');
+  console.log('  POST /platform-api/stream-data/query-plan');
   console.log('');
   console.log('Entity data loaded:');
   Object.entries(entityStore).forEach(([entityClass, entities]) => {

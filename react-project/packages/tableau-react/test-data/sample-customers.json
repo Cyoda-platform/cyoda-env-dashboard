@@ -3,65 +3,152 @@
     "entityClass": "com.cyoda.tms.model.entities.Customer",
     "entityId": "CUST-001",
     "values": [
+      { "columnPath": "id", "value": "CUST-001" },
       { "columnPath": "customerId", "value": "CUST-001" },
       { "columnPath": "firstName", "value": "John" },
       { "columnPath": "lastName", "value": "Smith" },
       { "columnPath": "email", "value": "john.smith@example.com" },
       { "columnPath": "phone", "value": "+1-555-0101" },
       { "columnPath": "country", "value": "USA" },
-      { "columnPath": "status", "value": "ACTIVE" }
+      { "columnPath": "city", "value": "New York" },
+      { "columnPath": "status", "value": "ACTIVE" },
+      { "columnPath": "createdDate", "value": "2023-01-15T10:00:00Z" },
+      { "columnPath": "accountBalance", "value": 15000.50 },
+      { "columnPath": "creditLimit", "value": 50000.00 },
+      { "columnPath": "customerType", "value": "PREMIUM" }
     ]
   },
   {
     "entityClass": "com.cyoda.tms.model.entities.Customer",
     "entityId": "CUST-002",
     "values": [
+      { "columnPath": "id", "value": "CUST-002" },
       { "columnPath": "customerId", "value": "CUST-002" },
       { "columnPath": "firstName", "value": "Emma" },
       { "columnPath": "lastName", "value": "Johnson" },
       { "columnPath": "email", "value": "emma.johnson@example.com" },
       { "columnPath": "phone", "value": "+44-20-7946-0958" },
       { "columnPath": "country", "value": "UK" },
-      { "columnPath": "status", "value": "ACTIVE" }
+      { "columnPath": "city", "value": "London" },
+      { "columnPath": "status", "value": "ACTIVE" },
+      { "columnPath": "createdDate", "value": "2023-02-20T14:30:00Z" },
+      { "columnPath": "accountBalance", "value": 8500.00 },
+      { "columnPath": "creditLimit", "value": 25000.00 },
+      { "columnPath": "customerType", "value": "STANDARD" }
     ]
   },
   {
     "entityClass": "com.cyoda.tms.model.entities.Customer",
     "entityId": "CUST-003",
     "values": [
+      { "columnPath": "id", "value": "CUST-003" },
       { "columnPath": "customerId", "value": "CUST-003" },
       { "columnPath": "firstName", "value": "Michael" },
       { "columnPath": "lastName", "value": "Brown" },
       { "columnPath": "email", "value": "michael.brown@example.com" },
       { "columnPath": "phone", "value": "+49-30-12345678" },
       { "columnPath": "country", "value": "Germany" },
-      { "columnPath": "status", "value": "INACTIVE" }
+      { "columnPath": "city", "value": "Berlin" },
+      { "columnPath": "status", "value": "INACTIVE" },
+      { "columnPath": "createdDate", "value": "2022-11-10T09:15:00Z" },
+      { "columnPath": "accountBalance", "value": -250.00 },
+      { "columnPath": "creditLimit", "value": 10000.00 },
+      { "columnPath": "customerType", "value": "STANDARD" }
     ]
   },
   {
     "entityClass": "com.cyoda.tms.model.entities.Customer",
     "entityId": "CUST-004",
     "values": [
+      { "columnPath": "id", "value": "CUST-004" },
       { "columnPath": "customerId", "value": "CUST-004" },
       { "columnPath": "firstName", "value": "Sarah" },
       { "columnPath": "lastName", "value": "Davis" },
       { "columnPath": "email", "value": "sarah.davis@example.com" },
       { "columnPath": "phone", "value": "+1-555-0202" },
       { "columnPath": "country", "value": "USA" },
-      { "columnPath": "status", "value": "ACTIVE" }
+      { "columnPath": "city", "value": "Los Angeles" },
+      { "columnPath": "status", "value": "ACTIVE" },
+      { "columnPath": "createdDate", "value": "2023-05-12T11:20:00Z" },
+      { "columnPath": "accountBalance", "value": 32000.00 },
+      { "columnPath": "creditLimit", "value": 100000.00 },
+      { "columnPath": "customerType", "value": "PREMIUM" }
     ]
   },
   {
     "entityClass": "com.cyoda.tms.model.entities.Customer",
     "entityId": "CUST-005",
     "values": [
+      { "columnPath": "id", "value": "CUST-005" },
       { "columnPath": "customerId", "value": "CUST-005" },
       { "columnPath": "firstName", "value": "Pierre" },
       { "columnPath": "lastName", "value": "Dubois" },
       { "columnPath": "email", "value": "pierre.dubois@example.com" },
       { "columnPath": "phone", "value": "+33-1-42-86-82-00" },
       { "columnPath": "country", "value": "France" },
-      { "columnPath": "status", "value": "ACTIVE" }
+      { "columnPath": "city", "value": "Paris" },
+      { "columnPath": "status", "value": "ACTIVE" },
+      { "columnPath": "createdDate", "value": "2023-03-08T16:45:00Z" },
+      { "columnPath": "accountBalance", "value": 12500.75 },
+      { "columnPath": "creditLimit", "value": 30000.00 },
+      { "columnPath": "customerType", "value": "STANDARD" }
+    ]
+  },
+  {
+    "entityClass": "com.cyoda.tms.model.entities.Customer",
+    "entityId": "CUST-006",
+    "values": [
+      { "columnPath": "id", "value": "CUST-006" },
+      { "columnPath": "customerId", "value": "CUST-006" },
+      { "columnPath": "firstName", "value": "Yuki" },
+      { "columnPath": "lastName", "value": "Tanaka" },
+      { "columnPath": "email", "value": "yuki.tanaka@example.com" },
+      { "columnPath": "phone", "value": "+81-3-1234-5678" },
+      { "columnPath": "country", "value": "Japan" },
+      { "columnPath": "city", "value": "Tokyo" },
+      { "columnPath": "status", "value": "ACTIVE" },
+      { "columnPath": "createdDate", "value": "2023-06-22T08:30:00Z" },
+      { "columnPath": "accountBalance", "value": 45000.00 },
+      { "columnPath": "creditLimit", "value": 75000.00 },
+      { "columnPath": "customerType", "value": "PREMIUM" }
+    ]
+  },
+  {
+    "entityClass": "com.cyoda.tms.model.entities.Customer",
+    "entityId": "CUST-007",
+    "values": [
+      { "columnPath": "id", "value": "CUST-007" },
+      { "columnPath": "customerId", "value": "CUST-007" },
+      { "columnPath": "firstName", "value": "Maria" },
+      { "columnPath": "lastName", "value": "Garcia" },
+      { "columnPath": "email", "value": "maria.garcia@example.com" },
+      { "columnPath": "phone", "value": "+34-91-123-4567" },
+      { "columnPath": "country", "value": "Spain" },
+      { "columnPath": "city", "value": "Madrid" },
+      { "columnPath": "status", "value": "ACTIVE" },
+      { "columnPath": "createdDate", "value": "2023-04-18T13:15:00Z" },
+      { "columnPath": "accountBalance", "value": 6200.00 },
+      { "columnPath": "creditLimit", "value": 20000.00 },
+      { "columnPath": "customerType", "value": "STANDARD" }
+    ]
+  },
+  {
+    "entityClass": "com.cyoda.tms.model.entities.Customer",
+    "entityId": "CUST-008",
+    "values": [
+      { "columnPath": "id", "value": "CUST-008" },
+      { "columnPath": "customerId", "value": "CUST-008" },
+      { "columnPath": "firstName", "value": "Ahmed" },
+      { "columnPath": "lastName", "value": "Al-Rashid" },
+      { "columnPath": "email", "value": "ahmed.alrashid@example.com" },
+      { "columnPath": "phone", "value": "+971-4-123-4567" },
+      { "columnPath": "country", "value": "UAE" },
+      { "columnPath": "city", "value": "Dubai" },
+      { "columnPath": "status", "value": "ACTIVE" },
+      { "columnPath": "createdDate", "value": "2023-07-05T10:00:00Z" },
+      { "columnPath": "accountBalance", "value": 98000.00 },
+      { "columnPath": "creditLimit", "value": 200000.00 },
+      { "columnPath": "customerType", "value": "PREMIUM" }
     ]
   }
 ]
