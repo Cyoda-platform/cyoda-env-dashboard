@@ -65,7 +65,7 @@ export const ReportScheduling: React.FC<ReportSchedulingProps> = ({ visible, rep
       open={visible}
       onCancel={onClose}
         footer={[
-          <Button key="cancel" onClick={() => setVisible(false)}>
+          <Button key="cancel" onClick={onClose}>
             Cancel
           </Button>,
           <Button

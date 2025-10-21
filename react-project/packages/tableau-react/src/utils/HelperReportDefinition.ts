@@ -80,30 +80,34 @@ export default class HelperReportDefinition {
     let cols: any[] = [];
 
     if (configDefinition && configDefinition.colDefs && configDefinition.colDefs.length > 0) {
-      const colDefs = configDefinition.colDefs.map((el: any) => {
-        return {
-          colType: 'colDef',
-          alias: el.fullPath,
-          name: el.fullPath,
-          typeShort: el.colType.split('.').pop() || '',
-          type: el.colType,
-          '@bean': SIMPLE_COLUMN,
-        };
-      });
+      const colDefs = configDefinition.colDefs
+        .filter((el: any) => el && el.fullPath) // Filter out null/undefined items
+        .map((el: any) => {
+          return {
+            colType: 'colDef',
+            alias: el.fullPath,
+            name: el.fullPath,
+            typeShort: el.colType.split('.').pop() || '',
+            type: el.colType,
+            '@bean': SIMPLE_COLUMN,
+          };
+        });
       cols = cols.concat(colDefs);
     }
 
     if (configDefinition && configDefinition.aliasDefs && configDefinition.aliasDefs.length > 0) {
-      const aliasDefs = configDefinition.aliasDefs.map((el: any) => {
-        return {
-          colType: 'aliasDef',
-          alias: el.name,
-          name: el.name,
-          typeShort: el.aliasType.split('.').pop() || '',
-          type: el.aliasType,
-          '@bean': ALIAS_COLUMN,
-        };
-      });
+      const aliasDefs = configDefinition.aliasDefs
+        .filter((el: any) => el && el.name) // Filter out null/undefined items
+        .map((el: any) => {
+          return {
+            colType: 'aliasDef',
+            alias: el.name,
+            name: el.name,
+            typeShort: el.aliasType.split('.').pop() || '',
+            type: el.aliasType,
+            '@bean': ALIAS_COLUMN,
+          };
+        });
       cols = cols.concat(aliasDefs);
     }
 

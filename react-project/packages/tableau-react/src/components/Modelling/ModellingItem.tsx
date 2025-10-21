@@ -106,6 +106,7 @@ export const ModellingItem: React.FC<ModellingItemProps> = ({
 
   const getChecked = useMemo(() => {
     return checked.find((path) => {
+      if (!path || !path.fullPath) return false;
       const selectedPathBySegments = path.fullPath.replace(/\.\[[^\]]*\]/g, '').split(/@|\./);
       const fullPathOfRowSegments = fullPath.replace(/\.\[[^\]]*\]/g, '').split(/@|\./);
       for (let i = 0; i < fullPathOfRowSegments.length; i++) {
@@ -249,6 +250,7 @@ export const ModellingItem: React.FC<ModellingItemProps> = ({
           <Checkbox
             disabled={isDisabled}
             checked={!!getChecked}
+            value={label}
             className={!isChildAvailable ? 'no-child' : ''}
             style={{ marginLeft: 8 }}
           >

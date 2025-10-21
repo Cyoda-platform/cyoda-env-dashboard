@@ -24,16 +24,19 @@ export const ModellingAliases: React.FC<ModellingAliasesProps> = ({ configDefini
   const aliasNewRef = useRef<ModellingPopUpAliasNewRef>(null);
 
   const tableData = useMemo(() => {
-    return (configDefinition.aliasDefs || []).map((el: AliasDef, index: number) => ({
+    console.log('Computing tableData from aliasDefs:', configDefinition.aliasDefs);
+    const data = (configDefinition.aliasDefs || []).map((el: AliasDef, index: number) => ({
       key: index,
       name: el.name,
       alias: el,
-      paths: el.aliasPaths.value.map((aliasPath) => ({
+      paths: el.aliasPaths?.value?.map((aliasPath) => ({
         path: aliasPath.colDef.fullPath,
         mapperClass: aliasPath.mapperClass.split('.').pop()!,
         mapperParameters: aliasPath.mapperParameters || undefined,
-      })),
+      })) || [],
     }));
+    console.log('Computed tableData:', data);
+    return data;
   }, [configDefinition.aliasDefs]);
 
   const handleOpenDialog = () => {
@@ -41,10 +44,15 @@ export const ModellingAliases: React.FC<ModellingAliasesProps> = ({ configDefini
   };
 
   const handleAliasSelected = (alias: AliasDef) => {
+    console.log('handleAliasSelected called with alias:', alias);
+    console.log('Current aliasDefs:', configDefinition.aliasDefs);
     const newAliasDefs = [...(configDefinition.aliasDefs || []), alias];
+    console.log('New aliasDefs:', newAliasDefs);
     if (onChange) {
+      console.log('Calling onChange with:', { aliasDefs: newAliasDefs });
       onChange({ aliasDefs: newAliasDefs });
     } else {
+      console.log('No onChange, mutating directly');
       configDefinition.aliasDefs = newAliasDefs;
     }
     message.success('Alias added successfully');
@@ -100,9 +108,14 @@ export const ModellingAliases: React.FC<ModellingAliasesProps> = ({ configDefini
       onOk: () => {
         if (configDefinition.aliasDefs) {
           const indicesToRemove = selectedRowKeys.map((key) => Number(key));
-          configDefinition.aliasDefs = configDefinition.aliasDefs.filter(
+          const newAliasDefs = configDefinition.aliasDefs.filter(
             (_: any, index: number) => !indicesToRemove.includes(index)
           );
+          if (onChange) {
+            onChange({ aliasDefs: newAliasDefs });
+          } else {
+            configDefinition.aliasDefs = newAliasDefs;
+          }
           setSelectedRowKeys([]);
           message.success(`${selectedRowKeys.length} aliases removed successfully`);
         }

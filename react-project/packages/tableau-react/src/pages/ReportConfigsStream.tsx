@@ -29,7 +29,7 @@ import { ConfigEditorStreamGrid, ConfigEditorStreamGridRef } from '@cyoda/ui-lib
 import { HelperStorage } from '@cyoda/ui-lib-react';
 import type { HistoryFilterForm } from '../utils/HelperReportDefinition';
 import type { ReportDefinition } from '../types';
-import { HelperReportDefinition } from '../utils/HelperReportDefinition';
+import HelperReportDefinition from '../utils/HelperReportDefinition';
 import './ReportConfigsStream.scss';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || '';

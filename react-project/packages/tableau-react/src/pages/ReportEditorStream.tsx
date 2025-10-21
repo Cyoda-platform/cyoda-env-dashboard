@@ -18,7 +18,7 @@ import ModellingRangeDefs from '../components/Modelling/ModellingRangeDefs';
 import { FilterBuilderGroup, FilterBuilderCondition } from '@cyoda/cobi-react/src/components/DataMapper/FilterBuilder';
 import QueryPlanButton from '../components/QueryPlanButton';
 import { ConfigEditorStreamGrid, ConfigEditorStreamGridRef } from '@cyoda/ui-lib-react';
-import { HelperReportDefinition } from '../utils/HelperReportDefinition';
+import HelperReportDefinition from '../utils/HelperReportDefinition';
 import type { ReportDefinition, ColDef, ReportColumn } from '../types';
 import './ReportEditorStream.scss';
 

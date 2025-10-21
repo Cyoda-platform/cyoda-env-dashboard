@@ -38,7 +38,8 @@ const ReportEditorTabFilterBuilder: React.FC<ReportEditorTabFilterBuilderProps> 
         },
       });
     }
-  }, [isNew, configDefinition.condition, onChange]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isNew]);
 
   const handleSingletonChange = (checked: boolean) => {
     onChange({ singletonReport: checked });

@@ -55,8 +55,10 @@ const ReportEditor: React.FC = () => {
 
   // Update local state when data loads
   useEffect(() => {
-    if (reportData?.content) {
-      setConfigDefinition(reportData.content);
+    if (reportData) {
+      // Handle both wrapped (reportData.content) and unwrapped responses
+      const definition = reportData.content || reportData;
+      setConfigDefinition(definition);
     }
   }, [reportData]);
 
@@ -142,7 +144,7 @@ const ReportEditor: React.FC = () => {
 
   // Handlers
   const handleBack = useCallback(() => {
-    navigate('/tableau/report-configs');
+    navigate('/tableau/reports');
   }, [navigate]);
 
   const handleUpdate = useCallback(() => {

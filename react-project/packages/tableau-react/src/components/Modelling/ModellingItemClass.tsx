@@ -59,6 +59,7 @@ export const ModellingItemClass: React.FC<ModellingItemClassProps> = ({
 
   const getChecked = useMemo(() => {
     return checked.find((path) => {
+      if (!path || !path.fullPath) return false;
       const selectedPathBySegments = path.fullPath.replace(/\.\[[^\]]*\]/g, '').split(/@|\./);
       const fullPathOfRowSegments = classPath
         .replace(/\.\[[^\]]*\]/g, '')

@@ -13,10 +13,11 @@ import './ModellingColDefs.scss';
 
 interface ModellingColDefsProps {
   configDefinition: any;
+  onChange?: (updates: any) => void;
   readOnly?: boolean;
 }
 
-export const ModellingColDefs: React.FC<ModellingColDefsProps> = ({ configDefinition, readOnly = false }) => {
+export const ModellingColDefs: React.FC<ModellingColDefsProps> = ({ configDefinition, onChange, readOnly = false }) => {
   const popupRef = useRef<ModellingPopUpRef>(null);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
@@ -44,7 +45,12 @@ export const ModellingColDefs: React.FC<ModellingColDefsProps> = ({ configDefini
       content: 'Do you really want to remove?',
       onOk: () => {
         if (configDefinition.colDefs) {
-          configDefinition.colDefs.splice(index, 1);
+          const newColDefs = configDefinition.colDefs.filter((_: any, i: number) => i !== index);
+          if (onChange) {
+            onChange({ colDefs: newColDefs });
+          } else {
+            configDefinition.colDefs = newColDefs;
+          }
           message.success('Column removed successfully');
         }
       },
@@ -52,7 +58,12 @@ export const ModellingColDefs: React.FC<ModellingColDefsProps> = ({ configDefini
   };
 
   const handleChange = (checkedData: ColDef[]) => {
-    configDefinition.colDefs = JSON.parse(JSON.stringify(checkedData));
+    const newColDefs = JSON.parse(JSON.stringify(checkedData));
+    if (onChange) {
+      onChange({ colDefs: newColDefs });
+    } else {
+      configDefinition.colDefs = newColDefs;
+    }
     message.success('Columns updated successfully');
   };
 
@@ -73,9 +84,14 @@ export const ModellingColDefs: React.FC<ModellingColDefsProps> = ({ configDefini
         if (configDefinition.colDefs) {
           // Remove selected items
           const indicesToRemove = selectedRowKeys.map((key) => Number(key));
-          configDefinition.colDefs = configDefinition.colDefs.filter(
+          const newColDefs = configDefinition.colDefs.filter(
             (_: any, index: number) => !indicesToRemove.includes(index)
           );
+          if (onChange) {
+            onChange({ colDefs: newColDefs });
+          } else {
+            configDefinition.colDefs = newColDefs;
+          }
           setSelectedRowKeys([]);
           message.success(`${selectedRowKeys.length} columns removed successfully`);
         }
