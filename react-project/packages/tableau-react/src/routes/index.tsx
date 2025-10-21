@@ -7,8 +7,8 @@ import { RouteObject } from 'react-router-dom';
 import Reports from '@/pages/Reports';
 import ReportConfigs from '@/pages/ReportConfigs';
 import ReportEditor from '@/pages/ReportEditor';
-import StreamReports from '@/pages/StreamReports';
-import StreamReportEditor from '@/pages/StreamReportEditor';
+import ReportConfigsStream from '@/pages/ReportConfigsStream';
+import ReportEditorStream from '@/pages/ReportEditorStream';
 
 // Mock Login component - will be replaced when ui-lib-react is available
 const Login = () => <div>Login Page</div>;
@@ -35,12 +35,12 @@ export const routes: RouteObject[] = [
     element: <ReportEditor />,
   },
   {
-    path: '/tableau/stream-reports',
-    element: <StreamReports />,
+    path: '/tableau/reports/stream',
+    element: <ReportConfigsStream />,
   },
   {
-    path: '/tableau/stream-report-editor/:id',
-    element: <StreamReportEditor />,
+    path: '/tableau/reports/stream/:id',
+    element: <ReportEditorStream />,
   },
 ];
 

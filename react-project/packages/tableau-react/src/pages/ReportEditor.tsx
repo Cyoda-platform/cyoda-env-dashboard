@@ -23,6 +23,9 @@ import ReportEditorTabSorting from '../components/ReportEditorTabSorting';
 import ReportEditorTabGrouping from '../components/ReportEditorTabGrouping';
 import ReportEditorTabSummary from '../components/ReportEditorTabSummary';
 import ReportEditorTabJson from '../components/ReportEditorTabJson';
+import QueryPlanButton from '../components/QueryPlanButton';
+import ReportScheduling from '../components/ReportScheduling';
+import ReportTemplates from '../components/ReportTemplates';
 
 const ReportEditor: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -37,6 +40,8 @@ const ReportEditor: React.FC = () => {
   const [showErrors, setShowErrors] = useState(false);
   const [runningReportId, setRunningReportId] = useState<string | null>(null);
   const [reportExecutionTime, setReportExecutionTime] = useState(0);
+  const [showScheduling, setShowScheduling] = useState(false);
+  const [showTemplates, setShowTemplates] = useState(false);
 
   // Load report definition
   const { data: reportData, isLoading } = useQuery({
@@ -282,6 +287,20 @@ const ReportEditor: React.FC = () => {
           Back
         </Button>
 
+        <Button
+          type="default"
+          onClick={() => setShowTemplates(true)}
+        >
+          Templates
+        </Button>
+
+        <Button
+          type="default"
+          onClick={() => setShowScheduling(true)}
+        >
+          Schedule
+        </Button>
+
         {!configDefinition.singletonReport && (
           <Button
             type="primary"
@@ -314,7 +333,27 @@ const ReportEditor: React.FC = () => {
             Stop
           </Button>
         )}
+
+        <QueryPlanButton configDefinition={configDefinition} />
       </div>
+
+      {/* Report Scheduling Modal */}
+      <ReportScheduling
+        visible={showScheduling}
+        reportId={id}
+        onClose={() => setShowScheduling(false)}
+      />
+
+      {/* Report Templates Modal */}
+      <ReportTemplates
+        visible={showTemplates}
+        onClose={() => setShowTemplates(false)}
+        onSelectTemplate={(template) => {
+          setConfigDefinition(template);
+          setShowTemplates(false);
+          message.success('Template applied successfully');
+        }}
+      />
     </div>
   );
 };

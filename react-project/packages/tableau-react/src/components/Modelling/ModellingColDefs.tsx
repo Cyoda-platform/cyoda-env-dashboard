@@ -1,0 +1,145 @@
+/**
+ * ModellingColDefs Component
+ * Column definitions management with table and selection
+ * Migrated from: CyodaModellingColDefs.vue
+ */
+
+import React, { useRef, useState, useMemo } from 'react';
+import { Button, Table, Modal, message } from 'antd';
+import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
+import { ModellingPopUp, ModellingPopUpRef } from './ModellingPopUp';
+import type { ColDef } from '../../types/modelling';
+import './ModellingColDefs.scss';
+
+interface ModellingColDefsProps {
+  configDefinition: any;
+  readOnly?: boolean;
+}
+
+export const ModellingColDefs: React.FC<ModellingColDefsProps> = ({ configDefinition, readOnly = false }) => {
+  const popupRef = useRef<ModellingPopUpRef>(null);
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+
+  const tableData = useMemo(() => {
+    return (
+      configDefinition.colDefs?.map((el: ColDef, index: number) => ({
+        key: index,
+        fullPath: el.fullPath,
+        colDef: el,
+      })) || []
+    );
+  }, [configDefinition.colDefs]);
+
+  const checked = useMemo(() => {
+    return JSON.parse(JSON.stringify(configDefinition.colDefs || []));
+  }, [configDefinition.colDefs]);
+
+  const handleOpenDialog = () => {
+    popupRef.current?.open();
+  };
+
+  const handleRemove = (index: number) => {
+    Modal.confirm({
+      title: 'Confirm',
+      content: 'Do you really want to remove?',
+      onOk: () => {
+        if (configDefinition.colDefs) {
+          configDefinition.colDefs.splice(index, 1);
+          message.success('Column removed successfully');
+        }
+      },
+    });
+  };
+
+  const handleChange = (checkedData: ColDef[]) => {
+    configDefinition.colDefs = JSON.parse(JSON.stringify(checkedData));
+    message.success('Columns updated successfully');
+  };
+
+  const handleSelectionChange = (selectedKeys: React.Key[]) => {
+    setSelectedRowKeys(selectedKeys);
+  };
+
+  const handleBulkDelete = () => {
+    if (selectedRowKeys.length === 0) {
+      message.warning('Please select columns to delete');
+      return;
+    }
+
+    Modal.confirm({
+      title: 'Confirm',
+      content: `Do you really want to remove ${selectedRowKeys.length} records?`,
+      onOk: () => {
+        if (configDefinition.colDefs) {
+          // Remove selected items
+          const indicesToRemove = selectedRowKeys.map((key) => Number(key));
+          configDefinition.colDefs = configDefinition.colDefs.filter(
+            (_: any, index: number) => !indicesToRemove.includes(index)
+          );
+          setSelectedRowKeys([]);
+          message.success(`${selectedRowKeys.length} columns removed successfully`);
+        }
+      },
+    });
+  };
+
+  const columns = [
+    {
+      title: 'Path',
+      dataIndex: 'fullPath',
+      key: 'fullPath',
+    },
+    {
+      title: 'Action',
+      key: 'action',
+      width: 180,
+      render: (_: any, record: any) => (
+        <Button type="primary" danger disabled={readOnly} onClick={() => handleRemove(record.key)}>
+          Remove
+        </Button>
+      ),
+    },
+  ];
+
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: handleSelectionChange,
+  };
+
+  return (
+    <div className="modelling-col-defs">
+      <Button
+        type="primary"
+        disabled={!configDefinition.requestClass || readOnly}
+        onClick={handleOpenDialog}
+        icon={<PlusOutlined />}
+      >
+        Add New Column Definition
+      </Button>
+
+      <h2>Selected Columns:</h2>
+      <Table
+        rowSelection={readOnly ? undefined : rowSelection}
+        columns={columns}
+        dataSource={tableData}
+        pagination={false}
+      />
+
+      {selectedRowKeys.length > 0 && (
+        <div className="form-multiple-selection">
+          <Button type="primary" danger icon={<DeleteOutlined />} onClick={handleBulkDelete}>
+            Delete Selected ({selectedRowKeys.length})
+          </Button>
+        </div>
+      )}
+
+      <ModellingPopUp
+        ref={popupRef}
+        requestClass={configDefinition.requestClass}
+        checked={checked}
+        onChange={handleChange}
+      />
+    </div>
+  );
+};
+

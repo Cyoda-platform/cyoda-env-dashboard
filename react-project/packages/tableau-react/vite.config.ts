@@ -12,6 +12,16 @@ export default defineConfig({
   },
   server: {
     port: 3007,
+    proxy: {
+      '/platform-api': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+      },
+      '/api': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+      },
+    },
   },
   build: {
     outDir: 'dist',

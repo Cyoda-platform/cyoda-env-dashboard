@@ -1,0 +1,30 @@
+.modelling-item-class {
+  margin-bottom: 8px;
+
+  .checked-path {
+    background-color: #f0f7ff;
+    padding: 2px 4px;
+    border-radius: 2px;
+  }
+
+  .name {
+    a {
+      cursor: pointer;
+      color: #1890ff;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    .empty-link {
+      color: #8c8c8c;
+      cursor: not-allowed;
+    }
+  }
+
+  .types-field {
+    margin-bottom: 12px;
+  }
+}
+

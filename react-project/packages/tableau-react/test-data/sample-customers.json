@@ -1,0 +1,68 @@
+[
+  {
+    "entityClass": "com.cyoda.tms.model.entities.Customer",
+    "entityId": "CUST-001",
+    "values": [
+      { "columnPath": "customerId", "value": "CUST-001" },
+      { "columnPath": "firstName", "value": "John" },
+      { "columnPath": "lastName", "value": "Smith" },
+      { "columnPath": "email", "value": "john.smith@example.com" },
+      { "columnPath": "phone", "value": "+1-555-0101" },
+      { "columnPath": "country", "value": "USA" },
+      { "columnPath": "status", "value": "ACTIVE" }
+    ]
+  },
+  {
+    "entityClass": "com.cyoda.tms.model.entities.Customer",
+    "entityId": "CUST-002",
+    "values": [
+      { "columnPath": "customerId", "value": "CUST-002" },
+      { "columnPath": "firstName", "value": "Emma" },
+      { "columnPath": "lastName", "value": "Johnson" },
+      { "columnPath": "email", "value": "emma.johnson@example.com" },
+      { "columnPath": "phone", "value": "+44-20-7946-0958" },
+      { "columnPath": "country", "value": "UK" },
+      { "columnPath": "status", "value": "ACTIVE" }
+    ]
+  },
+  {
+    "entityClass": "com.cyoda.tms.model.entities.Customer",
+    "entityId": "CUST-003",
+    "values": [
+      { "columnPath": "customerId", "value": "CUST-003" },
+      { "columnPath": "firstName", "value": "Michael" },
+      { "columnPath": "lastName", "value": "Brown" },
+      { "columnPath": "email", "value": "michael.brown@example.com" },
+      { "columnPath": "phone", "value": "+49-30-12345678" },
+      { "columnPath": "country", "value": "Germany" },
+      { "columnPath": "status", "value": "INACTIVE" }
+    ]
+  },
+  {
+    "entityClass": "com.cyoda.tms.model.entities.Customer",
+    "entityId": "CUST-004",
+    "values": [
+      { "columnPath": "customerId", "value": "CUST-004" },
+      { "columnPath": "firstName", "value": "Sarah" },
+      { "columnPath": "lastName", "value": "Davis" },
+      { "columnPath": "email", "value": "sarah.davis@example.com" },
+      { "columnPath": "phone", "value": "+1-555-0202" },
+      { "columnPath": "country", "value": "USA" },
+      { "columnPath": "status", "value": "ACTIVE" }
+    ]
+  },
+  {
+    "entityClass": "com.cyoda.tms.model.entities.Customer",
+    "entityId": "CUST-005",
+    "values": [
+      { "columnPath": "customerId", "value": "CUST-005" },
+      { "columnPath": "firstName", "value": "Pierre" },
+      { "columnPath": "lastName", "value": "Dubois" },
+      { "columnPath": "email", "value": "pierre.dubois@example.com" },
+      { "columnPath": "phone", "value": "+33-1-42-86-82-00" },
+      { "columnPath": "country", "value": "France" },
+      { "columnPath": "status", "value": "ACTIVE" }
+    ]
+  }
+]
+

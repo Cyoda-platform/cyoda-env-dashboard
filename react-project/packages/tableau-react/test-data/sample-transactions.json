@@ -1,0 +1,68 @@
+[
+  {
+    "entityClass": "com.cyoda.tms.model.entities.Transaction",
+    "entityId": "TXN-001",
+    "values": [
+      { "columnPath": "transactionId", "value": "TXN-001" },
+      { "columnPath": "amount", "value": 1500.50 },
+      { "columnPath": "currency", "value": "USD" },
+      { "columnPath": "status", "value": "COMPLETED" },
+      { "columnPath": "description", "value": "Payment for invoice #12345" },
+      { "columnPath": "customerId", "value": "CUST-001" },
+      { "columnPath": "transactionDate", "value": "2024-01-15T10:30:00Z" }
+    ]
+  },
+  {
+    "entityClass": "com.cyoda.tms.model.entities.Transaction",
+    "entityId": "TXN-002",
+    "values": [
+      { "columnPath": "transactionId", "value": "TXN-002" },
+      { "columnPath": "amount", "value": 2750.00 },
+      { "columnPath": "currency", "value": "EUR" },
+      { "columnPath": "status", "value": "PENDING" },
+      { "columnPath": "description", "value": "Wire transfer to supplier" },
+      { "columnPath": "customerId", "value": "CUST-002" },
+      { "columnPath": "transactionDate", "value": "2024-01-16T14:20:00Z" }
+    ]
+  },
+  {
+    "entityClass": "com.cyoda.tms.model.entities.Transaction",
+    "entityId": "TXN-003",
+    "values": [
+      { "columnPath": "transactionId", "value": "TXN-003" },
+      { "columnPath": "amount", "value": 500.00 },
+      { "columnPath": "currency", "value": "GBP" },
+      { "columnPath": "status", "value": "FAILED" },
+      { "columnPath": "description", "value": "Refund for order #98765" },
+      { "columnPath": "customerId", "value": "CUST-003" },
+      { "columnPath": "transactionDate", "value": "2024-01-17T09:15:00Z" }
+    ]
+  },
+  {
+    "entityClass": "com.cyoda.tms.model.entities.Transaction",
+    "entityId": "TXN-004",
+    "values": [
+      { "columnPath": "transactionId", "value": "TXN-004" },
+      { "columnPath": "amount", "value": 10250.75 },
+      { "columnPath": "currency", "value": "USD" },
+      { "columnPath": "status", "value": "COMPLETED" },
+      { "columnPath": "description", "value": "Large corporate payment" },
+      { "columnPath": "customerId", "value": "CUST-004" },
+      { "columnPath": "transactionDate", "value": "2024-01-18T16:45:00Z" }
+    ]
+  },
+  {
+    "entityClass": "com.cyoda.tms.model.entities.Transaction",
+    "entityId": "TXN-005",
+    "values": [
+      { "columnPath": "transactionId", "value": "TXN-005" },
+      { "columnPath": "amount", "value": 325.99 },
+      { "columnPath": "currency", "value": "USD" },
+      { "columnPath": "status", "value": "COMPLETED" },
+      { "columnPath": "description", "value": "Monthly subscription payment" },
+      { "columnPath": "customerId", "value": "CUST-001" },
+      { "columnPath": "transactionDate", "value": "2024-01-19T08:00:00Z" }
+    ]
+  }
+]
+

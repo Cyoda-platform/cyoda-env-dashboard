@@ -22,8 +22,10 @@ import moment from 'moment';
 import CreateReportDialog, { type CreateReportDialogRef, type CreateReportFormData } from '../components/CreateReportDialog';
 import CloneReportDialog, { type CloneReportDialogRef } from '../components/CloneReportDialog';
 import ConfigEditorReportsFilter from '../components/ConfigEditorReportsFilter';
+import ReportTemplates from '../components/ReportTemplates';
 import HelperReportDefinition from '../utils/HelperReportDefinition';
 import { HelperStorage } from '@cyoda/ui-lib-react';
+import type { ReportDefinition } from '../types';
 import './ReportConfigs.scss';
 
 interface ReportConfigRow {
@@ -65,11 +67,12 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
   
   const createDialogRef = useRef<CreateReportDialogRef>(null);
   const cloneDialogRef = useRef<CloneReportDialogRef>(null);
-  
+
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
   const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
   const [filterForm, setFilterForm] = useState<FilterForm>({});
   const [runningReports, setRunningReports] = useState<RunningReport[]>([]);
+  const [showTemplates, setShowTemplates] = useState(false);
 
   // Load report definitions
   const { data: definitions = [], isLoading, refetch } = useQuery({
@@ -437,6 +440,12 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
           >
             Create New
           </Button>
+          <Button
+            type="default"
+            onClick={() => setShowTemplates(true)}
+          >
+            Create from Template
+          </Button>
           <Button icon={<ReloadOutlined />} onClick={handleResetState}>
             Reset State
           </Button>
@@ -475,6 +484,22 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
 
       <CreateReportDialog ref={createDialogRef} onConfirm={handleCreateReport} />
       <CloneReportDialog ref={cloneDialogRef} onConfirm={handleCloneReport} />
+
+      {/* Report Templates Modal */}
+      <ReportTemplates
+        visible={showTemplates}
+        onClose={() => setShowTemplates(false)}
+        onSelectTemplate={(template: ReportDefinition) => {
+          // Create a new report from template
+          handleCreateReport({
+            name: template.name || 'New Report from Template',
+            description: template.description || '',
+            entityClass: template.entityClass || '',
+            reportDefinition: template,
+          });
+          setShowTemplates(false);
+        }}
+      />
     </div>
   );
 };

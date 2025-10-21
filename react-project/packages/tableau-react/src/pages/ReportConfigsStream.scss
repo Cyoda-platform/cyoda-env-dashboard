@@ -1,0 +1,15 @@
+.report-configs-stream {
+  padding: 24px;
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  h1 {
+    margin-bottom: 15px;
+  }
+}
+

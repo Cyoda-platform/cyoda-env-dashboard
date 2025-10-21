@@ -1,0 +1,96 @@
+.modelling-item {
+  margin-bottom: 8px;
+
+  .inner {
+    display: flex;
+    align-items: center;
+    padding: 4px 0;
+
+    &.checked-path {
+      background-color: #f0f7ff;
+    }
+
+    &.inner-related {
+      border-left: 3px solid #1890ff;
+      padding-left: 8px;
+    }
+  }
+
+  .eye {
+    cursor: pointer;
+    color: #8c8c8c;
+    
+    &:hover {
+      color: #1890ff;
+    }
+
+    &.is-leaf {
+      color: #52c41a;
+    }
+
+    &.is-joins {
+      color: #faad14;
+    }
+  }
+
+  .join-link {
+    cursor: pointer;
+    color: #8c8c8c;
+
+    &:hover {
+      color: #1890ff;
+    }
+
+    &.active {
+      color: #1890ff;
+    }
+
+    &.disabled {
+      color: #d9d9d9;
+      cursor: not-allowed;
+    }
+  }
+
+  .no-child {
+    margin-left: 24px;
+  }
+
+  .name {
+    a {
+      cursor: pointer;
+      color: #1890ff;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .wrap-form {
+    margin-top: 8px;
+  }
+
+  .inner-group {
+    margin-left: 24px;
+    margin-top: 8px;
+  }
+
+  &.has-join {
+    .inner-related {
+      background-color: #f6ffed;
+    }
+  }
+
+  &.rel-active {
+    .inner {
+      background-color: #fff7e6;
+    }
+  }
+
+  &.generic-field {
+    .inner {
+      background-color: #f9f0ff;
+    }
+  }
+}
+
