@@ -1,6 +1,7 @@
 import React, { forwardRef, useImperativeHandle, useState, useMemo, useCallback } from 'react'
 import { Modal, Table, Button, Select, Form, Space } from 'antd'
 import type { TableColumnsType } from 'antd'
+import EntityDetailModal from '../EntityDetailModal/EntityDetailModal'
 import './ConfigEditorStreamGrid.scss'
 
 export interface ConfigDefinitionRequest {
@@ -25,6 +26,7 @@ export interface ConfigEditorStreamGridProps {
   hasFilterBuilder?: boolean
   isDeleteAvailable?: boolean
   onLoadData?: (request: ConfigDefinitionRequest) => Promise<StreamGridData>
+  onFetchDefinition?: (definitionId: string) => Promise<any>
   onClose?: () => void
   className?: string
 }
@@ -32,6 +34,8 @@ export interface ConfigEditorStreamGridProps {
 export interface ConfigEditorStreamGridRef {
   dialogVisible: boolean
   setDialogVisible: (visible: boolean) => void
+  definitionId: string | null
+  setDefinitionId: (id: string | null) => void
   configDefinitionRequest: ConfigDefinitionRequest
   onlyUniq: boolean
   loadPage: () => Promise<void>
@@ -46,10 +50,12 @@ export const ConfigEditorStreamGrid = forwardRef<ConfigEditorStreamGridRef, Conf
   hasFilterBuilder = false,
   isDeleteAvailable = false,
   onLoadData,
+  onFetchDefinition,
   onClose,
   className = ''
 }, ref) => {
   const [dialogVisible, setDialogVisible] = useState(false)
+  const [definitionId, setDefinitionId] = useState<string | null>(null)
   const [configDefinitionRequest, setConfigDefinitionRequest] = useState<ConfigDefinitionRequest>({})
   const [onlyUniq, setOnlyUniq] = useState(false)
   const [lastRequest, setLastRequest] = useState<StreamGridData>({})
@@ -57,6 +63,8 @@ export const ConfigEditorStreamGrid = forwardRef<ConfigEditorStreamGridRef, Conf
   const [pageSize, setPageSize] = useState(100)
   const [isLoading, setIsLoading] = useState(false)
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
+  const [selectedRow, setSelectedRow] = useState<any>(null)
+  const [entityDetailVisible, setEntityDetailVisible] = useState(false)
 
   const columns: TableColumnsType<any> = useMemo(() => {
     if (lastRequest?.rows && lastRequest.rows.length > 0 && configDefinitionRequest.sdDef?.columns) {
@@ -77,12 +85,17 @@ export const ConfigEditorStreamGrid = forwardRef<ConfigEditorStreamGridRef, Conf
   }, [lastRequest, configDefinitionRequest])
 
   const tableData = useMemo(() => {
+    console.log('ConfigEditorStreamGrid: Computing tableData from lastRequest:', lastRequest)
     if (lastRequest?.rows && lastRequest.rows.length > 0) {
-      return lastRequest.rows.map((row, index) => ({
+      console.log('ConfigEditorStreamGrid: First row:', lastRequest.rows[0])
+      const data = lastRequest.rows.map((row, index) => ({
         key: index,
         ...row.columnsValues
       }))
+      console.log('ConfigEditorStreamGrid: Computed tableData:', data)
+      return data
     }
+    console.log('ConfigEditorStreamGrid: No rows in lastRequest')
     return []
   }, [lastRequest])
 
@@ -95,9 +108,24 @@ export const ConfigEditorStreamGrid = forwardRef<ConfigEditorStreamGridRef, Conf
         length: pageSize,
         pointTime: reset ? Date.now() : (lastRequest.pointTime || null)
       }
-      
+
+      console.log('ConfigEditorStreamGrid: Loading page with request:', request)
+
       if (onLoadData) {
         const data = await onLoadData(request)
+        console.log('ConfigEditorStreamGrid: Received data:', data)
+        console.log('ConfigEditorStreamGrid: sdDef from response:', data.sdDef)
+
+        // If the response includes sdDef, use it to update configDefinitionRequest
+        if (data.sdDef) {
+          const updatedRequest = {
+            ...request,
+            sdDef: data.sdDef,
+          }
+          console.log('ConfigEditorStreamGrid: Updated request with sdDef:', updatedRequest)
+          setConfigDefinitionRequest(updatedRequest)
+        }
+
         setLastRequest(data)
       }
     } catch (error) {
@@ -107,9 +135,66 @@ export const ConfigEditorStreamGrid = forwardRef<ConfigEditorStreamGridRef, Conf
     }
   }, [configDefinitionRequest, page, pageSize, lastRequest, onLoadData])
 
+  // Auto-load data when dialog opens (similar to Vue's watch)
+  React.useEffect(() => {
+    const fetchAndLoadData = async () => {
+      if (dialogVisible && definitionId) {
+        console.log('ConfigEditorStreamGrid: Dialog opened with definitionId:', definitionId)
+
+        // Reset state
+        setPage(0)
+        setLastRequest({})
+
+        // Fetch the stream definition
+        if (onFetchDefinition) {
+          try {
+            const definition = await onFetchDefinition(definitionId)
+            console.log('ConfigEditorStreamGrid: Fetched definition:', definition)
+
+            // Set the config definition request
+            const request: ConfigDefinitionRequest = {
+              '@bean': 'com.cyoda.core.streamdata.StreamDataRequest',
+              sdDef: definition.streamDataDef || definition,
+              pointTime: Date.now(),
+              offset: 0,
+              length: pageSize,
+            }
+
+            console.log('ConfigEditorStreamGrid: Setting configDefinitionRequest:', request)
+            setConfigDefinitionRequest(request)
+
+            // Load the first page with the request directly
+            if (onLoadData) {
+              setIsLoading(true)
+              try {
+                const data = await onLoadData(request)
+                console.log('ConfigEditorStreamGrid: Received data:', data)
+                setLastRequest(data)
+              } catch (error) {
+                console.error('ConfigEditorStreamGrid: Failed to load data:', error)
+              } finally {
+                setIsLoading(false)
+              }
+            }
+          } catch (error) {
+            console.error('ConfigEditorStreamGrid: Failed to fetch definition:', error)
+          }
+        }
+      }
+
+      if (!dialogVisible && onClose) {
+        onClose()
+      }
+    }
+
+    fetchAndLoadData()
+  }, [dialogVisible, definitionId])
+
   useImperativeHandle(ref, () => ({
     dialogVisible,
     setDialogVisible,
+    definitionId,
+    setDefinitionId,
     configDefinitionRequest,
     onlyUniq,
     loadPage
@@ -142,6 +227,19 @@ export const ConfigEditorStreamGrid = forwardRef<ConfigEditorStreamGridRef, Conf
     onChange: (newSelectedRowKeys: React.Key[]) => {
       setSelectedRowKeys(newSelectedRowKeys)
     }
+  }
+
+  const handleRowDoubleClick = (record: any) => {
+    console.log('Row double clicked:', record)
+    if (record && record.id) {
+      setSelectedRow(record)
+      setEntityDetailVisible(true)
+    }
+  }
+
+  const handleEntityDetailClose = () => {
+    setEntityDetailVisible(false)
+    setSelectedRow(null)
   }
 
   const isDisableNextPage = tableData.length < pageSize
@@ -210,12 +308,18 @@ export const ConfigEditorStreamGrid = forwardRef<ConfigEditorStreamGridRef, Conf
           pagination={false}
           scroll={{ y: 400 }}
           onRow={(record) => ({
-            onDoubleClick: () => {
-              console.log('Row double clicked:', record)
-            }
+            onDoubleClick: () => handleRowDoubleClick(record)
           })}
         />
       </div>
+
+      {/* Entity Detail Modal */}
+      <EntityDetailModal
+        visible={entityDetailVisible}
+        selectedRow={selectedRow}
+        configDefinition={configDefinitionRequest.sdDef || {}}
+        onClose={handleEntityDetailClose}
+      />
     </Modal>
   )
 })

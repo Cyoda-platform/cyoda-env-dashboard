@@ -13,7 +13,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import moment from 'moment';
 import ConfigEditorReportsFilter from '../components/ConfigEditorReportsFilter';
-import CreateReportDialog from '../components/CreateReportDialog';
+import CreateReportDialog, { CreateReportDialogRef } from '../components/CreateReportDialog';
 import { ConfigEditorStreamGrid } from '@cyoda/ui-lib-react';
 import HelperReportDefinition from '../utils/HelperReportDefinition';
 import './StreamReports.scss';
@@ -57,15 +57,19 @@ const StreamReports: React.FC = () => {
     entities: [] as string[],
   });
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-  const createDialogRef = useRef<any>(null);
+  const createDialogRef = useRef<CreateReportDialogRef>(null);
   const streamGridRef = useRef<any>(null);
+
+  // Memoize hideFields to prevent unnecessary re-renders
+  const hideFields = useMemo(() => ({ description: false }), []);
 
   // Fetch stream report definitions
   const { data: definitions = [], isLoading } = useQuery({
     queryKey: ['streamReportDefinitions'],
     queryFn: async () => {
       const { data } = await axios.get('/platform-api/streamdata/definitions');
-      return data._embedded?.streamDataConfigDefs || [];
+      // Handle both plain array and _embedded format
+      return Array.isArray(data) ? data : (data._embedded?.streamDataConfigDefs || []);
     },
   });
 
@@ -169,40 +173,46 @@ const StreamReports: React.FC = () => {
   };
 
   const handleCreateNew = async (values: any) => {
-    const newDefinition = {
-      '@bean': 'com.cyoda.core.streamdata.StreamDataConfigDef',
-      name: values.name,
-      description: values.description || '',
-      streamDataDef: {
-        requestClass: values.requestClass,
-        rangeOrder: 'ASC',
-        rangeCondition: {
-          '@bean': '',
-          fieldName: '',
-          operation: '',
-          value: {
-            '@type': '',
-            value: '',
+    try {
+      const newDefinition = {
+        '@bean': 'com.cyoda.core.streamdata.StreamDataConfigDef',
+        name: values.name,
+        description: values.description || '',
+        streamDataDef: {
+          requestClass: values.requestClass,
+          rangeOrder: 'ASC',
+          rangeCondition: {
+            '@bean': '',
+            fieldName: '',
+            operation: '',
+            value: {
+              '@type': '',
+              value: '',
+            },
           },
+          condition: {
+            '@bean': 'com.cyoda.core.conditions.GroupCondition',
+            operator: 'OR',
+            conditions: [],
+          },
+          columns: [],
+          colDefs: [],
+          aliasDefs: [],
         },
-        condition: {
-          '@bean': 'com.cyoda.core.conditions.GroupCondition',
-          operator: 'OR',
-          conditions: [],
-        },
-        columns: [],
-        colDefs: [],
-        aliasDefs: [],
-      },
-    };
+      };
 
-    const { data } = await axios.post('/platform-api/streamdata/definitions', newDefinition);
-    message.success('Stream report created successfully');
-    queryClient.invalidateQueries({ queryKey: ['streamReportDefinitions'] });
+      const { data } = await axios.post('/platform-api/streamdata/definitions', newDefinition);
+      message.success('Stream report created successfully');
+      queryClient.invalidateQueries({ queryKey: ['streamReportDefinitions'] });
 
-    // Navigate to editor
-    if (data.id) {
-      navigate(`/tableau/stream-report-editor/${data.id}?isNew=true`);
+      // Navigate to editor
+      if (data.id) {
+        navigate(`/tableau/stream-report-editor/${data.id}?isNew=true`);
+      }
+    } catch (error) {
+      console.error('Failed to create stream report:', error);
+      message.error('Failed to create stream report');
+      throw error;
     }
   };
 
@@ -289,7 +299,11 @@ const StreamReports: React.FC = () => {
           <Button
             type="primary"
             icon={<PlusOutlined />}
-            onClick={() => createDialogRef.current?.open()}
+            onClick={() => {
+              console.log('Create New button clicked');
+              console.log('createDialogRef.current:', createDialogRef.current);
+              createDialogRef.current?.open();
+            }}
           >
             Create New
           </Button>
@@ -335,7 +349,7 @@ const StreamReports: React.FC = () => {
         ref={createDialogRef}
         onConfirm={handleCreateNew}
         title="Create New Stream Data Report Definition"
-        hideFields={{ description: false }}
+        hideFields={hideFields}
       />
 
       <ConfigEditorStreamGrid

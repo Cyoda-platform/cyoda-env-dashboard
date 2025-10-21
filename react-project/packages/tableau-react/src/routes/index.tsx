@@ -5,7 +5,6 @@
 
 import { RouteObject } from 'react-router-dom';
 import Reports from '@/pages/Reports';
-import ReportConfigs from '@/pages/ReportConfigs';
 import ReportEditor from '@/pages/ReportEditor';
 import ReportConfigsStream from '@/pages/ReportConfigsStream';
 import ReportEditorStream from '@/pages/ReportEditorStream';
@@ -28,15 +27,15 @@ export const routes: RouteObject[] = [
   },
   {
     path: '/tableau/reports',
-    element: <Reports />, // Main Reports page with tabs (Report Config + Reports)
+    element: <Reports />, // Main Reports page with tabs (Report Config + Reports History)
+  },
+  {
+    path: '/tableau/reports/stream',
+    element: <ReportConfigsStream />, // Stream Reports page (separate from Reports)
   },
   {
     path: '/tableau/report-editor/:id',
     element: <ReportEditor />,
-  },
-  {
-    path: '/tableau/reports/stream',
-    element: <ReportConfigsStream />,
   },
   {
     path: '/tableau/reports/stream/:id',

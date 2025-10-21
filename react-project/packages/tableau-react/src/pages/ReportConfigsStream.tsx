@@ -7,7 +7,7 @@
 
 import React, { useState, useMemo, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Table, Button, Tooltip, Divider, Modal, message, Space } from 'antd';
+import { Table, Button, Tooltip, Divider, Modal, message, Space, Upload } from 'antd';
 import {
   PlusOutlined,
   ReloadOutlined,
@@ -16,6 +16,9 @@ import {
   DeleteOutlined,
   StopOutlined,
   ClockCircleOutlined,
+  UploadOutlined,
+  DownloadOutlined,
+  UndoOutlined,
 } from '@ant-design/icons';
 import type { TableColumnsType } from 'antd';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -61,17 +64,15 @@ export const ReportConfigsStream: React.FC = () => {
 
   const [createDialogVisible, setCreateDialogVisible] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-  const [filterForm, setFilterForm] = useState<HistoryFilterForm>({
-    status: [],
-    authors: [],
-    times: [],
-    entities: [],
-    time_custom: '',
-    search: '',
-  });
+  const [selectedRows, setSelectedRows] = useState<TableRow[]>([]);
+  const [filterForm, setFilterForm] = useState<HistoryFilterForm>(
+    HelperReportDefinition.reportHistoryDefaultFilter()
+  );
   const [showTemplates, setShowTemplates] = useState(false);
   const [showScheduling, setShowScheduling] = useState(false);
   const [selectedReportId, setSelectedReportId] = useState<string | undefined>();
+  const [exportLoading, setExportLoading] = useState(false);
+  const [importLoading, setImportLoading] = useState(false);
 
   const streamGridRef = useRef<ConfigEditorStreamGridRef>(null);
 
@@ -190,9 +191,17 @@ export const ReportConfigsStream: React.FC = () => {
         configDefinition
       );
 
+      console.log('Created stream report, response:', data);
+      const reportId = typeof data === 'string' ? data : data.id;
+      console.log('Navigating to stream report editor with ID:', reportId);
+
       message.success('Stream report created successfully');
       setCreateDialogVisible(false);
-      navigate(`/tableau/reports/stream/${data}?isNew=true`);
+
+      // Invalidate the query to refresh the list
+      queryClient.invalidateQueries({ queryKey: ['streamReportDefinitions'] });
+
+      navigate(`/tableau/reports/stream/${reportId}?isNew=true`);
     } catch (error) {
       message.error('Failed to create stream report');
     }
@@ -203,8 +212,46 @@ export const ReportConfigsStream: React.FC = () => {
   };
 
   const handleRun = async (record: TableRow) => {
-    streamGridRef.current?.open();
-    // TODO: Load stream data for this report
+    if (streamGridRef.current) {
+      // Set the definition ID and open the dialog
+      streamGridRef.current.setDefinitionId(record.id);
+      streamGridRef.current.setDialogVisible(true);
+    }
+  };
+
+  // Fetch stream definition
+  const handleFetchDefinition = async (definitionId: string) => {
+    try {
+      console.log('Fetching stream definition:', definitionId);
+      const { data: definition } = await axios.get(
+        `${API_BASE}/platform-api/streamdata/definitions/${definitionId}`
+      );
+      console.log('Fetched stream definition:', definition);
+      return definition;
+    } catch (error) {
+      console.error('Failed to fetch stream definition:', error);
+      message.error('Failed to fetch stream definition');
+      throw error;
+    }
+  };
+
+  // Load stream data for the grid
+  const handleLoadStreamData = async (request: any) => {
+    try {
+      console.log('Loading stream data with request:', request);
+
+      const { data: streamData } = await axios.post(
+        `${API_BASE}/platform-api/streamdata/fetch`,
+        request
+      );
+
+      console.log('Stream data response:', streamData);
+      return streamData;
+    } catch (error) {
+      console.error('Failed to load stream data:', error);
+      message.error('Failed to load stream data');
+      return { rows: [] };
+    }
   };
 
   const handleDelete = (record: TableRow) => {
@@ -218,15 +265,111 @@ export const ReportConfigsStream: React.FC = () => {
   };
 
   const handleResetState = () => {
-    setFilterForm({
-      status: [],
-      authors: [],
-      times: [],
-      entities: [],
-      time_custom: '',
-      search: '',
-    });
-    storage.deleteByKey('tableSaveState:configEditorReportsStream:table');
+    setFilterForm(HelperReportDefinition.reportHistoryDefaultFilter());
+    storage.remove('tableSaveState:configEditorReportsStream:table');
+    storage.remove('historyReports:filterForm');
+    message.success('State reset successfully');
+  };
+
+  const handleExport = async () => {
+    if (selectedRows.length === 0) {
+      message.warning('Please select at least one report to export');
+      return;
+    }
+
+    try {
+      setExportLoading(true);
+      const ids = selectedRows.map((row) => row.id);
+
+      // Fetch all selected definitions
+      const definitions = await Promise.all(
+        ids.map(async (id) => {
+          const { data } = await axios.get(
+            `${API_BASE}/platform-api/reporting/stream-definitions/${id}`
+          );
+          return data;
+        })
+      );
+
+      // Create export data
+      const exportData = {
+        data: {
+          value: definitions,
+        },
+        type: 'reportsStream',
+        exportDate: new Date().toISOString(),
+      };
+
+      // Download as JSON file
+      const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+        type: 'application/json',
+      });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      const filename = `export_stream_reports_${ids.join('-')}.json`;
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+
+      message.success('Reports exported successfully');
+    } catch (error) {
+      console.error('Export failed:', error);
+      message.error('Failed to export reports');
+    } finally {
+      setExportLoading(false);
+    }
+  };
+
+  const handleImport = async (file: File) => {
+    try {
+      setImportLoading(true);
+      const text = await file.text();
+      const importData = JSON.parse(text);
+
+      if (!importData.data?.value || !Array.isArray(importData.data.value)) {
+        message.error('Invalid import file format');
+        return false;
+      }
+
+      // Import each definition
+      let successCount = 0;
+      let failCount = 0;
+
+      for (const definition of importData.data.value) {
+        try {
+          // Remove id to create new definitions
+          const { id, ...defWithoutId } = definition;
+          await axios.post(
+            `${API_BASE}/platform-api/reporting/stream-definitions`,
+            defWithoutId
+          );
+          successCount++;
+        } catch (error) {
+          console.error('Failed to import definition:', definition.name, error);
+          failCount++;
+        }
+      }
+
+      if (successCount > 0) {
+        message.success(`Successfully imported ${successCount} report(s)`);
+        refetch();
+      }
+
+      if (failCount > 0) {
+        message.warning(`Failed to import ${failCount} report(s)`);
+      }
+
+      return false; // Prevent default upload behavior
+    } catch (error) {
+      console.error('Import failed:', error);
+      message.error('Failed to import reports');
+      return false;
+    } finally {
+      setImportLoading(false);
+    }
   };
 
   const columns: TableColumnsType<TableRow> = [
@@ -309,8 +452,9 @@ export const ReportConfigsStream: React.FC = () => {
 
   const rowSelection = {
     selectedRowKeys,
-    onChange: (newSelectedRowKeys: React.Key[]) => {
+    onChange: (newSelectedRowKeys: React.Key[], selectedRows: TableRow[]) => {
       setSelectedRowKeys(newSelectedRowKeys);
+      setSelectedRows(selectedRows);
     },
   };
 
@@ -322,12 +466,38 @@ export const ReportConfigsStream: React.FC = () => {
             Create New
           </Button>
 
-          <Button type="default" onClick={() => setShowTemplates(true)}>
-            Create from Template
-          </Button>
+          <Tooltip title="Export selected reports">
+            <Button
+              type="primary"
+              icon={<UploadOutlined />}
+              onClick={handleExport}
+              loading={exportLoading}
+              disabled={selectedRows.length === 0}
+            >
+              Export
+            </Button>
+          </Tooltip>
+
+          <Tooltip title="Import previously exported reports">
+            <Upload
+              accept=".json"
+              showUploadList={false}
+              beforeUpload={handleImport}
+            >
+              <Button
+                type="default"
+                icon={<DownloadOutlined />}
+                loading={importLoading}
+              >
+                Import
+              </Button>
+            </Upload>
+          </Tooltip>
+
+          <Divider type="vertical" />
 
           <Tooltip title="Reset state: filters, table settings, etc.">
-            <Button icon={<ReloadOutlined />} onClick={handleResetState}>
+            <Button icon={<UndoOutlined />} onClick={handleResetState}>
               Reset state
             </Button>
           </Tooltip>
@@ -363,7 +533,7 @@ export const ReportConfigsStream: React.FC = () => {
         onCancel={() => setCreateDialogVisible(false)}
         onCreate={handleCreateReport}
         title="Create New Stream Data Report Definition"
-        hideFields={{ description: true, valuationPointTime: false }}
+        hideFields={{ description: true }}
       />
 
       {/* Report Templates Modal */}
@@ -391,7 +561,12 @@ export const ReportConfigsStream: React.FC = () => {
         }}
       />
 
-      <ConfigEditorStreamGrid ref={streamGridRef} isDeleteAvailable={true} />
+      <ConfigEditorStreamGrid
+        ref={streamGridRef}
+        isDeleteAvailable={true}
+        onFetchDefinition={handleFetchDefinition}
+        onLoadData={handleLoadStreamData}
+      />
     </div>
   );
 };

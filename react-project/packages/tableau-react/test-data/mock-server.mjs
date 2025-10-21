@@ -100,11 +100,13 @@ app.get('/platform-api/entity-info/fetch/types', (req, res) => {
 
 // Get reporting types (for CreateReportDialog)
 app.get('/platform-api/reporting/types/fetch', (req, res) => {
+  console.log('📋 GET /platform-api/reporting/types/fetch', req.query);
   const types = Object.keys(entityStore).map(entityClass => ({
     name: entityClass,
     label: entityClass.split('.').pop(), // Use last part as label
     type: 'BUSINESS', // Default to BUSINESS type
   }));
+  console.log(`📋 Returning ${types.length} entity types`);
   res.json(types);
 });
 
@@ -333,25 +335,55 @@ if (!global.reportDefinitions) {
   };
 }
 
-// Get all stream report definitions
+// Get all stream report definitions (multiple endpoint paths for compatibility)
 app.get('/platform-api/reporting/stream-definitions', (req, res) => {
+  console.log('📋 GET /platform-api/reporting/stream-definitions');
+  console.log(`📋 Returning ${streamDefinitions.length} stream definitions`);
   res.json(streamDefinitions);
 });
 
-// Get single stream report definition
+app.get('/platform-api/streamdata/definitions', (req, res) => {
+  console.log('📋 GET /platform-api/streamdata/definitions');
+  console.log(`📋 Returning ${streamDefinitions.length} stream definitions`);
+  res.json(streamDefinitions);
+});
+
+app.get('/platform-api/stream-data/config/list', (req, res) => {
+  console.log('📋 GET /platform-api/stream-data/config/list');
+  console.log(`📋 Returning ${streamDefinitions.length} stream definitions`);
+  res.json(streamDefinitions);
+});
+
+// Get single stream report definition (multiple endpoint paths)
 app.get('/platform-api/reporting/stream-definitions/:id', (req, res) => {
+  console.log(`📋 GET /platform-api/reporting/stream-definitions/${req.params.id}`);
   const { id } = req.params;
   const definition = streamDefinitions.find(d => d.id === id);
 
   if (definition) {
+    console.log(`📋 Returning stream definition: ${id}`);
     res.json(definition);
   } else {
     res.status(404).json({ error: 'Stream report definition not found' });
   }
 });
 
-// Create stream report definition
+app.get('/platform-api/streamdata/definitions/:id', (req, res) => {
+  console.log(`📋 GET /platform-api/streamdata/definitions/${req.params.id}`);
+  const { id } = req.params;
+  const definition = streamDefinitions.find(d => d.id === id);
+
+  if (definition) {
+    console.log(`📋 Returning stream definition: ${id}`);
+    res.json(definition);
+  } else {
+    res.status(404).json({ error: 'Stream report definition not found' });
+  }
+});
+
+// Create stream report definition (multiple endpoint paths)
 app.post('/platform-api/reporting/stream-definitions', (req, res) => {
+  console.log('📋 POST /platform-api/reporting/stream-definitions', req.body);
   const definition = req.body;
   const id = `STREAM-${Date.now()}`;
 
@@ -365,11 +397,51 @@ app.post('/platform-api/reporting/stream-definitions', (req, res) => {
   };
 
   streamDefinitions.push(newDefinition);
+  console.log(`📋 Created stream definition with ID: ${id}`);
+  res.json({ id });
+});
+
+app.post('/platform-api/streamdata/definitions', (req, res) => {
+  console.log('📋 POST /platform-api/streamdata/definitions', req.body);
+  const definition = req.body;
+  const id = `STREAM-${Date.now()}`;
+
+  const newDefinition = {
+    id,
+    name: definition.name,
+    description: definition.description || '',
+    owner: 'admin',
+    createDate: new Date().toISOString(),
+    streamDataDef: definition.streamDataDef || definition,
+  };
+
+  streamDefinitions.push(newDefinition);
+  console.log(`📋 Created stream definition with ID: ${id}`);
+  res.json({ id });
+});
+
+app.post('/platform-api/stream-data/config', (req, res) => {
+  console.log('📋 POST /platform-api/stream-data/config', req.body);
+  const definition = req.body;
+  const id = `STREAM-${Date.now()}`;
+
+  const newDefinition = {
+    id,
+    name: definition.name,
+    description: definition.description || '',
+    owner: 'admin',
+    createDate: new Date().toISOString(),
+    streamDataDef: definition.streamDataDef || definition,
+  };
+
+  streamDefinitions.push(newDefinition);
+  console.log(`📋 Created stream definition with ID: ${id}`);
   res.json(id);
 });
 
-// Update stream report definition
+// Update stream report definition (multiple endpoint paths)
 app.put('/platform-api/reporting/stream-definitions/:id', (req, res) => {
+  console.log(`📋 PUT /platform-api/reporting/stream-definitions/${req.params.id}`);
   const { id } = req.params;
   const definition = req.body;
 
@@ -380,19 +452,55 @@ app.put('/platform-api/reporting/stream-definitions/:id', (req, res) => {
       ...definition,
       streamDataDef: definition.streamDataDef || definition,
     };
+    console.log(`📋 Updated stream definition: ${id}`);
     res.json({ success: true });
   } else {
     res.status(404).json({ error: 'Stream report definition not found' });
   }
 });
 
-// Delete stream report definition
+app.put('/platform-api/streamdata/definitions/:id', (req, res) => {
+  console.log(`📋 PUT /platform-api/streamdata/definitions/${req.params.id}`);
+  const { id } = req.params;
+  const definition = req.body;
+
+  const index = streamDefinitions.findIndex(d => d.id === id);
+  if (index !== -1) {
+    streamDefinitions[index] = {
+      ...streamDefinitions[index],
+      ...definition,
+      streamDataDef: definition.streamDataDef || definition,
+    };
+    console.log(`📋 Updated stream definition: ${id}`);
+    res.json({ success: true });
+  } else {
+    res.status(404).json({ error: 'Stream report definition not found' });
+  }
+});
+
+// Delete stream report definition (multiple endpoint paths)
 app.delete('/platform-api/reporting/stream-definitions/:id', (req, res) => {
+  console.log(`📋 DELETE /platform-api/reporting/stream-definitions/${req.params.id}`);
   const { id } = req.params;
   const index = streamDefinitions.findIndex(d => d.id === id);
 
   if (index !== -1) {
     streamDefinitions.splice(index, 1);
+    console.log(`📋 Deleted stream definition: ${id}`);
+    res.json({ success: true });
+  } else {
+    res.status(404).json({ error: 'Stream report definition not found' });
+  }
+});
+
+app.delete('/platform-api/streamdata/definitions/:id', (req, res) => {
+  console.log(`📋 DELETE /platform-api/streamdata/definitions/${req.params.id}`);
+  const { id } = req.params;
+  const index = streamDefinitions.findIndex(d => d.id === id);
+
+  if (index !== -1) {
+    streamDefinitions.splice(index, 1);
+    console.log(`📋 Deleted stream definition: ${id}`);
     res.json({ success: true });
   } else {
     res.status(404).json({ error: 'Stream report definition not found' });
@@ -401,6 +509,7 @@ app.delete('/platform-api/reporting/stream-definitions/:id', (req, res) => {
 
 // Get stream data (execute stream report)
 app.post('/platform-api/reporting/stream-data', (req, res) => {
+  console.log('📋 POST /platform-api/reporting/stream-data');
   const request = req.body;
 
   // Mock stream data response
@@ -426,6 +535,47 @@ app.post('/platform-api/reporting/stream-data', (req, res) => {
     pointTime: Date.now(),
   };
 
+  console.log(`📋 Returning ${mockStreamData.rows.length} stream data rows`);
+  res.json(mockStreamData);
+});
+
+// Fetch stream data (alternative endpoint)
+app.post('/platform-api/streamdata/fetch', (req, res) => {
+  console.log('📋 POST /platform-api/streamdata/fetch');
+  const request = req.body;
+  console.log('📋 Stream data request:', JSON.stringify(request, null, 2));
+
+  // Generate mock data based on the columns in the request
+  const columns = request.sdDef?.columns || [];
+  const length = request.length || 100;
+
+  const rows = [];
+  for (let i = 0; i < Math.min(length, 50); i++) {
+    const columnsValues = {};
+    columns.forEach(col => {
+      const colName = col.name || col.alias || 'unknown';
+      // Generate mock data based on column type
+      if (colName.includes('id') || colName.includes('Id')) {
+        columnsValues[colName] = `ID-${i + 1}`;
+      } else if (colName.includes('name') || colName.includes('Name')) {
+        columnsValues[colName] = `Item ${i + 1}`;
+      } else if (colName.includes('date') || colName.includes('Date') || colName.includes('time') || colName.includes('Time')) {
+        columnsValues[colName] = new Date(Date.now() - i * 86400000).toISOString();
+      } else if (colName.includes('price') || colName.includes('Price') || colName.includes('amount') || colName.includes('Amount')) {
+        columnsValues[colName] = (Math.random() * 1000).toFixed(2);
+      } else {
+        columnsValues[colName] = `Value ${i + 1}`;
+      }
+    });
+    rows.push({ columnsValues });
+  }
+
+  const mockStreamData = {
+    rows,
+    pointTime: request.pointTime || Date.now(),
+  };
+
+  console.log(`📋 Returning ${mockStreamData.rows.length} stream data rows`);
   res.json(mockStreamData);
 });
 

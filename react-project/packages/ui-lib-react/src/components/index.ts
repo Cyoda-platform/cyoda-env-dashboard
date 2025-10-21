@@ -113,6 +113,9 @@ export * from './ConsistencyDialog'
 // Config Editor
 export * from './ConfigEditorStreamGrid'
 
+// Entity Detail
+export * from './EntityDetailModal'
+
 // Templates
 export * from './BaseLayout'
 export * from './LoginLayout'

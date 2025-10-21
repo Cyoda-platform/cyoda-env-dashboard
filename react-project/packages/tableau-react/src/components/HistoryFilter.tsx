@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { Form, Select, DatePicker, Row, Col } from 'antd';
+import { Form, Select, DatePicker, Row, Col, Input } from 'antd';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import dayjs, { Dayjs } from 'dayjs';
@@ -13,16 +13,11 @@ import HelperReportDefinition from '../utils/HelperReportDefinition';
 import { HelperStorage } from '@cyoda/ui-lib-react';
 import './HistoryFilter.scss';
 
-const { Option } = Select;
-
 interface HistoryFilterProps {
   value?: HistoryFilterForm;
   onChange?: (filter: HistoryFilterForm) => void;
-}
-
-interface ReportType {
-  value: string;
-  label: string;
+  usersOptions?: { value: string; label: string }[];
+  entityOptions?: { value: string; label: string }[];
 }
 
 interface GridConfigFieldsView {
@@ -39,7 +34,12 @@ interface GridConfigFieldsView {
   };
 }
 
-const HistoryFilter: React.FC<HistoryFilterProps> = ({ value, onChange }) => {
+const HistoryFilter: React.FC<HistoryFilterProps> = ({
+  value,
+  onChange,
+  usersOptions: propUsersOptions,
+  entityOptions: propEntityOptions,
+}) => {
   const storage = useMemo(() => new HelperStorage(), []);
   const [form] = Form.useForm();
 
@@ -89,22 +89,31 @@ const HistoryFilter: React.FC<HistoryFilterProps> = ({ value, onChange }) => {
     },
   });
 
-  // Extract unique users from definitions
+  // Extract unique users from definitions (only if not provided via props)
   const usersOptions = useMemo(() => {
+    if (propUsersOptions && propUsersOptions.length > 0) {
+      return propUsersOptions;
+    }
+
     const users = definitions
       .filter((report) => report.gridConfigFields.user)
       .map((report) => ({
         value: report.gridConfigFields.user!.username,
         label: report.gridConfigFields.user!.username,
       }));
-    
+
     // Remove duplicates
     const uniqueUsers = Array.from(
       new Map(users.map((user) => [user.value, user])).values()
     );
-    
+
     return uniqueUsers;
-  }, [definitions]);
+  }, [definitions, propUsersOptions]);
+
+  // Entity options (use props if provided, otherwise empty)
+  const entityOptions = useMemo(() => {
+    return propEntityOptions || [];
+  }, [propEntityOptions]);
 
   // State options
   const stateOptions = useMemo(() => {
@@ -145,7 +154,9 @@ const HistoryFilter: React.FC<HistoryFilterProps> = ({ value, onChange }) => {
       authors: allValues.authors || [],
       states: allValues.states || [],
       types: allValues.types || [],
+      entities: allValues.entities || [],
       time_custom: allValues.time_custom ? allValues.time_custom.toDate() : null,
+      search: allValues.search || '',
       entityType: allValues.entityType || 'BUSINESS',
     };
 
@@ -160,10 +171,12 @@ const HistoryFilter: React.FC<HistoryFilterProps> = ({ value, onChange }) => {
       authors: filterForm.authors,
       states: filterForm.states,
       types: filterForm.types,
+      entities: filterForm.entities,
       time_custom: filterForm.time_custom ? dayjs(filterForm.time_custom) : null,
+      search: filterForm.search,
       entityType: filterForm.entityType,
     });
-    
+
     // Emit initial value
     onChange?.(filterForm);
   }, []);
@@ -236,6 +249,30 @@ const HistoryFilter: React.FC<HistoryFilterProps> = ({ value, onChange }) => {
                   value: shortcut.value(),
                 }))}
                 style={{ width: '100%' }}
+              />
+            </Form.Item>
+          </Col>
+          {entityOptions.length > 0 && (
+            <Col span={24}>
+              <Form.Item label="Entity:" name="entities">
+                <Select
+                  mode="multiple"
+                  allowClear
+                  showSearch
+                  placeholder="Select entity types"
+                  filterOption={(input, option) =>
+                    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                  }
+                  options={entityOptions}
+                />
+              </Form.Item>
+            </Col>
+          )}
+          <Col span={24}>
+            <Form.Item label="Search:" name="search">
+              <Input
+                placeholder="Search Report name and description here..."
+                allowClear
               />
             </Form.Item>
           </Col>

@@ -1,0 +1,33 @@
+.config-editor-reports-filter {
+  padding: 20px;
+  background: #fff;
+  border-radius: 4px;
+  margin-bottom: 20px;
+
+  h2 {
+    margin-bottom: 20px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+  }
+
+  .ant-form-item {
+    margin-bottom: 16px;
+  }
+
+  .ant-form-item-label {
+    padding-bottom: 4px;
+
+    > label {
+      font-weight: 500;
+      color: #666;
+    }
+  }
+
+  .ant-select,
+  .ant-input,
+  .ant-picker {
+    width: 100%;
+  }
+}
+

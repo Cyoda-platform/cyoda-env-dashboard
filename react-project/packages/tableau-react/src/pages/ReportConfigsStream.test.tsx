@@ -1,0 +1,326 @@
+/**
+ * Tests for ReportConfigsStream Page
+ * Tests for Stream Reports list page with Export/Import functionality
+ */
+
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { screen, waitFor, fireEvent } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { renderWithProviders, createTestQueryClient } from '../test/test-utils';
+import ReportConfigsStream from './ReportConfigsStream';
+import axios from 'axios';
+
+// Mock axios
+vi.mock('axios');
+const mockedAxios = vi.mocked(axios);
+
+// Mock the ConfigEditorStreamGrid component
+vi.mock('@cyoda/ui-lib-react', async () => {
+  const actual = await vi.importActual('@cyoda/ui-lib-react');
+  return {
+    ...actual,
+    ConfigEditorStreamGrid: vi.fn().mockImplementation(
+      ({ onFetchDefinition, onLoadData }, ref) => {
+        // Expose methods via ref
+        if (ref) {
+          ref.current = {
+            open: vi.fn((id: string) => {
+              console.log('ConfigEditorStreamGrid.open called with:', id);
+            }),
+          };
+        }
+        return <div data-testid="config-editor-stream-grid">Stream Grid Mock</div>;
+      }
+    ),
+  };
+});
+
+// Mock CreateReportDialog
+vi.mock('../components/CreateReportDialog', () => ({
+  default: ({ visible, onCancel, onCreate }: any) =>
+    visible ? (
+      <div data-testid="create-report-dialog">
+        <button onClick={() => onCreate({ name: 'Test Stream', entityClass: 'TestEntity' })}>
+          Create
+        </button>
+        <button onClick={onCancel}>Cancel</button>
+      </div>
+    ) : null,
+}));
+
+// Mock ReportTemplates
+vi.mock('../components/ReportTemplates', () => ({
+  default: ({ visible, onClose }: any) =>
+    visible ? (
+      <div data-testid="report-templates">
+        <button onClick={onClose}>Close</button>
+      </div>
+    ) : null,
+}));
+
+// Mock ReportScheduling
+vi.mock('../components/ReportScheduling', () => ({
+  default: ({ visible, onClose }: any) =>
+    visible ? (
+      <div data-testid="report-scheduling">
+        <button onClick={onClose}>Close</button>
+      </div>
+    ) : null,
+}));
+
+// Mock HistoryFilter
+vi.mock('../components/HistoryFilter', () => ({
+  default: ({ value, onChange }: any) => (
+    <div data-testid="history-filter">
+      <input
+        data-testid="filter-search"
+        value={value.search}
+        onChange={(e) => onChange({ ...value, search: e.target.value })}
+      />
+    </div>
+  ),
+}));
+
+// Mock useNavigate
+const mockNavigate = vi.fn();
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
+
+describe('ReportConfigsStream Page', () => {
+  const mockStreamReports = [
+    {
+      id: 'stream-1',
+      name: 'Test Stream Report 1',
+      description: 'Description 1',
+      entityClass: 'com.test.Entity1',
+      entityClassNameLabel: 'Entity1',
+      username: 'user1',
+      created: '2024-01-01T10:00:00Z',
+    },
+    {
+      id: 'stream-2',
+      name: 'Test Stream Report 2',
+      description: 'Description 2',
+      entityClass: 'com.test.Entity2',
+      entityClassNameLabel: 'Entity2',
+      username: 'user2',
+      created: '2024-01-02T10:00:00Z',
+    },
+  ];
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+
+    // Mock API responses
+    mockedAxios.get.mockImplementation((url: string) => {
+      if (url.includes('/platform-api/streamdata/definitions')) {
+        return Promise.resolve({ data: mockStreamReports });
+      }
+      if (url.includes('/platform-api/users')) {
+        return Promise.resolve({ data: ['user1', 'user2'] });
+      }
+      if (url.includes('/platform-api/entity/types')) {
+        return Promise.resolve({ data: ['com.test.Entity1', 'com.test.Entity2'] });
+      }
+      return Promise.reject(new Error('Not found'));
+    });
+
+    mockedAxios.post.mockImplementation((url: string, data: any) => {
+      if (url.includes('/platform-api/streamdata/definitions')) {
+        return Promise.resolve({
+          data: { id: 'new-stream-id', ...data },
+        });
+      }
+      if (url.includes('/platform-api/users/list')) {
+        return Promise.resolve({
+          data: [
+            { userId: 'user1', username: 'user1', firstName: 'User', lastName: '1' },
+            { userId: 'user2', username: 'user2', firstName: 'User', lastName: '2' },
+          ],
+        });
+      }
+      return Promise.reject(new Error('Not found'));
+    });
+
+    mockedAxios.delete.mockResolvedValue({ data: { success: true } });
+  });
+
+  afterEach(() => {
+    vi.clearAllTimers();
+  });
+
+  describe('Rendering', () => {
+    it('should render the page', async () => {
+      renderWithProviders(<ReportConfigsStream />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Create New')).toBeInTheDocument();
+      });
+    });
+
+    it('should render action buttons', async () => {
+      renderWithProviders(<ReportConfigsStream />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Create New')).toBeInTheDocument();
+        expect(screen.getByText('Export')).toBeInTheDocument();
+        expect(screen.getByText('Import')).toBeInTheDocument();
+        expect(screen.getByText('Reset state')).toBeInTheDocument();
+      });
+    });
+
+    it('should render history filter', async () => {
+      renderWithProviders(<ReportConfigsStream />);
+
+      await waitFor(() => {
+        expect(screen.getByTestId('history-filter')).toBeInTheDocument();
+      });
+    });
+
+    it('should render table with stream reports', async () => {
+      renderWithProviders(<ReportConfigsStream />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Test Stream Report 1')).toBeInTheDocument();
+        expect(screen.getByText('Test Stream Report 2')).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('Create New Stream Report', () => {
+    it('should open create dialog when clicking Create New', async () => {
+      const user = userEvent.setup();
+      renderWithProviders(<ReportConfigsStream />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Create New')).toBeInTheDocument();
+      });
+
+      await user.click(screen.getByText('Create New'));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('create-report-dialog')).toBeInTheDocument();
+      });
+    });
+
+    it('should create new stream report and navigate to editor', async () => {
+      const user = userEvent.setup();
+      renderWithProviders(<ReportConfigsStream />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Create New')).toBeInTheDocument();
+      });
+
+      await user.click(screen.getByText('Create New'));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('create-report-dialog')).toBeInTheDocument();
+      });
+
+      await user.click(screen.getByText('Create'));
+
+      await waitFor(() => {
+        expect(mockedAxios.post).toHaveBeenCalledWith(
+          expect.stringContaining('/platform-api/streamdata/definitions'),
+          expect.objectContaining({
+            name: 'Test Stream',
+            entityClass: 'TestEntity',
+          })
+        );
+        expect(mockNavigate).toHaveBeenCalledWith('/tableau/reports/stream/new-stream-id');
+      });
+    });
+  });
+
+  describe('Export Functionality', () => {
+    it('should disable export button when no rows selected', async () => {
+      renderWithProviders(<ReportConfigsStream />);
+
+      await waitFor(() => {
+        const exportButton = screen.getByText('Export').closest('button');
+        expect(exportButton).toBeDisabled();
+      });
+    });
+
+    it('should enable export button when rows are selected', async () => {
+      const user = userEvent.setup();
+      renderWithProviders(<ReportConfigsStream />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Test Stream Report 1')).toBeInTheDocument();
+      });
+
+      // Select a row by clicking checkbox
+      const checkboxes = screen.getAllByRole('checkbox');
+      await user.click(checkboxes[1]); // First checkbox is "select all"
+
+      await waitFor(() => {
+        const exportButton = screen.getByText('Export').closest('button');
+        expect(exportButton).not.toBeDisabled();
+      });
+    });
+  });
+
+  describe('Import Functionality', () => {
+    it('should render import button', async () => {
+      renderWithProviders(<ReportConfigsStream />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Import')).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('Delete Stream Report', () => {
+    it('should delete stream report when clicking delete button', async () => {
+      const user = userEvent.setup();
+      renderWithProviders(<ReportConfigsStream />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Test Stream Report 1')).toBeInTheDocument();
+      });
+
+      // Find and click delete button (trash icon)
+      const deleteButtons = screen.getAllByRole('button', { name: /delete/i });
+      if (deleteButtons.length > 0) {
+        await user.click(deleteButtons[0]);
+
+        await waitFor(() => {
+          expect(mockedAxios.delete).toHaveBeenCalledWith(
+            expect.stringContaining('/platform-api/streamdata/definitions/stream-1')
+          );
+        });
+      }
+    });
+  });
+
+  describe('Reset State', () => {
+    it('should reset filters when clicking reset state', async () => {
+      const user = userEvent.setup();
+      renderWithProviders(<ReportConfigsStream />);
+
+      await waitFor(() => {
+        expect(screen.getByTestId('filter-search')).toBeInTheDocument();
+      });
+
+      // Type in search filter
+      const searchInput = screen.getByTestId('filter-search');
+      await user.type(searchInput, 'test search');
+
+      expect(searchInput).toHaveValue('test search');
+
+      // Click reset state
+      await user.click(screen.getByText('Reset state'));
+
+      await waitFor(() => {
+        expect(searchInput).toHaveValue('');
+      });
+    });
+  });
+});
+

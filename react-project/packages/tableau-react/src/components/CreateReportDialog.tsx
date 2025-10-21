@@ -25,7 +25,10 @@ interface CreateReportDialogProps {
     description?: boolean;
     requestClass?: boolean;
   };
-  onConfirm: (formData: CreateReportFormData) => void | Promise<void>;
+  onConfirm?: (formData: CreateReportFormData) => void | Promise<void>;
+  onCreate?: (formData: CreateReportFormData) => void | Promise<void>;
+  visible?: boolean;
+  onCancel?: () => void;
 }
 
 export interface CreateReportFormData {
@@ -43,15 +46,36 @@ interface EntityOption {
 const ENTITY_TYPE_KEY = 'ConfigEditorNew:entityType';
 
 const CreateReportDialog = forwardRef<CreateReportDialogRef, CreateReportDialogProps>(
-  ({ title = 'Create New Report Definition', hideFields = {}, onConfirm }, ref) => {
+  ({
+    title = 'Create New Report Definition',
+    hideFields = {},
+    onConfirm,
+    onCreate,
+    visible: visibleProp,
+    onCancel
+  }, ref) => {
     const storage = useMemo(() => new HelperStorage(), []);
-    const [visible, setVisible] = useState(false);
+    const [visibleState, setVisibleState] = useState(false);
     const [loading, setLoading] = useState(false);
     const [currentStep, setCurrentStep] = useState(0);
     const [form] = Form.useForm();
     const [entityType, setEntityType] = useState<string>(
       storage.get(ENTITY_TYPE_KEY, 'BUSINESS') || 'BUSINESS'
     );
+
+    // Support both controlled (via props) and uncontrolled (via ref) modes
+    const visible = visibleProp !== undefined ? visibleProp : visibleState;
+    const setVisible = (value: boolean) => {
+      if (visibleProp !== undefined) {
+        // Controlled mode - call onCancel
+        if (!value && onCancel) {
+          onCancel();
+        }
+      } else {
+        // Uncontrolled mode - update internal state
+        setVisibleState(value);
+      }
+    };
 
     // Load entity types
     const { data: entityData = [] } = useQuery({
@@ -85,29 +109,49 @@ const CreateReportDialog = forwardRef<CreateReportDialogRef, CreateReportDialogP
     }, [entityData, entityType]);
 
     // Expose methods to parent
-    useImperativeHandle(ref, () => ({
-      open: () => {
-        setVisible(true);
-        setCurrentStep(0);
-        form.resetFields();
-      },
-      close: () => {
-        setVisible(false);
-      },
-    }));
+    useImperativeHandle(ref, () => {
+      console.log('CreateReportDialog: useImperativeHandle called, creating ref object');
+      return {
+        open: () => {
+          console.log('CreateReportDialog.open() called');
+          setVisible(true);
+          setCurrentStep(0);
+          form.resetFields();
+        },
+        close: () => {
+          console.log('CreateReportDialog.close() called');
+          setVisible(false);
+        },
+      };
+    });
+
+    useEffect(() => {
+      console.log('CreateReportDialog mounted');
+      return () => console.log('CreateReportDialog unmounted');
+    }, []);
+
+    useEffect(() => {
+      console.log('CreateReportDialog visible changed:', visible);
+    }, [visible]);
 
     // Handle form submission
     const handleConfirm = async () => {
       try {
         const values = await form.validateFields();
-        
+
         if (!values.requestClass) {
           message.error('Please select an entity class');
           return;
         }
 
         setLoading(true);
-        await onConfirm(values);
+
+        // Support both onConfirm and onCreate callbacks
+        const callback = onConfirm || onCreate;
+        if (callback) {
+          await callback(values);
+        }
+
         setVisible(false);
         form.resetFields();
         setCurrentStep(0);
@@ -117,7 +161,7 @@ const CreateReportDialog = forwardRef<CreateReportDialogRef, CreateReportDialogP
           message.error('Please fill in all required fields');
         } else {
           console.error('Failed to create report:', error);
-          message.error(error.message || 'Failed to create report');
+          // Don't show error message here - let the parent handle it
         }
       } finally {
         setLoading(false);
@@ -144,7 +188,14 @@ const CreateReportDialog = forwardRef<CreateReportDialogRef, CreateReportDialogP
     // Handle name input change (replace / with -)
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value.replace(/\//g, '-');
+      // Suppress circular reference warning from Ant Design
+      const originalWarn = console.warn;
+      console.warn = (...args: any[]) => {
+        if (args[0]?.includes?.('circular references')) return;
+        originalWarn(...args);
+      };
       form.setFieldValue('name', value);
+      console.warn = originalWarn;
     };
 
     // Save entity type to storage

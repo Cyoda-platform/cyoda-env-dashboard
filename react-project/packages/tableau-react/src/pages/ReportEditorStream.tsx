@@ -69,14 +69,25 @@ export const ReportEditorStream: React.FC = () => {
   const streamGridRef = useRef<ConfigEditorStreamGridRef>(null);
 
   // Fetch stream report definition
-  const { data: reportData, isLoading } = useQuery({
+  const { data: reportData, isLoading, error } = useQuery({
     queryKey: ['streamReport', id],
     queryFn: async () => {
-      const { data } = await axios.get(`${API_BASE}/platform-api/reporting/stream-definitions/${id}`);
+      console.log('Fetching stream report definition for ID:', id);
+      const url = `${API_BASE}/platform-api/reporting/stream-definitions/${id}`;
+      console.log('Fetch URL:', url);
+      const { data } = await axios.get(url);
+      console.log('Fetched stream report data:', data);
       return data;
     },
     enabled: !!id,
   });
+
+  useEffect(() => {
+    if (error) {
+      console.error('Error fetching stream report:', error);
+      message.error('Failed to load stream report');
+    }
+  }, [error]);
 
   // Update mutation
   const updateMutation = useMutation({
@@ -168,7 +179,46 @@ export const ReportEditorStream: React.FC = () => {
 
   const handleUpdateAndRun = async () => {
     await updateMutation.mutateAsync(configDefinition);
-    streamGridRef.current?.open();
+    if (streamGridRef.current && id) {
+      // Set the definition ID and open the dialog
+      streamGridRef.current.setDefinitionId(id);
+      streamGridRef.current.setDialogVisible(true);
+    }
+  };
+
+  // Fetch stream definition
+  const handleFetchDefinition = async (definitionId: string) => {
+    try {
+      console.log('Fetching stream definition:', definitionId);
+      const { data: definition } = await axios.get(
+        `${API_BASE}/platform-api/reporting/stream-definitions/${definitionId}`
+      );
+      console.log('Fetched stream definition:', definition);
+      return definition;
+    } catch (error) {
+      console.error('Failed to fetch stream definition:', error);
+      message.error('Failed to fetch stream definition');
+      throw error;
+    }
+  };
+
+  // Load stream data for the grid
+  const handleLoadStreamData = async (request: any) => {
+    try {
+      console.log('Loading stream data with request:', request);
+
+      const { data: streamData } = await axios.post(
+        `${API_BASE}/platform-api/streamdata/fetch`,
+        request
+      );
+
+      console.log('Stream data response:', streamData);
+      return streamData;
+    } catch (error) {
+      console.error('Failed to load stream data:', error);
+      message.error('Failed to load stream data');
+      return { rows: [] };
+    }
   };
 
   if (isLoading) {
@@ -314,7 +364,12 @@ export const ReportEditorStream: React.FC = () => {
         <QueryPlanButton configDefinition={configDefinition} />
       </div>
 
-      <ConfigEditorStreamGrid ref={streamGridRef} isDeleteAvailable={true} />
+      <ConfigEditorStreamGrid
+        ref={streamGridRef}
+        isDeleteAvailable={true}
+        onFetchDefinition={handleFetchDefinition}
+        onLoadData={handleLoadStreamData}
+      />
     </div>
   );
 };

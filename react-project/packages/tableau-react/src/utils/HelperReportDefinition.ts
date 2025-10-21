@@ -7,8 +7,13 @@ export interface HistoryFilterForm {
   authors: string[];
   states: string[];
   types: string[];
-  time_custom: Date | null;
+  entities?: string[];
+  time_custom: Date | null | string;
+  search?: string;
   entityType: string;
+  // Legacy fields for backward compatibility
+  status?: string[];
+  times?: string[];
 }
 
 export interface ReportDefinition {
@@ -65,8 +70,12 @@ export default class HelperReportDefinition {
       authors: [],
       states: [],
       types: [],
+      entities: [],
       time_custom: null,
+      search: '',
       entityType: 'BUSINESS',
+      status: [],
+      times: [],
     };
   }
 

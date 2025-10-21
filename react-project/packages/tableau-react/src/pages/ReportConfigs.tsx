@@ -58,6 +58,9 @@ interface FilterForm {
   search?: string;
   authors?: string[];
   entities?: string[];
+  states?: string[];
+  types?: string[];
+  time_custom?: Date | null;
 }
 
 const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
@@ -159,6 +162,34 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
 
     return Array.from(new Map(entities.map((e: { value: string; label: string }) => [e.value, e])).values());
   }, [definitions]);
+
+  // State options for filter
+  const stateOptions = useMemo((): { value: string; label: string }[] => {
+    return [
+      { value: 'ACTIVE', label: 'Active' },
+      { value: 'INACTIVE', label: 'Inactive' },
+      { value: 'DRAFT', label: 'Draft' },
+      { value: 'ARCHIVED', label: 'Archived' },
+    ];
+  }, []);
+
+  // Load report types
+  const { data: typeOptions = [] } = useQuery({
+    queryKey: ['reportTypes'],
+    queryFn: async () => {
+      try {
+        const { data } = await axios.get('/platform-api/reporting/types');
+        const types = data._embedded?.strings || [];
+        return types.map((type: string) => ({
+          value: type,
+          label: type,
+        }));
+      } catch (error) {
+        console.error('Failed to load report types:', error);
+        return [];
+      }
+    },
+  });
 
   // Create report mutation
   const createReportMutation = useMutation({
@@ -458,6 +489,8 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
         onChange={setFilterForm}
         usersOptions={usersOptions}
         entityOptions={entityOptions}
+        stateOptions={stateOptions}
+        typeOptions={typeOptions}
       />
 
       <Table
