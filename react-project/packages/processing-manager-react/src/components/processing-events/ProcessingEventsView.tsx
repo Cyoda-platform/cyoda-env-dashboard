@@ -52,6 +52,17 @@ export const ProcessingEventsView: React.FC = () => {
   const { data: summaryData } = useSummary({});
   const { data: queuesData } = useProcessingQueues({});
 
+  // Debug: Log what queuesData actually is
+  React.useEffect(() => {
+    console.log('🔍 queuesData received:', queuesData);
+    console.log('🔍 queuesData type:', typeof queuesData);
+    console.log('🔍 queuesData isArray:', Array.isArray(queuesData));
+    if (Array.isArray(queuesData) && queuesData.length > 0) {
+      console.log('🔍 First queue item:', queuesData[0]);
+      console.log('🔍 First queue item type:', typeof queuesData[0]);
+    }
+  }, [queuesData]);
+
   const tableData: ProcessingEvent[] = useMemo(() => {
     if (!eventsData || !Array.isArray(eventsData)) return [];
     return eventsData.map((el: any) => ({
@@ -72,8 +83,16 @@ export const ProcessingEventsView: React.FC = () => {
   }, [eventsData]);
 
   const queueOptions = useMemo(() => {
-    if (!queuesData || !Array.isArray(queuesData)) return [];
-    return queuesData;
+    if (!queuesData || !Array.isArray(queuesData)) {
+      console.warn('⚠️ queuesData is not an array:', queuesData);
+      return [];
+    }
+    // Ensure all items are strings
+    const validQueues = queuesData.filter(q => typeof q === 'string');
+    if (validQueues.length !== queuesData.length) {
+      console.error('❌ Some queue items are not strings:', queuesData);
+    }
+    return validQueues;
   }, [queuesData]);
 
   const shardOptions = useMemo(() => {
@@ -219,7 +238,11 @@ export const ProcessingEventsView: React.FC = () => {
                   placeholder="Select queue"
                   allowClear
                   showSearch
-                  options={queueOptions.map((q) => ({ value: q, label: q }))}
+                  options={queueOptions.map((q) => {
+                    // Defensive: ensure q is a string
+                    const queueValue = typeof q === 'string' ? q : String(q);
+                    return { value: queueValue, label: queueValue };
+                  })}
                 />
               </Form.Item>
             </Col>

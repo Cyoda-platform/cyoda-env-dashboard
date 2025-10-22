@@ -13,7 +13,7 @@ import { PendingTasksCount } from './PendingTasksCount';
 import { Resources } from './Resources';
 
 export const ShardsDetailTabProcessingManager: React.FC = () => {
-  const { data, isLoading, error } = useSummary();
+  const { data, isLoading, error } = useSummary({});
 
   // Show UI even without data - just with empty tables
   const actualShardsTable = (data?.actualShards || []).map((el: any) => ({

@@ -65,8 +65,10 @@ export function useEntityTypes(onlyDynamic = false) {
     queryKey: platformCommonKeys.entityTypes(),
     queryFn: async () => {
       const { data } = await getReportingFetchTypes(onlyDynamic);
-      return data;
+      // Ensure data is always an array
+      return Array.isArray(data) ? data : [];
     },
+    initialData: [], // Provide initial empty array
   });
 }
 
@@ -83,9 +85,11 @@ export function useCompositeIndexes(entity?: string) {
     queryFn: async () => {
       if (!entity) return [];
       const { data } = await getAllCompositeIndexes(entity);
-      return data;
+      // Ensure data is always an array
+      return Array.isArray(data) ? data : [];
     },
     enabled: !!entity,
+    initialData: [], // Provide initial empty array
   });
 }
 
@@ -152,8 +156,10 @@ export function useCachesList() {
     queryKey: platformCommonKeys.caches(),
     queryFn: async () => {
       const { data } = await getCachesList();
-      return data;
+      // Ensure data is always an array
+      return Array.isArray(data) ? data : [];
     },
+    initialData: [], // Provide initial empty array
   });
 }
 
@@ -166,9 +172,11 @@ export function useCacheKeys(cacheType?: string) {
     queryFn: async () => {
       if (!cacheType) return [];
       const { data } = await getCacheKeys(cacheType);
-      return data;
+      // Ensure data is always an array
+      return Array.isArray(data) ? data : [];
     },
     enabled: !!cacheType,
+    initialData: [], // Provide initial empty array
   });
 }
 

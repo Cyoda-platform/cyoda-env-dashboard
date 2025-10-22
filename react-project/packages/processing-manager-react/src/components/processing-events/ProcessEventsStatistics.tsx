@@ -7,7 +7,7 @@
 import React, { useState, useMemo } from 'react';
 import { Table, Form, Select, Row, Col } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { useProcessEventsStats, useSummary, useProcessingQueueEvents } from '../../hooks/useProcessing';
+import { useProcessEventsStats, useSummary, useProcessingQueues } from '../../hooks/useProcessing';
 
 interface ProcessEventStat {
   queue: string;
@@ -23,9 +23,9 @@ const createUniqMap = (prop: string, data: any[]): { label: string; value: any }
 };
 
 export const ProcessEventsStatistics: React.FC = () => {
-  const { data: statsData, isLoading: statsLoading } = useProcessEventsStats();
-  const { data: summaryData } = useSummary();
-  const { data: queuesData } = useProcessingQueueEvents();
+  const { data: statsData, isLoading: statsLoading } = useProcessEventsStats({});
+  const { data: summaryData } = useSummary({});
+  const { data: queuesData } = useProcessingQueues({});
 
   const [queueFilter, setQueueFilter] = useState<string | undefined>(undefined);
   const [shardFilter, setShardFilter] = useState<number | undefined>(undefined);
@@ -48,7 +48,8 @@ export const ProcessEventsStatistics: React.FC = () => {
 
   const queueOptions = useMemo(() => {
     if (!queuesData || !Array.isArray(queuesData)) return [];
-    return queuesData;
+    // Ensure all items are strings (defensive programming)
+    return queuesData.filter(q => typeof q === 'string');
   }, [queuesData]);
 
   const shardOptions = useMemo(() => {

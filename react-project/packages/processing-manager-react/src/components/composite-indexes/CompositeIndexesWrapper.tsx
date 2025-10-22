@@ -38,7 +38,7 @@ export const CompositeIndexesWrapper: React.FC = () => {
   const { data: entityTypes = [], isLoading: entityTypesLoading } = useEntityTypes();
 
   // Fetch composite indexes for selected entity
-  const { data: compositeIndexData = [], isLoading: indexesLoading, refetch } = useCompositeIndexes(entityClass);
+  const { data: compositeIndexData, isLoading: indexesLoading, refetch } = useCompositeIndexes(entityClass);
 
   // Mutations
   const reindexMutation = useReindexCompositeIndex();
@@ -49,8 +49,10 @@ export const CompositeIndexesWrapper: React.FC = () => {
   }, [entityTypes]);
 
   const filteredData = useMemo(() => {
-    if (!Array.isArray(compositeIndexData)) return [];
-    return compositeIndexData.filter((item: CompositeIndex) => {
+    // Ensure compositeIndexData is always an array
+    const dataArray = Array.isArray(compositeIndexData) ? compositeIndexData : [];
+
+    return dataArray.filter((item: CompositeIndex) => {
       if (!search) return true;
       return item.indexName.toLowerCase().includes(search.toLowerCase());
     });

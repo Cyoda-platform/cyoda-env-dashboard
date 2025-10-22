@@ -1,18 +1,19 @@
 /**
  * Mock API Toggle Component
- * 
+ *
  * Provides a UI control to enable/disable mock API for testing
  */
 
 import React, { useState, useEffect } from 'react';
-import { Switch, Card, Typography, Space, Tag, Alert } from 'antd';
-import { ExperimentOutlined, ApiOutlined } from '@ant-design/icons';
+import { Switch, Card, Typography, Space, Tag, Alert, Button } from 'antd';
+import { ExperimentOutlined, ApiOutlined, MinusOutlined, ExpandOutlined } from '@ant-design/icons';
 import { enableMockApi, disableMockApi, isMockApiEnabled, TEST_NODE_NAME } from '../mocks';
 
 const { Text, Title } = Typography;
 
 export function MockApiToggle() {
   const [enabled, setEnabled] = useState(isMockApiEnabled());
+  const [minimized, setMinimized] = useState(false);
 
   // Sync state with mock API on mount
   useEffect(() => {
@@ -28,6 +29,10 @@ export function MockApiToggle() {
     setEnabled(checked);
   };
 
+  const handleMinimize = () => {
+    setMinimized(!minimized);
+  };
+
   return (
     <Card
       size="small"
@@ -35,10 +40,20 @@ export function MockApiToggle() {
         position: 'fixed',
         bottom: 20,
         right: 20,
-        width: 350,
+        width: minimized ? 200 : 350,
         zIndex: 1000,
         boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+        transition: 'width 0.3s ease',
       }}
+      extra={
+        <Button
+          type="text"
+          size="small"
+          icon={minimized ? <ExpandOutlined /> : <MinusOutlined />}
+          onClick={handleMinimize}
+          style={{ padding: '4px 8px' }}
+        />
+      }
     >
       <Space direction="vertical" style={{ width: '100%' }}>
         <Space>
@@ -54,7 +69,7 @@ export function MockApiToggle() {
           />
         </Space>
 
-        {enabled && (
+        {!minimized && enabled && (
           <>
             <Alert
               message="Mock API Enabled"
@@ -64,7 +79,7 @@ export function MockApiToggle() {
               icon={<ApiOutlined />}
               style={{ marginTop: 8 }}
             />
-            
+
             <Space wrap>
               <Tag color="green">Cluster Stats</Tag>
               <Tag color="green">Shards</Tag>
@@ -82,7 +97,7 @@ export function MockApiToggle() {
           </>
         )}
 
-        {!enabled && (
+        {!minimized && !enabled && (
           <Text type="secondary" style={{ fontSize: 12 }}>
             Enable test mode to use mock data for testing all Processing Manager features
           </Text>

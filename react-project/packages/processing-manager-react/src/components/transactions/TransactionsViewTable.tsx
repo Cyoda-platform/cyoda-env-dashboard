@@ -34,6 +34,8 @@ export const TransactionsViewTable: React.FC<TransactionsViewTableProps> = ({
   const { name } = useParams<{ name: string }>();
 
   const getRowClassName = (record: TransactionRow): string => {
+    if (!record.finishTime) return '';
+
     const createTime = record.createTime.replace('(', '.').replace(')', '');
     const finishTime = record.finishTime.replace('(', '.').replace(')', '');
     const diff = dayjs(finishTime).diff(dayjs(createTime));

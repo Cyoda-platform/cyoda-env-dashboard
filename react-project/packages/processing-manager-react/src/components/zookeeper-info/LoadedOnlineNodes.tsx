@@ -24,9 +24,15 @@ interface LoadedOnlineNodesProps {
 export const LoadedOnlineNodes: React.FC<LoadedOnlineNodesProps> = ({
   clusterStateClientNodes = {},
 }) => {
-  const { data: nodesData = [], isLoading } = useZkOnlineNodes();
+  const { data: nodesData, isLoading } = useZkOnlineNodes();
 
   const columns: ColumnsType<OnlineNode> = [
+    {
+      title: 'ID',
+      dataIndex: 'id',
+      key: 'id',
+      sorter: (a, b) => a.id.localeCompare(b.id),
+    },
     {
       title: 'Hostname',
       dataIndex: 'hostname',
@@ -62,12 +68,13 @@ export const LoadedOnlineNodes: React.FC<LoadedOnlineNodesProps> = ({
     },
   ];
 
-  return (
-    <div>
-      <h3>Loaded Online Nodes</h3>
+  // Render a table for each node type (DEFAULT, PROCESSING, TOOLBOX)
+  const renderTable = (title: string, data: OnlineNode[] = []) => (
+    <div key={title} style={{ marginBottom: 24 }}>
+      <h4>{title}</h4>
       <Table
         columns={columns}
-        dataSource={Array.isArray(nodesData) ? nodesData : []}
+        dataSource={data}
         rowKey="id"
         bordered
         loading={isLoading}
@@ -77,6 +84,21 @@ export const LoadedOnlineNodes: React.FC<LoadedOnlineNodesProps> = ({
           showSizeChanger: true,
         }}
       />
+    </div>
+  );
+
+  return (
+    <div>
+      <h3>Loaded Online Nodes</h3>
+      {nodesData && typeof nodesData === 'object' && !Array.isArray(nodesData) ? (
+        <>
+          {renderTable('Default', (nodesData as any).DEFAULT)}
+          {renderTable('Processing', (nodesData as any).PROCESSING)}
+          {renderTable('Toolbox', (nodesData as any).TOOLBOX)}
+        </>
+      ) : (
+        renderTable('All Nodes', Array.isArray(nodesData) ? nodesData : [])
+      )}
     </div>
   );
 };

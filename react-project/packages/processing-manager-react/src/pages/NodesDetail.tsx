@@ -11,6 +11,8 @@ import React, { useState, useEffect } from 'react';
 import { Card, Typography, Tabs } from 'antd';
 import { Layout } from '../components/layout';
 import { useParams } from 'react-router-dom';
+import { useAppStore } from '../stores/appStore';
+import { useProcessingStore } from '../stores/processingStore';
 import {
   ShardsDetailTabProcessingManager,
   ShardsDetailTabSummary,
@@ -32,6 +34,18 @@ const TAB_STORAGE_KEY = 'nodesDetailTab';
 
 export default function NodesDetail() {
   const { name } = useParams<{ name: string }>();
+  const setNode = useAppStore((state) => state.setNode);
+  const setSelectedNode = useProcessingStore((state) => state.setSelectedNode);
+
+  // Set the node in appStore and processingStore when component mounts or name changes
+  useEffect(() => {
+    if (name) {
+      setNode(name);
+      // Set selectedNode in processingStore for hooks that depend on it (e.g., useSiftLogger)
+      setSelectedNode(name as any); // Type assertion needed as selectedNode expects PmNode
+      console.log('🔧 Set node in appStore and processingStore:', name);
+    }
+  }, [name, setNode, setSelectedNode]);
 
   // Load initial tab from localStorage, default to '1'
   const [activeKey, setActiveKey] = useState<string>(() => {

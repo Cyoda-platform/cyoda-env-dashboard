@@ -9,11 +9,11 @@
 
 .c-body {
   flex: 1 1 auto;
-  margin-top: 5.5rem; // Account for fixed header + subheader (reduced from 7rem)
+  margin-top: 7rem; // Account for fixed header + subheader
 }
 
 .c-main {
-  padding: 0.5rem 1rem 1rem; // Reduced top padding
+  padding: 1rem; // Consistent padding
 }
 
 .container-fluid {

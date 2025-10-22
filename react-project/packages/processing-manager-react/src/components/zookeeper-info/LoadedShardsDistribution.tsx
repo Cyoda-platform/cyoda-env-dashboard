@@ -3,17 +3,14 @@
  * Migrated from @cyoda/processing-manager/src/components/PmShardsDetailTab/PmShardsDetailTabZKInfo/PmLoadedShardsDistribution.vue
  */
 
-import React from 'react';
-import { Table, Tag } from 'antd';
+import React, { useMemo } from 'react';
+import { Table, Descriptions } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { useZkShardsDistribution } from '../../hooks/usePlatformCommon';
 
-interface ShardDistribution {
-  shardId: number;
-  node: string;
-  state: string;
-  documentsCount: number;
-  size?: string;
+interface TableDataRow {
+  id: string;
+  shardsByNodes: string;
 }
 
 interface LoadedShardsDistributionProps {
@@ -25,52 +22,50 @@ export const LoadedShardsDistribution: React.FC<LoadedShardsDistributionProps> =
   clusterState = {},
   clusterStateShardsDistr = {},
 }) => {
-  const { data: shardsData = [], isLoading } = useZkShardsDistribution();
+  const { data: shardsData, isLoading } = useZkShardsDistribution();
 
-  const columns: ColumnsType<ShardDistribution> = [
+  // Transform the data from { nodesIds: [...], shardsByNodes: {...} } to table rows
+  const tableData = useMemo(() => {
+    if (!shardsData || !(shardsData as any).nodesIds) return [];
+
+    const data = shardsData as any;
+    return data.nodesIds.map((id: string) => ({
+      id,
+      shardsByNodes: data.shardsByNodes[id]?.join(', ') || '',
+    }));
+  }, [shardsData]);
+
+  const columns: ColumnsType<TableDataRow> = [
     {
-      title: 'Shard ID',
-      dataIndex: 'shardId',
-      key: 'shardId',
-      sorter: (a, b) => a.shardId - b.shardId,
+      title: 'Nodes ID',
+      dataIndex: 'id',
+      key: 'id',
+      sorter: (a, b) => a.id.localeCompare(b.id),
     },
     {
-      title: 'Node',
-      dataIndex: 'node',
-      key: 'node',
-      sorter: (a, b) => a.node.localeCompare(b.node),
-    },
-    {
-      title: 'State',
-      dataIndex: 'state',
-      key: 'state',
-      render: (state: string) => {
-        const color = state === 'STARTED' ? 'green' : state === 'STOPPED' ? 'red' : 'orange';
-        return <Tag color={color}>{state || 'UNKNOWN'}</Tag>;
-      },
-    },
-    {
-      title: 'Documents',
-      dataIndex: 'documentsCount',
-      key: 'documentsCount',
-      sorter: (a, b) => a.documentsCount - b.documentsCount,
-      render: (count: number) => count?.toLocaleString() || 0,
-    },
-    {
-      title: 'Size',
-      dataIndex: 'size',
-      key: 'size',
-      render: (size: string) => size || '-',
+      title: 'Shards By Nodes',
+      dataIndex: 'shardsByNodes',
+      key: 'shardsByNodes',
     },
   ];
 
   return (
     <div>
       <h3>Loaded Shards Distribution</h3>
+      {shardsData && (shardsData as any).id && (
+        <Descriptions column={2} bordered style={{ marginBottom: 16 }}>
+          <Descriptions.Item label="ID">
+            {(shardsData as any).id || '-'}
+          </Descriptions.Item>
+          <Descriptions.Item label="Dispatcher Node ID">
+            {(shardsData as any).dispatcherNodeId || '-'}
+          </Descriptions.Item>
+        </Descriptions>
+      )}
       <Table
         columns={columns}
-        dataSource={Array.isArray(shardsData) ? shardsData : []}
-        rowKey="shardId"
+        dataSource={tableData}
+        rowKey="id"
         bordered
         loading={isLoading}
         pagination={{

@@ -24,11 +24,11 @@ export const CurrNodeInfo: React.FC<CurrNodeInfoProps> = ({
     <div>
       <Card title="Current Node Information" bordered={false}>
         <Descriptions column={2} bordered>
-          <Descriptions.Item label="Node Name">
-            {(nodeInfo as any)?.name || '-'}
+          <Descriptions.Item label="Node ID">
+            {(nodeInfo as any)?.nodeId || (nodeInfo as any)?.name || '-'}
           </Descriptions.Item>
-          <Descriptions.Item label="Host">
-            {(nodeInfo as any)?.host || '-'}
+          <Descriptions.Item label="Hostname">
+            {(nodeInfo as any)?.hostname || (nodeInfo as any)?.host || '-'}
           </Descriptions.Item>
           <Descriptions.Item label="IP Address">
             {(nodeInfo as any)?.ip || '-'}
@@ -39,19 +39,18 @@ export const CurrNodeInfo: React.FC<CurrNodeInfoProps> = ({
           <Descriptions.Item label="Version">
             {(nodeInfo as any)?.version || '-'}
           </Descriptions.Item>
-          <Descriptions.Item label="State">
-            {(nodeInfo as any)?.state ? (
-              <Tag color={(nodeInfo as any).state === 'RUNNING' ? 'green' : 'default'}>
-                {(nodeInfo as any).state}
+          <Descriptions.Item label="Status">
+            {(nodeInfo as any)?.status || (nodeInfo as any)?.state ? (
+              <Tag color={(nodeInfo as any).status === 'ONLINE' || (nodeInfo as any).state === 'RUNNING' ? 'green' : 'default'}>
+                {(nodeInfo as any).status || (nodeInfo as any).state}
               </Tag>
             ) : '-'}
           </Descriptions.Item>
-          <Descriptions.Item label="Leader">
-            {(nodeInfo as any)?.leader ? (
-              <Tag color="blue">Leader</Tag>
-            ) : (
-              <Tag>Follower</Tag>
-            )}
+          <Descriptions.Item label="Uptime">
+            {(nodeInfo as any)?.uptime ? `${Math.floor((nodeInfo as any).uptime / 1000 / 60)} minutes` : '-'}
+          </Descriptions.Item>
+          <Descriptions.Item label="JVM Version">
+            {(nodeInfo as any)?.jvmVersion || '-'}
           </Descriptions.Item>
         </Descriptions>
       </Card>
