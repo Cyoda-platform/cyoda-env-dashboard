@@ -54,6 +54,7 @@ interface StatemachineState {
   postTransition: (persistedType: PersistedType, workflowId: string, form: TransitionForm) => Promise<any>;
   putTransition: (persistedType: PersistedType, workflowId: string, transitionId: string, form: TransitionForm) => Promise<any>;
   deleteTransition: (persistedType: PersistedType, workflowId: string, transitionId: string) => Promise<any>;
+  copyTransition: (persistedType: PersistedType, workflowId: string, transitionId: string) => Promise<any>;
   
   // API Methods - Criteria
   getCriteriaList: (entityClassName?: string) => Promise<any>;
@@ -62,6 +63,7 @@ interface StatemachineState {
   postCriteria: (persistedType: PersistedType, form: CriteriaForm) => Promise<any>;
   putCriteria: (persistedType: PersistedType, criteriaId: string, form: CriteriaForm) => Promise<any>;
   deleteCriteria: (persistedType: PersistedType, criteriaId: string) => Promise<any>;
+  copyCriteria: (persistedType: PersistedType, criteriaId: string) => Promise<any>;
   getCriteriacheckers: (entityClassName?: string) => Promise<any>;
   
   // API Methods - Processes
@@ -73,6 +75,7 @@ interface StatemachineState {
   putProcesses: (persistedType: PersistedType, processId: string, form: ProcessForm) => Promise<any>;
   putProcessesTemplate: (persistedType: PersistedType, processId: string, form: ProcessForm) => Promise<any>;
   deleteProcesses: (persistedType: PersistedType, processId: string) => Promise<any>;
+  copyProcesses: (persistedType: PersistedType, processId: string) => Promise<any>;
   
   // API Methods - Instances
   postInstances: (data: InstancesRequest) => Promise<any>;
@@ -198,7 +201,13 @@ export const useStatemachineStore = create<StatemachineState>()(
           `/platform-api/statemachine/${persistedType}/workflows/${encodeURIComponent(workflowId)}/transitions/${encodeURIComponent(transitionId)}`
         );
       },
-      
+
+      copyTransition: async (persistedType, workflowId, transitionId) => {
+        return axios.post(
+          `/platform-api/statemachine/${persistedType}/workflows/${encodeURIComponent(workflowId)}/transitions/copy/${encodeURIComponent(transitionId)}`
+        );
+      },
+
       // Criteria API Methods
       getCriteriaList: async (entityClassName) => {
         return axios.get('/platform-api/statemachine/criteria', {
@@ -254,7 +263,13 @@ export const useStatemachineStore = create<StatemachineState>()(
           `/platform-api/statemachine/${persistedType}/criteria/${criteriaId}`
         );
       },
-      
+
+      copyCriteria: async (persistedType, criteriaId) => {
+        return axios.post(
+          `/platform-api/statemachine/${persistedType}/criteria/copy/${encodeURIComponent(criteriaId)}`
+        );
+      },
+
       getCriteriacheckers: async (entityClassName) => {
         return axios.get('/platform-api/statemachine/criteriacheckers', {
           params: { entityClassName },
@@ -309,7 +324,13 @@ export const useStatemachineStore = create<StatemachineState>()(
           `/platform-api/statemachine/${persistedType}/processes/${processId}`
         );
       },
-      
+
+      copyProcesses: async (persistedType, processId) => {
+        return axios.post(
+          `/platform-api/statemachine/${persistedType}/processes/copy/${encodeURIComponent(processId)}`
+        );
+      },
+
       // Instance API Methods
       postInstances: async (data) => {
         return axios.post('/platform-api/statemachine/instances', data);
