@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { Table, Button, Space, Tooltip, Modal, message } from 'antd';
 import { PlusOutlined, CopyOutlined, DeleteOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
-import { useProcessesList, useDeleteProcess } from '../hooks/useStatemachine';
+import { useProcessesList, useDeleteProcess, useCopyProcess } from '../hooks/useStatemachine';
 import type { PersistedType } from '../types';
 
 const { confirm } = Modal;
@@ -38,9 +38,10 @@ export const ProcessesList: React.FC<ProcessesListProps> = ({
   
   // Queries
   const { data: processes = [], isLoading, refetch } = useProcessesList(entityClassName);
-  
+
   // Mutations
   const deleteProcessMutation = useDeleteProcess();
+  const copyProcessMutation = useCopyProcess();
   
   // Table data
   const tableData = useMemo<ProcessRow[]>(() => {
@@ -57,20 +58,35 @@ export const ProcessesList: React.FC<ProcessesListProps> = ({
   // Handlers
   const handleAddNew = () => {
     navigate(
-      `/statemachine/process/new?workflowId=${workflowId}&persistedType=persisted&entityClassName=${entityClassName}&workflowPersistedType=${persistedType}`
+      `/process/new?workflowId=${workflowId}&persistedType=persisted&entityClassName=${entityClassName}&workflowPersistedType=${persistedType}`
     );
   };
-  
+
   const handleViewProcess = (record: ProcessRow) => {
     const processPersistedType = record.persisted ? 'persisted' : 'transient';
     navigate(
-      `/statemachine/process/${record.id}?persistedType=${processPersistedType}&entityClassName=${entityClassName}&workflowId=${workflowId}&workflowPersistedType=${persistedType}`
+      `/process/${record.id}?persistedType=${processPersistedType}&entityClassName=${entityClassName}&workflowId=${workflowId}&workflowPersistedType=${persistedType}`
     );
   };
-  
-  const handleCopy = async (_record: ProcessRow) => {
-    // TODO: Implement copy functionality
-    message.info('Copy process coming soon');
+
+  const handleCopy = async (record: ProcessRow) => {
+    try {
+      const processPersistedType = record.persisted ? 'persisted' : 'transient';
+      const newProcessId = await copyProcessMutation.mutateAsync({
+        persistedType: processPersistedType,
+        processId: record.id,
+      });
+
+      message.success('Process copied successfully');
+      refetch();
+
+      // Navigate to the new process
+      navigate(
+        `/process/${newProcessId}?persistedType=${processPersistedType}&entityClassName=${entityClassName}&workflowId=${workflowId}&workflowPersistedType=${persistedType}`
+      );
+    } catch (error) {
+      message.error('Failed to copy process');
+    }
   };
   
   const handleDelete = (record: ProcessRow) => {
@@ -150,6 +166,7 @@ export const ProcessesList: React.FC<ProcessesListProps> = ({
               size="small"
               icon={<CopyOutlined />}
               onClick={() => handleCopy(record)}
+              loading={copyProcessMutation.isPending}
             />
           </Tooltip>
           <Tooltip title="Delete">

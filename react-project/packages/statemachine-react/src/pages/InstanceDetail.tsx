@@ -5,12 +5,14 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { useParams, useSearchParams } from 'react-router-dom';
-import { Tabs, Card, Spin, Typography, Space, Alert, Descriptions } from 'antd';
+import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
+import { Tabs, Card, Spin, Typography, Space, Alert, Descriptions, Button } from 'antd';
+import { ArrowLeftOutlined } from '@ant-design/icons';
 import {
   useWorkflow,
   useWorkflowEnabledTypes,
 } from '../hooks/useStatemachine';
+import { useEntity } from '@cyoda/http-api-react';
 import { DataLineage, TransitionChangesTable } from '@cyoda/ui-lib-react';
 import type { PersistedType } from '../types';
 import axios from 'axios';
@@ -21,14 +23,13 @@ const { TabPane } = Tabs;
 export const InstanceDetail: React.FC = () => {
   const { instanceId } = useParams<{ instanceId: string }>();
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('details');
-  const [entityData, setEntityData] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
-  
+
   const entityClassName = searchParams.get('entityClassName') || '';
   const currentWorkflowId = searchParams.get('currentWorkflowId') || '';
   const persistedType = (searchParams.get('persistedType') || 'persisted') as PersistedType;
-  
+
   // Queries
   const { data: workflow } = useWorkflow(
     persistedType,
@@ -36,33 +37,14 @@ export const InstanceDetail: React.FC = () => {
     !!currentWorkflowId
   );
   const { data: workflowEnabledTypes = [] } = useWorkflowEnabledTypes();
-  
-  // Load entity data
-  useEffect(() => {
-    const loadEntityData = async () => {
-      if (!instanceId || !entityClassName) return;
-      
-      setLoading(true);
-      try {
-        // TODO: Implement entity loading via http-api-react
-        // const response = await api.getEntityLoad(instanceId, entityClassName);
-        // setEntityData(response.data);
-        
-        // Placeholder for now
-        setEntityData({
-          id: instanceId,
-          entityClassName,
-          // Add more fields as needed
-        });
-      } catch (error) {
-        console.error('Failed to load entity data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    loadEntityData();
-  }, [instanceId, entityClassName]);
+
+  // Load entity data using http-api-react hook
+  const { data: entityData, isLoading: loading } = useEntity(
+    entityClassName,
+    instanceId || '',
+    undefined,
+    { enabled: !!instanceId && !!entityClassName }
+  );
   
   // Determine if we should show JSON view
   const isShowDetailJson = () => {
@@ -73,9 +55,19 @@ export const InstanceDetail: React.FC = () => {
   };
   
   const modelName = entityClassName.split('.').pop();
-  
+
   return (
     <div style={{ padding: '16px' }}>
+      {/* Back Button */}
+      <div style={{ marginBottom: '16px' }}>
+        <Button
+          icon={<ArrowLeftOutlined />}
+          onClick={() => navigate(`/instances?entityClassName=${entityClassName}`)}
+        >
+          Back to Instances
+        </Button>
+      </div>
+
       <Card>
         <Space direction="vertical" size="large" style={{ width: '100%' }}>
           {/* Header */}
@@ -168,38 +160,17 @@ const DetailView: React.FC<{
     );
   }
 
-  // Convert entity data to descriptions format
-  const renderEntityData = (data: any, prefix = '') => {
-    const items: any[] = [];
-
-    Object.keys(data).forEach((key) => {
-      const value = data[key];
-      const label = prefix ? `${prefix}.${key}` : key;
-
-      if (value && typeof value === 'object' && !Array.isArray(value)) {
-        // Nested object - render recursively
-        items.push(...renderEntityData(value, label));
-      } else if (Array.isArray(value)) {
-        // Array - show as JSON string
-        items.push({
-          key: label,
-          label,
-          children: JSON.stringify(value),
-        });
-      } else {
-        // Primitive value
-        items.push({
-          key: label,
-          label,
-          children: value !== null && value !== undefined ? String(value) : '-',
-        });
-      }
-    });
-
-    return items;
-  };
-
-  const items = renderEntityData(entityData);
+  // Convert entity data array to descriptions format
+  // Entity data is an array of { type, columnName, value, presented } objects
+  const items = Array.isArray(entityData)
+    ? entityData
+        .filter((item: any) => item.presented !== false)
+        .map((item: any) => ({
+          key: item.columnName,
+          label: item.columnName,
+          children: item.value !== null && item.value !== undefined ? String(item.value) : '-',
+        }))
+    : [];
 
   return (
     <div>
@@ -275,7 +246,11 @@ const WorkflowView: React.FC<{
   persistedType: PersistedType;
   entityData: any;
 }> = ({ workflowId, entityClassName, instanceId, persistedType, entityData }) => {
-  const currentState = entityData?.state || 'Unknown';
+  // Extract state from entity data array
+  const stateItem = Array.isArray(entityData)
+    ? entityData.find((item: any) => item.columnName === 'state')
+    : null;
+  const currentState = stateItem?.value || 'Unknown';
 
   return (
     <div>

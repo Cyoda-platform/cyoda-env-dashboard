@@ -52,8 +52,8 @@ const App: React.FC = () => {
                 />
               ))}
 
-            {/* Redirect root to workflows */}
-            <Route path="/" element={<Navigate to="/workflows" replace />} />
+            {/* Redirect root to menu */}
+            <Route path="/" element={<Navigate to="/menu" replace />} />
           </Routes>
         </BrowserRouter>
         <ReactQueryDevtools initialIsOpen={false} />

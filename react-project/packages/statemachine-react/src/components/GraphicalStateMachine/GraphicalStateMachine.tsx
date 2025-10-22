@@ -78,9 +78,11 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
       return;
     }
 
+    const elements = getStatesTransitionsEles(activeTransitions, positionsMap, currentState);
+
     const cy = cytoscape({
       container: containerRef.current,
-      elements: getStatesTransitionsEles(activeTransitions, positionsMap, currentState),
+      elements,
       layout: coreLayout('breadthfirst'),
       style,
       zoom: 1,

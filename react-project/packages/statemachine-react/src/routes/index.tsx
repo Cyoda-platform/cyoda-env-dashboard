@@ -5,7 +5,8 @@
 
 import React from 'react';
 import { RouteObject } from 'react-router-dom';
-import { Login, Home } from '@cyoda/ui-lib-react';
+import { Login } from '@cyoda/ui-lib-react';
+import { Menu } from '../pages/Menu';
 import { Workflows } from '../pages/Workflows';
 import { Instances } from '../pages/Instances';
 import { InstanceDetail } from '../pages/InstanceDetail';
@@ -22,7 +23,7 @@ export const routes: RouteObject[] = [
   },
   {
     path: '/menu',
-    element: <Home />,
+    element: <Menu />,
   },
   {
     path: '/workflows',

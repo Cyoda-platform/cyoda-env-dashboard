@@ -4,16 +4,18 @@
  * Migrated from: .old_project/packages/statemachine/src/views/Instances.vue
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Table, Button, Input, Select, Space, Card, Row, Col, message } from 'antd';
-import { SearchOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
+import { SearchOutlined, LeftOutlined, RightOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import {
   useWorkflowEnabledTypes,
   useWorkflowsList,
   useInstances,
 } from '../hooks/useStatemachine';
+import { EntityTypeSwitch } from '@cyoda/ui-lib-react';
+import { useGlobalUiSettingsStore } from '../stores/globalUiSettingsStore';
 import type { Instance, InstanceTableRow, InstancesResponse } from '../types';
 
 const PAGE_SIZE = 20;
@@ -25,7 +27,10 @@ export const Instances: React.FC = () => {
   const [filter, setFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [instancesData, setInstancesData] = useState<InstancesResponse | null>(null);
-  
+
+  // Global UI settings
+  const { entityType, isEnabledTechView, setEntityType } = useGlobalUiSettingsStore();
+
   // Queries
   const { data: workflowEnabledTypes = [], isLoading: isLoadingEntities } = useWorkflowEnabledTypes();
   const { data: workflows = [] } = useWorkflowsList(entityClassName);
@@ -87,7 +92,7 @@ export const Instances: React.FC = () => {
   
   const handleViewDetail = (record: InstanceTableRow) => {
     navigate(
-      `/statemachine/instances/${record.entityId}?entityClassName=${record.entityClassName}`
+      `/instances/${record.entityId}?entityClassName=${record.entityClassName}`
     );
   };
   
@@ -102,12 +107,45 @@ export const Instances: React.FC = () => {
     const persistedType = 'persisted'; // Default to persisted
     return `/statemachine/workflow/${record.currentWorkflowId}?persistedType=${persistedType}&entityClassName=${record.entityClassName}`;
   };
-  
-  // Entity options
-  const entityOptions = workflowEnabledTypes.map((type: any) => ({
-    label: type.label || type.name || type.value,
-    value: type.value || type.name,
-  }));
+
+  // Helper function to map entity type
+  const entityTypeMapper = (type: string): string => {
+    const map: Record<string, string> = {
+      BUSINESS: 'Business',
+      PERSISTENCE: 'Technical',
+    };
+    return map[type] || type;
+  };
+
+  // Entity options - filtered by selected entity type
+  const entityOptions = useMemo(() => {
+    return workflowEnabledTypes
+      .filter((type: any) => {
+        // If tech view is enabled, filter by entity type
+        if (isEnabledTechView && typeof type === 'object' && type.type) {
+          return type.type === entityType;
+        }
+        return true;
+      })
+      .map((type: any) => {
+        // Handle both string arrays and object arrays
+        if (typeof type === 'string') {
+          return { label: type, value: type };
+        }
+
+        // If entity has type info, add it to the label
+        let label = type.name || type.value || type;
+        if (type.type) {
+          const typeLabel = entityTypeMapper(type.type);
+          label = `${type.name} (${typeLabel})`;
+        }
+
+        return {
+          label,
+          value: type.value || type.name || type,
+        };
+      });
+  }, [workflowEnabledTypes, entityType, isEnabledTechView]);
   
   // Table data
   const tableData: InstanceTableRow[] = (instancesData?.instances || []).map((instance) => ({
@@ -193,6 +231,24 @@ export const Instances: React.FC = () => {
   
   return (
     <div style={{ padding: '16px' }}>
+      {/* Header with Back button and Entity Type Switch */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <Button
+            icon={<ArrowLeftOutlined />}
+            onClick={() => navigate('/menu')}
+          >
+            Back to Menu
+          </Button>
+          <h1 style={{ margin: 0 }}>Instances</h1>
+        </div>
+        <EntityTypeSwitch
+          value={entityType}
+          onChange={setEntityType}
+          visible={isEnabledTechView}
+        />
+      </div>
+
       <Card>
         <Space direction="vertical" size="middle" style={{ width: '100%' }}>
           {/* Filters */}

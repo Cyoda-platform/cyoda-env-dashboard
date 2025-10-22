@@ -7,6 +7,7 @@
 import React, { useEffect, useMemo } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { Form, Input, Button, Card, message, Space, Select, Alert } from 'antd';
+import { ArrowLeftOutlined } from '@ant-design/icons';
 import {
   useCriteria,
   useCriteriacheckers,
@@ -92,24 +93,34 @@ export const Criteria: React.FC = () => {
       
       // Navigate back to workflow detail
       navigate(
-        `/statemachine/workflow/${workflowId}?persistedType=${workflowPersistedType}&entityClassName=${entityClassName}`
+        `/workflow/${workflowId}?persistedType=${workflowPersistedType}&entityClassName=${entityClassName}`
       );
     } catch (error) {
       message.error('Failed to save criteria');
     }
   };
-  
+
   const handleCancel = () => {
     navigate(
-      `/statemachine/workflow/${workflowId}?persistedType=${workflowPersistedType}&entityClassName=${entityClassName}`
+      `/workflow/${workflowId}?persistedType=${workflowPersistedType}&entityClassName=${entityClassName}`
     );
   };
   
   const pageTitle = isNew ? 'Create New Criteria' : `Criteria: ${criteria?.name || ''}`;
   const isLoading = isLoadingCriteria || createCriteriaMutation.isPending || updateCriteriaMutation.isPending;
-  
+
   return (
     <div style={{ padding: '16px' }}>
+      {/* Back Button */}
+      <div style={{ marginBottom: '16px' }}>
+        <Button
+          icon={<ArrowLeftOutlined />}
+          onClick={handleCancel}
+        >
+          Back to Workflow
+        </Button>
+      </div>
+
       <Card>
         <Form
           form={form}

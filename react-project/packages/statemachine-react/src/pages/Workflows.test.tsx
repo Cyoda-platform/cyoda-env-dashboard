@@ -59,6 +59,36 @@ vi.mock('../components/ExportImport', () => ({
   ),
 }));
 
+// Mock EntityTypeSwitch component
+vi.mock('@cyoda/ui-lib-react', () => ({
+  EntityTypeSwitch: ({ value, onChange, visible }: any) => (
+    visible ? (
+      <div data-testid="entity-type-switch">
+        <span>Entity Type: </span>
+        <button
+          data-testid="entity-type-toggle"
+          onClick={() => onChange(value === 'BUSINESS' ? 'PERSISTENCE' : 'BUSINESS')}
+        >
+          {value === 'BUSINESS' ? 'Business' : 'Technical'}
+        </button>
+      </div>
+    ) : null
+  ),
+}));
+
+// Mock global UI settings store
+const mockSetEntityType = vi.fn();
+const mockEntityType = vi.fn(() => 'BUSINESS');
+const mockIsEnabledTechView = vi.fn(() => true);
+
+vi.mock('../stores/globalUiSettingsStore', () => ({
+  useGlobalUiSettingsStore: () => ({
+    entityType: mockEntityType(),
+    isEnabledTechView: mockIsEnabledTechView(),
+    setEntityType: mockSetEntityType,
+  }),
+}));
+
 const createWrapper = () => {
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -77,26 +107,30 @@ const createWrapper = () => {
 describe('Workflows', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
+    // Reset mock functions
+    mockEntityType.mockReturnValue('BUSINESS');
+    mockIsEnabledTechView.mockReturnValue(true);
+
     mockUseWorkflowsList.mockReturnValue({
       data: mockWorkflows,
       isLoading: false,
       refetch: vi.fn(),
     });
-    
+
     mockUseWorkflowEnabledTypes.mockReturnValue({
       data: [
         { name: 'com.example.Entity1', label: 'Entity 1', type: 'BUSINESS' },
-        { name: 'com.example.Entity2', label: 'Entity 2', type: 'TECHNICAL' },
+        { name: 'com.example.Entity2', label: 'Entity 2', type: 'PERSISTENCE' },
       ],
       isLoading: false,
     });
-    
+
     mockUseDeleteWorkflow.mockReturnValue({
       mutateAsync: vi.fn(),
       isPending: false,
     });
-    
+
     mockUseCopyWorkflow.mockReturnValue({
       mutateAsync: vi.fn(),
       isPending: false,
@@ -269,6 +303,144 @@ describe('Workflows', () => {
       expect(screen.getByText('Test Workflow 1')).toBeInTheDocument();
       expect(screen.getByText('Test Workflow 2')).toBeInTheDocument();
       expect(screen.getByText('Another Workflow')).toBeInTheDocument();
+    });
+  });
+
+  describe('Entity Type Toggle', () => {
+    it('should render the entity type switch when tech view is enabled', () => {
+      mockIsEnabledTechView.mockReturnValue(true);
+      render(<Workflows />, { wrapper: createWrapper() });
+
+      expect(screen.getByTestId('entity-type-switch')).toBeInTheDocument();
+      expect(screen.getByText('Entity Type:')).toBeInTheDocument();
+    });
+
+    it('should not render the entity type switch when tech view is disabled', () => {
+      mockIsEnabledTechView.mockReturnValue(false);
+      render(<Workflows />, { wrapper: createWrapper() });
+
+      expect(screen.queryByTestId('entity-type-switch')).not.toBeInTheDocument();
+    });
+
+    it('should display current entity type (Business)', () => {
+      mockEntityType.mockReturnValue('BUSINESS');
+      render(<Workflows />, { wrapper: createWrapper() });
+
+      expect(screen.getByTestId('entity-type-toggle')).toHaveTextContent('Business');
+    });
+
+    it('should display current entity type (Technical)', () => {
+      mockEntityType.mockReturnValue('PERSISTENCE');
+      render(<Workflows />, { wrapper: createWrapper() });
+
+      expect(screen.getByTestId('entity-type-toggle')).toHaveTextContent('Technical');
+    });
+
+    it('should call setEntityType when toggle is clicked', async () => {
+      mockEntityType.mockReturnValue('BUSINESS');
+      render(<Workflows />, { wrapper: createWrapper() });
+
+      const toggle = screen.getByTestId('entity-type-toggle');
+      fireEvent.click(toggle);
+
+      await waitFor(() => {
+        expect(mockSetEntityType).toHaveBeenCalledWith('PERSISTENCE');
+      });
+    });
+
+    it('should filter workflows by BUSINESS entity type', () => {
+      mockEntityType.mockReturnValue('BUSINESS');
+      mockIsEnabledTechView.mockReturnValue(true);
+
+      // Update workflows to have entity types
+      const workflowsWithTypes = [
+        { ...mockWorkflows[0], entityClassName: 'com.example.Entity1' }, // BUSINESS
+        { ...mockWorkflows[1], entityClassName: 'com.example.Entity2' }, // PERSISTENCE
+        { ...mockWorkflows[2], entityClassName: 'com.example.Entity1' }, // BUSINESS
+      ];
+
+      mockUseWorkflowsList.mockReturnValue({
+        data: workflowsWithTypes,
+        isLoading: false,
+        refetch: vi.fn(),
+      });
+
+      render(<Workflows />, { wrapper: createWrapper() });
+
+      // Should show BUSINESS workflows (Entity1)
+      expect(screen.getByText('Test Workflow 1')).toBeInTheDocument();
+      expect(screen.getByText('Another Workflow')).toBeInTheDocument();
+
+      // Should NOT show PERSISTENCE workflows (Entity2)
+      expect(screen.queryByText('Test Workflow 2')).not.toBeInTheDocument();
+    });
+
+    it('should filter workflows by PERSISTENCE entity type', () => {
+      mockEntityType.mockReturnValue('PERSISTENCE');
+      mockIsEnabledTechView.mockReturnValue(true);
+
+      const workflowsWithTypes = [
+        { ...mockWorkflows[0], entityClassName: 'com.example.Entity1' }, // BUSINESS
+        { ...mockWorkflows[1], entityClassName: 'com.example.Entity2' }, // PERSISTENCE
+        { ...mockWorkflows[2], entityClassName: 'com.example.Entity1' }, // BUSINESS
+      ];
+
+      mockUseWorkflowsList.mockReturnValue({
+        data: workflowsWithTypes,
+        isLoading: false,
+        refetch: vi.fn(),
+      });
+
+      render(<Workflows />, { wrapper: createWrapper() });
+
+      // Should show PERSISTENCE workflows (Entity2)
+      expect(screen.getByText('Test Workflow 2')).toBeInTheDocument();
+
+      // Should NOT show BUSINESS workflows (Entity1)
+      expect(screen.queryByText('Test Workflow 1')).not.toBeInTheDocument();
+      expect(screen.queryByText('Another Workflow')).not.toBeInTheDocument();
+    });
+
+    it('should show all workflows when tech view is disabled', () => {
+      mockIsEnabledTechView.mockReturnValue(false);
+
+      render(<Workflows />, { wrapper: createWrapper() });
+
+      // Should show all workflows regardless of entity type
+      expect(screen.getByText('Test Workflow 1')).toBeInTheDocument();
+      expect(screen.getByText('Test Workflow 2')).toBeInTheDocument();
+      expect(screen.getByText('Another Workflow')).toBeInTheDocument();
+    });
+
+    it('should display entity type labels in entity class names', () => {
+      mockEntityType.mockReturnValue('BUSINESS');
+      mockIsEnabledTechView.mockReturnValue(true);
+
+      render(<Workflows />, { wrapper: createWrapper() });
+
+      // Entity class labels should include type information
+      expect(screen.getByText(/Entity 1.*Business/i)).toBeInTheDocument();
+    });
+
+    it('should update filtered workflows when entity type changes', async () => {
+      mockEntityType.mockReturnValue('BUSINESS');
+      mockIsEnabledTechView.mockReturnValue(true);
+
+      const { rerender } = render(<Workflows />, { wrapper: createWrapper() });
+
+      // Initially showing BUSINESS workflows
+      expect(screen.getByText('Test Workflow 1')).toBeInTheDocument();
+      expect(screen.queryByText('Test Workflow 2')).not.toBeInTheDocument();
+
+      // Change to PERSISTENCE
+      mockEntityType.mockReturnValue('PERSISTENCE');
+      rerender(<Workflows />);
+
+      await waitFor(() => {
+        // Now showing PERSISTENCE workflows
+        expect(screen.queryByText('Test Workflow 1')).not.toBeInTheDocument();
+        expect(screen.getByText('Test Workflow 2')).toBeInTheDocument();
+      });
     });
   });
 });

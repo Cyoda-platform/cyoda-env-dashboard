@@ -53,6 +53,36 @@ vi.mock('../hooks/useStatemachine', () => ({
   useWorkflowsList: () => mockUseWorkflowsList(),
 }));
 
+// Mock EntityTypeSwitch component
+vi.mock('@cyoda/ui-lib-react', () => ({
+  EntityTypeSwitch: ({ value, onChange, visible }: any) => (
+    visible ? (
+      <div data-testid="entity-type-switch">
+        <span>Entity Type: </span>
+        <button
+          data-testid="entity-type-toggle"
+          onClick={() => onChange(value === 'BUSINESS' ? 'PERSISTENCE' : 'BUSINESS')}
+        >
+          {value === 'BUSINESS' ? 'Business' : 'Technical'}
+        </button>
+      </div>
+    ) : null
+  ),
+}));
+
+// Mock global UI settings store
+const mockSetEntityType = vi.fn();
+const mockEntityType = vi.fn(() => 'BUSINESS');
+const mockIsEnabledTechView = vi.fn(() => true);
+
+vi.mock('../stores/globalUiSettingsStore', () => ({
+  useGlobalUiSettingsStore: () => ({
+    entityType: mockEntityType(),
+    isEnabledTechView: mockIsEnabledTechView(),
+    setEntityType: mockSetEntityType,
+  }),
+}));
+
 const createWrapper = () => {
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -72,6 +102,10 @@ describe('Instances', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
+    // Reset mock functions
+    mockEntityType.mockReturnValue('BUSINESS');
+    mockIsEnabledTechView.mockReturnValue(true);
+
     // useInstances returns a mutation, not a query
     mockUseInstances.mockReturnValue({
       mutateAsync: vi.fn().mockResolvedValue(mockInstancesResponse),
@@ -83,7 +117,7 @@ describe('Instances', () => {
     mockUseWorkflowEnabledTypes.mockReturnValue({
       data: [
         { value: 'com.example.Entity1', label: 'Entity 1', name: 'com.example.Entity1', type: 'BUSINESS' },
-        { value: 'com.example.Entity2', label: 'Entity 2', name: 'com.example.Entity2', type: 'TECHNICAL' },
+        { value: 'com.example.Entity2', label: 'Entity 2', name: 'com.example.Entity2', type: 'PERSISTENCE' },
       ],
       isLoading: false,
     });
@@ -243,6 +277,139 @@ describe('Instances', () => {
 
     // Component should render
     expect(container).toBeInTheDocument();
+  });
+
+  describe('Entity Type Toggle', () => {
+    it('should render the entity type switch when tech view is enabled', () => {
+      mockIsEnabledTechView.mockReturnValue(true);
+      render(<Instances />, { wrapper: createWrapper() });
+
+      expect(screen.getByTestId('entity-type-switch')).toBeInTheDocument();
+      expect(screen.getByText('Entity Type:')).toBeInTheDocument();
+    });
+
+    it('should not render the entity type switch when tech view is disabled', () => {
+      mockIsEnabledTechView.mockReturnValue(false);
+      render(<Instances />, { wrapper: createWrapper() });
+
+      expect(screen.queryByTestId('entity-type-switch')).not.toBeInTheDocument();
+    });
+
+    it('should display current entity type (Business)', () => {
+      mockEntityType.mockReturnValue('BUSINESS');
+      render(<Instances />, { wrapper: createWrapper() });
+
+      expect(screen.getByTestId('entity-type-toggle')).toHaveTextContent('Business');
+    });
+
+    it('should display current entity type (Technical)', () => {
+      mockEntityType.mockReturnValue('PERSISTENCE');
+      render(<Instances />, { wrapper: createWrapper() });
+
+      expect(screen.getByTestId('entity-type-toggle')).toHaveTextContent('Technical');
+    });
+
+    it('should call setEntityType when toggle is clicked', async () => {
+      mockEntityType.mockReturnValue('BUSINESS');
+      render(<Instances />, { wrapper: createWrapper() });
+
+      const toggle = screen.getByTestId('entity-type-toggle');
+      fireEvent.click(toggle);
+
+      await waitFor(() => {
+        expect(mockSetEntityType).toHaveBeenCalledWith('PERSISTENCE');
+      });
+    });
+
+    it('should filter entity options by BUSINESS entity type', () => {
+      mockEntityType.mockReturnValue('BUSINESS');
+      mockIsEnabledTechView.mockReturnValue(true);
+
+      render(<Instances />, { wrapper: createWrapper() });
+
+      // Open entity select dropdown
+      const select = screen.getByPlaceholderText('Select entity');
+      fireEvent.mouseDown(select);
+
+      // Should show BUSINESS entities
+      expect(screen.getByText(/Entity 1.*Business/i)).toBeInTheDocument();
+
+      // Should NOT show PERSISTENCE entities
+      expect(screen.queryByText(/Entity 2/i)).not.toBeInTheDocument();
+    });
+
+    it('should filter entity options by PERSISTENCE entity type', () => {
+      mockEntityType.mockReturnValue('PERSISTENCE');
+      mockIsEnabledTechView.mockReturnValue(true);
+
+      render(<Instances />, { wrapper: createWrapper() });
+
+      // Open entity select dropdown
+      const select = screen.getByPlaceholderText('Select entity');
+      fireEvent.mouseDown(select);
+
+      // Should show PERSISTENCE entities
+      expect(screen.getByText(/Entity 2.*Technical/i)).toBeInTheDocument();
+
+      // Should NOT show BUSINESS entities
+      expect(screen.queryByText(/Entity 1/i)).not.toBeInTheDocument();
+    });
+
+    it('should show all entity options when tech view is disabled', () => {
+      mockIsEnabledTechView.mockReturnValue(false);
+
+      render(<Instances />, { wrapper: createWrapper() });
+
+      // Open entity select dropdown
+      const select = screen.getByPlaceholderText('Select entity');
+      fireEvent.mouseDown(select);
+
+      // Should show all entities
+      expect(screen.getByText(/Entity 1/i)).toBeInTheDocument();
+      expect(screen.getByText(/Entity 2/i)).toBeInTheDocument();
+    });
+
+    it('should display entity type labels in dropdown options', () => {
+      mockEntityType.mockReturnValue('BUSINESS');
+      mockIsEnabledTechView.mockReturnValue(true);
+
+      render(<Instances />, { wrapper: createWrapper() });
+
+      // Open entity select dropdown
+      const select = screen.getByPlaceholderText('Select entity');
+      fireEvent.mouseDown(select);
+
+      // Entity options should include type information
+      expect(screen.getByText(/Entity 1.*Business/i)).toBeInTheDocument();
+    });
+
+    it('should update entity options when entity type changes', async () => {
+      mockEntityType.mockReturnValue('BUSINESS');
+      mockIsEnabledTechView.mockReturnValue(true);
+
+      const { rerender } = render(<Instances />, { wrapper: createWrapper() });
+
+      // Open dropdown - should show BUSINESS entities
+      let select = screen.getByPlaceholderText('Select entity');
+      fireEvent.mouseDown(select);
+      expect(screen.getByText(/Entity 1.*Business/i)).toBeInTheDocument();
+
+      // Close dropdown
+      fireEvent.keyDown(select, { key: 'Escape', code: 'Escape' });
+
+      // Change to PERSISTENCE
+      mockEntityType.mockReturnValue('PERSISTENCE');
+      rerender(<Instances />);
+
+      // Open dropdown again - should show PERSISTENCE entities
+      select = screen.getByPlaceholderText('Select entity');
+      fireEvent.mouseDown(select);
+
+      await waitFor(() => {
+        expect(screen.getByText(/Entity 2.*Technical/i)).toBeInTheDocument();
+        expect(screen.queryByText(/Entity 1/i)).not.toBeInTheDocument();
+      });
+    });
   });
 });
 

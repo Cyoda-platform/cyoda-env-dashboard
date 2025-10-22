@@ -13,6 +13,7 @@ import {
   CopyOutlined,
   DeleteOutlined,
   TableOutlined,
+  ArrowLeftOutlined,
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import {
@@ -22,6 +23,8 @@ import {
   useCopyWorkflow,
 } from '../hooks/useStatemachine';
 import { ExportImport } from '../components/ExportImport';
+import { EntityTypeSwitch } from '@cyoda/ui-lib-react';
+import { useGlobalUiSettingsStore } from '../stores/globalUiSettingsStore';
 import type { Workflow, WorkflowTableRow } from '../types';
 
 const { confirm } = Modal;
@@ -30,11 +33,14 @@ export const Workflows: React.FC = () => {
   const navigate = useNavigate();
   const [filter, setFilter] = useState('');
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-  
+
+  // Global UI settings
+  const { entityType, isEnabledTechView, setEntityType } = useGlobalUiSettingsStore();
+
   // Queries
   const { data: workflows = [], isLoading, refetch } = useWorkflowsList();
   const { data: workflowEnabledTypes = [] } = useWorkflowEnabledTypes();
-  
+
   // Mutations
   const deleteWorkflowMutation = useDeleteWorkflow();
   const copyWorkflowMutation = useCopyWorkflow();
@@ -44,11 +50,21 @@ export const Workflows: React.FC = () => {
     return persisted ? 'persisted' : 'transient';
   };
   
+  // Helper function to map entity type
+  const entityTypeMapper = (type: string): string => {
+    const map: Record<string, string> = {
+      BUSINESS: 'Business',
+      PERSISTENCE: 'Technical',
+    };
+    return map[type] || type;
+  };
+
   // Table data with filtering
   const tableData = useMemo<WorkflowTableRow[]>(() => {
     return workflows
       .map((workflow: Workflow) => {
         let entityClassNameLabel = workflow.entityClassName;
+        let entityTypeValue = null;
 
         // Find entity type info
         const entityRow = workflowEnabledTypes.find(
@@ -56,16 +72,32 @@ export const Workflows: React.FC = () => {
         );
 
         if (entityRow) {
-          entityClassNameLabel = entityRow.label || entityRow.name || workflow.entityClassName;
+          // If entity has type info, add it to the label
+          if (entityRow.type) {
+            entityTypeValue = entityRow.type;
+            const typeLabel = entityTypeMapper(entityRow.type);
+            entityClassNameLabel = `${entityRow.name || workflow.entityClassName} (${typeLabel})`;
+          } else {
+            entityClassNameLabel = entityRow.label || entityRow.name || workflow.entityClassName;
+          }
         }
 
         return {
           ...workflow,
           key: workflow.id,
           entityClassNameLabel,
+          entityType: entityTypeValue,
         };
       })
       .filter((workflow) => {
+        // Filter by entity type if tech view is enabled
+        if (isEnabledTechView && workflow.entityType) {
+          if (workflow.entityType !== entityType) {
+            return false;
+          }
+        }
+
+        // Filter by search text
         if (!filter) return true;
         const filterLower = filter.toLowerCase();
         return (
@@ -73,7 +105,7 @@ export const Workflows: React.FC = () => {
           workflow.entityClassNameLabel.toLowerCase().includes(filterLower)
         );
       });
-  }, [workflows, workflowEnabledTypes, filter]);
+  }, [workflows, workflowEnabledTypes, filter, entityType, isEnabledTechView]);
 
   // Get selected workflows for export
   const selectedWorkflows = useMemo(() => {
@@ -103,12 +135,12 @@ export const Workflows: React.FC = () => {
         persistedType,
         workflowId: record.id,
       });
-      
+
       message.success('Workflow copied successfully');
 
-      // Navigate to the new workflow
+      // Navigate to the new workflow as 'persisted' so it can be edited
       navigate(
-        `/workflow/${newWorkflowId}?persistedType=${persistedType}&entityClassName=${record.entityClassName}`
+        `/workflow/${newWorkflowId}?persistedType=persisted&entityClassName=${record.entityClassName}`
       );
     } catch (error) {
       message.error('Failed to copy workflow');
@@ -229,6 +261,24 @@ export const Workflows: React.FC = () => {
   
   return (
     <div style={{ padding: '16px' }}>
+      {/* Header with Back button and Entity Type Switch */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <Button
+            icon={<ArrowLeftOutlined />}
+            onClick={() => navigate('/menu')}
+          >
+            Back to Menu
+          </Button>
+          <h1 style={{ margin: 0 }}>Workflows</h1>
+        </div>
+        <EntityTypeSwitch
+          value={entityType}
+          onChange={setEntityType}
+          visible={isEnabledTechView}
+        />
+      </div>
+
       <Card>
         <Space direction="vertical" size="middle" style={{ width: '100%' }}>
           {/* Header with filter and create button */}

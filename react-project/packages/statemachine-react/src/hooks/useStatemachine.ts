@@ -333,7 +333,7 @@ export function useUpdateTransition() {
 export function useDeleteTransition() {
   const queryClient = useQueryClient();
   const store = useStatemachineStore();
-  
+
   return useMutation({
     mutationFn: async ({
       persistedType,
@@ -345,6 +345,29 @@ export function useDeleteTransition() {
       transitionId: string;
     }) => {
       const response = await store.deleteTransition(persistedType, workflowId, transitionId);
+      return response.data;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: statemachineKeys.transitionsList(variables.persistedType, variables.workflowId) });
+    },
+  });
+}
+
+export function useCopyTransition() {
+  const queryClient = useQueryClient();
+  const store = useStatemachineStore();
+
+  return useMutation({
+    mutationFn: async ({
+      persistedType,
+      workflowId,
+      transitionId,
+    }: {
+      persistedType: PersistedType;
+      workflowId: string;
+      transitionId: string;
+    }) => {
+      const response = await store.copyTransition(persistedType, workflowId, transitionId);
       return response.data;
     },
     onSuccess: (_, variables) => {
@@ -448,6 +471,21 @@ export function useDeleteCriteria() {
   });
 }
 
+export function useCopyCriteria() {
+  const queryClient = useQueryClient();
+  const store = useStatemachineStore();
+
+  return useMutation({
+    mutationFn: async ({ persistedType, criteriaId }: { persistedType: PersistedType; criteriaId: string }) => {
+      const response = await store.copyCriteria(persistedType, criteriaId);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: statemachineKeys.criteria() });
+    },
+  });
+}
+
 // ============================================================================
 // Process Hooks
 // ============================================================================
@@ -543,6 +581,21 @@ export function useDeleteProcess() {
   });
 }
 
+export function useCopyProcess() {
+  const queryClient = useQueryClient();
+  const store = useStatemachineStore();
+
+  return useMutation({
+    mutationFn: async ({ persistedType, processId }: { persistedType: PersistedType; processId: string }) => {
+      const response = await store.copyProcesses(persistedType, processId);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: statemachineKeys.processes() });
+    },
+  });
+}
+
 // ============================================================================
 // Instance Hooks
 // ============================================================================
@@ -575,12 +628,18 @@ export function useTransitions(persistedType: PersistedType, workflowId: string,
 }
 
 /**
- * Alias for useProcessesList - fetches processes for a workflow
+ * Fetches all processes for an entity class (for graphical view)
  * Note: This returns all processes for an entity class, not workflow-specific
  */
-export function useProcesses(persistedType: PersistedType, workflowId: string, enabled = true) {
-  // Get entity class from workflow if needed
-  // For now, just return all processes
-  return useProcessesList();
+export function useProcesses(persistedType: PersistedType, workflowId: string, entityClassName?: string, enabled = true) {
+  return useProcessesList(entityClassName);
+}
+
+/**
+ * Fetches all criteria for an entity class (for graphical view)
+ * Note: This returns all criteria for an entity class, not workflow-specific
+ */
+export function useCriteriaForWorkflow(persistedType: PersistedType, workflowId: string, entityClassName?: string, enabled = true) {
+  return useCriteriaList(entityClassName);
 }
 

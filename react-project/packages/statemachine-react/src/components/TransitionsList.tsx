@@ -4,12 +4,13 @@
  * Migrated from: .old_project/packages/statemachine/src/components/TransitionsList.vue
  */
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Table, Button, Space, Tooltip, Modal, message } from 'antd';
 import { PlusOutlined, CopyOutlined, DeleteOutlined, UnorderedListOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
-import { useTransitionsList, useDeleteTransition } from '../hooks/useStatemachine';
+import { useTransitionsList, useDeleteTransition, useCopyTransition } from '../hooks/useStatemachine';
+import { StatesListModal } from './StatesListModal';
 import type { PersistedType } from '../types';
 
 const { confirm } = Modal;
@@ -41,12 +42,14 @@ export const TransitionsList: React.FC<TransitionsListProps> = ({
 }) => {
   const navigate = useNavigate();
   const isRuntime = persistedType === 'transient';
-  
+  const [statesModalVisible, setStatesModalVisible] = useState(false);
+
   // Queries
   const { data: transitions = [], isLoading, refetch } = useTransitionsList(persistedType, workflowId);
-  
+
   // Mutations
   const deleteTransitionMutation = useDeleteTransition();
+  const copyTransitionMutation = useCopyTransition();
   
   // Table data
   const tableData = useMemo<TransitionRow[]>(() => {
@@ -68,24 +71,38 @@ export const TransitionsList: React.FC<TransitionsListProps> = ({
   // Handlers
   const handleAddNew = () => {
     navigate(
-      `/statemachine/transition/new?workflowId=${workflowId}&persistedType=${persistedType}&entityClassName=${entityClassName}`
+      `/transition/new?workflowId=${workflowId}&persistedType=${persistedType}&entityClassName=${entityClassName}`
     );
   };
-  
+
   const handleShowStates = () => {
-    // TODO: Implement states list modal
-    message.info('States list modal coming soon');
+    setStatesModalVisible(true);
   };
-  
+
   const handleViewTransition = (record: TransitionRow) => {
     navigate(
-      `/statemachine/transition/${record.id}?workflowId=${workflowId}&persistedType=${persistedType}&entityClassName=${entityClassName}`
+      `/transition/${record.id}?workflowId=${workflowId}&persistedType=${persistedType}&entityClassName=${entityClassName}`
     );
   };
-  
-  const handleCopy = async (_record: TransitionRow) => {
-    // TODO: Implement copy functionality
-    message.info('Copy transition coming soon');
+
+  const handleCopy = async (record: TransitionRow) => {
+    try {
+      const newTransitionId = await copyTransitionMutation.mutateAsync({
+        persistedType,
+        workflowId,
+        transitionId: record.id,
+      });
+
+      message.success('Transition copied successfully');
+      refetch();
+
+      // Navigate to the new transition
+      navigate(
+        `/transition/${newTransitionId}?workflowId=${workflowId}&persistedType=${persistedType}&entityClassName=${entityClassName}`
+      );
+    } catch (error) {
+      message.error('Failed to copy transition');
+    }
   };
   
   const handleDelete = (record: TransitionRow) => {
@@ -114,9 +131,9 @@ export const TransitionsList: React.FC<TransitionsListProps> = ({
   const handleViewState = (record: TransitionRow, stateType: 'start' | 'end') => {
     const stateId = stateType === 'start' ? record.startStateId : record.endStateId;
     if (!stateId || stateId.toLowerCase() === 'none') return;
-    
+
     navigate(
-      `/statemachine/state/${stateId}?workflowId=${workflowId}&persistedType=${persistedType}&entityClassName=${entityClassName}`
+      `/state/${stateId}?workflowId=${workflowId}&persistedType=${persistedType}&entityClassName=${entityClassName}`
     );
   };
   
@@ -214,6 +231,7 @@ export const TransitionsList: React.FC<TransitionsListProps> = ({
                     size="small"
                     icon={<CopyOutlined />}
                     onClick={() => handleCopy(record)}
+                    loading={copyTransitionMutation.isPending}
                   />
                 </Tooltip>
                 <Tooltip title="Delete">
@@ -254,6 +272,14 @@ export const TransitionsList: React.FC<TransitionsListProps> = ({
         loading={isLoading}
         bordered
         pagination={false}
+      />
+
+      <StatesListModal
+        visible={statesModalVisible}
+        onClose={() => setStatesModalVisible(false)}
+        workflowId={workflowId}
+        persistedType={persistedType}
+        entityClassName={entityClassName}
       />
     </div>
   );

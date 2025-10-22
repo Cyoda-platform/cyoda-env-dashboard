@@ -4,8 +4,8 @@
  * Migrated from: .old_project/packages/statemachine/src/components/WorkflowForm.vue
  */
 
-import React, { useEffect, useState } from 'react';
-import { Form, Input, Select, Switch, Button, Tabs, message, Space } from 'antd';
+import React, { useEffect, useState, useMemo } from 'react';
+import { Form, Input, Select, Switch, Button, Tabs, message, Space, Checkbox, Alert } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import {
   useWorkflow,
@@ -14,6 +14,7 @@ import {
   useCreateWorkflow,
   useUpdateWorkflow,
 } from '../hooks/useStatemachine';
+import { useGlobalUiSettingsStore } from '../stores/globalUiSettingsStore';
 import type { PersistedType, WorkflowForm as WorkflowFormType } from '../types';
 
 const { TextArea } = Input;
@@ -32,10 +33,14 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
   const [form] = Form.useForm();
   const [activeTab, setActiveTab] = useState('settings');
   const [selectedEntityClassName, setSelectedEntityClassName] = useState<string>('');
-  
+  const [useDecisionTreeEnabled, setUseDecisionTreeEnabled] = useState<boolean>(false);
+
   const isNew = !workflowId || workflowId === 'new';
   const isRuntime = persistedType === 'transient';
-  
+
+  // Global UI settings
+  const { entityType, isEnabledTechView } = useGlobalUiSettingsStore();
+
   // Queries
   const { data: workflow, isLoading: isLoadingWorkflow } = useWorkflow(
     persistedType,
@@ -44,7 +49,7 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
   );
   const { data: workflowEnabledTypes = [], isLoading: isLoadingTypes } = useWorkflowEnabledTypes();
   const { data: criteriaList = [], isLoading: isLoadingCriteria } = useCriteriaList(selectedEntityClassName);
-  
+
   // Mutations
   const createWorkflowMutation = useCreateWorkflow();
   const updateWorkflowMutation = useUpdateWorkflow();
@@ -52,6 +57,7 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
   // Initialize form when workflow data loads
   useEffect(() => {
     if (workflow) {
+      const useDecisionTree = workflow.useDecisionTree || false;
       form.setFieldsValue({
         entityClassName: workflow.entityClassName,
         name: workflow.name,
@@ -59,22 +65,57 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
         documentLink: workflow.documentLink || '',
         criteriaIds: workflow.criteriaIds || [],
         active: workflow.active !== undefined ? workflow.active : true,
-        useDecisionTree: workflow.useDecisionTree || false,
+        useDecisionTree,
       });
       setSelectedEntityClassName(workflow.entityClassName);
+      setUseDecisionTreeEnabled(useDecisionTree);
     } else if (isNew) {
       form.setFieldsValue({
         active: true,
         useDecisionTree: false,
       });
+      setUseDecisionTreeEnabled(false);
     }
   }, [workflow, isNew, form]);
   
-  // Entity type options
-  const entityOptions = workflowEnabledTypes.map((type: any) => ({
-    label: type.label || type.name || type.value,
-    value: type.value || type.name,
-  }));
+  // Helper function to map entity type
+  const entityTypeMapper = (type: string): string => {
+    const map: Record<string, string> = {
+      BUSINESS: 'Business',
+      PERSISTENCE: 'Technical',
+    };
+    return map[type] || type;
+  };
+
+  // Entity type options - filtered by selected entity type
+  const entityOptions = useMemo(() => {
+    return workflowEnabledTypes
+      .filter((type: any) => {
+        // If tech view is enabled, filter by entity type
+        if (isEnabledTechView && typeof type === 'object' && type.type) {
+          return type.type === entityType;
+        }
+        return true;
+      })
+      .map((type: any) => {
+        // Handle both string arrays and object arrays
+        if (typeof type === 'string') {
+          return { label: type, value: type };
+        }
+
+        // If entity has type info, add it to the label
+        let label = type.name || type.value || type;
+        if (type.type) {
+          const typeLabel = entityTypeMapper(type.type);
+          label = `${type.name} (${typeLabel})`;
+        }
+
+        return {
+          label,
+          value: type.value || type.name || type,
+        };
+      });
+  }, [workflowEnabledTypes, entityType, isEnabledTechView]);
   
   // Criteria options
   const criteriaOptions = criteriaList.map((criteria: any) => ({
@@ -106,7 +147,7 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
         const newWorkflow = await createWorkflowMutation.mutateAsync(formData);
         message.success('Workflow created successfully');
         navigate(
-          `/statemachine/workflow/${newWorkflow.id}?persistedType=persisted&entityClassName=${values.entityClassName}`
+          `/workflow/${newWorkflow.id}?persistedType=persisted&entityClassName=${values.entityClassName}`
         );
       } else {
         await updateWorkflowMutation.mutateAsync({
@@ -176,8 +217,14 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
               />
             </Form.Item>
             
-            <Form.Item label="Documentation Link" name="documentLink">
-              <Input disabled={isRuntime} />
+            <Form.Item
+              label="Documentation Link"
+              name="documentLink"
+              rules={[
+                { type: 'url', message: 'Documentation Link must be a valid URL' }
+              ]}
+            >
+              <Input disabled={isRuntime} placeholder="https://..." />
             </Form.Item>
             
             <Form.Item label="Criteria" name="criteriaIds">
@@ -193,12 +240,31 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
                 }
               />
             </Form.Item>
+
+            <Form.Item name="useDecisionTree" valuePropName="checked">
+              <Checkbox
+                disabled={isRuntime}
+                onChange={(e) => setUseDecisionTreeEnabled(e.target.checked)}
+              >
+                Use Decision Tree
+              </Checkbox>
+            </Form.Item>
           </TabPane>
-          
-          {/* Decision Tree tab - placeholder for future implementation */}
-          <TabPane tab="Decision Tree" key="decisionTree" disabled>
+
+          {/* Decision Tree tab */}
+          <TabPane tab="Decision Tree" key="decisionTree" disabled={!useDecisionTreeEnabled}>
+            <Alert
+              message="Decision Tree Configuration"
+              description="Decision trees allow you to define complex conditional logic for state transitions. This feature enables you to create branching logic based on criteria evaluation."
+              type="info"
+              showIcon
+              style={{ marginBottom: '16px' }}
+            />
             <div style={{ padding: '20px', textAlign: 'center', color: '#999' }}>
-              Decision tree configuration coming soon...
+              <p>Decision tree visual editor coming soon...</p>
+              <p style={{ fontSize: '12px', marginTop: '8px' }}>
+                Enable "Use Decision Tree" checkbox in Settings tab to activate this feature.
+              </p>
             </div>
           </TabPane>
         </Tabs>

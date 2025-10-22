@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { Table, Button, Space, Tooltip, Modal, message } from 'antd';
 import { PlusOutlined, CopyOutlined, DeleteOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
-import { useCriteriaList, useDeleteCriteria } from '../hooks/useStatemachine';
+import { useCriteriaList, useDeleteCriteria, useCopyCriteria } from '../hooks/useStatemachine';
 import type { PersistedType } from '../types';
 
 const { confirm } = Modal;
@@ -37,9 +37,10 @@ export const CriteriaList: React.FC<CriteriaListProps> = ({
   
   // Queries
   const { data: criteriaList = [], isLoading, refetch } = useCriteriaList(entityClassName);
-  
+
   // Mutations
   const deleteCriteriaMutation = useDeleteCriteria();
+  const copyCriteriaMutation = useCopyCriteria();
   
   // Table data
   const tableData = useMemo<CriteriaRow[]>(() => {
@@ -55,20 +56,35 @@ export const CriteriaList: React.FC<CriteriaListProps> = ({
   // Handlers
   const handleAddNew = () => {
     navigate(
-      `/statemachine/criteria/new?persistedType=persisted&entityClassName=${entityClassName}&workflowPersistedType=${persistedType}&workflowId=${workflowId}`
+      `/criteria/new?persistedType=persisted&entityClassName=${entityClassName}&workflowPersistedType=${persistedType}&workflowId=${workflowId}`
     );
   };
-  
+
   const handleViewCriteria = (record: CriteriaRow) => {
     const criteriaPersistedType = record.persisted ? 'persisted' : 'transient';
     navigate(
-      `/statemachine/criteria/${record.id}?persistedType=${criteriaPersistedType}&entityClassName=${entityClassName}&workflowPersistedType=${persistedType}&workflowId=${workflowId}`
+      `/criteria/${record.id}?persistedType=${criteriaPersistedType}&entityClassName=${entityClassName}&workflowPersistedType=${persistedType}&workflowId=${workflowId}`
     );
   };
-  
-  const handleCopy = async (_record: CriteriaRow) => {
-    // TODO: Implement copy functionality
-    message.info('Copy criteria coming soon');
+
+  const handleCopy = async (record: CriteriaRow) => {
+    try {
+      const criteriaPersistedType = record.persisted ? 'persisted' : 'transient';
+      const newCriteriaId = await copyCriteriaMutation.mutateAsync({
+        persistedType: criteriaPersistedType,
+        criteriaId: record.id,
+      });
+
+      message.success('Criteria copied successfully');
+      refetch();
+
+      // Navigate to the new criteria
+      navigate(
+        `/criteria/${newCriteriaId}?persistedType=${criteriaPersistedType}&entityClassName=${entityClassName}&workflowPersistedType=${persistedType}&workflowId=${workflowId}`
+      );
+    } catch (error) {
+      message.error('Failed to copy criteria');
+    }
   };
   
   const handleDelete = (record: CriteriaRow) => {
@@ -136,6 +152,7 @@ export const CriteriaList: React.FC<CriteriaListProps> = ({
               size="small"
               icon={<CopyOutlined />}
               onClick={() => handleCopy(record)}
+              loading={copyCriteriaMutation.isPending}
             />
           </Tooltip>
           <Tooltip title="Delete">

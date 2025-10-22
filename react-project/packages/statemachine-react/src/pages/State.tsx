@@ -7,6 +7,7 @@
 import React, { useEffect } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { Form, Input, Button, Card, message, Space } from 'antd';
+import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useState as useStateHook, useCreateState, useUpdateState } from '../hooks/useStatemachine';
 import type { PersistedType, StateForm as StateFormType } from '../types';
 
@@ -78,7 +79,7 @@ export const State: React.FC = () => {
       
       // Navigate back to workflow detail
       navigate(
-        `/statemachine/workflow/${workflowId}?persistedType=${persistedType}&entityClassName=${entityClassName}`
+        `/workflow/${workflowId}?persistedType=${persistedType}&entityClassName=${entityClassName}`
       );
     } catch (error) {
       message.error('Failed to save state');
@@ -87,15 +88,25 @@ export const State: React.FC = () => {
   
   const handleCancel = () => {
     navigate(
-      `/statemachine/workflow/${workflowId}?persistedType=${persistedType}&entityClassName=${entityClassName}`
+      `/workflow/${workflowId}?persistedType=${persistedType}&entityClassName=${entityClassName}`
     );
   };
   
   const pageTitle = isNew ? 'Create New State' : `State: ${state?.name || ''}`;
   const isLoading = isLoadingState || createStateMutation.isPending || updateStateMutation.isPending;
-  
+
   return (
     <div style={{ padding: '16px' }}>
+      {/* Back Button */}
+      <div style={{ marginBottom: '16px' }}>
+        <Button
+          icon={<ArrowLeftOutlined />}
+          onClick={handleCancel}
+        >
+          Back to Workflow
+        </Button>
+      </div>
+
       <Card>
         <Form
           form={form}
