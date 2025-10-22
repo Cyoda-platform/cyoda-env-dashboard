@@ -6,6 +6,7 @@ import './HiddenTablesPopUp.css';
 
 interface HiddenTablesPopUpProps {
   tables: SqlTable[];
+  onTablesChange?: (tables: SqlTable[]) => void;
 }
 
 export interface HiddenTablesPopUpRef {
@@ -13,7 +14,7 @@ export interface HiddenTablesPopUpRef {
 }
 
 const HiddenTablesPopUp = forwardRef<HiddenTablesPopUpRef, HiddenTablesPopUpProps>(
-  ({ tables }, ref) => {
+  ({ tables, onTablesChange }, ref) => {
     const [visible, setVisible] = useState(false);
     const [filter, setFilter] = useState('');
 
@@ -38,7 +39,17 @@ const HiddenTablesPopUp = forwardRef<HiddenTablesPopUpRef, HiddenTablesPopUpProp
 
     // Handle checkbox change
     const handleHiddenChange = (record: SqlTable, checked: boolean) => {
-      record.hidden = checked;
+      // Update the table's hidden state
+      const updatedTables = tables.map((table) =>
+        table.metadataClassId === record.metadataClassId
+          ? { ...table, hidden: checked }
+          : table
+      );
+
+      // Notify parent of the change
+      if (onTablesChange) {
+        onTablesChange(updatedTables);
+      }
     };
 
     // Table columns

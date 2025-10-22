@@ -25,43 +25,39 @@ export const routes: RouteObject[] = [
     element: <Home />,
   },
   {
-    path: '/',
+    path: '/workflows',
     element: <Workflows />,
   },
   {
-    path: '/statemachine/workflows',
-    element: <Workflows />,
-  },
-  {
-    path: '/statemachine/instances',
+    path: '/instances',
     element: <Instances />,
   },
   {
-    path: '/statemachine/workflow/new',
+    path: '/workflow/new',
     element: <WorkflowDetail />,
   },
   {
-    path: '/statemachine/workflow/:workflowId',
+    path: '/workflow/:workflowId',
     element: <WorkflowDetail />,
   },
   {
-    path: '/statemachine/state/:stateId',
+    path: '/state/:stateId',
     element: <State />,
   },
   {
-    path: '/statemachine/transition/:transitionId',
+    path: '/transition/:transitionId',
     element: <Transition />,
   },
   {
-    path: '/statemachine/criteria/:criteriaId',
+    path: '/criteria/:criteriaId',
     element: <Criteria />,
   },
   {
-    path: '/statemachine/process/:processId',
+    path: '/process/:processId',
     element: <Process />,
   },
   {
-    path: '/statemachine/instances/:instanceId',
+    path: '/instances/:instanceId',
     element: <InstanceDetail />,
   },
 ];

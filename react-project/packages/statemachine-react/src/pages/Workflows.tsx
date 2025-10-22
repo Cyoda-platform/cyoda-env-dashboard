@@ -82,18 +82,18 @@ export const Workflows: React.FC = () => {
   
   // Handlers
   const handleCreateNew = () => {
-    navigate('/statemachine/workflow/new');
+    navigate('/workflow/new');
   };
-  
+
   const handleViewWorkflow = (record: WorkflowTableRow) => {
     const persistedType = getPersistedType(record.persisted);
     navigate(
-      `/statemachine/workflow/${record.id}?persistedType=${persistedType}&entityClassName=${record.entityClassName}`
+      `/workflow/${record.id}?persistedType=${persistedType}&entityClassName=${record.entityClassName}`
     );
   };
-  
+
   const handleViewInstances = (record: WorkflowTableRow) => {
-    navigate(`/statemachine/instances?entityClassName=${record.entityClassName}`);
+    navigate(`/instances?entityClassName=${record.entityClassName}`);
   };
   
   const handleCopyWorkflow = async (record: WorkflowTableRow) => {
@@ -105,10 +105,10 @@ export const Workflows: React.FC = () => {
       });
       
       message.success('Workflow copied successfully');
-      
+
       // Navigate to the new workflow
       navigate(
-        `/statemachine/workflow/${newWorkflowId}?persistedType=${persistedType}&entityClassName=${record.entityClassName}`
+        `/workflow/${newWorkflowId}?persistedType=${persistedType}&entityClassName=${record.entityClassName}`
       );
     } catch (error) {
       message.error('Failed to copy workflow');

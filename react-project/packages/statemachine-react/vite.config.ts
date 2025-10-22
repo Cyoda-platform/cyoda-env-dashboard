@@ -10,6 +10,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': resolve(__dirname, './src'),
+      '@cyoda/http-api-react': resolve(__dirname, './src/__mocks__/@cyoda/http-api-react.ts'),
     },
   },
   build: {

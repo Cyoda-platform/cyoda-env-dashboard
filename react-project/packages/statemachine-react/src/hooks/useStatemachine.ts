@@ -575,16 +575,6 @@ export function useTransitions(persistedType: PersistedType, workflowId: string,
 }
 
 /**
- * Alias for useCriteriaList - fetches criteria for a workflow
- * Note: This returns all criteria for an entity class, not workflow-specific
- */
-export function useCriteria(persistedType: PersistedType, workflowId: string, enabled = true) {
-  // Get entity class from workflow if needed
-  // For now, just return all criteria
-  return useCriteriaList();
-}
-
-/**
  * Alias for useProcessesList - fetches processes for a workflow
  * Note: This returns all processes for an entity class, not workflow-specific
  */

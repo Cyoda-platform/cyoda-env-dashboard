@@ -19,7 +19,7 @@ import ModelsPopUp, { ModelsPopUpRef } from '../../components/dialogs/ModelsPopU
 import HiddenTablesPopUp, { HiddenTablesPopUpRef } from '../../components/dialogs/HiddenTablesPopUp';
 import HiddenFieldsPopUp, { HiddenFieldsPopUpRef } from '../../components/dialogs/HiddenFieldsPopUp';
 import TrinoEditTable from '../../components/TrinoEditTable/TrinoEditTable';
-import { getAllFields } from '../../utils/helpers';
+import { getAllFields, updateFieldInNested } from '../../utils/helpers';
 import './TrinoEdit.css';
 
 const TrinoEdit: React.FC = () => {
@@ -36,6 +36,7 @@ const TrinoEdit: React.FC = () => {
   });
   const [activeTab, setActiveTab] = useState('0');
   const [tableFilter, setTableFilter] = useState('');
+  const [currentTableIndex, setCurrentTableIndex] = useState<number>(0);
 
   // Refs for dialogs
   const modelsPopUpRef = useRef<ModelsPopUpRef>(null);
@@ -162,6 +163,34 @@ const TrinoEdit: React.FC = () => {
     }
   };
 
+  // Handle fields change from HiddenFieldsPopUp
+  const handleFieldsChange = (updatedFields: any[]) => {
+    setSchemaData((prev) => {
+      const newTables = [...prev.tables];
+      const tableIndex = currentTableIndex;
+
+      if (tableIndex >= 0 && tableIndex < newTables.length) {
+        // Update each field in the nested structure
+        let updatedTableFields = newTables[tableIndex].fields;
+
+        updatedFields.forEach((updatedField) => {
+          updatedTableFields = updateFieldInNested(
+            updatedTableFields,
+            updatedField.fieldName,
+            { hidden: updatedField.hidden }
+          );
+        });
+
+        newTables[tableIndex] = {
+          ...newTables[tableIndex],
+          fields: updatedTableFields,
+        };
+      }
+
+      return { ...prev, tables: newTables };
+    });
+  };
+
   // Check if there are validation errors
   const hasErrors = useMemo(() => {
     return schemaData.tables.some((table) => {
@@ -263,7 +292,10 @@ const TrinoEdit: React.FC = () => {
                             <Badge count={hiddenFieldsCount} showZero={false}>
                               <Button
                                 icon={<EyeOutlined />}
-                                onClick={() => hiddenFieldsPopUpRef.current?.open(allFields)}
+                                onClick={() => {
+                                  setCurrentTableIndex(index);
+                                  hiddenFieldsPopUpRef.current?.open(allFields);
+                                }}
                               />
                             </Badge>
                           </div>
@@ -313,9 +345,16 @@ const TrinoEdit: React.FC = () => {
       <HiddenTablesPopUp
         ref={hiddenTablesPopUpRef}
         tables={schemaData.tables}
+        onTablesChange={(updatedTables) => {
+          setSchemaData((prev) => ({
+            ...prev,
+            tables: updatedTables,
+          }));
+        }}
       />
       <HiddenFieldsPopUp
         ref={hiddenFieldsPopUpRef}
+        onFieldsChange={handleFieldsChange}
       />
     </div>
   );

@@ -82,3 +82,33 @@ export const filterHidden = <T extends { hidden?: boolean }>(items: T[]): T[] =>
   return items.filter((el) => el.hidden);
 };
 
+/**
+ * Update a field in a nested field structure (including arrayFields)
+ * @param fields - List of fields to search in
+ * @param fieldName - Name of the field to update
+ * @param updates - Updates to apply to the field
+ * @returns Updated fields array
+ */
+export const updateFieldInNested = (
+  fields: SqlField[],
+  fieldName: string,
+  updates: Partial<SqlField>
+): SqlField[] => {
+  return fields.map((field) => {
+    // If this is the field we're looking for, update it
+    if (field.fieldName === fieldName) {
+      return { ...field, ...updates };
+    }
+
+    // If this field has arrayFields, recursively update them
+    if (field.arrayFields) {
+      return {
+        ...field,
+        arrayFields: updateFieldInNested(field.arrayFields, fieldName, updates),
+      };
+    }
+
+    return field;
+  });
+};
+

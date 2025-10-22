@@ -4,7 +4,9 @@ import type { ColumnsType } from 'antd/es/table';
 import type { SqlField } from '../../types';
 import './HiddenFieldsPopUp.css';
 
-interface HiddenFieldsPopUpProps {}
+interface HiddenFieldsPopUpProps {
+  onFieldsChange?: (fields: SqlField[]) => void;
+}
 
 export interface HiddenFieldsPopUpRef {
   open: (fields: SqlField[]) => void;
@@ -15,7 +17,7 @@ interface SqlFieldWithKey extends SqlField {
 }
 
 const HiddenFieldsPopUp = forwardRef<HiddenFieldsPopUpRef, HiddenFieldsPopUpProps>(
-  (_props, ref) => {
+  ({ onFieldsChange }, ref) => {
     const [visible, setVisible] = useState(false);
     const [filter, setFilter] = useState('');
     const [fields, setFields] = useState<SqlFieldWithKey[]>([]);
@@ -46,7 +48,19 @@ const HiddenFieldsPopUp = forwardRef<HiddenFieldsPopUpRef, HiddenFieldsPopUpProp
 
     // Handle checkbox change
     const handleHiddenChange = (record: SqlFieldWithKey, checked: boolean) => {
-      record.hidden = checked;
+      // Update the fields array immutably to trigger re-render
+      const updatedFields = fields.map((field) =>
+        field.fieldKey === record.fieldKey
+          ? { ...field, hidden: checked }
+          : field
+      );
+
+      setFields(updatedFields);
+
+      // Notify parent of the change
+      if (onFieldsChange) {
+        onFieldsChange(updatedFields);
+      }
     };
 
     // Table columns

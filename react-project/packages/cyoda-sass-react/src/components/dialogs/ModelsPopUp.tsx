@@ -3,6 +3,7 @@ import { Modal, Table, Button, message } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import moment from 'moment';
 import { useEntityModels } from '../../hooks/useSqlSchema';
+import sqlSchemaApi from '../../api/sqlSchemaApi';
 import type { EntityModel, SqlTable } from '../../types';
 import './ModelsPopUp.css';
 
@@ -111,25 +112,53 @@ const ModelsPopUp = forwardRef<ModelsPopUpRef, ModelsPopUpProps>(
     // Generate tables from model IDs
     const generateTableByIds = async (ids: string[]) => {
       try {
+        console.log('Generating tables for model IDs:', ids);
+
         const promises = ids.map(async (id) => {
-          const response = await fetch(`/sql/schema/genTables/${id}`);
-          const { data } = await response.json();
-          return data;
+          try {
+            const response = await sqlSchemaApi.getGenTable(id);
+            console.log(`Response for model ${id}:`, response);
+            return response.data;
+          } catch (err) {
+            console.error(`Error fetching tables for model ${id}:`, err);
+            return null;
+          }
         });
 
         const results = await Promise.all(promises);
-        const tableList = results.flat();
+        console.log('All results:', results);
+
+        // Filter out null/undefined values and flatten
+        const tableList = results
+          .filter((result) => {
+            console.log('Filtering result:', result);
+            return result != null && Array.isArray(result);
+          })
+          .flat()
+          .filter((table) => {
+            console.log('Filtering table:', table);
+            return table != null && table.tableName;
+          });
+
+        console.log('Final table list:', tableList);
 
         // Convert table names to lowercase and replace dashes
         tableList.forEach((el: SqlTable) => {
-          el.tableName = el.tableName.toLowerCase().replaceAll('-', '_');
+          if (el && el.tableName) {
+            el.tableName = el.tableName.toLowerCase().replaceAll('-', '_');
+          }
         });
 
+        if (tableList.length === 0) {
+          message.warning('No tables were generated');
+          return;
+        }
+
         onChange(tableList);
-        message.success('Tables generated successfully');
+        message.success(`Generated ${tableList.length} table(s) successfully`);
       } catch (error) {
         message.error('Failed to generate tables');
-        console.error(error);
+        console.error('Generate tables error:', error);
       }
     };
 

@@ -8,7 +8,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { ConfigProvider } from 'antd';
-import { BaseLayout, LoginLayout, ErrorHandler } from '@cyoda/ui-lib-react';
+import { BaseLayout, LoginLayout, ErrorHandler, ErrorHandlerProvider } from '@cyoda/ui-lib-react';
 import { routes } from './routes';
 import './App.css';
 
@@ -35,38 +35,26 @@ const App: React.FC = () => {
   return (
     <ConfigProvider theme={theme}>
       <QueryClientProvider client={queryClient}>
-        <BrowserRouter basename="/statemachine">
-          <ErrorHandler>
-            <Routes>
-              {/* Login route */}
-              <Route
-                path="/login"
-                element={
-                  <LoginLayout>
-                    {routes.find((r) => r.path === '/login')?.element}
-                  </LoginLayout>
-                }
-              />
-              
-              {/* Protected routes with BaseLayout */}
-              {routes
-                .filter((route) => route.path !== '/login')
-                .map((route) => (
-                  <Route
-                    key={route.path}
-                    path={route.path}
-                    element={
-                      <BaseLayout>
-                        {route.element}
-                      </BaseLayout>
-                    }
-                  />
-                ))}
-              
-              {/* Redirect root to workflows */}
-              <Route path="/" element={<Navigate to="/statemachine/workflows" replace />} />
-            </Routes>
-          </ErrorHandler>
+        <BrowserRouter>
+          <Routes>
+            {/* Protected routes */}
+            {routes
+              .filter((route) => route.path !== '/login')
+              .map((route) => (
+                <Route
+                  key={route.path}
+                  path={route.path}
+                  element={
+                    <div style={{ padding: '20px', minHeight: '100vh', backgroundColor: '#f0f2f5' }}>
+                      {route.element}
+                    </div>
+                  }
+                />
+              ))}
+
+            {/* Redirect root to workflows */}
+            <Route path="/" element={<Navigate to="/workflows" replace />} />
+          </Routes>
         </BrowserRouter>
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
