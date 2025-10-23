@@ -236,8 +236,8 @@ export const PageEntityViewer: React.FC = () => {
             <div className="wrap-entity-view-box">
               <div className="tools">
                 <div className="buttons">
-                  <ZoomOutOutlined onClick={handleZoomOut} />
-                  <ZoomInOutlined onClick={handleZoomIn} />
+                  <ZoomInOutlined onClick={handleZoomOut} />
+                  <ZoomOutOutlined onClick={handleZoomIn} />
                   <SyncOutlined onClick={handleZoomRefresh} />
                   {zoom !== 1 && (
                     <>

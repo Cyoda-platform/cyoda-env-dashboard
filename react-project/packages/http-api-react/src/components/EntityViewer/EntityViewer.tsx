@@ -231,7 +231,14 @@ export const EntityViewer = forwardRef<EntityViewerRef, EntityViewerProps>(
             onResetRequestClass?.();
           }
           removeEntity(entity);
-          drawLines();
+
+          // Wait for React to update the DOM before redrawing lines
+          // Use requestAnimationFrame to ensure DOM has updated
+          requestAnimationFrame(() => {
+            setTimeout(() => {
+              drawLines();
+            }, 50);
+          });
         },
       });
     };
