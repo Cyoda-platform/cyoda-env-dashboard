@@ -13,6 +13,16 @@ export default defineConfig({
       '@cyoda/http-api-react': resolve(__dirname, './src/__mocks__/@cyoda/http-api-react.ts'),
     },
   },
+  define: {
+    'global': 'globalThis',
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+      define: {
+        global: 'globalThis',
+      },
+    },
+  },
   build: {
     outDir: 'dist',
     sourcemap: true,

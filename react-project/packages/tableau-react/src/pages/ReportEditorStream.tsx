@@ -15,7 +15,7 @@ import ReportEditorTabModel from '../components/ReportEditorTabModel';
 import ReportEditorTabColumns from '../components/ReportEditorTabColumns';
 import ReportEditorTabJson from '../components/ReportEditorTabJson';
 import ModellingRangeDefs from '../components/Modelling/ModellingRangeDefs';
-import { FilterBuilderGroup, FilterBuilderCondition } from '@cyoda/cobi-react/src/components/DataMapper/FilterBuilder';
+import { FilterBuilderGroup, FilterBuilderCondition } from '@cyoda/cobi-react';
 import QueryPlanButton from '../components/QueryPlanButton';
 import { ConfigEditorStreamGrid, ConfigEditorStreamGridRef } from '@cyoda/ui-lib-react';
 import HelperReportDefinition from '../utils/HelperReportDefinition';

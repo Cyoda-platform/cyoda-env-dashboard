@@ -1,7 +1,7 @@
 import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { Modal, Form, Input, Button, Alert, message } from 'antd';
 import type { EntityMappingConfigDto, Metadata } from '../../../types';
-import TransformerConfig from '../Transformers/TransformerConfig';
+import TransformerConfig from '../TransformerConfig';
 import './MetadataDialog.css';
 
 export interface MetadataDialogRef {

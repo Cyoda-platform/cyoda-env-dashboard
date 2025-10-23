@@ -6,14 +6,12 @@
 
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Modal, Table, Input, Button, Space, Tooltip, message } from 'antd';
+import { Modal, Table, Input, Button, Space, Tooltip, App } from 'antd';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { useStatesList, useDeleteState } from '../hooks/useStatemachine';
 import { StateIndicator } from './StateIndicator';
 import type { PersistedType } from '../types';
-
-const { confirm } = Modal;
 
 interface StatesListModalProps {
   visible: boolean;
@@ -38,6 +36,7 @@ export const StatesListModal: React.FC<StatesListModalProps> = ({
   persistedType,
   entityClassName,
 }) => {
+  const { modal, message } = App.useApp();
   const navigate = useNavigate();
   const [filter, setFilter] = useState('');
   
@@ -77,8 +76,8 @@ export const StatesListModal: React.FC<StatesListModalProps> = ({
       message.warning('Cannot delete "None" state');
       return;
     }
-    
-    confirm({
+
+    modal.confirm({
       title: 'Delete confirmation',
       content: 'Are you sure you want to delete this state? Before deleting, please make sure that this state is not used in any of the transitions.',
       okText: 'Delete',

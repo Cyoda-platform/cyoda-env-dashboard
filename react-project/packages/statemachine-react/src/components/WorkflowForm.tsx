@@ -5,7 +5,7 @@
  */
 
 import React, { useEffect, useState, useMemo } from 'react';
-import { Form, Input, Select, Switch, Button, Tabs, message, Space, Checkbox, Alert } from 'antd';
+import { Form, Input, Select, Switch, Button, Tabs, App, Space, Checkbox, Alert } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import {
   useWorkflow,
@@ -29,6 +29,7 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
   workflowId,
   persistedType = 'persisted',
 }) => {
+  const { message } = App.useApp();
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const [activeTab, setActiveTab] = useState('settings');

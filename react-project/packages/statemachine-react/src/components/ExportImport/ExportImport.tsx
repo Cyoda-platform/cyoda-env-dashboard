@@ -5,7 +5,7 @@
  */
 
 import React, { useState } from 'react';
-import { Button, Space, Tooltip, message } from 'antd';
+import { Button, Space, Tooltip, App } from 'antd';
 import { UploadOutlined, DownloadOutlined } from '@ant-design/icons';
 import { ExportDialog } from './ExportDialog';
 import { ImportDialog } from './ImportDialog';
@@ -22,6 +22,7 @@ export const ExportImport: React.FC<ExportImportProps> = ({
   onImportSuccess,
   className = '',
 }) => {
+  const { message } = App.useApp();
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
   const [importDialogOpen, setImportDialogOpen] = useState(false);
 

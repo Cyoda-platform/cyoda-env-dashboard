@@ -275,9 +275,11 @@ const axios = {
 
     if (url === '/platform-api/statemachine/workflows') {
       const entityClassName = config?.params?.entityClassName;
-      const filtered = entityClassName 
+      const filtered = entityClassName
         ? mockWorkflows.filter(w => w.entityClassName === entityClassName)
         : mockWorkflows;
+      console.log(`📋 GET workflows (entityClassName: ${entityClassName}): returning ${filtered.length} workflows`);
+      console.log(`   Workflows:`, filtered.map(w => `${w.id}: ${w.name}`));
       return { data: filtered, status: 200 };
     }
 
@@ -397,6 +399,43 @@ const axios = {
     // Entity info endpoints
     if (url.includes('/platform-api/entity-info/entity-parents-interfaces')) {
       return { data: { parents: [], interfaces: [] }, status: 200 };
+    }
+
+    // Entity model info (for CyodaModelling/ModellingPopUp)
+    if (url.includes('/platform-api/entity-info/model-info')) {
+      const mockModelInfo = [
+        {
+          columnName: 'id',
+          columnPath: 'id',
+          type: 'LEAF',
+        },
+        {
+          columnName: 'name',
+          columnPath: 'name',
+          type: 'LEAF',
+        },
+        {
+          columnName: 'description',
+          columnPath: 'description',
+          type: 'LEAF',
+        },
+        {
+          columnName: 'amount',
+          columnPath: 'amount',
+          type: 'LEAF',
+        },
+        {
+          columnName: 'status',
+          columnPath: 'status',
+          type: 'LEAF',
+        },
+        {
+          columnName: 'createdDate',
+          columnPath: 'createdDate',
+          type: 'LEAF',
+        },
+      ];
+      return { data: mockModelInfo, status: 200 };
     }
 
     // Default response
@@ -638,6 +677,46 @@ const axios = {
 
   delete: async (url: string) => {
     console.log('Mock DELETE:', url);
+
+    // Delete workflow
+    if (url.includes('/platform-api/statemachine/persisted/workflows/') ||
+        url.includes('/platform-api/statemachine/transient/workflows/')) {
+      const workflowId = url.split('/').pop();
+      console.log(`Attempting to delete workflow: ${workflowId}`);
+      console.log(`Current workflows before delete:`, mockWorkflows.map(w => w.id));
+      const index = mockWorkflows.findIndex(w => w.id === workflowId);
+      if (index !== -1) {
+        const deleted = mockWorkflows.splice(index, 1);
+        console.log(`✅ Deleted workflow ${workflowId}:`, deleted[0].name);
+        console.log(`Remaining workflows (${mockWorkflows.length}):`, mockWorkflows.map(w => `${w.id}: ${w.name}`));
+      } else {
+        console.log(`❌ Workflow ${workflowId} not found in mock data`);
+      }
+      return { data: null, status: 200 };
+    }
+
+    // Delete state
+    if (url.includes('/platform-api/statemachine/') && url.includes('/states/')) {
+      const stateId = url.split('/').pop();
+      const index = mockStates.findIndex(s => s.id === stateId);
+      if (index !== -1) {
+        mockStates.splice(index, 1);
+        console.log(`Deleted state ${stateId}`);
+      }
+      return { data: null, status: 200 };
+    }
+
+    // Delete transition
+    if (url.includes('/platform-api/statemachine/') && url.includes('/transitions/')) {
+      const transitionId = url.split('/').pop();
+      const index = mockTransitions.findIndex(t => t.id === transitionId);
+      if (index !== -1) {
+        mockTransitions.splice(index, 1);
+        console.log(`Deleted transition ${transitionId}`);
+      }
+      return { data: null, status: 200 };
+    }
+
     return { data: null, status: 200 };
   },
 };

@@ -7,7 +7,7 @@
 
 import React, { useEffect } from 'react';
 import { Form, Switch, Divider } from 'antd';
-import { FilterBuilderGroup } from '@cyoda/cobi-react/src/components/DataMapper/FilterBuilder';
+import { FilterBuilderGroup } from '@cyoda/cobi-react';
 import { DateTimePicker } from '@cyoda/ui-lib-react';
 import FilterBuilderQueryPlan from './FilterBuilderQueryPlan';
 import type { ReportDefinition } from '../types';

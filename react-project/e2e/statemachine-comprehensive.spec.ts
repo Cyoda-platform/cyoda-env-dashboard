@@ -18,14 +18,14 @@ test.describe('State Machine - Comprehensive E2E Tests', () => {
   test('1. Should load the Menu page successfully', async ({ page }) => {
     // Check if we're on the menu page
     await expect(page).toHaveURL(/\/menu/);
-    
-    // Check for menu cards
-    const workflowsCard = page.locator('text=Workflows');
-    const instancesCard = page.locator('text=Instances');
-    
+
+    // Check for menu cards using more specific selectors
+    const workflowsCard = page.getByRole('heading', { name: 'Workflows' });
+    const instancesCard = page.getByRole('heading', { name: 'Instances' });
+
     await expect(workflowsCard).toBeVisible();
     await expect(instancesCard).toBeVisible();
-    
+
     // Take screenshot
     await page.screenshot({ path: 'react-project/e2e-screenshots/statemachine-01-menu.png', fullPage: true });
   });
@@ -69,9 +69,9 @@ test.describe('State Machine - Comprehensive E2E Tests', () => {
     const table = page.locator('.ant-table');
     await expect(table).toBeVisible();
     
-    // Check for column headers
+    // Check for column headers (actual column names from Workflows.tsx)
     await expect(page.locator('th:has-text("Name")')).toBeVisible();
-    await expect(page.locator('th:has-text("Entity Class")')).toBeVisible();
+    await expect(page.locator('th:has-text("Entity")')).toBeVisible(); // Changed from "Entity Class"
     await expect(page.locator('th:has-text("Active")')).toBeVisible();
     await expect(page.locator('th:has-text("Persisted")')).toBeVisible();
     
@@ -87,40 +87,46 @@ test.describe('State Machine - Comprehensive E2E Tests', () => {
   test('4. Should create a new workflow', async ({ page }) => {
     await page.click('text=Workflows');
     await page.waitForLoadState('networkidle');
-    
+
     // Click Create button
     await page.click('button:has-text("Create")');
     await page.waitForLoadState('networkidle');
-    
+
     // Check URL
     await expect(page).toHaveURL(/\/workflow\/new/);
-    
-    // Fill in workflow form
-    const workflowName = `Test Workflow ${Date.now()}`;
-    await page.fill('input[name="name"]', workflowName);
-    
-    // Select entity class
-    await page.click('.ant-select-selector:has-text("Select Entity Class")');
+
+    // Wait for form to load
+    await page.waitForSelector('label:has-text("Entity Class Name")');
+
+    // Select entity class first (required field)
+    await page.click('.ant-select-selector');
     await page.waitForTimeout(500);
-    
+
     // Click first option
     const firstOption = page.locator('.ant-select-item').first();
     if (await firstOption.isVisible()) {
       await firstOption.click();
+      await page.waitForTimeout(300);
     }
-    
+
+    // Fill in workflow name (use placeholder or find by form structure)
+    const workflowName = `Test Workflow ${Date.now()}`;
+    // Find the Name input - it's the second input in the form (first is entity class select)
+    const nameInput = page.locator('input[type="text"]').nth(0);
+    await nameInput.fill(workflowName);
+
     // Take screenshot before save
     await page.screenshot({ path: 'react-project/e2e-screenshots/statemachine-04-create-workflow.png', fullPage: true });
-    
+
     // Click Save button
     const saveButton = page.locator('button:has-text("Save")');
     if (await saveButton.isVisible()) {
       await saveButton.click();
       await page.waitForLoadState('networkidle');
-      
+
       // Should navigate to workflow detail page
       await expect(page).toHaveURL(/\/workflow\/[^/]+/);
-      
+
       // Take screenshot after save
       await page.screenshot({ path: 'react-project/e2e-screenshots/statemachine-05-workflow-created.png', fullPage: true });
     }

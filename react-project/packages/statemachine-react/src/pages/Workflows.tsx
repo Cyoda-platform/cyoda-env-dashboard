@@ -6,7 +6,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Table, Button, Input, Space, Tooltip, Modal, message, Card } from 'antd';
+import { Table, Button, Input, Space, Tooltip, App, Card } from 'antd';
 import {
   PlusOutlined,
   SearchOutlined,
@@ -28,9 +28,8 @@ import { EntityTypeSwitch } from '@cyoda/ui-lib-react';
 import { useGlobalUiSettingsStore } from '../stores/globalUiSettingsStore';
 import type { Workflow, WorkflowTableRow } from '../types';
 
-const { confirm } = Modal;
-
 export const Workflows: React.FC = () => {
+  const { modal, message } = App.useApp();
   const navigate = useNavigate();
   const [filter, setFilter] = useState('');
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
@@ -149,7 +148,7 @@ export const Workflows: React.FC = () => {
   };
   
   const handleDeleteWorkflow = (record: WorkflowTableRow) => {
-    confirm({
+    modal.confirm({
       title: 'Delete confirmation',
       content: 'Are you sure you want to delete this workflow?',
       okText: 'Delete',
@@ -159,7 +158,12 @@ export const Workflows: React.FC = () => {
         try {
           await deleteWorkflowMutation.mutateAsync(record.id);
           message.success('Workflow deleted successfully');
-          refetch();
+
+          // Clear selection if deleted workflow was selected
+          setSelectedRowKeys(prev => prev.filter(key => key !== record.key));
+
+          // Refetch to update the table
+          await refetch();
         } catch (error) {
           message.error('Failed to delete workflow');
         }
