@@ -38,3 +38,9 @@ export * from './DryRun';
 // Metadata
 export * from './Metadata';
 
+// Filter Builder
+export * from './FilterBuilder';
+
+// Content Editor
+export * from './ContentEditor';
+

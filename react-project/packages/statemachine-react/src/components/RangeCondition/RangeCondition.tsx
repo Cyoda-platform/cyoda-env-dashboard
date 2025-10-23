@@ -8,8 +8,8 @@ import React, { useState, useRef, useMemo, useCallback } from 'react';
 import { Row, Col, Button, Form, Select, Alert } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { ModellingPopUp, ModellingPopUpRef } from '@cyoda/tableau-react';
-import FilterBuilderCondition from '../../../cobi-react/src/components/DataMapper/FilterBuilder/FilterBuilderCondition';
-import type { FilterCondition, ColumnInfo } from '../../../cobi-react/src/components/DataMapper/FilterBuilder/types';
+import { FilterBuilderCondition } from '@cyoda/cobi-react';
+import type { FilterCondition, ColumnInfo } from '@cyoda/cobi-react';
 import './RangeCondition.css';
 
 export interface RangeConditionForm {
