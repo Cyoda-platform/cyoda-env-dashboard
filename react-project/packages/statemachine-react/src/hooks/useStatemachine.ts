@@ -120,13 +120,36 @@ export function useUpdateWorkflow() {
 export function useDeleteWorkflow() {
   const queryClient = useQueryClient();
   const store = useStatemachineStore();
-  
+
   return useMutation({
     mutationFn: async (workflowId: string) => {
       const response = await store.deleteWorkflow(workflowId);
       return response.data;
     },
-    onSuccess: () => {
+    onMutate: async (workflowId: string) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: statemachineKeys.workflowsList() });
+
+      // Snapshot the previous value
+      const previousWorkflows = queryClient.getQueryData(statemachineKeys.workflowsList());
+
+      // Optimistically update to remove the workflow
+      queryClient.setQueryData(statemachineKeys.workflowsList(), (old: any) => {
+        if (!old) return old;
+        return old.filter((w: any) => w.id !== workflowId);
+      });
+
+      // Return context with the snapshot
+      return { previousWorkflows };
+    },
+    onError: (err, workflowId, context: any) => {
+      // Rollback on error
+      if (context?.previousWorkflows) {
+        queryClient.setQueryData(statemachineKeys.workflowsList(), context.previousWorkflows);
+      }
+    },
+    onSettled: () => {
+      // Always refetch after error or success
       queryClient.invalidateQueries({ queryKey: statemachineKeys.workflows() });
     },
   });

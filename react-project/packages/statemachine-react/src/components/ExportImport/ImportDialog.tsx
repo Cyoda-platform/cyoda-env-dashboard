@@ -45,7 +45,7 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
         try {
           const text = await readFileAsText(file);
           const data = JSON.parse(text);
-          
+
           if (validateWorkflowData(data)) {
             setParsedData(data);
             setValidationError('');

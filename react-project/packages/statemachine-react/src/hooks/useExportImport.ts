@@ -4,9 +4,10 @@
  * Migrated from: .old_project/packages/cyoda-ui-lib/src/components-library/elements/ExportImport
  */
 
-import { useMutation } from '@tanstack/react-query';
-import axios from 'axios';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { axios } from '@cyoda/http-api-react';
 import type { Workflow } from '../types';
+import { statemachineKeys } from './useStatemachine';
 
 export interface ExportFormat {
   extension: 'json' | 'zip';
@@ -49,7 +50,7 @@ export const useExportWorkflows = () => {
             responseType: 'blob',
           }
         );
-        
+
         // Download the file
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement('a');
@@ -59,13 +60,13 @@ export const useExportWorkflows = () => {
         link.click();
         link.remove();
         window.URL.revokeObjectURL(url);
-        
+
         return response.data;
       } else {
         // Export as JSON
         const ids = workflows.map((w) => `includeIds=${encodeURIComponent(w.id)}`);
         const { data } = await axios.get(`/platform-api/statemachine/export?${ids.join('&')}`);
-        
+
         // Download the file
         const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
         const url = window.URL.createObjectURL(blob);
@@ -76,7 +77,7 @@ export const useExportWorkflows = () => {
         link.click();
         link.remove();
         window.URL.revokeObjectURL(url);
-        
+
         return data;
       }
     },
@@ -87,6 +88,8 @@ export const useExportWorkflows = () => {
  * Hook for importing workflows
  */
 export const useImportWorkflows = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: async ({ data, needRewrite = true }: ImportWorkflowsParams) => {
       const response = await axios.post(
@@ -94,6 +97,10 @@ export const useImportWorkflows = () => {
         data
       );
       return response.data;
+    },
+    onSettled: () => {
+      // Invalidate and refetch all workflow-related queries
+      queryClient.invalidateQueries({ queryKey: statemachineKeys.workflows() });
     },
   });
 };
@@ -125,19 +132,19 @@ export const validateWorkflowData = (data: any): boolean => {
     if (!data || typeof data !== 'object') {
       return false;
     }
-    
+
     // Check if workflow array exists
     if (!Array.isArray(data.workflow)) {
       return false;
     }
-    
+
     // Basic validation of workflow structure
     for (const workflow of data.workflow) {
       if (!workflow.name || !workflow.entityClassName) {
         return false;
       }
     }
-    
+
     return true;
   } catch (error) {
     return false;

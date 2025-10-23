@@ -1,0 +1,98 @@
+{
+  "workflow": [
+    {
+      "id": "workflow-import-001",
+      "name": "Imported Order Workflow",
+      "entityClassName": "com.example.ImportedOrder",
+      "description": "Sample imported workflow for testing",
+      "enabled": true,
+      "active": true,
+      "persisted": true,
+      "creationDate": 1704067200000,
+      "states": [
+        "NEW",
+        "APPROVED",
+        "COMPLETED",
+        "REJECTED"
+      ],
+      "initialState": "NEW"
+    }
+  ],
+  "state": [
+    {
+      "id": "state-import-001",
+      "name": "NEW",
+      "workflowId": "workflow-import-001",
+      "isInitial": true,
+      "isFinal": false
+    },
+    {
+      "id": "state-import-002",
+      "name": "APPROVED",
+      "workflowId": "workflow-import-001",
+      "isInitial": false,
+      "isFinal": false
+    },
+    {
+      "id": "state-import-003",
+      "name": "COMPLETED",
+      "workflowId": "workflow-import-001",
+      "isInitial": false,
+      "isFinal": true
+    },
+    {
+      "id": "state-import-004",
+      "name": "REJECTED",
+      "workflowId": "workflow-import-001",
+      "isInitial": false,
+      "isFinal": true
+    }
+  ],
+  "transition": [
+    {
+      "id": "trans-import-001",
+      "name": "Approve Order",
+      "startStateId": "state-import-001",
+      "endStateId": "state-import-002",
+      "startStateName": "NEW",
+      "endStateName": "APPROVED",
+      "automated": false,
+      "active": true,
+      "persisted": true,
+      "workflowId": "workflow-import-001",
+      "criteriaIds": [],
+      "endProcessesIds": []
+    },
+    {
+      "id": "trans-import-002",
+      "name": "Complete Order",
+      "startStateId": "state-import-002",
+      "endStateId": "state-import-003",
+      "startStateName": "APPROVED",
+      "endStateName": "COMPLETED",
+      "automated": false,
+      "active": true,
+      "persisted": true,
+      "workflowId": "workflow-import-001",
+      "criteriaIds": [],
+      "endProcessesIds": []
+    },
+    {
+      "id": "trans-import-003",
+      "name": "Reject Order",
+      "startStateId": "state-import-001",
+      "endStateId": "state-import-004",
+      "startStateName": "NEW",
+      "endStateName": "REJECTED",
+      "automated": false,
+      "active": true,
+      "persisted": true,
+      "workflowId": "workflow-import-001",
+      "criteriaIds": [],
+      "endProcessesIds": []
+    }
+  ],
+  "criteria": [],
+  "process": []
+}
+
