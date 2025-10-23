@@ -6,7 +6,6 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
-import axios from 'axios';
 import {
   useExportWorkflows,
   useImportWorkflows,
@@ -15,8 +14,15 @@ import {
   EXPORT_FORMATS,
 } from './useExportImport';
 
-// Mock axios
-vi.mock('axios');
+// Mock the @cyoda/http-api-react module
+vi.mock('@cyoda/http-api-react', () => ({
+  axios: {
+    get: vi.fn(),
+    post: vi.fn(),
+  },
+}));
+
+import { axios } from '@cyoda/http-api-react';
 
 // Mock DOM APIs
 const mockRemove = vi.fn();
@@ -739,6 +745,273 @@ describe('useExportImport hooks', () => {
 
       expect(mockFileReader.readAsText).toHaveBeenCalledWith(customFile);
       expect(mockFileReader.readAsText).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('Technical Entity Workflows', () => {
+    it('should validate technical entity workflow data', () => {
+      const technicalWorkflowData = {
+        workflow: [
+          {
+            id: 'workflow-004',
+            name: 'Data Pipeline Processing',
+            entityClassName: 'com.cyoda.technical.DataPipeline',
+            description: 'Technical workflow for data ingestion and processing pipeline',
+            enabled: true,
+            active: true,
+            persisted: true,
+          },
+        ],
+      };
+
+      expect(validateWorkflowData(technicalWorkflowData)).toBe(true);
+    });
+
+    it('should export technical entity workflow', async () => {
+      const technicalWorkflow = {
+        id: 'workflow-004',
+        name: 'Data Pipeline Processing',
+        entityClassName: 'com.cyoda.technical.DataPipeline',
+        active: true,
+        persisted: true,
+      };
+
+      const mockExportData = {
+        workflow: [technicalWorkflow],
+        state: [
+          { id: 'state-015', name: 'QUEUED', workflowId: 'workflow-004', isInitial: true, isFinal: false },
+          { id: 'state-016', name: 'VALIDATING', workflowId: 'workflow-004', isInitial: false, isFinal: false },
+          { id: 'state-017', name: 'PROCESSING', workflowId: 'workflow-004', isInitial: false, isFinal: false },
+          { id: 'state-018', name: 'COMPLETED', workflowId: 'workflow-004', isInitial: false, isFinal: true },
+        ],
+        transition: [
+          {
+            id: 'trans-012',
+            name: 'Start Validation',
+            startStateId: 'state-015',
+            endStateId: 'state-016',
+            workflowId: 'workflow-004',
+          },
+        ],
+        criteria: [
+          { id: 'criteria-004', name: 'Queue Not Empty', entityClassName: 'com.cyoda.technical.DataPipeline' },
+        ],
+        process: [
+          { id: 'process-004', name: 'Initialize Validators', entityClassName: 'com.cyoda.technical.DataPipeline' },
+        ],
+      };
+
+      vi.mocked(axios.get).mockResolvedValue({ data: mockExportData });
+
+      const { result } = renderHook(() => useExportWorkflows(), { wrapper });
+
+      result.current.mutate({
+        workflows: [technicalWorkflow] as any,
+        format: EXPORT_FORMATS[0],
+      });
+
+      await waitFor(() => {
+        expect(result.current.isSuccess).toBe(true);
+      });
+
+      expect(axios.get).toHaveBeenCalledWith(
+        '/platform-api/statemachine/export?includeIds=workflow-004'
+      );
+    });
+
+    it('should import technical entity workflow with all related data', async () => {
+      const technicalWorkflowImportData = {
+        workflow: [
+          {
+            id: 'workflow-004',
+            name: 'Data Pipeline Processing',
+            entityClassName: 'com.cyoda.technical.DataPipeline',
+            active: true,
+            persisted: true,
+          },
+        ],
+        state: [
+          { id: 'state-015', name: 'QUEUED', workflowId: 'workflow-004' },
+          { id: 'state-016', name: 'VALIDATING', workflowId: 'workflow-004' },
+        ],
+        transition: [
+          {
+            id: 'trans-012',
+            name: 'Start Validation',
+            startStateId: 'state-015',
+            endStateId: 'state-016',
+            workflowId: 'workflow-004',
+          },
+        ],
+        criteria: [
+          { id: 'criteria-004', name: 'Queue Not Empty', entityClassName: 'com.cyoda.technical.DataPipeline' },
+        ],
+        process: [
+          { id: 'process-004', name: 'Initialize Validators', entityClassName: 'com.cyoda.technical.DataPipeline' },
+        ],
+      };
+
+      const mockResponse = {
+        data: {
+          success: true,
+          imported: 1,
+          workflowIds: ['workflow-004'],
+        },
+      };
+
+      vi.mocked(axios.post).mockResolvedValue(mockResponse);
+
+      const { result } = renderHook(() => useImportWorkflows(), { wrapper });
+
+      result.current.mutate({
+        data: technicalWorkflowImportData,
+        needRewrite: true,
+      });
+
+      await waitFor(() => {
+        expect(result.current.isSuccess).toBe(true);
+      });
+
+      expect(axios.post).toHaveBeenCalledWith(
+        '/platform-api/statemachine/import?needRewrite=true',
+        technicalWorkflowImportData
+      );
+
+      expect(result.current.data).toEqual(mockResponse.data);
+    });
+  });
+
+  describe('Export/Import Roundtrip', () => {
+    it('should successfully export and re-import workflow data', async () => {
+      const originalWorkflow = {
+        id: 'workflow-001',
+        name: 'Order Processing Workflow',
+        entityClassName: 'com.example.Order',
+        active: true,
+        persisted: true,
+      };
+
+      const exportData = {
+        workflow: [originalWorkflow],
+        state: [
+          { id: 'state-001', name: 'CREATED', workflowId: 'workflow-001' },
+          { id: 'state-002', name: 'PROCESSING', workflowId: 'workflow-001' },
+        ],
+        transition: [
+          {
+            id: 'trans-001',
+            name: 'Start Processing',
+            startStateId: 'state-001',
+            endStateId: 'state-002',
+            workflowId: 'workflow-001',
+          },
+        ],
+        criteria: [],
+        process: [],
+      };
+
+      // Mock export
+      vi.mocked(axios.get).mockResolvedValue({ data: exportData });
+
+      const { result: exportResult } = renderHook(() => useExportWorkflows(), { wrapper });
+
+      exportResult.current.mutate({
+        workflows: [originalWorkflow] as any,
+        format: EXPORT_FORMATS[0],
+      });
+
+      await waitFor(() => {
+        expect(exportResult.current.isSuccess).toBe(true);
+      });
+
+      // Verify export data is valid for import
+      expect(validateWorkflowData(exportData)).toBe(true);
+
+      // Mock import
+      vi.mocked(axios.post).mockResolvedValue({
+        data: {
+          success: true,
+          imported: 1,
+          workflowIds: ['workflow-001'],
+        },
+      });
+
+      const { result: importResult } = renderHook(() => useImportWorkflows(), { wrapper });
+
+      importResult.current.mutate({
+        data: exportData,
+        needRewrite: true,
+      });
+
+      await waitFor(() => {
+        expect(importResult.current.isSuccess).toBe(true);
+      });
+
+      expect(importResult.current.data?.success).toBe(true);
+      expect(importResult.current.data?.imported).toBe(1);
+    });
+
+    it('should handle export/import of multiple workflows', async () => {
+      const workflows = [
+        {
+          id: 'workflow-001',
+          name: 'Order Processing',
+          entityClassName: 'com.example.Order',
+          active: true,
+          persisted: true,
+        },
+        {
+          id: 'workflow-004',
+          name: 'Data Pipeline Processing',
+          entityClassName: 'com.cyoda.technical.DataPipeline',
+          active: true,
+          persisted: true,
+        },
+      ];
+
+      const exportData = {
+        workflow: workflows,
+        state: [],
+        transition: [],
+        criteria: [],
+        process: [],
+      };
+
+      // Export
+      vi.mocked(axios.get).mockResolvedValue({ data: exportData });
+
+      const { result: exportResult } = renderHook(() => useExportWorkflows(), { wrapper });
+
+      exportResult.current.mutate({
+        workflows: workflows as any,
+        format: EXPORT_FORMATS[0],
+      });
+
+      await waitFor(() => {
+        expect(exportResult.current.isSuccess).toBe(true);
+      });
+
+      // Import
+      vi.mocked(axios.post).mockResolvedValue({
+        data: {
+          success: true,
+          imported: 2,
+          workflowIds: ['workflow-001', 'workflow-004'],
+        },
+      });
+
+      const { result: importResult } = renderHook(() => useImportWorkflows(), { wrapper });
+
+      importResult.current.mutate({
+        data: exportData,
+        needRewrite: false,
+      });
+
+      await waitFor(() => {
+        expect(importResult.current.isSuccess).toBe(true);
+      });
+
+      expect(importResult.current.data?.imported).toBe(2);
     });
   });
 });
