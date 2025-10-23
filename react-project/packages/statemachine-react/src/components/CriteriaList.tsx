@@ -10,6 +10,7 @@ import { Table, Button, Space, Tooltip, Modal, message } from 'antd';
 import { PlusOutlined, CopyOutlined, DeleteOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { useCriteriaList, useDeleteCriteria, useCopyCriteria } from '../hooks/useStatemachine';
+import { StateIndicator } from './StateIndicator';
 import type { PersistedType } from '../types';
 
 const { confirm } = Modal;
@@ -128,11 +129,7 @@ export const CriteriaList: React.FC<CriteriaListProps> = ({
       key: 'persisted',
       width: 150,
       sorter: (a, b) => Number(a.persisted) - Number(b.persisted),
-      render: (persisted: boolean) => (
-        <span style={{ color: persisted ? '#52c41a' : '#ff4d4f' }}>
-          {persisted ? 'Yes' : 'No'}
-        </span>
-      ),
+      render: (persisted: boolean) => <StateIndicator state={persisted} />,
     },
     {
       title: 'Description',

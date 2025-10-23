@@ -11,6 +11,7 @@ import { PlusOutlined, CopyOutlined, DeleteOutlined, UnorderedListOutlined } fro
 import type { ColumnsType } from 'antd/es/table';
 import { useTransitionsList, useDeleteTransition, useCopyTransition } from '../hooks/useStatemachine';
 import { StatesListModal } from './StatesListModal';
+import { StateIndicator } from './StateIndicator';
 import type { PersistedType } from '../types';
 
 const { confirm } = Modal;
@@ -154,11 +155,7 @@ export const TransitionsList: React.FC<TransitionsListProps> = ({
       key: 'active',
       width: 150,
       sorter: (a, b) => Number(a.active) - Number(b.active),
-      render: (active: boolean) => (
-        <span style={{ color: active ? '#52c41a' : '#ff4d4f' }}>
-          {active ? 'Yes' : 'No'}
-        </span>
-      ),
+      render: (active: boolean) => <StateIndicator state={active} />,
     },
     {
       title: 'Persisted',
@@ -166,11 +163,7 @@ export const TransitionsList: React.FC<TransitionsListProps> = ({
       key: 'persisted',
       width: 150,
       sorter: (a, b) => Number(a.persisted) - Number(b.persisted),
-      render: (persisted: boolean) => (
-        <span style={{ color: persisted ? '#52c41a' : '#ff4d4f' }}>
-          {persisted ? 'Yes' : 'No'}
-        </span>
-      ),
+      render: (persisted: boolean) => <StateIndicator state={persisted} />,
     },
     {
       title: 'Automated',
@@ -178,11 +171,7 @@ export const TransitionsList: React.FC<TransitionsListProps> = ({
       key: 'automated',
       width: 150,
       sorter: (a, b) => Number(a.automated) - Number(b.automated),
-      render: (automated: boolean) => (
-        <span style={{ color: automated ? '#1890ff' : '#999' }}>
-          {automated ? 'Auto' : 'Manual'}
-        </span>
-      ),
+      render: (automated: boolean) => <StateIndicator state={automated} type="automated" />,
     },
     {
       title: 'Transition',

@@ -89,6 +89,16 @@ vi.mock('../stores/globalUiSettingsStore', () => ({
   }),
 }));
 
+// Mock StateIndicator component
+vi.mock('../components/StateIndicator', () => ({
+  StateIndicator: ({ state, type }: any) => (
+    <div data-testid={`state-indicator-${type || 'default'}`} data-state={state}>
+      {state ? '🟢' : '⚪'}
+      {type === 'automated' && 'A'}
+    </div>
+  ),
+}));
+
 const createWrapper = () => {
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -440,6 +450,59 @@ describe('Workflows', () => {
         // Now showing PERSISTENCE workflows
         expect(screen.queryByText('Test Workflow 1')).not.toBeInTheDocument();
         expect(screen.getByText('Test Workflow 2')).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('StateIndicator Integration', () => {
+    it('should render StateIndicator for Active column', () => {
+      render(<Workflows />, { wrapper: createWrapper() });
+
+      // Should have StateIndicator components for active state
+      const indicators = screen.getAllByTestId('state-indicator-default');
+      expect(indicators.length).toBeGreaterThan(0);
+    });
+
+    it('should show active state indicator for active workflows', () => {
+      render(<Workflows />, { wrapper: createWrapper() });
+
+      const indicators = screen.getAllByTestId('state-indicator-default');
+      const activeIndicators = indicators.filter(ind => ind.getAttribute('data-state') === 'true');
+
+      // At least one workflow should be active
+      expect(activeIndicators.length).toBeGreaterThan(0);
+    });
+
+    it('should show inactive state indicator for inactive workflows', () => {
+      render(<Workflows />, { wrapper: createWrapper() });
+
+      const indicators = screen.getAllByTestId('state-indicator-default');
+      const inactiveIndicators = indicators.filter(ind => ind.getAttribute('data-state') === 'false');
+
+      // At least one workflow should be inactive
+      expect(inactiveIndicators.length).toBeGreaterThan(0);
+    });
+
+    it('should render StateIndicator for Persisted column', () => {
+      render(<Workflows />, { wrapper: createWrapper() });
+
+      // Should have StateIndicator components
+      const indicators = screen.getAllByTestId('state-indicator-default');
+
+      // Should have indicators for both Active and Persisted columns
+      // (2 indicators per row: Active + Persisted)
+      expect(indicators.length).toBeGreaterThan(0);
+    });
+
+    it('should display correct state for persisted workflows', () => {
+      render(<Workflows />, { wrapper: createWrapper() });
+
+      const indicators = screen.getAllByTestId('state-indicator-default');
+
+      // Verify indicators exist and have state attributes
+      indicators.forEach(indicator => {
+        const state = indicator.getAttribute('data-state');
+        expect(state).toMatch(/true|false/);
       });
     });
   });

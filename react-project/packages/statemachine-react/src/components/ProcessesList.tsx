@@ -10,6 +10,7 @@ import { Table, Button, Space, Tooltip, Modal, message } from 'antd';
 import { PlusOutlined, CopyOutlined, DeleteOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { useProcessesList, useDeleteProcess, useCopyProcess } from '../hooks/useStatemachine';
+import { StateIndicator } from './StateIndicator';
 import type { PersistedType } from '../types';
 
 const { confirm } = Modal;
@@ -130,11 +131,7 @@ export const ProcessesList: React.FC<ProcessesListProps> = ({
       key: 'persisted',
       width: 150,
       sorter: (a, b) => Number(a.persisted) - Number(b.persisted),
-      render: (persisted: boolean) => (
-        <span style={{ color: persisted ? '#52c41a' : '#ff4d4f' }}>
-          {persisted ? 'Yes' : 'No'}
-        </span>
-      ),
+      render: (persisted: boolean) => <StateIndicator state={persisted} />,
     },
     {
       title: 'Template',
@@ -142,11 +139,7 @@ export const ProcessesList: React.FC<ProcessesListProps> = ({
       key: 'isTemplate',
       width: 150,
       sorter: (a, b) => Number(a.isTemplate) - Number(b.isTemplate),
-      render: (isTemplate: boolean) => (
-        <span style={{ color: isTemplate ? '#1890ff' : '#999' }}>
-          {isTemplate ? 'Yes' : 'No'}
-        </span>
-      ),
+      render: (isTemplate: boolean) => <StateIndicator state={isTemplate} />,
     },
     {
       title: 'Description',

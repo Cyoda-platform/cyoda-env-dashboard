@@ -1,11 +1,14 @@
 /**
  * Config Workflow Component
- * Display workflow configuration as formatted JSON
+ * Display workflow configuration as formatted JSON with syntax highlighting
  * Migrated from: .old_project/packages/statemachine/src/components/ConfigWorkflow.vue
  */
 
 import React, { useEffect, useState } from 'react';
 import { Spin, Alert } from 'antd';
+import Prism from 'prismjs';
+import 'prismjs/themes/prism.css';
+import 'prismjs/components/prism-json';
 import { useWorkflow } from '../hooks/useStatemachine';
 import type { PersistedType } from '../types';
 
@@ -24,17 +27,25 @@ export const ConfigWorkflow: React.FC<ConfigWorkflowProps> = ({
     !!workflowId
   );
 
-  const [formattedJson, setFormattedJson] = useState<string>('');
+  const [highlightedCode, setHighlightedCode] = useState<string>('');
 
   useEffect(() => {
     if (workflow) {
       try {
         // Format JSON with 2-space indentation
         const formatted = JSON.stringify(workflow, null, 2);
-        setFormattedJson(formatted);
+
+        // Apply syntax highlighting using Prism
+        const highlighted = Prism.highlight(
+          formatted,
+          Prism.languages.json,
+          'json'
+        );
+
+        setHighlightedCode(highlighted);
       } catch (err) {
         console.error('Error formatting workflow JSON:', err);
-        setFormattedJson('Error formatting workflow data');
+        setHighlightedCode('Error formatting workflow data');
       }
     }
   }, [workflow]);
@@ -80,6 +91,7 @@ export const ConfigWorkflow: React.FC<ConfigWorkflowProps> = ({
       />
       
       <pre
+        className="language-json"
         style={{
           backgroundColor: '#f5f5f5',
           border: '1px solid #d9d9d9',
@@ -93,7 +105,10 @@ export const ConfigWorkflow: React.FC<ConfigWorkflowProps> = ({
           margin: 0,
         }}
       >
-        {formattedJson}
+        <code
+          className="language-json"
+          dangerouslySetInnerHTML={{ __html: highlightedCode }}
+        />
       </pre>
     </div>
   );

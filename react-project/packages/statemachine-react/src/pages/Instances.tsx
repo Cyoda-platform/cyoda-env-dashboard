@@ -6,8 +6,8 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Table, Button, Input, Select, Space, Card, Row, Col, message } from 'antd';
-import { SearchOutlined, LeftOutlined, RightOutlined, ArrowLeftOutlined } from '@ant-design/icons';
+import { Table, Button, Input, Select, Space, Card, Row, Col, message, Divider, Collapse } from 'antd';
+import { SearchOutlined, LeftOutlined, RightOutlined, ArrowLeftOutlined, WarningOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import {
   useWorkflowEnabledTypes,
@@ -16,6 +16,7 @@ import {
 } from '../hooks/useStatemachine';
 import { EntityTypeSwitch } from '@cyoda/ui-lib-react';
 import { useGlobalUiSettingsStore } from '../stores/globalUiSettingsStore';
+import { RangeCondition, type RangeConditionForm } from '../components/RangeCondition';
 import type { Instance, InstanceTableRow, InstancesResponse } from '../types';
 
 const PAGE_SIZE = 20;
@@ -27,6 +28,22 @@ export const Instances: React.FC = () => {
   const [filter, setFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [instancesData, setInstancesData] = useState<InstancesResponse | null>(null);
+  const [isShowAdvanced, setIsShowAdvanced] = useState(false);
+
+  // Range condition form state
+  const [rangeConditionForm, setRangeConditionForm] = useState<RangeConditionForm>({
+    entityClassName: entityClassName,
+    rangeOrder: 'ASC',
+    rangeCondition: {
+      '@bean': '',
+      fieldName: '',
+      operation: '',
+      value: {
+        '@type': '',
+        value: '',
+      },
+    },
+  });
 
   // Global UI settings
   const { entityType, isEnabledTechView, setEntityType } = useGlobalUiSettingsStore();
@@ -36,27 +53,44 @@ export const Instances: React.FC = () => {
   const { data: workflows = [] } = useWorkflowsList(entityClassName);
   const instancesMutation = useInstances();
   
+  // Update rangeConditionForm when entityClassName changes
+  useEffect(() => {
+    setRangeConditionForm(prev => ({
+      ...prev,
+      entityClassName: entityClassName,
+    }));
+  }, [entityClassName]);
+
   // Load instances
   const loadInstances = async (offset = 0) => {
     if (!entityClassName) {
       message.warning('Please select an entity');
       return;
     }
-    
+
     try {
       const requestData: any = {
         entityClassName,
-        offset,
-        limit: PAGE_SIZE,
+        rangeOrder: rangeConditionForm.rangeOrder,
+        paging: {
+          offset,
+          maxResults: PAGE_SIZE,
+        },
       };
-      
+
+      // Add rangeCondition if it's configured
+      if (rangeConditionForm.rangeCondition['@bean']) {
+        requestData.rangeCondition = rangeConditionForm.rangeCondition;
+      }
+
+      // Add entity IDs filter if provided
       if (filter.trim()) {
         requestData.entityIds = filter
           .split(',')
           .map((id) => id.trim())
           .filter((id) => id);
       }
-      
+
       const response = await instancesMutation.mutateAsync(requestData);
       setInstancesData(response);
     } catch (error) {
@@ -70,10 +104,18 @@ export const Instances: React.FC = () => {
     setCurrentPage(1);
     setInstancesData(null);
   };
-  
+
   const handleSearch = () => {
     setCurrentPage(1);
     loadInstances(0);
+  };
+
+  const handleToggleAdvanced = () => {
+    setIsShowAdvanced(!isShowAdvanced);
+  };
+
+  const handleRangeConditionChange = (form: RangeConditionForm) => {
+    setRangeConditionForm(form);
   };
   
   const handlePrevPage = () => {
@@ -278,18 +320,55 @@ export const Instances: React.FC = () => {
               </div>
             </Col>
             <Col span={6}>
-              <Button
-                type="primary"
-                icon={<SearchOutlined />}
-                onClick={handleSearch}
-                disabled={!entityClassName}
-                loading={instancesMutation.isPending}
-              >
-                Search
-              </Button>
+              <Space>
+                <Button
+                  type="primary"
+                  icon={<SearchOutlined />}
+                  onClick={handleSearch}
+                  disabled={!entityClassName}
+                  loading={instancesMutation.isPending}
+                >
+                  Search
+                </Button>
+                <Button
+                  type="default"
+                  icon={<WarningOutlined />}
+                  onClick={handleToggleAdvanced}
+                  style={{
+                    backgroundColor: isShowAdvanced ? '#faad14' : undefined,
+                    borderColor: isShowAdvanced ? '#faad14' : undefined,
+                    color: isShowAdvanced ? '#fff' : undefined,
+                  }}
+                >
+                  Advanced
+                </Button>
+              </Space>
             </Col>
           </Row>
-          
+
+          {/* Advanced Filtering */}
+          <Collapse
+            activeKey={isShowAdvanced ? ['advanced'] : []}
+            ghost
+            items={[
+              {
+                key: 'advanced',
+                label: null,
+                showArrow: false,
+                children: (
+                  <>
+                    <Divider />
+                    <RangeCondition
+                      form={rangeConditionForm}
+                      onChange={handleRangeConditionChange}
+                      disabled={!entityClassName}
+                    />
+                  </>
+                ),
+              },
+            ]}
+          />
+
           {/* Table */}
           <Table
             columns={columns}

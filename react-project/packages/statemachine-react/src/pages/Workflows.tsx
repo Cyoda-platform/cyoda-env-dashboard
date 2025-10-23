@@ -23,6 +23,7 @@ import {
   useCopyWorkflow,
 } from '../hooks/useStatemachine';
 import { ExportImport } from '../components/ExportImport';
+import { StateIndicator } from '../components/StateIndicator';
 import { EntityTypeSwitch } from '@cyoda/ui-lib-react';
 import { useGlobalUiSettingsStore } from '../stores/globalUiSettingsStore';
 import type { Workflow, WorkflowTableRow } from '../types';
@@ -186,11 +187,7 @@ export const Workflows: React.FC = () => {
       dataIndex: 'active',
       key: 'active',
       width: 100,
-      render: (active: boolean) => (
-        <span style={{ color: active ? '#52c41a' : '#ff4d4f' }}>
-          {active ? 'Yes' : 'No'}
-        </span>
-      ),
+      render: (active: boolean) => <StateIndicator state={active} />,
       sorter: (a, b) => Number(a.active) - Number(b.active),
     },
     {
@@ -198,11 +195,7 @@ export const Workflows: React.FC = () => {
       dataIndex: 'persisted',
       key: 'persisted',
       width: 130,
-      render: (persisted: boolean) => (
-        <span style={{ color: persisted ? '#52c41a' : '#ff4d4f' }}>
-          {persisted ? 'Yes' : 'No'}
-        </span>
-      ),
+      render: (persisted: boolean) => <StateIndicator state={persisted} />,
       sorter: (a, b) => Number(a.persisted) - Number(b.persisted),
     },
     {
