@@ -490,6 +490,40 @@ export interface RelatedPath {
 }
 
 // ============================================================================
+// Reporting Info Types (for Entity Viewer)
+// ============================================================================
+
+export interface ReportingInfoRow {
+  columnName: string;
+  columnPath: string;
+  columnType: string;
+  elementType?: string;
+  elementInfo?: string;
+  joinInfo?: JoinInfo;
+  subClasses?: SubClass[];
+  abstract?: boolean;
+}
+
+export interface JoinInfo {
+  targetEntityClass: string;
+  cardinality: string;
+}
+
+export interface SubClass {
+  class: string;
+  abstract: boolean;
+}
+
+export interface RequestParam {
+  reportClass: string;
+  columnPath: string;
+  requestClass: string;
+  types: string[];
+  baseColumnPath: string;
+  key: string | null;
+}
+
+// ============================================================================
 // Transfer Types
 // ============================================================================
 

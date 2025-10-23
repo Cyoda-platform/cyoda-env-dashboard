@@ -3,8 +3,12 @@ import ReactDOM from 'react-dom/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { ConfigProvider } from 'antd';
+import { Buffer } from 'buffer';
 import App from './App';
 import './index.css';
+
+// Polyfill Buffer for browser
+window.Buffer = Buffer;
 
 // Create a client
 const queryClient = new QueryClient({

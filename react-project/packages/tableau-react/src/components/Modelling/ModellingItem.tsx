@@ -9,9 +9,12 @@ import { Checkbox, Tooltip } from 'antd';
 import { EyeOutlined, CaretDownOutlined, CaretRightOutlined, LinkOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { ModellingGroupClass } from './ModellingGroupClass';
 import { ModellingGroup } from './ModellingGroup';
+import { UniqueValuesModal } from '../UniqueValuesModal/UniqueValuesModal';
 import type { ReportingInfoRow, RelatedPath, ColDef, RequestParam } from '../../types/modelling';
 import HelperModelling from '../../utils/HelperModelling';
+import { HelperEntities } from '@cyoda/http-api-react/utils';
 import { useModellingStore } from '../../stores/modellingStore';
+import { useEntityViewerStore } from '@cyoda/http-api-react/stores';
 import { getReportingInfo, getReportingRelatedPaths } from '../../api/modelling';
 import './ModellingItem.scss';
 
@@ -49,8 +52,10 @@ export const ModellingItem: React.FC<ModellingItemProps> = ({
   const [reportingInfoRows, setReportingInfoRows] = useState<ReportingInfoRow[]>([]);
   const [relatedPathsInner, setRelatedPathsInner] = useState<RelatedPath[]>([]);
   const [values, setValues] = useState<any>({});
+  const [uniqueValuesVisible, setUniqueValuesVisible] = useState(false);
 
   const { searchResult, addSearchPath, removeSearchPath } = useModellingStore();
+  const { addEntity } = useEntityViewerStore();
 
   // Computed values
   const notPrimitiveList = ['EMBEDDED', 'LIST', 'MAP'];
@@ -208,18 +213,32 @@ export const ModellingItem: React.FC<ModellingItemProps> = ({
   };
 
   const handleClickJoin = () => {
-    setIsShowJoin(!isShowJoin);
+    if (onlyView && joinItem) {
+      // In Entity Viewer mode, add a new entity box
+      addEntity({
+        from: requestClass,
+        to: joinItem.targetEntityClass
+      });
+    } else {
+      // In edit mode, toggle the join expansion
+      setIsShowJoin(!isShowJoin);
+    }
   };
 
   const handleClickEye = () => {
-    // Preview functionality - can be implemented later
-    console.log('Preview:', fullPath);
+    // Only show unique values for LEAF type fields
+    if (reportInfoRow.type !== 'LEAF' || disablePreview) {
+      return;
+    }
+
+    setUniqueValuesVisible(true);
   };
 
-  const getShortEntityName = (entityClass: string) => {
-    const parts = entityClass.split('.');
-    return parts[parts.length - 1];
+  const handleCloseUniqueValues = () => {
+    setUniqueValuesVisible(false);
   };
+
+
 
   if (!isSearchCondition) {
     return null;
@@ -260,20 +279,39 @@ export const ModellingItem: React.FC<ModellingItemProps> = ({
                 <InfoCircleOutlined style={{ marginLeft: 4 }} />
               </Tooltip>
             )}
-            {isJoinAvailable && <span> ({getShortEntityName(joinItem!.targetEntityClass)})</span>}
+            {isJoinAvailable && (
+              <span className="entity-class-name">
+                {' '}({HelperEntities.getShortNameOfEntity(joinItem!.targetEntityClass)})
+              </span>
+            )}
           </Checkbox>
         ) : (
           <span className="name" style={{ marginLeft: 8 }}>
             {isChildAvailable ? (
-              <a onClick={handleClick}>{reportInfoRow.columnName}</a>
+              <>
+                <a onClick={handleClick}>{reportInfoRow.columnName}</a>
+                {isJoinAvailable && (
+                  <span className="entity-class-name">
+                    {' '}({HelperEntities.getShortNameOfEntity(joinItem!.targetEntityClass)})
+                  </span>
+                )}
+              </>
             ) : (
               <>
                 {isJoinAvailable && onlyView ? (
                   <a onClick={handleClickJoin}>
-                    {reportInfoRow.columnName} ({getShortEntityName(joinItem!.targetEntityClass)})
+                    {reportInfoRow.columnName}{' '}
+                    ({HelperEntities.getShortNameOfEntity(joinItem!.targetEntityClass)})
                   </a>
                 ) : (
-                  reportInfoRow.columnName
+                  <>
+                    {reportInfoRow.columnName}
+                    {isJoinAvailable && (
+                      <span className="entity-class-name">
+                        {' '}({HelperEntities.getShortNameOfEntity(joinItem!.targetEntityClass)})
+                      </span>
+                    )}
+                  </>
                 )}
               </>
             )}
@@ -325,6 +363,15 @@ export const ModellingItem: React.FC<ModellingItemProps> = ({
           />
         </div>
       )}
+
+      {/* Unique Values Modal */}
+      <UniqueValuesModal
+        visible={uniqueValuesVisible}
+        fieldName={reportInfoRow.columnName}
+        fieldPath={fullPath}
+        entityClass={requestClass}
+        onClose={handleCloseUniqueValues}
+      />
     </div>
   );
 };

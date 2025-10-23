@@ -6,6 +6,7 @@ import {
   CheckSquareOutlined,
   ApartmentOutlined,
   ApiOutlined,
+  DatabaseOutlined,
 } from '@ant-design/icons';
 
 const { Header, Content, Footer } = Layout;
@@ -39,6 +40,11 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
       icon: <ApiOutlined />,
       label: 'API Demo',
     },
+    {
+      key: '/entity-viewer',
+      icon: <DatabaseOutlined />,
+      label: 'Entity Viewer',
+    },
   ];
 
   const handleMenuClick = (e: { key: string }) => {
@@ -50,6 +56,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     if (path.startsWith('/tasks')) return '/tasks';
     if (path.startsWith('/statemachine')) return '/statemachine';
     if (path.startsWith('/api-demo')) return '/api-demo';
+    if (path.startsWith('/entity-viewer')) return '/entity-viewer';
     return '/';
   };
 

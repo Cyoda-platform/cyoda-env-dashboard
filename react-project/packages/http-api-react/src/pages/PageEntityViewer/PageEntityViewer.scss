@@ -1,0 +1,129 @@
+/**
+ * PageEntityViewer Styles
+ * Migrated from: .old_project/packages/http-api/src/views/PageEntityViewer.vue
+ */
+
+.page-entity-viewer {
+  margin-top: 20px;
+
+  svg.canvas {
+    height: 1000px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  h2 {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    li {
+      margin-bottom: 2px;
+      margin-top: 2px;
+    }
+  }
+
+  .wrap-entity-select {
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    gap: 20px;
+
+    .select {
+      .ant-select {
+        width: 400px;
+      }
+    }
+
+    .checkbox {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      label {
+        margin-right: 0;
+      }
+
+      .anticon {
+        color: #a7a7a7;
+        cursor: pointer;
+        font-size: 14px;
+
+        &:hover {
+          color: #666;
+        }
+      }
+    }
+  }
+
+  .wrap-entity-view-box {
+    margin-top: 30px;
+    border: 1px solid #e8e8e8;
+    border-radius: 4px;
+    background: #fafafa;
+
+    .wrap-entity-view-box-inner {
+      overflow: hidden;
+      position: relative;
+      width: 100%;
+      min-height: 600px;
+      background: #fff;
+    }
+  }
+
+  .tools {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    flex-wrap: nowrap;
+    flex-shrink: 0;
+    height: 40px;
+    border-bottom: 1px solid #dedede;
+    padding: 0 15px;
+    background: #fafafa;
+
+    .buttons {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+
+      .anticon {
+        opacity: 0.5;
+        cursor: pointer;
+        font-size: 16px;
+        transition: opacity 0.2s;
+
+        &:hover {
+          opacity: 1;
+        }
+      }
+
+      .delimiter {
+        color: #dedede;
+      }
+
+      span:not(.delimiter) {
+        font-size: 13px;
+        color: #666;
+      }
+    }
+  }
+
+  .card-body {
+    padding: 20px;
+  }
+}
+

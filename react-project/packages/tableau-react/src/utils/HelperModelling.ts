@@ -14,7 +14,13 @@ export default class HelperModelling {
   /**
    * Filter out rows with empty elementType or elementInfo
    */
-  public static filterData(datas: ReportingInfoRow[]): ReportingInfoRow[] {
+  public static filterData(datas: ReportingInfoRow[] | any): ReportingInfoRow[] {
+    // Safety check: ensure datas is an array
+    if (!Array.isArray(datas)) {
+      console.warn('HelperModelling.filterData: data is not an array, returning empty array', datas);
+      return [];
+    }
+
     return datas.filter((el) => {
       if ('elementType' in el && !el.elementType) {
         return false;
@@ -29,7 +35,13 @@ export default class HelperModelling {
   /**
    * Sort data by columnName alphabetically
    */
-  public static sortData(datas: ReportingInfoRow[]): ReportingInfoRow[] {
+  public static sortData(datas: ReportingInfoRow[] | any): ReportingInfoRow[] {
+    // Safety check: ensure datas is an array
+    if (!Array.isArray(datas)) {
+      console.warn('HelperModelling.sortData: data is not an array, returning empty array', datas);
+      return [];
+    }
+
     datas.sort((a, b) => {
       if (a.columnName > b.columnName) {
         return 1;

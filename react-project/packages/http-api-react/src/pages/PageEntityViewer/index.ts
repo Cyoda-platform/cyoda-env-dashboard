@@ -1,0 +1,2 @@
+export { PageEntityViewer } from './PageEntityViewer';
+

@@ -1,0 +1,70 @@
+/**
+ * EntityViewer Styles
+ * Migrated from: .old_project/packages/http-api/src/components/EntityViewer/EntityViewer.vue
+ */
+
+.entity-viewer {
+  cursor: move;
+  transition: opacity 0.5s;
+  background: #fff;
+  min-height: 100px;
+  position: absolute;
+  border: 1px solid #000;
+  display: inline-block;
+  min-width: 200px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  user-select: none;
+
+  &.dragging {
+    opacity: 0.8;
+    z-index: 1000;
+  }
+
+  .modelling-item {
+    margin: 2px 0;
+
+    .item {
+      padding-right: 0;
+    }
+
+    .inner {
+      padding-right: 0;
+    }
+  }
+
+  .header {
+    background-color: #148751;
+    color: #fff;
+    padding: 5px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .wrap-icon {
+      margin-left: 15px;
+      cursor: pointer;
+
+      svg,
+      .anticon {
+        margin: 0 2px;
+        cursor: pointer;
+        font-size: 14px;
+
+        &:hover {
+          opacity: 0.8;
+        }
+      }
+    }
+  }
+
+  .body {
+    padding: 5px 30px;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  &.action-hover {
+    opacity: 0.5;
+  }
+}
+

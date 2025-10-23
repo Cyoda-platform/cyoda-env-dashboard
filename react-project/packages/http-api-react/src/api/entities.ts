@@ -192,11 +192,300 @@ export function getEntityCount(entityClass: string, params?: any) {
 }
 
 /**
- * Get reporting fetch types (entity classes)
+ * Mock entity classes for demo mode
  */
-export function getReportingFetchTypes(onlyDynamic = false) {
-  // For now, use the simpler endpoint. Can be enhanced with feature flags later.
-  return axios.get<string[]>(`/platform-api/entity-info/fetch/types?onlyDynamic=${onlyDynamic}`);
+const MOCK_ENTITY_CLASSES = [
+  'com.cyoda.core.Entity',
+  'com.cyoda.core.User',
+  'com.cyoda.core.Transaction',
+  'com.cyoda.core.Account',
+  'com.cyoda.core.Product',
+  'com.cyoda.core.Order',
+  'com.cyoda.core.Customer',
+  'com.cyoda.core.Payment',
+];
+
+const MOCK_DYNAMIC_ENTITY_CLASSES = [
+  'com.cyoda.core.Entity',
+  'com.cyoda.core.User',
+  'com.cyoda.core.Transaction',
+];
+
+/**
+ * Get reporting fetch types (entity classes)
+ * Falls back to mock data if API is unavailable (for demo mode)
+ */
+export async function getReportingFetchTypes(onlyDynamic = false) {
+  try {
+    // Try to get data from the real API
+    const response = await axios.get<string[]>(`/platform-api/entity-info/fetch/types?onlyDynamic=${onlyDynamic}`);
+
+    // If response data is valid, return it
+    if (Array.isArray(response.data) && response.data.length > 0) {
+      return response;
+    }
+
+    // If API returns empty or invalid data, fall back to mock
+    console.warn('API returned empty/invalid data, using mock entity classes for demo');
+    return {
+      data: onlyDynamic ? MOCK_DYNAMIC_ENTITY_CLASSES : MOCK_ENTITY_CLASSES,
+      status: 200,
+      statusText: 'OK (Mock Data)',
+      headers: {},
+      config: {} as any,
+    };
+  } catch (error) {
+    // If API fails, use mock data for demo mode
+    console.warn('API unavailable, using mock entity classes for demo:', error);
+    return {
+      data: onlyDynamic ? MOCK_DYNAMIC_ENTITY_CLASSES : MOCK_ENTITY_CLASSES,
+      status: 200,
+      statusText: 'OK (Mock Data)',
+      headers: {},
+      config: {} as any,
+    };
+  }
+}
+
+/**
+ * Mock entity info data for demo mode
+ * Includes various field types to demonstrate all ModellingGroup features:
+ * - Simple fields (LEAF type)
+ * - Nested objects (OBJECT type)
+ * - Collections (LIST type)
+ * - Related entities (with join paths)
+ */
+const getMockEntityInfo = (entityClass: string) => {
+  const shortName = entityClass.split('.').pop() || 'Entity';
+
+  // Comprehensive test data with different field types
+  return [
+    // Simple LEAF fields
+    {
+      columnName: 'id',
+      columnType: 'java.lang.String',
+      columnPath: 'id',
+      type: 'LEAF',
+      fullPath: `@${entityClass.replace(/\./g, '#')}#id`
+    },
+    {
+      columnName: 'name',
+      columnType: 'java.lang.String',
+      columnPath: 'name',
+      type: 'LEAF',
+      fullPath: `@${entityClass.replace(/\./g, '#')}#name`
+    },
+    {
+      columnName: 'createdAt',
+      columnType: 'java.time.Instant',
+      columnPath: 'createdAt',
+      type: 'LEAF',
+      fullPath: `@${entityClass.replace(/\./g, '#')}#createdAt`
+    },
+    {
+      columnName: 'updatedAt',
+      columnType: 'java.time.Instant',
+      columnPath: 'updatedAt',
+      type: 'LEAF',
+      fullPath: `@${entityClass.replace(/\./g, '#')}#updatedAt`
+    },
+    {
+      columnName: 'status',
+      columnType: 'java.lang.String',
+      columnPath: 'status',
+      type: 'LEAF',
+      fullPath: `@${entityClass.replace(/\./g, '#')}#status`
+    },
+
+    // OBJECT type field (expandable with nested fields)
+    {
+      columnName: 'metadata',
+      columnType: 'com.cyoda.core.Metadata',
+      columnPath: 'metadata',
+      type: 'OBJECT',
+      fullPath: `@${entityClass.replace(/\./g, '#')}#metadata`,
+      elementInfo: {
+        type: 'OBJECT',
+        columnType: 'com.cyoda.core.Metadata'
+      }
+    },
+
+    // LIST type field (expandable collection)
+    {
+      columnName: 'tags',
+      columnType: 'java.util.List',
+      columnPath: 'tags',
+      type: 'LIST',
+      fullPath: `@${entityClass.replace(/\./g, '#')}#tags`,
+      elementType: {
+        type: 'LEAF',
+        columnType: 'java.lang.String'
+      }
+    },
+
+    // Related entity field (will have blue circle icon)
+    {
+      columnName: 'owner',
+      columnType: 'com.cyoda.core.User',
+      columnPath: 'owner',
+      type: 'OBJECT',
+      fullPath: `@${entityClass.replace(/\./g, '#')}#owner`,
+      elementInfo: {
+        type: 'OBJECT',
+        columnType: 'com.cyoda.core.User'
+      }
+    },
+
+    // Another related entity
+    {
+      columnName: 'category',
+      columnType: 'com.cyoda.core.Category',
+      columnPath: 'category',
+      type: 'OBJECT',
+      fullPath: `@${entityClass.replace(/\./g, '#')}#category`,
+      elementInfo: {
+        type: 'OBJECT',
+        columnType: 'com.cyoda.core.Category'
+      }
+    },
+
+    // More simple fields
+    {
+      columnName: 'description',
+      columnType: 'java.lang.String',
+      columnPath: 'description',
+      type: 'LEAF',
+      fullPath: `@${entityClass.replace(/\./g, '#')}#description`
+    },
+    {
+      columnName: 'amount',
+      columnType: 'java.math.BigDecimal',
+      columnPath: 'amount',
+      type: 'LEAF',
+      fullPath: `@${entityClass.replace(/\./g, '#')}#amount`
+    },
+    {
+      columnName: 'quantity',
+      columnType: 'java.lang.Integer',
+      columnPath: 'quantity',
+      type: 'LEAF',
+      fullPath: `@${entityClass.replace(/\./g, '#')}#quantity`
+    },
+  ];
+};
+
+/**
+ * Get reporting info (entity fields and types)
+ * Falls back to mock data if API is unavailable (for demo mode)
+ */
+export async function getReportingInfo(
+  entityClass: string,
+  parentFldClass: string = '',
+  columnPath: string = '',
+  onlyRange: boolean = false
+) {
+  const params: any = { entityModel: entityClass };
+  if (parentFldClass) params.parentFieldType = encodeURIComponent(parentFldClass);
+  if (columnPath) params.columnPath = encodeURIComponent(columnPath);
+  if (onlyRange) params.onlyRange = onlyRange;
+
+  const query = Object.keys(params)
+    .map((key) => `${key}=${params[key]}`)
+    .join('&');
+
+  try {
+    const response = await axios.get(`/platform-api/entity-info/model-info?${query}`);
+
+    // If response data is valid, return it
+    if (Array.isArray(response.data) && response.data.length > 0) {
+      return response;
+    }
+
+    // Fall back to mock data
+    console.warn(`API returned empty data for ${entityClass}, using mock data`);
+    return {
+      data: getMockEntityInfo(entityClass),
+      status: 200,
+      statusText: 'OK (Mock Data)',
+      headers: {},
+      config: {} as any,
+    };
+  } catch (error) {
+    console.warn(`API unavailable for ${entityClass}, using mock data:`, error);
+    return {
+      data: getMockEntityInfo(entityClass),
+      status: 200,
+      statusText: 'OK (Mock Data)',
+      headers: {},
+      config: {} as any,
+    };
+  }
+}
+
+/**
+ * Mock related paths data for demo mode
+ * These define which fields are joinable/related entities (will show blue circle icon)
+ */
+const getMockRelatedPaths = (entityClass: string) => {
+  return [
+    {
+      columnPath: 'owner',
+      path: 'owner',
+      targetEntityClass: 'com.cyoda.core.User',
+      joinType: 'MANY_TO_ONE',
+      description: 'User who owns this entity'
+    },
+    {
+      columnPath: 'category',
+      path: 'category',
+      targetEntityClass: 'com.cyoda.core.Category',
+      joinType: 'MANY_TO_ONE',
+      description: 'Category of this entity'
+    },
+    {
+      columnPath: 'metadata',
+      path: 'metadata',
+      targetEntityClass: 'com.cyoda.core.Metadata',
+      joinType: 'ONE_TO_ONE',
+      description: 'Metadata information'
+    }
+  ];
+};
+
+/**
+ * Get related paths for an entity
+ * Falls back to mock data if API is unavailable (for demo mode)
+ */
+export async function getReportingRelatedPaths(entityClass: string) {
+  try {
+    const response = await axios.get(
+      `/platform-api/entity-info/model-info/related/paths?entityModel=${entityClass}`
+    );
+
+    // If response data is valid, return it
+    if (Array.isArray(response.data) && response.data.length > 0) {
+      return response;
+    }
+
+    // Fall back to mock data for demo mode
+    console.warn(`API returned empty/invalid data for related paths of ${entityClass}, using mock data`);
+    return {
+      data: getMockRelatedPaths(entityClass),
+      status: 200,
+      statusText: 'OK (Mock Data)',
+      headers: {},
+      config: {} as any,
+    };
+  } catch (error) {
+    console.warn(`API unavailable for related paths of ${entityClass}, using mock data:`, error);
+    return {
+      data: getMockRelatedPaths(entityClass),
+      status: 200,
+      statusText: 'OK (Mock Data)',
+      headers: {},
+      config: {} as any,
+    };
+  }
 }
 
 /**

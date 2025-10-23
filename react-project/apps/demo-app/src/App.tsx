@@ -6,6 +6,7 @@ import HomePage from './pages/HomePage';
 import TasksDemo from './pages/TasksDemo';
 import StateMachineDemo from './pages/StateMachineDemo';
 import ApiDemo from './pages/ApiDemo';
+import EntityViewerDemo from './pages/EntityViewerDemo';
 import './App.css';
 
 const { Content } = Layout;
@@ -19,6 +20,7 @@ const App: React.FC = () => {
           <Route path="/tasks/*" element={<TasksDemo />} />
           <Route path="/statemachine/*" element={<StateMachineDemo />} />
           <Route path="/api-demo" element={<ApiDemo />} />
+          <Route path="/entity-viewer" element={<EntityViewerDemo />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AppLayout>

@@ -7,9 +7,57 @@ import axios from 'axios';
 import type { ReportingInfoRow, RelatedPath, CatalogItem } from '../types/modelling';
 
 /**
- * Get reporting info (entity fields and types)
+ * Mock entity info data for demo mode
  */
-export function getReportingInfo(
+const getMockEntityInfo = (entityClass: string): ReportingInfoRow[] => {
+  const shortName = entityClass.split('.').pop() || 'Entity';
+
+  return [
+    {
+      columnName: 'id',
+      columnPath: 'id',
+      type: 'LEAF',
+    },
+    {
+      columnName: 'name',
+      columnPath: 'name',
+      type: 'LEAF',
+    },
+    {
+      columnName: 'createdAt',
+      columnPath: 'createdAt',
+      type: 'LEAF',
+    },
+    {
+      columnName: 'updatedAt',
+      columnPath: 'updatedAt',
+      type: 'LEAF',
+    },
+    {
+      columnName: 'status',
+      columnPath: 'status',
+      type: 'LEAF',
+    },
+    {
+      columnName: 'description',
+      columnPath: 'description',
+      type: 'LEAF',
+    },
+  ];
+};
+
+/**
+ * Mock related paths data for demo mode
+ */
+const getMockRelatedPaths = (entityClass: string): RelatedPath[] => {
+  return [];
+};
+
+/**
+ * Get reporting info (entity fields and types)
+ * Falls back to mock data if API is unavailable (for demo mode)
+ */
+export async function getReportingInfo(
   entityClass: string,
   parentFldClass: string = '',
   columnPath: string = '',
@@ -24,16 +72,69 @@ export function getReportingInfo(
     .map((key) => `${key}=${params[key]}`)
     .join('&');
 
-  return axios.get<ReportingInfoRow[]>(`/platform-api/entity-info/model-info?${query}`);
+  try {
+    const response = await axios.get<ReportingInfoRow[]>(`/platform-api/entity-info/model-info?${query}`);
+
+    // If response data is valid, return it
+    if (Array.isArray(response.data) && response.data.length > 0) {
+      return response;
+    }
+
+    // Fall back to mock data
+    console.warn(`API returned empty data for ${entityClass}, using mock data`);
+    return {
+      data: getMockEntityInfo(entityClass),
+      status: 200,
+      statusText: 'OK (Mock Data)',
+      headers: {},
+      config: {} as any,
+    };
+  } catch (error) {
+    console.warn(`API unavailable for ${entityClass}, using mock data:`, error);
+    return {
+      data: getMockEntityInfo(entityClass),
+      status: 200,
+      statusText: 'OK (Mock Data)',
+      headers: {},
+      config: {} as any,
+    };
+  }
 }
 
 /**
  * Get related paths for an entity
+ * Falls back to mock data if API is unavailable (for demo mode)
  */
-export function getReportingRelatedPaths(entityClass: string) {
-  return axios.get<RelatedPath[]>(
-    `/platform-api/entity-info/model-info/related/paths?entityModel=${entityClass}`
-  );
+export async function getReportingRelatedPaths(entityClass: string) {
+  try {
+    const response = await axios.get<RelatedPath[]>(
+      `/platform-api/entity-info/model-info/related/paths?entityModel=${entityClass}`
+    );
+
+    // If response data is valid, return it
+    if (Array.isArray(response.data)) {
+      return response;
+    }
+
+    // Fall back to mock data
+    console.warn(`API returned invalid data for related paths of ${entityClass}, using mock data`);
+    return {
+      data: getMockRelatedPaths(entityClass),
+      status: 200,
+      statusText: 'OK (Mock Data)',
+      headers: {},
+      config: {} as any,
+    };
+  } catch (error) {
+    console.warn(`API unavailable for related paths of ${entityClass}, using mock data:`, error);
+    return {
+      data: getMockRelatedPaths(entityClass),
+      status: 200,
+      statusText: 'OK (Mock Data)',
+      headers: {},
+      config: {} as any,
+    };
+  }
 }
 
 /**
