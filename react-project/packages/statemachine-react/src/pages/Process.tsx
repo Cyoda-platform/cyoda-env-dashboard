@@ -47,10 +47,22 @@ export const Process: React.FC = () => {
   
   // Processor options
   const processorOptions = useMemo(() => {
-    return processors.map((processor: any) => ({
-      label: processor.name || processor.value,
-      value: processor.value || processor.name,
-    }));
+    return processors.map((processor: any) => {
+      // Handle both string format (legacy) and object format
+      if (typeof processor === 'string') {
+        return {
+          label: processor,
+          value: processor,
+        };
+      }
+      // Object format with name and entityClass
+      const fullName = processor.name || processor.value || processor;
+      const shortName = fullName.split('.').pop() || fullName;
+      return {
+        label: shortName,
+        value: fullName,
+      };
+    });
   }, [processors]);
   
   // Initialize form when process data loads

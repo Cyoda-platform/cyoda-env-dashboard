@@ -60,6 +60,10 @@ vi.mock('../../hooks/useStatemachine', () => ({
     data: [],
     isLoading: false,
   }),
+  useCriteriaForWorkflow: () => ({
+    data: [],
+    isLoading: false,
+  }),
 }));
 
 // Mock components

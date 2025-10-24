@@ -29,10 +29,10 @@ vi.mock('@cyoda/tableau-react', () => ({
 }));
 
 // Mock FilterBuilderCondition component
-vi.mock('../../../cobi-react/src/components/DataMapper/FilterBuilder/FilterBuilderCondition', () => ({
-  default: vi.fn(({ condition, onRemove, onChange }) => (
+vi.mock('@cyoda/cobi-react', () => ({
+  FilterBuilderCondition: vi.fn(({ condition, onRemove, onChange }) => (
     <div data-testid="filter-builder-condition">
-      <span>Field: {condition.fieldName}</span>
+      <span>Field: {condition?.fieldName}</span>
       <button data-testid="condition-change" onClick={onChange}>
         Change Condition
       </button>
@@ -187,6 +187,11 @@ describe('RangeCondition', () => {
           rangeCondition: {
             '@bean': 'com.cyoda.core.conditions.EqualsCondition',
             fieldName: 'entity.field1',
+            operation: '',
+            value: {
+              '@type': '',
+              value: '',
+            },
           },
         });
       });
@@ -298,10 +303,11 @@ describe('RangeCondition', () => {
   });
 
   describe('Props Validation', () => {
-    it('should pass correct props to ModellingPopUp', () => {
+    it('should pass correct props to ModellingPopUp', async () => {
       render(<RangeCondition form={defaultForm} onChange={mockOnChange} />);
 
-      const ModellingPopUp = require('@cyoda/tableau-react').ModellingPopUp;
+      const tableauReact = await import('@cyoda/tableau-react');
+      const ModellingPopUp = tableauReact.ModellingPopUp as any;
       const lastCall = ModellingPopUp.mock.calls[ModellingPopUp.mock.calls.length - 1][0];
 
       expect(lastCall.requestClass).toBe('com.example.Entity');
@@ -309,7 +315,7 @@ describe('RangeCondition', () => {
       expect(lastCall.limit).toBe(1);
     });
 
-    it('should pass correct props to FilterBuilderCondition', () => {
+    it('should pass correct props to FilterBuilderCondition', async () => {
       const formWithCondition = {
         ...defaultForm,
         rangeCondition: {
@@ -325,7 +331,13 @@ describe('RangeCondition', () => {
 
       render(<RangeCondition form={formWithCondition} onChange={mockOnChange} />);
 
-      const FilterBuilderCondition = require('../../../cobi-react/src/components/DataMapper/FilterBuilder/FilterBuilderCondition').default;
+      // Wait for the component to render with the condition
+      await waitFor(() => {
+        expect(screen.getByTestId('filter-builder-condition')).toBeInTheDocument();
+      });
+
+      const cobiReact = await import('@cyoda/cobi-react');
+      const FilterBuilderCondition = cobiReact.FilterBuilderCondition as any;
       const lastCall = FilterBuilderCondition.mock.calls[FilterBuilderCondition.mock.calls.length - 1][0];
 
       expect(lastCall.condition).toEqual(formWithCondition.rangeCondition);

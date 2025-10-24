@@ -51,10 +51,22 @@ export const ProcessForm: React.FC<ProcessFormProps> = ({
   // Processor options
   const processorOptions = React.useMemo(() => {
     if (Array.isArray(processorsList)) {
-      return processorsList.map((processor: any) => ({
-        label: typeof processor === 'string' ? processor : (processor.name || processor.value || processor),
-        value: typeof processor === 'string' ? processor : (processor.value || processor.name || processor),
-      }));
+      return processorsList.map((processor: any) => {
+        // Handle both string format (legacy) and object format
+        if (typeof processor === 'string') {
+          return {
+            label: processor,
+            value: processor,
+          };
+        }
+        // Object format with name and entityClass
+        const fullName = processor.name || processor.value || processor;
+        const shortName = fullName.split('.').pop() || fullName;
+        return {
+          label: shortName,
+          value: fullName,
+        };
+      });
     }
     return [];
   }, [processorsList]);

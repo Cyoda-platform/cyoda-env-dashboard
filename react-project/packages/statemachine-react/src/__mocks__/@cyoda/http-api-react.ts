@@ -571,7 +571,36 @@ const axios = {
     }
 
     if (url === '/platform-api/statemachine/processors') {
-      return { data: ['EmailProcessor', 'InventoryProcessor', 'InvoiceProcessor'], status: 200 };
+      return {
+        data: [
+          {
+            name: 'com.example.processors.EmailProcessor',
+            entityClass: 'com.example.Order',
+            parameters: []
+          },
+          {
+            name: 'com.example.processors.InventoryProcessor',
+            entityClass: 'com.example.Order',
+            parameters: []
+          },
+          {
+            name: 'com.example.processors.InvoiceProcessor',
+            entityClass: 'com.example.Order',
+            parameters: []
+          },
+          {
+            name: 'com.cyoda.technical.processors.DataValidationProcessor',
+            entityClass: 'com.cyoda.technical.DataPipeline',
+            parameters: []
+          },
+          {
+            name: 'com.cyoda.technical.processors.ProcessingEngineProcessor',
+            entityClass: 'com.cyoda.technical.DataPipeline',
+            parameters: []
+          }
+        ],
+        status: 200
+      };
     }
 
     if (url.match(/\/platform-api\/statemachine\/(draft|published|persisted|transient)\/processes\/[\w-]+$/)) {

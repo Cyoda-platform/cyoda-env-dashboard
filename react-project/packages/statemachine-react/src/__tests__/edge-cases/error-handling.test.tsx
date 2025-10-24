@@ -10,6 +10,17 @@ import { BrowserRouter } from 'react-router-dom';
 import React from 'react';
 import { Workflows } from '../../pages/Workflows';
 
+// Mock http-api-react/utils to avoid cross-package dependency issues
+vi.mock('@cyoda/http-api-react/utils', () => ({
+  HelperStorage: {},
+  HelperErrors: {},
+  serializeParams: vi.fn(),
+  HelperEntities: {},
+  HelperModelling: {},
+  eventBus: { on: vi.fn(), off: vi.fn(), emit: vi.fn() },
+  EventBus: class EventBus {},
+}));
+
 // Mock Ant Design message
 vi.mock('antd', async () => {
   const actual = await vi.importActual('antd');

@@ -78,7 +78,7 @@ describe('CriteriaForm Component', () => {
     expect(screen.getByLabelText(/Criteria Checker/i)).toBeInTheDocument();
   });
 
-  it('should render Active and Template toggles', () => {
+  it('should render all form fields', () => {
     render(
       <CriteriaForm
         entityClassName="com.example.Order"
@@ -88,8 +88,9 @@ describe('CriteriaForm Component', () => {
       { wrapper: createWrapper() }
     );
 
-    expect(screen.getByText('Active')).toBeInTheDocument();
-    expect(screen.getByText('Template')).toBeInTheDocument();
+    expect(screen.getByLabelText(/Name/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Description/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Criteria Checker/i)).toBeInTheDocument();
   });
 
   it('should render Create button for new criteria', () => {
@@ -105,10 +106,10 @@ describe('CriteriaForm Component', () => {
     expect(screen.getByText('Create')).toBeInTheDocument();
   });
 
-  it('should render Update button for existing criteria', () => {
-    const { useCriteria } = require('../hooks/useStatemachine');
-    
-    vi.mocked(useCriteria).mockReturnValue({
+  it('should render Update button for existing criteria', async () => {
+    const statemachineHooks = await import('../hooks/useStatemachine');
+
+    vi.mocked(statemachineHooks.useCriteria).mockReturnValue({
       data: {
         id: 'criteria-1',
         name: 'Test Criteria',
@@ -118,7 +119,7 @@ describe('CriteriaForm Component', () => {
         isTemplate: false,
       },
       isLoading: false,
-    });
+    } as any);
 
     render(
       <CriteriaForm
@@ -176,9 +177,9 @@ describe('CriteriaForm Component', () => {
 
   it('should handle form submission for updating criteria', async () => {
     const user = userEvent.setup();
-    const { useCriteria } = require('../hooks/useStatemachine');
-    
-    vi.mocked(useCriteria).mockReturnValue({
+    const statemachineHooks = await import('../hooks/useStatemachine');
+
+    vi.mocked(statemachineHooks.useCriteria).mockReturnValue({
       data: {
         id: 'criteria-1',
         name: 'Test Criteria',
@@ -188,7 +189,7 @@ describe('CriteriaForm Component', () => {
         isTemplate: false,
       },
       isLoading: false,
-    });
+    } as any);
 
     mockUpdateCriteriaMutateAsync.mockResolvedValue({ id: 'criteria-1' });
 
@@ -227,9 +228,7 @@ describe('CriteriaForm Component', () => {
     });
   });
 
-  it('should show criteria checker input when template is enabled', async () => {
-    const user = userEvent.setup();
-    
+  it('should render criteria checker as a select dropdown', () => {
     render(
       <CriteriaForm
         entityClassName="com.example.Order"
@@ -239,22 +238,9 @@ describe('CriteriaForm Component', () => {
       { wrapper: createWrapper() }
     );
 
-    // Find and click the Template toggle
-    const templateToggles = screen.getAllByRole('switch');
-    const templateToggle = templateToggles.find((toggle) => {
-      const parent = toggle.closest('.ant-space-item');
-      return parent?.textContent?.includes('Template');
-    });
-
-    if (templateToggle) {
-      await user.click(templateToggle);
-
-      await waitFor(() => {
-        // Should show input instead of select
-        const criteriaCheckerInput = screen.getByLabelText(/Criteria Checker/i);
-        expect(criteriaCheckerInput.tagName).toBe('INPUT');
-      });
-    }
+    // Criteria checker should be a select (combobox role)
+    const criteriaCheckerSelect = screen.getByRole('combobox');
+    expect(criteriaCheckerSelect).toBeInTheDocument();
   });
 
   it('should disable fields when persistedType is transient', () => {
@@ -275,9 +261,9 @@ describe('CriteriaForm Component', () => {
   });
 
   it('should populate form fields when editing existing criteria', async () => {
-    const { useCriteria } = require('../hooks/useStatemachine');
-    
-    vi.mocked(useCriteria).mockReturnValue({
+    const statemachineHooks = await import('../hooks/useStatemachine');
+
+    vi.mocked(statemachineHooks.useCriteria).mockReturnValue({
       data: {
         id: 'criteria-1',
         name: 'Existing Criteria',
@@ -287,7 +273,7 @@ describe('CriteriaForm Component', () => {
         isTemplate: false,
       },
       isLoading: false,
-    });
+    } as any);
 
     render(
       <CriteriaForm

@@ -45,12 +45,14 @@ const mockUseWorkflow = vi.fn();
 const mockUseTransitions = vi.fn();
 const mockUseProcesses = vi.fn();
 const mockUseCriteria = vi.fn();
+const mockUseCriteriaForWorkflow = vi.fn();
 
 vi.mock('../hooks/useStatemachine', () => ({
   useWorkflow: () => mockUseWorkflow(),
   useTransitions: () => mockUseTransitions(),
   useProcesses: () => mockUseProcesses(),
   useCriteria: () => mockUseCriteria(),
+  useCriteriaForWorkflow: () => mockUseCriteriaForWorkflow(),
 }));
 
 // Mock the store
@@ -114,6 +116,11 @@ describe('WorkflowDetail', () => {
     });
 
     mockUseCriteria.mockReturnValue({
+      data: [{ id: 'criteria-1', name: 'Criteria 1' }],
+      isLoading: false,
+    });
+
+    mockUseCriteriaForWorkflow.mockReturnValue({
       data: [{ id: 'criteria-1', name: 'Criteria 1' }],
       isLoading: false,
     });

@@ -47,6 +47,18 @@ export const RangeCondition: React.FC<RangeConditionProps> = ({
   const modellingPopUpRef = useRef<ModellingPopUpRef>(null);
   const [configDefinitionColRanges, setConfigDefinitionColRanges] = useState<any[]>([]);
 
+  // Initialize colsRange from existing condition
+  React.useEffect(() => {
+    if (form.rangeCondition?.fieldName && configDefinitionColRanges.length === 0) {
+      // Extract type from the condition if available
+      const colType = form.rangeCondition.value?.['@type'] || 'java.lang.String';
+      setConfigDefinitionColRanges([{
+        fullPath: form.rangeCondition.fieldName,
+        colType: colType,
+      }]);
+    }
+  }, [form.rangeCondition?.fieldName]);
+
   // Convert selected columns to ColumnInfo format for FilterBuilderCondition
   const colsRange = useMemo<ColumnInfo[]>(() => {
     return configDefinitionColRanges.map((el) => ({

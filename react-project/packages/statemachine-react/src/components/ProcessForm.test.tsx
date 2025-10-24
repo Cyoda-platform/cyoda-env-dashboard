@@ -20,7 +20,10 @@ vi.mock('../hooks/useStatemachine', () => ({
     isLoading: false,
   })),
   useProcessorsList: vi.fn(() => ({
-    data: ['com.example.Processor1', 'com.example.Processor2'],
+    data: [
+      { name: 'com.example.Processor1', entityClass: 'com.example.Order', parameters: [] },
+      { name: 'com.example.Processor2', entityClass: 'com.example.Order', parameters: [] }
+    ],
     isLoading: false,
   })),
   useCreateProcess: vi.fn(() => ({
@@ -106,10 +109,10 @@ describe('ProcessForm Component', () => {
     expect(screen.getByText('Create')).toBeInTheDocument();
   });
 
-  it('should render Update button for existing process', () => {
-    const { useProcess } = require('../hooks/useStatemachine');
-    
-    vi.mocked(useProcess).mockReturnValue({
+  it('should render Update button for existing process', async () => {
+    const statemachineHooks = await import('../hooks/useStatemachine');
+
+    vi.mocked(statemachineHooks.useProcess).mockReturnValue({
       data: {
         id: 'process-1',
         name: 'Test Process',
@@ -120,7 +123,7 @@ describe('ProcessForm Component', () => {
         isTemplate: false,
       },
       isLoading: false,
-    });
+    } as any);
 
     render(
       <ProcessForm
@@ -178,9 +181,9 @@ describe('ProcessForm Component', () => {
 
   it('should handle form submission for updating process', async () => {
     const user = userEvent.setup();
-    const { useProcess } = require('../hooks/useStatemachine');
-    
-    vi.mocked(useProcess).mockReturnValue({
+    const statemachineHooks = await import('../hooks/useStatemachine');
+
+    vi.mocked(statemachineHooks.useProcess).mockReturnValue({
       data: {
         id: 'process-1',
         name: 'Test Process',
@@ -191,7 +194,7 @@ describe('ProcessForm Component', () => {
         isTemplate: false,
       },
       isLoading: false,
-    });
+    } as any);
 
     mockUpdateProcessMutateAsync.mockResolvedValue({ id: 'process-1' });
 
@@ -278,9 +281,9 @@ describe('ProcessForm Component', () => {
   });
 
   it('should populate form fields when editing existing process', async () => {
-    const { useProcess } = require('../hooks/useStatemachine');
-    
-    vi.mocked(useProcess).mockReturnValue({
+    const statemachineHooks = await import('../hooks/useStatemachine');
+
+    vi.mocked(statemachineHooks.useProcess).mockReturnValue({
       data: {
         id: 'process-1',
         name: 'Existing Process',
@@ -291,7 +294,7 @@ describe('ProcessForm Component', () => {
         isTemplate: false,
       },
       isLoading: false,
-    });
+    } as any);
 
     render(
       <ProcessForm

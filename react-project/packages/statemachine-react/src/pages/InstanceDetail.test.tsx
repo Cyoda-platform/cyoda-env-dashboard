@@ -73,7 +73,9 @@ describe('InstanceDetail', () => {
 
   it('should render the component', () => {
     render(<InstanceDetail />, { wrapper: createWrapper() });
-    expect(screen.getByText(/Instances/i)).toBeInTheDocument();
+    // Use getAllByText since "Instances" appears in both the button and heading
+    const instancesElements = screen.getAllByText(/Instances/i);
+    expect(instancesElements.length).toBeGreaterThan(0);
   });
 
   it('should display instance ID and model name', () => {
