@@ -47,10 +47,13 @@ export const Criteria: React.FC = () => {
   
   // Criteria checker options
   const checkerOptions = useMemo(() => {
-    return criteriacheckers.map((checker: any) => ({
-      label: checker.name || checker.value,
-      value: checker.value || checker.name,
-    }));
+    if (Array.isArray(criteriacheckers)) {
+      return criteriacheckers.map((checker: any) => ({
+        label: typeof checker === 'string' ? checker : (checker.name || checker.value || checker),
+        value: typeof checker === 'string' ? checker : (checker.value || checker.name || checker),
+      }));
+    }
+    return [];
   }, [criteriacheckers]);
   
   // Initialize form when criteria data loads
@@ -68,25 +71,34 @@ export const Criteria: React.FC = () => {
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
-      
+
       const formData: CriteriaFormType = {
+        '@bean': 'com.cyoda.core.model.stateMachine.dto.CriteriaDto',
         name: values.name,
         description: values.description,
         criteriaChecker: values.criteriaChecker,
         entityClassName,
+        condition: {
+          '@bean': 'com.cyoda.core.conditions.GroupCondition',
+          operator: 'AND',
+          conditions: [],
+        },
+        parameters: [],
+        colDefs: [],
+        aliasDefs: [],
       };
-      
+
       if (isNew) {
         await createCriteriaMutation.mutateAsync({
           persistedType,
-          criteriaData: formData,
+          form: formData,
         });
         message.success('Criteria created successfully');
       } else {
         await updateCriteriaMutation.mutateAsync({
           persistedType,
           criteriaId: criteriaId!,
-          criteriaData: formData,
+          form: formData,
         });
         message.success('Criteria updated successfully');
       }

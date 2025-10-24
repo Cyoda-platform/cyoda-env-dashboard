@@ -98,9 +98,12 @@ export const useImportWorkflows = () => {
       );
       return response.data;
     },
-    onSettled: () => {
+    onSuccess: () => {
       // Invalidate and refetch all workflow-related queries
-      queryClient.invalidateQueries({ queryKey: statemachineKeys.workflows() });
+      queryClient.invalidateQueries({
+        queryKey: statemachineKeys.workflows(),
+        refetchType: 'active'
+      });
     },
   });
 };

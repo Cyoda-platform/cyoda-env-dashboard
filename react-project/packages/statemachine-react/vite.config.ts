@@ -11,6 +11,9 @@ export default defineConfig({
     alias: {
       '@': resolve(__dirname, './src'),
       '@cyoda/http-api-react': resolve(__dirname, './src/__mocks__/@cyoda/http-api-react.ts'),
+      '@cyoda/http-api-react/utils': resolve(__dirname, '../http-api-react/src/utils/index.ts'),
+      '@cyoda/http-api-react/stores': resolve(__dirname, '../http-api-react/src/stores/index.ts'),
+      '@cyoda/tableau-react': resolve(__dirname, './src/__mocks__/@cyoda/tableau-react.tsx'),
     },
   },
   define: {

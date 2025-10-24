@@ -74,12 +74,21 @@ export const CriteriaForm: React.FC<CriteriaFormProps> = ({
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
-      
+
       const formData: CriteriaFormType = {
+        '@bean': 'com.cyoda.core.model.stateMachine.dto.CriteriaDto',
         name: values.name,
         description: values.description,
         criteriaChecker: values.criteriaChecker,
         entityClassName,
+        condition: {
+          '@bean': 'com.cyoda.core.conditions.GroupCondition',
+          operator: 'AND',
+          conditions: [],
+        },
+        parameters: [],
+        colDefs: [],
+        aliasDefs: [],
       };
       
       let resultId;

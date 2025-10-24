@@ -88,11 +88,16 @@ export interface Condition {
 }
 
 export interface CriteriaForm {
+  '@bean'?: string;
   id?: string;
   name: string;
   description?: string;
   entityClassName?: string;
   condition?: Condition;
+  criteriaChecker?: string;
+  parameters?: any[];
+  colDefs?: any[];
+  aliasDefs?: any[];
 }
 
 // Process Types
@@ -101,16 +106,27 @@ export interface Process {
   name: string;
   description?: string;
   entityClassName?: string;
+  processorClassName?: string;
+  syncProcess?: boolean;
+  newTransactionForAsync?: boolean;
+  isTemplate?: boolean;
+  parameters?: any[];
   processorId?: string;
   template?: string;
   config?: any;
 }
 
 export interface ProcessForm {
+  '@bean'?: string;
   id?: string;
   name: string;
   description?: string;
   entityClassName?: string;
+  processorClassName?: string;
+  syncProcess?: boolean;
+  newTransactionForAsync?: boolean;
+  isTemplate?: boolean;
+  parameters?: any[];
   processorId?: string;
   template?: string;
   config?: any;

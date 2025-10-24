@@ -89,28 +89,30 @@ export const Process: React.FC = () => {
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
-      
+
       const formData: ProcessFormType = {
+        '@bean': 'com.cyoda.core.model.stateMachine.dto.ProcessDto',
         name: values.name,
         description: values.description,
         processorClassName: values.processorClassName,
         syncProcess: values.syncProcess,
         newTransactionForAsync: values.newTransactionForAsync,
         isTemplate: values.isTemplate,
+        parameters: [],
         entityClassName,
       };
       
       if (isNew) {
         await createProcessMutation.mutateAsync({
           persistedType,
-          processData: formData,
+          form: formData,
         });
         message.success('Process created successfully');
       } else {
         await updateProcessMutation.mutateAsync({
           persistedType,
           processId: processId!,
-          processData: formData,
+          form: formData,
         });
         message.success('Process updated successfully');
       }

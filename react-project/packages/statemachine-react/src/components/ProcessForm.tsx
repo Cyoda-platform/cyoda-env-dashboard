@@ -95,14 +95,16 @@ export const ProcessForm: React.FC<ProcessFormProps> = ({
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
-      
+
       const formData: ProcessFormType = {
+        '@bean': 'com.cyoda.core.model.stateMachine.dto.ProcessDto',
         name: values.name,
         description: values.description,
         processorClassName: values.processorClassName,
         syncProcess: values.syncProcess,
         newTransactionForAsync: values.newTransactionForAsync,
         isTemplate: values.isTemplate,
+        parameters: [],
         entityClassName,
       };
       

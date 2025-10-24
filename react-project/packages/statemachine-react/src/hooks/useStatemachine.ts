@@ -556,7 +556,10 @@ export function useCreateProcess() {
 
   return useMutation({
     mutationFn: async ({ persistedType, form }: { persistedType: PersistedType; form: ProcessForm }) => {
-      const response = await store.postProcesses(persistedType, form);
+      // Use different endpoint for template processes
+      const response = form.isTemplate
+        ? await store.postProcessesTemplate(persistedType, form)
+        : await store.postProcesses(persistedType, form);
       return response.data;
     },
     onSuccess: () => {
@@ -579,7 +582,10 @@ export function useUpdateProcess() {
       processId: string;
       form: ProcessForm;
     }) => {
-      const response = await store.putProcesses(persistedType, processId, form);
+      // Use different endpoint for template processes
+      const response = form.isTemplate
+        ? await store.putProcessesTemplate(persistedType, processId, form)
+        : await store.putProcesses(persistedType, processId, form);
       return response.data;
     },
     onSuccess: (_, variables) => {
