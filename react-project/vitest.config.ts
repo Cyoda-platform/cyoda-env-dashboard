@@ -38,6 +38,8 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': resolve(__dirname, './packages/ui-lib-react/src'),
+      '@cyoda/http-api-react/utils': resolve(__dirname, './packages/http-api-react/src/utils'),
+      '@cyoda/http-api-react/stores': resolve(__dirname, './packages/http-api-react/src/stores'),
       '@cyoda/http-api-react': resolve(__dirname, './packages/http-api-react/src/index.ts'),
       '@cyoda/ui-lib-react': resolve(__dirname, './packages/ui-lib-react/src/index.ts'),
       '@cyoda/tasks-react': resolve(__dirname, './packages/tasks-react/src/index.ts'),
