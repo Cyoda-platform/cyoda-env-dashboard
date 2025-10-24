@@ -4,7 +4,7 @@
  * Migrated from: .old_project/packages/tasks/src/views/tasks/index/Tasks.vue
  */
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Button, Card } from 'antd';
 import { CloseOutlined, ApiOutlined } from '@ant-design/icons';
 import { TasksFilter } from '../components/TasksFilter';
@@ -16,16 +16,17 @@ export const Tasks: React.FC = () => {
   const { isApplyRealData, setIsApplyRealData } = useTasksState();
   const [filter, setFilter] = useState<TaskFilterType>({});
 
-  const handleChangeFilter = (filterValue: TaskFilterType) => {
+  const handleChangeFilter = useCallback((filterValue: TaskFilterType) => {
+    console.log('📝 Tasks page received filter:', filterValue);
     setFilter(filterValue);
-  };
+  }, []);
 
-  const toggleApplyRealData = () => {
+  const toggleApplyRealData = useCallback(() => {
     setIsApplyRealData(!isApplyRealData);
-  };
+  }, [isApplyRealData, setIsApplyRealData]);
 
   return (
-    <div>
+    <main id="main-content" role="main">
       <div className="row">
         <div className="col-md-12">
           <Card>
@@ -40,6 +41,8 @@ export const Tasks: React.FC = () => {
                     danger
                     icon={<CloseOutlined />}
                     onClick={toggleApplyRealData}
+                    aria-label="Unsubscribe from live data updates"
+                    aria-pressed="true"
                   >
                     Unsubscribe to live data
                   </Button>
@@ -48,6 +51,8 @@ export const Tasks: React.FC = () => {
                     type="primary"
                     icon={<ApiOutlined />}
                     onClick={toggleApplyRealData}
+                    aria-label="Subscribe to live data updates"
+                    aria-pressed="false"
                   >
                     Subscribe to live data
                   </Button>
@@ -59,7 +64,7 @@ export const Tasks: React.FC = () => {
           </Card>
         </div>
       </div>
-    </div>
+    </main>
   );
 };
 

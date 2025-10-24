@@ -1,4 +1,4 @@
-import { expect, afterEach } from 'vitest'
+import { expect, afterEach, vi } from 'vitest'
 import { cleanup } from '@testing-library/react'
 import * as matchers from '@testing-library/jest-dom/matchers'
 
@@ -10,20 +10,19 @@ afterEach(() => {
   cleanup()
 })
 
-// Mock window.matchMedia
-Object.defineProperty(window, 'matchMedia', {
-  writable: true,
-  value: (query: string) => ({
+// Mock window.matchMedia - MUST be done before any Ant Design components are imported
+global.matchMedia = global.matchMedia || function (query: string) {
+  return {
     matches: false,
     media: query,
     onchange: null,
-    addListener: () => {}, // deprecated
-    removeListener: () => {}, // deprecated
-    addEventListener: () => {},
-    removeEventListener: () => {},
-    dispatchEvent: () => {}
-  })
-})
+    addListener: vi.fn(), // deprecated
+    removeListener: vi.fn(), // deprecated
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(() => true),
+  }
+}
 
 // Mock IntersectionObserver
 global.IntersectionObserver = class IntersectionObserver {

@@ -4,7 +4,7 @@
  * Migrated from: .old_project/packages/tasks/src/views/tasks/index/TasksGrid.vue
  */
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, memo } from 'react';
 import { Table, Button, Tooltip, Pagination } from 'antd';
 import { EditOutlined, ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
@@ -19,20 +19,63 @@ interface TasksGridProps {
   isApplyRealData: boolean;
 }
 
-export const TasksGrid: React.FC<TasksGridProps> = ({ filter, isApplyRealData }) => {
+// Memoized priority arrow component
+const PriorityArrow = memo<{ priority: number }>(({ priority }) => {
+  const Icon = priority > 5 ? ArrowUpOutlined : ArrowDownOutlined;
+  const color = priority > 5 ? 'red' : 'green';
+
+  return (
+    <span style={{ color }}>
+      <Icon />
+    </span>
+  );
+});
+PriorityArrow.displayName = 'PriorityArrow';
+
+// Memoized priority cell component
+const PriorityCell = memo<{ text: string; priority: number }>(({ text, priority }) => {
+  return (
+    <span>
+      {text} <PriorityArrow priority={priority} />
+    </span>
+  );
+});
+PriorityCell.displayName = 'PriorityCell';
+
+// Memoized operations cell component
+const OperationsCell = memo<{ onView: () => void }>(({ onView }) => {
+  return (
+    <Tooltip title="Edit task">
+      <Button
+        type="default"
+        icon={<EditOutlined />}
+        onClick={onView}
+        aria-label="Edit task"
+      />
+    </Tooltip>
+  );
+});
+OperationsCell.displayName = 'OperationsCell';
+
+export const TasksGrid: React.FC<TasksGridProps> = memo(({ filter, isApplyRealData }) => {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
   // Build query params
-  const params = useMemo(() => ({
-    page: currentPage - 1,
-    size: pageSize,
-    state: filter.status_id || '',
-    assignee: filter.assignee_id || '',
-    priority: filter.priority_id || '',
-  }), [currentPage, pageSize, filter]);
+  const params = useMemo(() => {
+    const queryParams = {
+      page: currentPage - 1,
+      size: pageSize,
+      state: filter.status_id || '',
+      assignee: filter.assignee_id || '',
+      priority: filter.priority_id || '',
+    };
+    console.log('🔍 TasksGrid filter:', filter);
+    console.log('🔍 TasksGrid params:', queryParams);
+    return queryParams;
+  }, [currentPage, pageSize, filter]);
 
   // Fetch tasks
   const { data, isLoading, refetch } = useTasksPerPage(params);
@@ -55,34 +98,24 @@ export const TasksGrid: React.FC<TasksGridProps> = ({ filter, isApplyRealData })
     }));
   }, [data]);
 
-  // Priority arrow icon
-  const priorityArrow = (priority: number) => {
-    return priority > 5 ? <ArrowUpOutlined /> : <ArrowDownOutlined />;
-  };
-
-  // Priority arrow color
-  const priorityArrowColor = (priority: number) => {
-    return priority > 5 ? 'red' : 'green';
-  };
-
-  // Handle view task
-  const handleView = (row: TableRow) => {
+  // Handle view task - memoized to prevent re-creating on every render
+  const handleView = useCallback((row: TableRow) => {
     navigate(`/tasks/${row.id}`);
-  };
+  }, [navigate]);
 
-  // Handle selection change
-  const handleSelectionChange = (selectedKeys: React.Key[]) => {
+  // Handle selection change - memoized
+  const handleSelectionChange = useCallback((selectedKeys: React.Key[]) => {
     setSelectedRowKeys(selectedKeys);
-  };
+  }, []);
 
-  // Handle page change
-  const handlePageChange = (page: number, size: number) => {
+  // Handle page change - memoized
+  const handlePageChange = useCallback((page: number, size: number) => {
     setCurrentPage(page);
     setPageSize(size);
-  };
+  }, []);
 
-  // Table columns
-  const columns: ColumnsType<TableRow> = [
+  // Table columns - memoized to prevent re-creating on every render
+  const columns: ColumnsType<TableRow> = useMemo(() => [
     {
       title: 'Title',
       dataIndex: 'title',
@@ -104,12 +137,7 @@ export const TasksGrid: React.FC<TasksGridProps> = ({ filter, isApplyRealData })
       width: 180,
       sorter: (a, b) => a.priority - b.priority,
       render: (text, record) => (
-        <span>
-          {text}{' '}
-          <span style={{ color: priorityArrowColor(record.priority) }}>
-            {priorityArrow(record.priority)}
-          </span>
-        </span>
+        <PriorityCell text={text} priority={record.priority} />
       ),
     },
     {
@@ -128,27 +156,33 @@ export const TasksGrid: React.FC<TasksGridProps> = ({ filter, isApplyRealData })
       title: 'Operations',
       key: 'operations',
       render: (_, record) => (
-        <Tooltip title="Edit">
-          <Button
-            type="default"
-            icon={<EditOutlined />}
-            onClick={() => handleView(record)}
-          />
-        </Tooltip>
+        <OperationsCell onView={() => handleView(record)} />
       ),
     },
-  ];
+  ], [handleView]);
 
-  // Row selection config
-  const rowSelection = {
+  // Row selection config - memoized
+  const rowSelection = useMemo(() => ({
     selectedRowKeys,
     onChange: handleSelectionChange,
-  };
+  }), [selectedRowKeys, handleSelectionChange]);
+
+  // Handle bulk update completion - memoized
+  const handleBulkUpdated = useCallback(() => {
+    setSelectedRowKeys([]);
+    refetch();
+  }, [refetch]);
+
+  // Selected rows - memoized
+  const selectedRows = useMemo(() =>
+    tableData.filter(row => selectedRowKeys.includes(row.id)),
+    [tableData, selectedRowKeys]
+  );
 
   return (
-    <div className="tasks-grid">
+    <div className="tasks-grid" role="region" aria-label="Tasks management">
       <div>
-        <h2>Tasks</h2>
+        <h2 id="tasks-heading">Tasks</h2>
       </div>
       <div className="wrap-table">
         <Table
@@ -158,30 +192,38 @@ export const TasksGrid: React.FC<TasksGridProps> = ({ filter, isApplyRealData })
           loading={isLoading}
           rowKey="id"
           pagination={false}
+          aria-labelledby="tasks-heading"
+          aria-busy={isLoading}
+          aria-describedby="tasks-description"
         />
+        <div id="tasks-description" className="sr-only">
+          Table showing {data?.totalElements || 0} tasks with columns for title, status, priority, assignee, created date, and operations
+        </div>
 
         {selectedRowKeys.length > 0 && (
-          <BulkUpdateForm
-            multipleSelection={tableData.filter(row => selectedRowKeys.includes(row.id))}
-            onUpdated={() => {
-              setSelectedRowKeys([]);
-              refetch();
-            }}
-          />
+          <div role="region" aria-label="Bulk update form" aria-live="polite">
+            <BulkUpdateForm
+              multipleSelection={selectedRows}
+              onUpdated={handleBulkUpdated}
+            />
+          </div>
         )}
 
-        <Pagination
-          current={currentPage}
-          pageSize={pageSize}
-          total={data?.totalElements || 0}
-          showSizeChanger
-          showTotal={(total) => `Total ${total} items`}
-          pageSizeOptions={[5, 10, 20]}
-          onChange={handlePageChange}
-          style={{ marginTop: 16, textAlign: 'right' }}
-        />
+        <nav aria-label="Tasks pagination" style={{ marginTop: 16, textAlign: 'right' }}>
+          <Pagination
+            current={currentPage}
+            pageSize={pageSize}
+            total={data?.totalElements || 0}
+            showSizeChanger
+            showTotal={(total) => `Total ${total} items`}
+            pageSizeOptions={[5, 10, 20]}
+            onChange={handlePageChange}
+            aria-label="Pagination navigation"
+          />
+        </nav>
       </div>
     </div>
   );
-};
+});
+TasksGrid.displayName = 'TasksGrid';
 

@@ -95,6 +95,7 @@ export const TasksNotifications: React.FC<TasksNotificationsProps> = ({
   const startPolling = async () => {
     if (intervalRef.current) return
 
+    console.log('🔄 TasksNotifications: SSE failed, falling back to polling every', pollingInterval, 'ms');
     await getAllTasksRequests()
 
     intervalRef.current = setInterval(async () => {
@@ -119,7 +120,9 @@ export const TasksNotifications: React.FC<TasksNotificationsProps> = ({
     if (!token) return
 
     const url = `${_.trimEnd(apiBase, '/')}/alerts/tasks/emit`
-    
+
+    console.log('📡 TasksNotifications: Connecting to SSE endpoint:', url);
+
     eventSourceRef.current = new EventSourcePolyfill(url, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -128,7 +131,8 @@ export const TasksNotifications: React.FC<TasksNotificationsProps> = ({
     })
 
     // Handle errors - fall back to polling
-    eventSourceRef.current.addEventListener('error', () => {
+    eventSourceRef.current.addEventListener('error', (error) => {
+      console.log('❌ TasksNotifications: SSE connection error:', error);
       if (eventSourceRef.current) {
         eventSourceRef.current.close()
         eventSourceRef.current = null
@@ -160,11 +164,13 @@ export const TasksNotifications: React.FC<TasksNotificationsProps> = ({
 
     eventSourceRef.current.addEventListener('message', (event: any) => {
       const task = JSON.parse(event.data)
-      
+
+      console.log('📨 TasksNotifications: Received new task via SSE:', task);
+
       if (task.previousState === 'None') {
         debouncedNotification(task)
       }
-      
+
       onNewTask?.(task)
     })
   }
@@ -180,8 +186,10 @@ export const TasksNotifications: React.FC<TasksNotificationsProps> = ({
   // Main effect - start/stop based on enabled flag
   useEffect(() => {
     if (enabled) {
+      console.log('🔔 TasksNotifications: Starting live data subscription (SSE)');
       startEventSource()
     } else {
+      console.log('🔕 TasksNotifications: Stopping live data subscription');
       stopEventSource()
       stopPolling()
     }

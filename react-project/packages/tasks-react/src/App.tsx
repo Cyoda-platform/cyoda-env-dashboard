@@ -4,12 +4,16 @@
  */
 
 import React, { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { QueryProvider } from '@cyoda/http-api-react';
 import { BaseLayout, LoginLayout, ErrorHandler, TasksNotifications, ErrorHandlerProvider } from '@cyoda/ui-lib-react';
 import { useAuth } from '@cyoda/http-api-react';
+import { useTasksStore } from './stores/tasksStore';
 import { routes } from './routes';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import './App.css';
+import './styles/accessibility.css';
 
 // Development mode - bypass authentication
 const DEV_MODE = import.meta.env.DEV;
@@ -57,34 +61,68 @@ const RouteWithLayout: React.FC<{
   return <BaseLayout>{content}</BaseLayout>;
 };
 
+// App content with TasksNotifications integration
+const AppContent: React.FC = () => {
+  const location = useLocation();
+  const queryClient = useQueryClient();
+  const { token } = useAuth();
+  const { isApplyRealData, getAllTasks } = useTasksStore();
+
+  // Get current task ID from route
+  const currentTaskId = location.pathname.includes('/tasks/')
+    ? location.pathname.split('/tasks/')[1]
+    : undefined;
+
+  // Handle new task notification
+  const handleNewTask = () => {
+    // Invalidate tasks queries to trigger refetch
+    queryClient.invalidateQueries({ queryKey: ['tasks'] });
+  };
+
+  return (
+    <div id="app">
+      <a href="#main-content" className="skip-to-main">
+        Skip to main content
+      </a>
+      <Routes>
+        {routes.map((route, index) => {
+          const isPublic = route.path?.includes('/login');
+          const layout = isPublic ? 'login' : 'base';
+
+          return (
+            <Route
+              key={index}
+              path={route.path}
+              element={
+                <RouteWithLayout element={route.element} isPublic={isPublic} layout={layout} />
+              }
+            />
+          );
+        })}
+      </Routes>
+      <TasksNotifications
+        enabled={isApplyRealData}
+        token={token}
+        onFetchTasks={getAllTasks}
+        onNewTask={handleNewTask}
+        currentTaskId={currentTaskId}
+      />
+      <ErrorHandler />
+    </div>
+  );
+};
+
 function App() {
   return (
-    <ErrorHandlerProvider>
-      <QueryProvider showDevtools={import.meta.env.DEV}>
-        <BrowserRouter>
-          <div id="app">
-            <Routes>
-              {routes.map((route, index) => {
-                const isPublic = route.path?.includes('/login');
-                const layout = isPublic ? 'login' : 'base';
-
-                return (
-                  <Route
-                    key={index}
-                    path={route.path}
-                    element={
-                      <RouteWithLayout element={route.element} isPublic={isPublic} layout={layout} />
-                    }
-                  />
-                );
-              })}
-            </Routes>
-            <TasksNotifications />
-            <ErrorHandler />
-          </div>
-        </BrowserRouter>
-      </QueryProvider>
-    </ErrorHandlerProvider>
+    <ErrorBoundary>
+      <ErrorHandlerProvider>
+        <QueryProvider showDevtools={import.meta.env.DEV}>
+          <BrowserRouter>
+            <AppContent />
+          </BrowserRouter>
+        </QueryProvider>
+      </ErrorHandlerProvider>
+    </ErrorBoundary>
   );
 }
 

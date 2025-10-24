@@ -4,7 +4,7 @@
  * Migrated from: .old_project/packages/tasks/src/views/tasks/index/TasksFilter.vue
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, memo, useCallback, useMemo } from 'react';
 import { Form, Select, Row, Col, Divider } from 'antd';
 import { HelperStorage, HelperDictionary } from '@cyoda/ui-lib-react';
 import type { TaskFilterType } from '../types';
@@ -23,7 +23,7 @@ const defaultFilter: TaskFilterType = {
 
 const helperStorage = new HelperStorage();
 
-export const TasksFilter: React.FC<TasksFilterProps> = ({ onChangeFilter }) => {
+export const TasksFilter: React.FC<TasksFilterProps> = memo(({ onChangeFilter }) => {
   const [form] = Form.useForm();
 
   // Load saved filter from storage
@@ -31,29 +31,37 @@ export const TasksFilter: React.FC<TasksFilterProps> = ({ onChangeFilter }) => {
     const savedFilter = helperStorage.get<TaskFilterType>('TasksFilter', defaultFilter);
     form.setFieldsValue(savedFilter);
     onChangeFilter(savedFilter);
-  }, []);
+  }, [form, onChangeFilter]);
 
-  const handleValuesChange = (_: any, allValues: TaskFilterType) => {
+  const handleValuesChange = useCallback((_: any, allValues: TaskFilterType) => {
+    console.log('🔍 Filter values changed:', allValues);
     helperStorage.set('TasksFilter', allValues);
     onChangeFilter(allValues);
-  };
+  }, [onChangeFilter]);
 
-  const optionsStatus = HelperDictionary.statuses || [];
-  const optionsAssignee = HelperDictionary.users || [];
-  const optionsPriority = HelperDictionary.priorities || [];
+  // Memoize options to prevent re-creating on every render
+  const optionsStatus = useMemo(() => HelperDictionary.statuses || [], []);
+  const optionsAssignee = useMemo(() => HelperDictionary.users || [], []);
+  const optionsPriority = useMemo(() => HelperDictionary.priorities || [], []);
 
   return (
-    <div className="tasks-filters">
+    <div className="tasks-filters" role="search" aria-label="Filter tasks">
       <Form
         form={form}
         layout="vertical"
         onValuesChange={handleValuesChange}
         initialValues={defaultFilter}
+        aria-label="Task filters form"
       >
         <Row gutter={20}>
           <Col span={8}>
             <Form.Item label="By Status" name="status_id">
-              <Select placeholder="-- Select --" allowClear>
+              <Select
+                placeholder="-- Select --"
+                allowClear
+                aria-label="Filter by status"
+                aria-describedby="status-filter-description"
+              >
                 {optionsStatus.map((item: any) => (
                   <Option key={item.key} value={item.key}>
                     {item.value}
@@ -61,10 +69,18 @@ export const TasksFilter: React.FC<TasksFilterProps> = ({ onChangeFilter }) => {
                 ))}
               </Select>
             </Form.Item>
+            <span id="status-filter-description" className="sr-only">
+              Filter tasks by their current status
+            </span>
           </Col>
           <Col span={8}>
             <Form.Item label="By Assignee" name="assignee_id">
-              <Select placeholder="-- Select --" allowClear>
+              <Select
+                placeholder="-- Select --"
+                allowClear
+                aria-label="Filter by assignee"
+                aria-describedby="assignee-filter-description"
+              >
                 {optionsAssignee.map((item: any) => (
                   <Option key={item.name} value={item.name}>
                     {item.name}
@@ -72,10 +88,18 @@ export const TasksFilter: React.FC<TasksFilterProps> = ({ onChangeFilter }) => {
                 ))}
               </Select>
             </Form.Item>
+            <span id="assignee-filter-description" className="sr-only">
+              Filter tasks by assigned user
+            </span>
           </Col>
           <Col span={8}>
             <Form.Item label="By Priority" name="priority_id">
-              <Select placeholder="-- Select --" allowClear>
+              <Select
+                placeholder="-- Select --"
+                allowClear
+                aria-label="Filter by priority"
+                aria-describedby="priority-filter-description"
+              >
                 {optionsPriority.map((item: any) => (
                   <Option key={item.key} value={item.key}>
                     {item.value}
@@ -83,11 +107,15 @@ export const TasksFilter: React.FC<TasksFilterProps> = ({ onChangeFilter }) => {
                 ))}
               </Select>
             </Form.Item>
+            <span id="priority-filter-description" className="sr-only">
+              Filter tasks by priority level
+            </span>
           </Col>
         </Row>
       </Form>
-      <Divider />
+      <Divider role="separator" />
     </div>
   );
-};
+});
+TasksFilter.displayName = 'TasksFilter';
 
