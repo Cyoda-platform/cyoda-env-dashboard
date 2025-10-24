@@ -19,7 +19,7 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
 
 export interface ModellingPopUpAliasNewProps {
   configDefinition: ReportDefinition;
-  onCreated?: () => void;
+  onCreated?: (aliasDef: AliasDef) => void;
   onUpdated?: () => void;
 }
 
@@ -102,25 +102,25 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
 
     // Create/Update mutation
     const saveMutation = useMutation({
-      mutationFn: async (alias: any) => {
+      mutationFn: async (payload: { catalogItem: any; aliasDef: AliasDef }) => {
         if (editItem?.id) {
           const { data } = await axios.put(
             `${API_BASE}/platform-api/catalog/item?itemId=${editItem.id}`,
-            alias
+            payload.catalogItem
           );
-          return data;
+          return { data, aliasDef: payload.aliasDef };
         } else {
-          const { data } = await axios.post(`${API_BASE}/platform-api/catalog/item`, alias);
-          return data;
+          const { data } = await axios.post(`${API_BASE}/platform-api/catalog/item`, payload.catalogItem);
+          return { data, aliasDef: payload.aliasDef };
         }
       },
-      onSuccess: () => {
+      onSuccess: (result) => {
         message.success(editItem ? 'Alias updated successfully' : 'Alias created successfully');
         setVisible(false);
         if (editItem) {
           onUpdated?.();
         } else {
-          onCreated?.();
+          onCreated?.(result.aliasDef);
         }
       },
       onError: () => {
@@ -148,25 +148,61 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
     };
 
     const handleColumnsSelected = (columns: ColDef[]) => {
-      const newPaths = columns.map((col) => ({
-        colDef: col,
-        mapperClass: 'com.cyoda.platform.mappers.IdentityMapper',
-        mapperParameters: undefined,
-      }));
+      const newPaths = columns.map((col) => {
+        // Find existing mapper if editing
+        const existingPath = editItem?.aliasDef?.aliasPaths?.value?.find(
+          (p: any) => p.colDef.fullPath === col.fullPath
+        );
+
+        return {
+          colDef: col,
+          mapperClass: existingPath?.mapperClass || 'com.cyoda.core.reports.aliasmappers.BasicMapper',
+          mapperParameters: existingPath?.mapperParameters,
+        };
+      });
+
+      const allPaths = [...aliasForm.aliasPaths, ...newPaths];
+      const allColumns = [...selectedColumns, ...columns];
+
+      // Auto-detect alias type from first column's colType
+      const aliasType = allColumns.length > 0 ? allColumns[0].colType : 'SIMPLE';
+
+      // Auto-generate name from first column if name is empty
+      let autoName = aliasForm.name;
+      if (!autoName && allColumns.length > 0) {
+        const firstPath = allColumns[0].fullPath;
+        const shortPath = firstPath.split('.').pop() || firstPath;
+        autoName = shortPath.replaceAll('.', ':');
+      }
 
       setAliasForm((prev) => ({
         ...prev,
-        aliasPaths: [...prev.aliasPaths, ...newPaths],
+        aliasPaths: allPaths,
+        aliasType: aliasType as 'SIMPLE' | 'COMPLEX',
+        name: autoName,
       }));
-      setSelectedColumns([...selectedColumns, ...columns]);
+
+      setSelectedColumns(allColumns);
+
+      // Update form field
+      if (autoName && !form.getFieldValue('name')) {
+        form.setFieldsValue({ name: autoName });
+      }
     };
 
     const handleRemovePath = (index: number) => {
+      const newPaths = aliasForm.aliasPaths.filter((_, i) => i !== index);
+      const newColumns = selectedColumns.filter((_, i) => i !== index);
+
+      // Update alias type based on remaining columns
+      const aliasType = newColumns.length > 0 ? newColumns[0].colType : 'SIMPLE';
+
       setAliasForm((prev) => ({
         ...prev,
-        aliasPaths: prev.aliasPaths.filter((_, i) => i !== index),
+        aliasPaths: newPaths,
+        aliasType: aliasType as 'SIMPLE' | 'COMPLEX',
       }));
-      setSelectedColumns(selectedColumns.filter((_, i) => i !== index));
+      setSelectedColumns(newColumns);
     };
 
     const handleMapperChange = (index: number, mapperClass: string) => {
@@ -188,19 +224,21 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
     };
 
     const handleFinish = async () => {
-      const catalogItem = {
+      const aliasDef: AliasDef = {
         name: aliasForm.name,
-        aliasDef: {
-          name: aliasForm.name,
-          aliasType: aliasForm.aliasType,
-          aliasPaths: {
-            '@bean': 'com.cyoda.core.reports.columns.AliasPaths',
-            value: aliasForm.aliasPaths,
-          },
+        aliasType: aliasForm.aliasType,
+        aliasPaths: {
+          '@bean': 'com.cyoda.core.reports.columns.AliasPaths',
+          value: aliasForm.aliasPaths,
         },
       };
 
-      await saveMutation.mutateAsync(catalogItem);
+      const catalogItem = {
+        name: aliasForm.name,
+        aliasDef: aliasDef,
+      };
+
+      await saveMutation.mutateAsync({ catalogItem, aliasDef });
     };
 
     const pathColumns: TableColumnsType<AliasPath> = [
@@ -251,27 +289,7 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
 
     const steps = [
       {
-        title: 'Basic Info',
-        content: (
-          <Form form={form} layout="vertical">
-            <Form.Item
-              label="Alias Name"
-              name="name"
-              rules={[{ required: true, message: 'Please enter alias name' }]}
-            >
-              <Input placeholder="Enter alias name" />
-            </Form.Item>
-            <Form.Item label="Alias Type" name="aliasType" initialValue="SIMPLE">
-              <Select>
-                <Select.Option value="SIMPLE">Simple</Select.Option>
-                <Select.Option value="COMPLEX">Complex</Select.Option>
-              </Select>
-            </Form.Item>
-          </Form>
-        ),
-      },
-      {
-        title: 'Select Columns',
+        title: 'Paths',
         content: (
           <div>
             <Button
@@ -282,6 +300,73 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
             >
               Add Columns
             </Button>
+            {aliasForm.aliasPaths.length > 0 && (
+              <div style={{ marginBottom: 16 }}>
+                <strong>Selected Paths:</strong> {aliasForm.aliasPaths.length}
+                {aliasForm.aliasType && (
+                  <span style={{ marginLeft: 16 }}>
+                    <strong>Type:</strong> {aliasForm.aliasType}
+                  </span>
+                )}
+              </div>
+            )}
+            <Table
+              columns={[
+                {
+                  title: 'Path',
+                  dataIndex: ['colDef', 'fullPath'],
+                  key: 'path',
+                },
+                {
+                  title: 'Type',
+                  dataIndex: ['colDef', 'colType'],
+                  key: 'type',
+                },
+                {
+                  title: 'Action',
+                  key: 'action',
+                  width: 100,
+                  render: (_, record, index) => (
+                    <Button danger icon={<DeleteOutlined />} onClick={() => handleRemovePath(index)} />
+                  ),
+                },
+              ]}
+              dataSource={aliasForm.aliasPaths}
+              rowKey={(record, index) => `${record.colDef.fullPath}-${index}`}
+              pagination={false}
+            />
+          </div>
+        ),
+      },
+      {
+        title: 'Name',
+        content: (
+          <Form form={form} layout="vertical">
+            <Form.Item
+              label="Alias Name"
+              name="name"
+              rules={[{ required: true, message: 'Please enter alias name' }]}
+            >
+              <Input
+                placeholder="Enter alias name"
+                onChange={(e) => {
+                  const value = e.target.value.replaceAll('.', ':');
+                  form.setFieldsValue({ name: value });
+                  setAliasForm((prev) => ({ ...prev, name: value }));
+                }}
+              />
+            </Form.Item>
+            <Form.Item label="Alias Type (Auto-detected)">
+              <Input value={aliasForm.aliasType} disabled />
+            </Form.Item>
+          </Form>
+        ),
+      },
+      {
+        title: 'Mappers',
+        content: (
+          <div>
+            <p>Configure mapper classes and parameters for each path:</p>
             <Table
               columns={pathColumns}
               dataSource={aliasForm.aliasPaths}

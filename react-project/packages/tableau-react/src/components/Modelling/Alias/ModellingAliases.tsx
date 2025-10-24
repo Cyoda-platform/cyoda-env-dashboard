@@ -170,11 +170,29 @@ export const ModellingAliases: React.FC<ModellingAliasesProps> = ({ configDefini
     onChange: handleSelectionChange,
   };
 
+  const handleCreateNew = () => {
+    aliasNewRef.current?.open(configDefinition.requestClass || '');
+  };
+
   return (
     <div className="modelling-aliases">
-      <Button type="primary" disabled={!configDefinition.requestClass || readOnly} onClick={handleOpenDialog}>
-        Catalogue of Aliases
-      </Button>
+      <div style={{ marginBottom: 16 }}>
+        <Button
+          type="primary"
+          disabled={!configDefinition.requestClass || readOnly}
+          onClick={handleOpenDialog}
+          style={{ marginRight: 8 }}
+        >
+          Add from Catalog
+        </Button>
+        <Button
+          type="default"
+          disabled={!configDefinition.requestClass || readOnly}
+          onClick={handleCreateNew}
+        >
+          Create New
+        </Button>
+      </div>
 
       <h2>Selected Aliases:</h2>
       <Table
@@ -203,8 +221,17 @@ export const ModellingAliases: React.FC<ModellingAliasesProps> = ({ configDefini
       <ModellingPopUpAliasNew
         ref={aliasNewRef}
         configDefinition={configDefinition}
-        onCreated={() => message.success('Alias created successfully')}
-        onUpdated={() => message.success('Alias updated successfully')}
+        onCreated={(aliasDef) => {
+          console.log('Alias created, adding to report:', aliasDef);
+          handleAliasSelected(aliasDef);
+        }}
+        onUpdated={() => {
+          message.success('Alias updated successfully');
+          // Trigger a re-render by updating the config
+          if (onChange) {
+            onChange({ aliasDefs: [...(configDefinition.aliasDefs || [])] });
+          }
+        }}
       />
     </div>
   );
