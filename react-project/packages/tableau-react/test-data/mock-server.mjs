@@ -98,6 +98,14 @@ app.get('/platform-api/entity-info/fetch/types', (req, res) => {
   res.json(types);
 });
 
+// Get entity classes (for various components)
+app.get('/platform-api/entity/classes', (req, res) => {
+  console.log('📋 GET /platform-api/entity/classes');
+  const classes = Object.keys(entityStore);
+  console.log(`📋 Returning ${classes.length} entity classes`);
+  res.json(classes);
+});
+
 // Get reporting types (for CreateReportDialog)
 app.get('/platform-api/reporting/types/fetch', (req, res) => {
   console.log('📋 GET /platform-api/reporting/types/fetch', req.query);
@@ -187,7 +195,13 @@ if (!global.catalogItems) {
   global.catalogItems = {};
 }
 
-// Get catalog items
+// Get all catalog items
+app.get('/platform-api/catalog/item/all', (req, res) => {
+  const items = Object.values(global.catalogItems);
+  res.json(items);
+});
+
+// Get catalog items by entity class
 app.get('/platform-api/catalog/item/class', (req, res) => {
   const { entityClass } = req.query;
 

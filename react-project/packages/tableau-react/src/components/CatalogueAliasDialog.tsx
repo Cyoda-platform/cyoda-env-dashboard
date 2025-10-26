@@ -5,14 +5,20 @@
  * Dialog for creating and editing alias catalog items
  */
 
-import React, { useState, useRef, forwardRef, useImperativeHandle } from 'react';
-import { Modal, Form, Input, Select, Button, Steps, Table, Space, message } from 'antd';
+import React, { useState, useRef, forwardRef, useImperativeHandle, useEffect, useCallback } from 'react';
+import { Modal, Form, Input, Select, Button, Steps, Table, Space, message, Checkbox, Alert } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import type { TableColumnsType } from 'antd';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
+import MonacoEditor from '@monaco-editor/react';
 import type { CatalogItem, AliasDef, ColDef } from '@cyoda/http-api-react';
-import { ModellingPopUp, ModellingPopUpRef } from './Modelling/ModellingPopUp';
+import { ModellingPopUpToggles } from './Modelling/ModellingPopUpToggles';
+import { ModellingPopUpSearch } from './Modelling/ModellingPopUpSearch';
+import { ModellingGroup } from './Modelling/ModellingGroup';
+import type { ReportingInfoRow, RelatedPath } from '../types/modelling';
+import { getReportingInfo, getReportingRelatedPaths } from '../api/modelling';
+import HelperModelling from '../utils/HelperModelling';
 import './CatalogueAliasDialog.scss';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
@@ -55,7 +61,14 @@ export const CatalogueAliasDialog = forwardRef<CatalogueAliasDialogRef, Catalogu
     });
     const [editItem, setEditItem] = useState<CatalogItem | null>(null);
     const [selectedColumns, setSelectedColumns] = useState<ColDef[]>([]);
-    const modellingPopUpRef = useRef<ModellingPopUpRef>(null);
+
+    // State for inline tree view in Paths step
+    const [reportingInfoRows, setReportingInfoRows] = useState<ReportingInfoRow[]>([]);
+    const [relatedPaths, setRelatedPaths] = useState<RelatedPath[]>([]);
+    const [isVisibleGroup, setIsVisibleGroup] = useState(false);
+    const [isOpenAllSelected, setIsOpenAllSelected] = useState(false);
+    const [isCondenseThePaths, setIsCondenseThePaths] = useState(false);
+    const [search, setSearch] = useState('');
 
     // Fetch entity classes
     const { data: entityClasses = [] } = useQuery({
@@ -74,6 +87,37 @@ export const CatalogueAliasDialog = forwardRef<CatalogueAliasDialogRef, Catalogu
         return data;
       },
     });
+
+    // Load entity model when entity class changes
+    useEffect(() => {
+      if (aliasForm.entityClass && currentStep === 1) {
+        loadEntityModel();
+      }
+    }, [aliasForm.entityClass, currentStep]);
+
+    const loadEntityModel = async () => {
+      try {
+        const [infoResponse, relatedResponse] = await Promise.all([
+          getReportingInfo(aliasForm.entityClass),
+          getReportingRelatedPaths(aliasForm.entityClass),
+        ]);
+        setReportingInfoRows(infoResponse.data);
+        setRelatedPaths(relatedResponse.data);
+        setIsVisibleGroup(true);
+      } catch (error) {
+        console.error('Failed to load entity model:', error);
+        message.error('Failed to load entity model');
+      }
+    };
+
+    const handleTogglesChange = (values: { isCondenseThePaths: boolean; isOpenAllSelected: boolean }) => {
+      setIsCondenseThePaths(values.isCondenseThePaths);
+      setIsOpenAllSelected(values.isOpenAllSelected);
+    };
+
+    const handleSearchChange = (values: { input: string }) => {
+      setSearch(values.input);
+    };
 
     useImperativeHandle(ref, () => ({
       open: (item?: CatalogItem) => {
@@ -142,50 +186,40 @@ export const CatalogueAliasDialog = forwardRef<CatalogueAliasDialogRef, Catalogu
       setCurrentStep(currentStep - 1);
     };
 
-    const handleAddColumns = () => {
-      if (!aliasForm.entityClass) {
-        message.error('Please select an entity class first');
-        return;
-      }
-      modellingPopUpRef.current?.open();
-    };
+    // Watch selectedColumns and update aliasPaths
+    useEffect(() => {
+      if (selectedColumns.length === 0) return;
 
-    const handleColumnsSelected = (columns: ColDef[]) => {
-      // Create new alias paths with default mapper
-      const newPaths: AliasPath[] = columns.map((col) => ({
+      // Create alias paths from selected columns
+      const newPaths: AliasPath[] = selectedColumns.map((col) => ({
         colDef: col,
         mapperClass: 'com.cyoda.core.reports.mappers.SimpleMapper',
         mapperParameters: undefined,
       }));
 
-      const allPaths = [...aliasForm.aliasPaths, ...newPaths];
-      const allColumns = [...selectedColumns, ...columns];
-
       // Auto-detect alias type from first column's colType
-      const aliasType = allColumns.length > 0 ? allColumns[0].colType : 'SIMPLE';
+      const aliasType = selectedColumns.length > 0 ? selectedColumns[0].colType : 'SIMPLE';
 
       // Auto-generate name from first column if name is empty
       let autoName = aliasForm.name;
-      if (!autoName && allColumns.length > 0) {
-        const firstPath = allColumns[0].fullPath;
+      if (!autoName && selectedColumns.length > 0) {
+        const firstPath = selectedColumns[0].fullPath;
         const shortPath = firstPath.split('.').pop() || firstPath;
         autoName = shortPath.replaceAll('.', ':');
       }
 
       setAliasForm((prev) => ({
         ...prev,
-        aliasPaths: allPaths,
+        aliasPaths: newPaths,
         aliasType: aliasType as 'SIMPLE' | 'COMPLEX',
         name: autoName,
       }));
-
-      setSelectedColumns(allColumns);
 
       // Update form field
       if (autoName && !form.getFieldValue('name')) {
         form.setFieldsValue({ name: autoName });
       }
-    };
+    }, [selectedColumns]);
 
     const handleRemovePath = (index: number) => {
       const newPaths = aliasForm.aliasPaths.filter((_, i) => i !== index);
@@ -329,49 +363,27 @@ export const CatalogueAliasDialog = forwardRef<CatalogueAliasDialogRef, Catalogu
         title: 'Paths',
         content: (
           <div>
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={handleAddColumns}
-              style={{ marginBottom: 16 }}
-            >
-              Add Columns
-            </Button>
-            {aliasForm.aliasPaths.length > 0 && (
-              <div style={{ marginBottom: 16 }}>
-                <strong>Selected Paths:</strong> {aliasForm.aliasPaths.length}
-                {aliasForm.aliasType && (
-                  <span style={{ marginLeft: 16 }}>
-                    <strong>Type:</strong> {aliasForm.aliasType}
-                  </span>
+            <div className="actions-settings" style={{ marginBottom: 16 }}>
+              <ModellingPopUpToggles onChange={handleTogglesChange} />
+              <ModellingPopUpSearch onChange={handleSearchChange} />
+            </div>
+            {!aliasForm.entityClass ? (
+              <Alert message="Please select an entity class first" type="info" showIcon />
+            ) : (
+              <Checkbox.Group value={selectedColumns} onChange={(values) => setSelectedColumns(values as ColDef[])}>
+                {isVisibleGroup && (
+                  <ModellingGroup
+                    reportInfoRows={reportingInfoRows}
+                    relatedPaths={relatedPaths}
+                    requestClass={aliasForm.entityClass}
+                    checked={selectedColumns}
+                    isOpenAllSelected={isOpenAllSelected}
+                    isCondenseThePaths={isCondenseThePaths}
+                    search={search}
+                  />
                 )}
-              </div>
+              </Checkbox.Group>
             )}
-            <Table
-              columns={[
-                {
-                  title: 'Path',
-                  dataIndex: ['colDef', 'fullPath'],
-                  key: 'path',
-                },
-                {
-                  title: 'Type',
-                  dataIndex: ['colDef', 'colType'],
-                  key: 'type',
-                },
-                {
-                  title: 'Action',
-                  key: 'action',
-                  width: 100,
-                  render: (_, record, index) => (
-                    <Button danger icon={<DeleteOutlined />} onClick={() => handleRemovePath(index)} />
-                  ),
-                },
-              ]}
-              dataSource={aliasForm.aliasPaths}
-              rowKey={(record, index) => `${record.colDef.fullPath}-${index}`}
-              pagination={false}
-            />
           </div>
         ),
       },
@@ -380,9 +392,9 @@ export const CatalogueAliasDialog = forwardRef<CatalogueAliasDialogRef, Catalogu
         content: (
           <Form form={form} layout="vertical">
             <Form.Item
-              label="Alias Name"
+              label="Name"
               name="name"
-              rules={[{ required: true, message: 'Please enter alias name' }]}
+              rules={[{ required: true, message: 'Please input Name' }]}
             >
               <Input
                 placeholder="Enter alias name"
@@ -400,9 +412,6 @@ export const CatalogueAliasDialog = forwardRef<CatalogueAliasDialogRef, Catalogu
                 onChange={(e) => setAliasForm((prev) => ({ ...prev, desc: e.target.value }))}
               />
             </Form.Item>
-            <Form.Item label="Alias Type (Auto-detected)">
-              <Input value={aliasForm.aliasType} disabled />
-            </Form.Item>
           </Form>
         ),
       },
@@ -416,6 +425,65 @@ export const CatalogueAliasDialog = forwardRef<CatalogueAliasDialogRef, Catalogu
               dataSource={aliasForm.aliasPaths}
               rowKey={(record, index) => `${record.colDef.fullPath}-${index}`}
               pagination={false}
+            />
+          </div>
+        ),
+      },
+      {
+        title: 'Config file',
+        content: (
+          <div>
+            <p style={{ marginBottom: 16 }}>Review and edit the alias configuration:</p>
+            <MonacoEditor
+              height="400px"
+              language="json"
+              theme="vs-light"
+              value={JSON.stringify(
+                {
+                  '@bean': 'com.cyoda.core.model.catalog.AliasCatalogItem',
+                  name: aliasForm.name,
+                  desc: aliasForm.desc || '',
+                  entityClass: aliasForm.entityClass,
+                  aliasDef: {
+                    name: aliasForm.name,
+                    aliasType: aliasForm.aliasType,
+                    aliasPaths: {
+                      '@meta': 'com.cyoda.core.reports.columns.AliasPaths',
+                      value: aliasForm.aliasPaths,
+                    },
+                  },
+                },
+                null,
+                2
+              )}
+              onChange={(value) => {
+                if (!value) return;
+                try {
+                  const parsed = JSON.parse(value);
+                  setAliasForm({
+                    name: parsed.name || '',
+                    desc: parsed.desc || '',
+                    entityClass: parsed.entityClass || '',
+                    aliasType: parsed.aliasDef?.aliasType || 'SIMPLE',
+                    aliasPaths: parsed.aliasDef?.aliasPaths?.value || [],
+                  });
+                  form.setFieldsValue({
+                    name: parsed.name || '',
+                    desc: parsed.desc || '',
+                  });
+                } catch (e) {
+                  // Invalid JSON, ignore
+                }
+              }}
+              options={{
+                minimap: { enabled: false },
+                scrollBeyondLastLine: false,
+                fontSize: 13,
+                lineNumbers: 'on',
+                automaticLayout: true,
+                formatOnPaste: true,
+                formatOnType: true,
+              }}
             />
           </div>
         ),
@@ -455,13 +523,6 @@ export const CatalogueAliasDialog = forwardRef<CatalogueAliasDialogRef, Catalogu
             </Space>
           </div>
         </Modal>
-
-        <ModellingPopUp
-          ref={modellingPopUpRef}
-          requestClass={aliasForm.entityClass}
-          checked={selectedColumns}
-          onChange={handleColumnsSelected}
-        />
       </>
     );
   }
