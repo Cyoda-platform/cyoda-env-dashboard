@@ -80,6 +80,7 @@ export const AppRoutes: React.FC = () => {
         <Route path="entity-viewer" element={<PageEntityViewer />} />
 
         {/* Processing Manager */}
+        <Route path="processing" element={<Navigate to="/processing-ui" replace />} />
         <Route path="processing-ui" element={<ProcessingHome />} />
         <Route path="processing-ui/nodes" element={<ProcessingNodes />} />
         <Route path="processing-ui/nodes/:name" element={<ProcessingNodesDetail />} />

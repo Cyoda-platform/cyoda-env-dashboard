@@ -1,10 +1,11 @@
 import React from 'react';
-import { Layout, Space } from 'antd';
-import { EntityTypeSwitch, type EntityType } from '@cyoda/ui-lib-react';
+import { Layout, Space, Typography } from 'antd';
+import { EntityTypeSwitch, type EntityType, AppLogo } from '@cyoda/ui-lib-react';
 import { useGlobalUiSettingsStore } from '@cyoda/http-api-react';
 import './AppHeader.scss';
 
 const { Header } = Layout;
+const { Text } = Typography;
 
 export const AppHeader: React.FC = () => {
   const { entityType, setEntityType } = useGlobalUiSettingsStore();
@@ -16,19 +17,19 @@ export const AppHeader: React.FC = () => {
   return (
     <Header className="saas-app-header">
       <div className="header-content">
-        <div className="logo">
-          <img
-            src="/assets/images/cyoda-logo-green.svg"
-            alt="CYODA"
-          />
+        <div className="logo-section">
+          <AppLogo size="m" />
         </div>
-        
-        <Space className="header-right">
-          <EntityTypeSwitch
-            value={entityType}
-            onChange={handleEntityTypeChange}
-            visible={true}
-          />
+
+        <Space className="header-right" size="large">
+          <div className="entity-type-section">
+            <Text className="entity-type-label">Entity Type:</Text>
+            <EntityTypeSwitch
+              value={entityType}
+              onChange={handleEntityTypeChange}
+              visible={true}
+            />
+          </div>
         </Space>
       </div>
     </Header>

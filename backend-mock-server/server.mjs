@@ -3,35 +3,28 @@
 /**
  * Cyoda Backend Mock Server
  * Provides mock endpoints for Processing Manager and other Cyoda applications
- * Runs on ports 8081 (Processing) and 8082 (API)
+ * Runs on port 8080 (unified server for saas-app)
  */
 
 import express from 'express';
 import cors from 'cors';
 
-// Create two Express apps - one for each port
-const apiApp = express();
-const processingApp = express();
+// Create unified Express app
+const app = express();
 
-const API_PORT = 8082;
-const PROCESSING_PORT = 8081;
+const PORT = 8080;
 
 // Middleware
-const setupMiddleware = (app) => {
-  app.use(cors());
-  app.use(express.json());
-  app.use(express.urlencoded({ extended: true }));
-  
-  // Request logging
-  app.use((req, res, next) => {
-    const timestamp = new Date().toISOString();
-    console.log(`[${timestamp}] ${req.method} ${req.url}`);
-    next();
-  });
-};
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-setupMiddleware(apiApp);
-setupMiddleware(processingApp);
+// Request logging
+app.use((req, res, next) => {
+  const timestamp = new Date().toISOString();
+  console.log(`[${timestamp}] ${req.method} ${req.url}`);
+  next();
+});
 
 // ============================================================================
 // Mock Data
@@ -140,16 +133,16 @@ for (let i = 0; i < 20; i++) {
 // ============================================================================
 
 // Health check
-apiApp.get('/actuator/health', (req, res) => {
+app.get('/actuator/health', (req, res) => {
   res.json({ status: 'UP', timestamp: new Date().toISOString() });
 });
 
-apiApp.get('/api/health', (req, res) => {
+app.get('/api/health', (req, res) => {
   res.json({ status: 'UP', timestamp: new Date().toISOString() });
 });
 
 // Root endpoint
-apiApp.get('/api', (req, res) => {
+app.get('/api', (req, res) => {
   res.json({
     message: 'Cyoda API Mock Server',
     version: '1.0.0',
@@ -163,12 +156,12 @@ apiApp.get('/api', (req, res) => {
 });
 
 // Get all nodes
-apiApp.get('/api/nodes', (req, res) => {
+app.get('/api/nodes', (req, res) => {
   res.json(mockNodes);
 });
 
 // Get node by ID
-apiApp.get('/api/nodes/:id', (req, res) => {
+app.get('/api/nodes/:id', (req, res) => {
   const node = mockNodes.find(n => n.id === req.params.id);
   if (node) {
     res.json(node);
@@ -178,7 +171,7 @@ apiApp.get('/api/nodes/:id', (req, res) => {
 });
 
 // Get all events
-apiApp.get('/api/events', (req, res) => {
+app.get('/api/events', (req, res) => {
   const { page = 0, size = 20, sort = 'timestamp,desc' } = req.query;
   const start = page * size;
   const end = start + parseInt(size);
@@ -198,7 +191,7 @@ apiApp.get('/api/events', (req, res) => {
 });
 
 // Get all tasks
-apiApp.get('/api/tasks', (req, res) => {
+app.get('/api/tasks', (req, res) => {
   const { page = 0, size = 20 } = req.query;
   const start = page * size;
   const end = start + parseInt(size);
@@ -219,16 +212,16 @@ apiApp.get('/api/tasks', (req, res) => {
 // ============================================================================
 
 // Health check
-processingApp.get('/actuator/health', (req, res) => {
+app.get('/actuator/health', (req, res) => {
   res.json({ status: 'UP', timestamp: new Date().toISOString() });
 });
 
-processingApp.get('/processing/health', (req, res) => {
+app.get('/processing/health', (req, res) => {
   res.json({ status: 'UP', timestamp: new Date().toISOString() });
 });
 
 // Root endpoint
-processingApp.get('/processing', (req, res) => {
+app.get('/processing', (req, res) => {
   res.json({
     message: 'Cyoda Processing Mock Server',
     version: '1.0.0',
@@ -243,12 +236,12 @@ processingApp.get('/processing', (req, res) => {
 });
 
 // Get all processing nodes
-processingApp.get('/processing/nodes', (req, res) => {
+app.get('/processing/nodes', (req, res) => {
   res.json(mockNodes);
 });
 
 // Get node by ID
-processingApp.get('/processing/nodes/:id', (req, res) => {
+app.get('/processing/nodes/:id', (req, res) => {
   const node = mockNodes.find(n => n.id === req.params.id);
   if (node) {
     res.json(node);
@@ -258,7 +251,7 @@ processingApp.get('/processing/nodes/:id', (req, res) => {
 });
 
 // Get node metrics
-processingApp.get('/processing/nodes/:id/metrics', (req, res) => {
+app.get('/processing/nodes/:id/metrics', (req, res) => {
   const node = mockNodes.find(n => n.id === req.params.id);
   if (node) {
     res.json({
@@ -278,7 +271,7 @@ processingApp.get('/processing/nodes/:id/metrics', (req, res) => {
 });
 
 // Get processing events
-processingApp.get('/processing/events', (req, res) => {
+app.get('/processing/events', (req, res) => {
   const { page = 0, size = 20, sort = 'timestamp,desc' } = req.query;
   const start = page * size;
   const end = start + parseInt(size);
@@ -298,7 +291,7 @@ processingApp.get('/processing/events', (req, res) => {
 });
 
 // Get processing tasks
-processingApp.get('/processing/tasks', (req, res) => {
+app.get('/processing/tasks', (req, res) => {
   const { page = 0, size = 20, status } = req.query;
   let filteredTasks = mockTasks;
   
@@ -321,7 +314,7 @@ processingApp.get('/processing/tasks', (req, res) => {
 });
 
 // Get system metrics
-processingApp.get('/processing/metrics', (req, res) => {
+app.get('/processing/metrics', (req, res) => {
   res.json({
     timestamp: new Date().toISOString(),
     totalNodes: mockNodes.length,
@@ -336,43 +329,185 @@ processingApp.get('/processing/metrics', (req, res) => {
 });
 
 // ============================================================================
-// Start Servers
+// Platform API Endpoints (for SaaS App)
 // ============================================================================
 
-apiApp.listen(API_PORT, () => {
+// Entity types
+app.get('/platform-api/entity-info/fetch/types', (req, res) => {
+  const { onlyDynamic } = req.query;
+  const allTypes = [
+    { id: 'entity-type-1', name: 'Customer', description: 'Customer entity type', dynamic: true },
+    { id: 'entity-type-2', name: 'Order', description: 'Order entity type', dynamic: true },
+    { id: 'entity-type-3', name: 'Product', description: 'Product entity type', dynamic: false }
+  ];
+
+  if (onlyDynamic === 'true') {
+    res.json(allTypes.filter(t => t.dynamic));
+  } else {
+    res.json(allTypes);
+  }
+});
+
+// Entity classes
+app.get('/platform-api/entity/classes', (req, res) => {
+  res.json([
+    { id: 'class-1', name: 'CustomerClass', type: 'Customer' },
+    { id: 'class-2', name: 'OrderClass', type: 'Order' },
+    { id: 'class-3', name: 'ProductClass', type: 'Product' }
+  ]);
+});
+
+// Mappers
+app.get('/platform-api/entity-info/fetch/mappers', (req, res) => {
+  res.json([
+    { id: 'mapper-1', name: 'CustomerMapper', sourceType: 'CSV', targetType: 'Customer' },
+    { id: 'mapper-2', name: 'OrderMapper', sourceType: 'JSON', targetType: 'Order' }
+  ]);
+});
+
+// Catalog items
+app.get('/platform-api/catalog/item/all', (req, res) => {
+  res.json([
+    { id: 'catalog-1', name: 'Customer Data', type: 'Dataset', status: 'Active' },
+    { id: 'catalog-2', name: 'Order History', type: 'Dataset', status: 'Active' },
+    { id: 'catalog-3', name: 'Product Catalog', type: 'Dataset', status: 'Active' }
+  ]);
+});
+
+// Report types
+app.get('/platform-api/reporting/types', (req, res) => {
+  res.json([
+    { id: 'report-type-1', name: 'Sales Report', category: 'Financial' },
+    { id: 'report-type-2', name: 'Customer Analytics', category: 'Analytics' },
+    { id: 'report-type-3', name: 'Inventory Report', category: 'Operations' }
+  ]);
+});
+
+// Report types with models
+app.get('/platform-api/reporting/types/fetch', (req, res) => {
+  res.json([
+    { id: 'report-type-1', name: 'Sales Report', category: 'Financial', models: [] },
+    { id: 'report-type-2', name: 'Customer Analytics', category: 'Analytics', models: [] },
+    { id: 'report-type-3', name: 'Inventory Report', category: 'Operations', models: [] }
+  ]);
+});
+
+// Report definitions
+app.get('/platform-api/reporting/definitions', (req, res) => {
+  res.json([
+    { id: 'report-def-1', name: 'Monthly Sales', typeId: 'report-type-1', schedule: 'Monthly' },
+    { id: 'report-def-2', name: 'Customer Segmentation', typeId: 'report-type-2', schedule: 'Weekly' },
+    { id: 'report-def-3', name: 'Stock Levels', typeId: 'report-type-3', schedule: 'Daily' }
+  ]);
+});
+
+// Workflows
+app.get('/platform-api/statemachine/workflows', (req, res) => {
+  res.json([
+    { id: 'workflow-1', name: 'Order Processing', status: 'Active', version: '1.0' },
+    { id: 'workflow-2', name: 'Customer Onboarding', status: 'Active', version: '2.1' },
+    { id: 'workflow-3', name: 'Product Approval', status: 'Draft', version: '1.5' }
+  ]);
+});
+
+// Workflow enabled types
+app.get('/platform-api/statemachine/workflow-enabled-types', (req, res) => {
+  res.json([
+    { id: 'type-1', name: 'Customer', enabled: true },
+    { id: 'type-2', name: 'Order', enabled: true },
+    { id: 'type-3', name: 'Product', enabled: false }
+  ]);
+});
+
+// ============================================================================
+// Platform Processing Endpoints
+// ============================================================================
+
+// Cluster stats full
+app.get('/platform-processing/pm-cluster-stats-full.do', (req, res) => {
+  res.json({
+    nodes: [
+      {
+        hostname: 'processing-node-1',
+        baseUrl: 'http://localhost:8081',
+        status: 'ONLINE',
+        cpuUsage: 45.2,
+        memoryUsage: 62.8,
+        diskUsage: 38.5,
+        uptime: 86400000,
+        version: '1.0.0',
+        grafana: null
+      },
+      {
+        hostname: 'processing-node-2',
+        baseUrl: 'http://localhost:8082',
+        status: 'ONLINE',
+        cpuUsage: 32.1,
+        memoryUsage: 54.3,
+        diskUsage: 42.1,
+        uptime: 172800000,
+        version: '1.0.0',
+        grafana: null
+      },
+      {
+        hostname: 'processing-node-3',
+        baseUrl: 'http://localhost:8083',
+        status: 'OFFLINE',
+        cpuUsage: 0,
+        memoryUsage: 0,
+        diskUsage: 0,
+        uptime: 0,
+        version: '1.0.0',
+        grafana: null
+      }
+    ],
+    totalNodes: 3,
+    onlineNodes: 2,
+    offlineNodes: 1,
+    totalCpuUsage: 77.3,
+    totalMemoryUsage: 117.1,
+    totalDiskUsage: 80.6
+  });
+});
+
+// ============================================================================
+// Processing UI Config
+// ============================================================================
+
+// Config.json for processing-manager-react
+app.get('/processing-ui/config.json', (req, res) => {
+  res.json({
+    apiBaseUrl: 'http://localhost:8080',
+    grafanaUrl: 'http://localhost:3000',
+    enableSSH: false,
+    pollingInterval: 30000
+  });
+});
+
+// ============================================================================
+// Start Server
+// ============================================================================
+
+app.listen(PORT, () => {
   console.log('');
   console.log('╔════════════════════════════════════════════════════════════╗');
   console.log('║         Cyoda Backend Mock Server - STARTED               ║');
   console.log('╚════════════════════════════════════════════════════════════╝');
   console.log('');
-  console.log(`✅ API Server running on:        http://localhost:${API_PORT}`);
+  console.log(`✅ Server running on:            http://localhost:${PORT}`);
   console.log(`   Endpoints:`);
-  console.log(`   - http://localhost:${API_PORT}/api`);
-  console.log(`   - http://localhost:${API_PORT}/api/health`);
-  console.log(`   - http://localhost:${API_PORT}/api/nodes`);
-  console.log(`   - http://localhost:${API_PORT}/api/events`);
-  console.log(`   - http://localhost:${API_PORT}/api/tasks`);
-  console.log('');
-});
-
-processingApp.listen(PROCESSING_PORT, () => {
-  console.log(`✅ Processing Server running on: http://localhost:${PROCESSING_PORT}`);
-  console.log(`   Endpoints:`);
-  console.log(`   - http://localhost:${PROCESSING_PORT}/processing`);
-  console.log(`   - http://localhost:${PROCESSING_PORT}/processing/health`);
-  console.log(`   - http://localhost:${PROCESSING_PORT}/processing/nodes`);
-  console.log(`   - http://localhost:${PROCESSING_PORT}/processing/events`);
-  console.log(`   - http://localhost:${PROCESSING_PORT}/processing/tasks`);
-  console.log(`   - http://localhost:${PROCESSING_PORT}/processing/metrics`);
+  console.log(`   - http://localhost:${PORT}/api/*`);
+  console.log(`   - http://localhost:${PORT}/processing/*`);
+  console.log(`   - http://localhost:${PORT}/platform-api/*`);
   console.log('');
   console.log('📊 Mock Data:');
   console.log(`   - ${mockNodes.length} processing nodes`);
   console.log(`   - ${mockEvents.length} events`);
   console.log(`   - ${mockTasks.length} tasks`);
   console.log('');
-  console.log('🎯 Ready for Processing Manager on http://localhost:3008');
+  console.log('🎯 Ready for SaaS App on http://localhost:3000');
   console.log('');
-  console.log('Press Ctrl+C to stop the servers');
+  console.log('Press Ctrl+C to stop the server');
   console.log('');
 });
 

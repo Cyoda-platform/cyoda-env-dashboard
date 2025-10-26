@@ -6,7 +6,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Spin } from 'antd';
-import { ServerOutlined } from '@ant-design/icons';
+import { CloudServerOutlined } from '@ant-design/icons';
 import type { PmNode } from '../../types';
 import './Node.scss';
 
@@ -68,7 +68,7 @@ export default function Node({ node }: NodeProps) {
               />
             </div>
             <div className="col-auto">
-              <ServerOutlined style={{ fontSize: '20px' }} />
+              <CloudServerOutlined style={{ fontSize: '20px' }} />
             </div>
             <div className="col">
               <div className="title">{node.hostname}</div>

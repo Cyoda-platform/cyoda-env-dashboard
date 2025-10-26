@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { Card, Typography, Table, Input, Select, Space, Breadcrumb, Spin, Alert, Tag } from 'antd';
 import { HomeOutlined, ArrowRightOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
-import { Layout } from '../components/layout';
+
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEntityChanges } from '../hooks';
 import type { EntityChange } from '../types';
@@ -150,7 +150,7 @@ export default function TransitionChanges() {
   ];
 
   return (
-    <Layout>
+    
       <div style={{ padding: '24px' }}>
         <Breadcrumb
           items={breadcrumbItems}
@@ -220,7 +220,7 @@ export default function TransitionChanges() {
           )}
         </Card>
       </div>
-    </Layout>
+    
   );
 }
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Layout, Menu, Modal } from 'antd';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
@@ -11,7 +11,6 @@ import {
   LogoutOutlined,
   InfoCircleOutlined,
 } from '@ant-design/icons';
-import { VersionInfo } from '@cyoda/ui-lib-react';
 import type { MenuProps } from 'antd';
 import './LeftSideMenu.scss';
 
@@ -195,27 +194,78 @@ export const LeftSideMenu: React.FC = () => {
       </Sider>
 
       {/* Version Info Modal */}
-      {versionModalVisible && (
-        <div style={{ display: 'none' }}>
-          <VersionInfo
-            uiVersion={import.meta.env.VITE_APP_UI_VERSION}
-            uiBuildTime={import.meta.env.VITE_APP_UI_BUILD_TIME}
-            uiBranchName={import.meta.env.VITE_APP_UI_BRANCH_NAME}
-          />
-        </div>
-      )}
       <Modal
-        title="Version Information"
+        title=""
         open={versionModalVisible}
         onCancel={() => setVersionModalVisible(false)}
         footer={null}
         width={600}
       >
-        <VersionInfo
-          uiVersion={import.meta.env.VITE_APP_UI_VERSION || '1.0.0'}
-          uiBuildTime={import.meta.env.VITE_APP_UI_BUILD_TIME || new Date().toISOString()}
-          uiBranchName={import.meta.env.VITE_APP_UI_BRANCH_NAME || 'main'}
-        />
+        <div>
+          <h2>Platform</h2>
+          <div className="detail-tree-item">
+            <div className="title-value">
+              <div className="name">Version:</div>
+              <div className="value">-</div>
+            </div>
+          </div>
+          <div className="detail-tree-item">
+            <div className="title-value">
+              <div className="name">Build Time:</div>
+              <div className="value">-</div>
+            </div>
+          </div>
+          <div className="detail-tree-item">
+            <div className="title-value">
+              <div className="name">Branch Name:</div>
+              <div className="value">-</div>
+            </div>
+          </div>
+
+          <hr style={{ margin: '16px 0', border: 'none', borderTop: '1px solid #d9d9d9' }} />
+
+          <h2>Client</h2>
+          <div className="detail-tree-item">
+            <div className="title-value">
+              <div className="name">Version:</div>
+              <div className="value">-</div>
+            </div>
+          </div>
+          <div className="detail-tree-item">
+            <div className="title-value">
+              <div className="name">Build Time:</div>
+              <div className="value">-</div>
+            </div>
+          </div>
+          <div className="detail-tree-item">
+            <div className="title-value">
+              <div className="name">Branch Name:</div>
+              <div className="value">-</div>
+            </div>
+          </div>
+
+          <hr style={{ margin: '16px 0', border: 'none', borderTop: '1px solid #d9d9d9' }} />
+
+          <h2>UI</h2>
+          <div className="detail-tree-item">
+            <div className="title-value">
+              <div className="name">Version:</div>
+              <div className="value">{import.meta.env.VITE_APP_UI_VERSION || '1.0.0'}</div>
+            </div>
+          </div>
+          <div className="detail-tree-item">
+            <div className="title-value">
+              <div className="name">Build Time:</div>
+              <div className="value">{import.meta.env.VITE_APP_UI_BUILD_TIME || new Date().toISOString()}</div>
+            </div>
+          </div>
+          <div className="detail-tree-item">
+            <div className="title-value">
+              <div className="name">Branch Name:</div>
+              <div className="value">{import.meta.env.VITE_APP_UI_BRANCH_NAME || 'main'}</div>
+            </div>
+          </div>
+        </div>
       </Modal>
     </>
   );

@@ -1,33 +1,68 @@
 .saas-app-header {
   background: #fff;
   padding: 0 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 2px 0 rgba(60, 75, 100, 0.14),
+              0 3px 1px -2px rgba(60, 75, 100, 0.12),
+              0 1px 5px 0 rgba(60, 75, 100, 0.2);
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 1000;
+  border-bottom: 1px solid #d8dbe0;
 
   .header-content {
     display: flex;
     justify-content: space-between;
     align-items: center;
     height: 64px;
+    padding: 0;
 
-    .logo {
+    .logo-section {
       display: flex;
       align-items: center;
+      justify-content: center;
+      height: 100%;
 
-      img {
-        height: 36px;
-        width: auto;
+      .cyoda-logo {
+        width: 140px;
+        height: 28px;
         display: block;
+
+        .st0 {
+          fill: #ffffff;
+        }
+
+        .st1 {
+          fill: #148751;
+        }
       }
     }
 
     .header-right {
       display: flex;
       align-items: center;
+      height: 100%;
+
+      .entity-type-section {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        height: 100%;
+
+        .entity-type-label {
+          font-size: 14px;
+          color: #595959;
+          font-weight: 500;
+          line-height: 64px;
+        }
+
+        // Ensure the switch is vertically centered
+        .ant-space-item {
+          display: flex;
+          align-items: center;
+        }
+      }
     }
   }
 }

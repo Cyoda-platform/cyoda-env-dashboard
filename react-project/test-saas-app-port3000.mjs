@@ -248,10 +248,105 @@ async function runTests() {
       logIssue('Navigation', 'warning', 'Failed to navigate to Tableau', error.message);
     }
 
+    // Test 11: Try navigating to Workflows (nested under Lifecycle)
+    try {
+      const lifecycleMenu = page.locator('.ant-menu-submenu:has-text("Lifecycle")').first();
+      const lifecycleMenuCount = await lifecycleMenu.count();
+
+      if (lifecycleMenuCount > 0) {
+        await lifecycleMenu.click();
+        await page.waitForTimeout(1000);
+
+        const workflowLink = page.locator('.ant-menu-item:has-text("Workflow")').first();
+        const workflowLinkCount = await workflowLink.count();
+
+        if (workflowLinkCount > 0) {
+          await workflowLink.click();
+          await page.waitForTimeout(2000);
+          const url = page.url();
+          logTest('Navigate to Workflows page', url.includes('workflows'));
+          await page.screenshot({ path: 'react-project/test-screenshots/saas-app-05-workflows.png', fullPage: true });
+          log('  📸 Screenshot: saas-app-05-workflows.png', colors.cyan);
+        } else {
+          logTest('Navigate to Workflows page', false);
+          logIssue('Navigation', 'warning', 'Workflow link not found in submenu');
+        }
+      } else {
+        logTest('Navigate to Workflows page', false);
+        logIssue('Navigation', 'warning', 'Lifecycle submenu not found');
+      }
+    } catch (error) {
+      logTest('Navigate to Workflows page', false, error);
+      logIssue('Navigation', 'warning', 'Failed to navigate to Workflows', error.message);
+    }
+
+    // Test 12: Try navigating to Tasks
+    try {
+      const tasksLink = page.locator('.ant-menu-item:has-text("Tasks")').first();
+      const tasksLinkCount = await tasksLink.count();
+
+      if (tasksLinkCount > 0) {
+        await tasksLink.click();
+        await page.waitForTimeout(2000);
+        const url = page.url();
+        logTest('Navigate to Tasks page', url.includes('tasks'));
+        await page.screenshot({ path: 'react-project/test-screenshots/saas-app-06-tasks.png', fullPage: true });
+        log('  📸 Screenshot: saas-app-06-tasks.png', colors.cyan);
+      } else {
+        logTest('Navigate to Tasks page', false);
+        logIssue('Navigation', 'warning', 'Tasks link not found');
+      }
+    } catch (error) {
+      logTest('Navigate to Tasks page', false, error);
+      logIssue('Navigation', 'warning', 'Failed to navigate to Tasks', error.message);
+    }
+
+    // Test 13: Try navigating to Entity Viewer
+    try {
+      const entityViewerLink = page.locator('.ant-menu-item:has-text("Entity viewer")').first();
+      const entityViewerLinkCount = await entityViewerLink.count();
+
+      if (entityViewerLinkCount > 0) {
+        await entityViewerLink.click();
+        await page.waitForTimeout(2000);
+        const url = page.url();
+        logTest('Navigate to Entity Viewer page', url.includes('entity-viewer'));
+        await page.screenshot({ path: 'react-project/test-screenshots/saas-app-07-entity-viewer.png', fullPage: true });
+        log('  📸 Screenshot: saas-app-07-entity-viewer.png', colors.cyan);
+      } else {
+        logTest('Navigate to Entity Viewer page', false);
+        logIssue('Navigation', 'warning', 'Entity viewer link not found');
+      }
+    } catch (error) {
+      logTest('Navigate to Entity Viewer page', false, error);
+      logIssue('Navigation', 'warning', 'Failed to navigate to Entity Viewer', error.message);
+    }
+
+    // Test 14: Try navigating to Processing
+    try {
+      const processingLink = page.locator('.ant-menu-item:has-text("Processing")').first();
+      const processingLinkCount = await processingLink.count();
+
+      if (processingLinkCount > 0) {
+        await processingLink.click();
+        await page.waitForTimeout(2000);
+        const url = page.url();
+        logTest('Navigate to Processing page', url.includes('processing-ui'));
+        await page.screenshot({ path: 'react-project/test-screenshots/saas-app-08-processing.png', fullPage: true });
+        log('  📸 Screenshot: saas-app-08-processing.png', colors.cyan);
+      } else {
+        logTest('Navigate to Processing page', false);
+        logIssue('Navigation', 'warning', 'Processing link not found');
+      }
+    } catch (error) {
+      logTest('Navigate to Processing page', false, error);
+      logIssue('Navigation', 'warning', 'Failed to navigate to Processing', error.message);
+    }
+
     // Test Suite 4: Console & Network Errors
     log('\n📋 Test Suite 4: Console & Network Errors', colors.blue);
 
-    // Test 11: Check for console errors
+    // Test 15: Check for console errors
     if (consoleErrors.length === 0) {
       logTest('No console errors', true);
     } else {
@@ -261,7 +356,7 @@ async function runTests() {
       });
     }
 
-    // Test 12: Check for network errors
+    // Test 16: Check for network errors
     if (networkErrors.length === 0) {
       logTest('No network errors', true);
     } else {

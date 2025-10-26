@@ -22,7 +22,7 @@ vi.mock('antd', () => ({
 
 // Mock Ant Design icons
 vi.mock('@ant-design/icons', () => ({
-  ServerOutlined: () => <span data-testid="server-icon">ServerIcon</span>,
+  CloudServerOutlined: () => <span data-testid="server-icon">ServerIcon</span>,
 }));
 
 // Mock useNavigate

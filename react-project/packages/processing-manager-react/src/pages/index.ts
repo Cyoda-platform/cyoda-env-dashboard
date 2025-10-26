@@ -2,13 +2,13 @@
  * Pages exports
  */
 
-export { Home } from './Home';
-export { Nodes } from './Nodes';
-export { NodesDetail } from './NodesDetail';
-export { EventView } from './EventView';
-export { TransactionDetail } from './TransactionDetail';
-export { TransitionVersions } from './TransitionVersions';
-export { TransitionChanges } from './TransitionChanges';
-export { TransitionEntityStateMachine } from './TransitionEntityStateMachine';
-export { Page404 } from './Page404';
+export { default as Home } from './Home';
+export { default as Nodes } from './Nodes';
+export { default as NodesDetail } from './NodesDetail';
+export { default as EventView } from './EventView';
+export { default as TransactionDetail } from './TransactionDetail';
+export { default as TransitionVersions } from './TransitionVersions';
+export { default as TransitionChanges } from './TransitionChanges';
+export { default as TransitionEntityStateMachine } from './TransitionEntityStateMachine';
+export { default as Page404 } from './Page404';
 
