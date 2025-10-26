@@ -1,0 +1,17 @@
+.saas-left-side-menu {
+  .ant-menu-item,
+  .ant-menu-submenu {
+    &.ant-menu-item-danger {
+      color: #ff4d4f;
+
+      &:hover {
+        background-color: rgba(255, 77, 79, 0.1);
+      }
+    }
+  }
+
+  .ant-menu-item-divider {
+    margin: 8px 0;
+  }
+}
+

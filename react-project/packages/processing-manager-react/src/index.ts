@@ -18,6 +18,6 @@ export * from './utils';
 // Components (will be added as we migrate them)
 // export * from './components';
 
-// Pages (will be added as we migrate them)
-// export * from './pages';
+// Pages
+export * from './pages';
 

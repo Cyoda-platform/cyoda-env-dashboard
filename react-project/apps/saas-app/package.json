@@ -1,0 +1,37 @@
+{
+  "name": "@cyoda/saas-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Cyoda SaaS Application - Integrated platform with selective features",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@ant-design/icons": "^5.5.1",
+    "@cyoda/cyoda-sass-react": "workspace:*",
+    "@cyoda/http-api-react": "workspace:*",
+    "@cyoda/processing-manager-react": "workspace:*",
+    "@cyoda/statemachine-react": "workspace:*",
+    "@cyoda/tableau-react": "workspace:*",
+    "@cyoda/tasks-react": "workspace:*",
+    "@cyoda/ui-lib-react": "workspace:*",
+    "@tanstack/react-query": "^5.62.7",
+    "antd": "^5.21.6",
+    "axios": "^1.7.9",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.26.2",
+    "zustand": "^5.0.2"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "^5.7.3",
+    "vite": "^6.0.3"
+  }
+}
