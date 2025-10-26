@@ -95,7 +95,21 @@ export function deleteStreamDefinition(streamId: string) {
 }
 
 /**
- * Get catalog items (aliases)
+ * Get all catalog items (aliases)
+ */
+export function getAllCatalogItems() {
+  return axios.get<CatalogItem[]>(`/platform-api/catalog/item/all`);
+}
+
+/**
+ * Get catalog items by entity class
+ */
+export function getCatalogItemsByClass(entityClass: string) {
+  return axios.get<CatalogItem[]>(`/platform-api/catalog/item/class?entityClass=${entityClass}`);
+}
+
+/**
+ * Get catalog items (aliases) - generic version
  */
 export function getCatalogItems(params?: any) {
   const query = params ? qs.stringify(params, stringifyOpts) : '';
@@ -106,44 +120,51 @@ export function getCatalogItems(params?: any) {
  * Get specific catalog item
  */
 export function getCatalogItem(itemId: string) {
-  return axios.get<CatalogItem>(`/platform-api/catalog/${itemId}`);
+  return axios.get<CatalogItem>(`/platform-api/catalog/item?itemId=${itemId}`);
 }
 
 /**
  * Create catalog item
  */
 export function createCatalogItem(item: CatalogItem) {
-  return axios.post('/platform-api/catalog', item);
+  return axios.post<string>('/platform-api/catalog/item', item);
 }
 
 /**
  * Update catalog item
  */
 export function updateCatalogItem(itemId: string, item: CatalogItem) {
-  return axios.put(`/platform-api/catalog/${itemId}`, item);
+  return axios.put(`/platform-api/catalog/item?itemId=${itemId}`, item);
 }
 
 /**
  * Delete catalog item
  */
 export function deleteCatalogItem(itemId: string) {
-  return axios.delete(`/platform-api/catalog/${itemId}`);
+  return axios.delete(`/platform-api/catalog/item?itemId=${itemId}`);
 }
 
 /**
- * Export catalog items
+ * Export catalog items by IDs
  */
-export function exportCatalogItems(itemIds: string[]) {
-  return axios.post<CatalogItemExportImportContainer>('/platform-api/catalog/export', {
-    itemIds,
-  });
+export function exportCatalogItems(itemIds: string[], isSingleFile: boolean = true) {
+  return axios.get<CatalogItemExportImportContainer>(
+    `/platform-api/catalog/item/export-by-ids?ids=${itemIds.join(',')}&isSingleFile=${isSingleFile}`
+  );
+}
+
+/**
+ * Export catalog items by entity classes
+ */
+export function exportCatalogItemsByClass(entityClasses: string) {
+  return axios.get<CatalogItem[]>(`/platform-api/catalog/item/export?entityClasses=${entityClasses}`);
 }
 
 /**
  * Import catalog items
  */
-export function importCatalogItems(container: CatalogItemExportImportContainer) {
-  return axios.post('/platform-api/catalog/import', container);
+export function importCatalogItems(container: CatalogItemExportImportContainer, needRewrite: boolean = true) {
+  return axios.post(`/platform-api/catalog/item/import?needRewrite=${needRewrite}`, container);
 }
 
 /**

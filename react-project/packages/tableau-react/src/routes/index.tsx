@@ -8,6 +8,7 @@ import Reports from '@/pages/Reports';
 import ReportEditor from '@/pages/ReportEditor';
 import ReportConfigsStream from '@/pages/ReportConfigsStream';
 import ReportEditorStream from '@/pages/ReportEditorStream';
+import CatalogueOfAliases from '@/pages/CatalogueOfAliases';
 
 // Mock Login component - will be replaced when ui-lib-react is available
 const Login = () => <div>Login Page</div>;
@@ -40,6 +41,10 @@ export const routes: RouteObject[] = [
   {
     path: '/tableau/reports/stream/:id',
     element: <ReportEditorStream />,
+  },
+  {
+    path: '/tableau/catalogue-of-aliases',
+    element: <CatalogueOfAliases />,
   },
 ];
 

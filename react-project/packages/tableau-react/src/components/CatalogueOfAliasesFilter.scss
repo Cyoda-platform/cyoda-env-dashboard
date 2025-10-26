@@ -1,0 +1,26 @@
+/**
+ * Catalogue of Aliases Filter Component Styles
+ * Migrated from: .old_project/packages/http-api/src/components/CatalogOfAliasesFilter/CatalogOfAliasesFilter.vue
+ */
+
+.catalogue-of-aliases-filter {
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  margin-bottom: 20px;
+
+  h2 {
+    margin-bottom: 16px;
+    font-size: 18px;
+    color: #2c3e50;
+  }
+
+  .ant-form-item {
+    margin-bottom: 16px;
+  }
+
+  .ant-form-item-label {
+    font-weight: 500;
+  }
+}
+

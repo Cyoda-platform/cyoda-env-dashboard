@@ -12,24 +12,32 @@ import './ReportsNavigation.scss';
 const ReportsNavigation: React.FC = () => {
   const location = useLocation();
 
-  const isReportsPage = location.pathname === '/tableau/reports' || 
+  const isReportsPage = location.pathname === '/tableau/reports' ||
                         location.pathname.startsWith('/tableau/report-editor');
   const isStreamReportsPage = location.pathname.startsWith('/tableau/reports/stream');
+  const isCatalogueOfAliasesPage = location.pathname.startsWith('/tableau/catalogue-of-aliases');
 
   return (
     <div className="reports-navigation">
-      <Link 
-        to="/tableau/reports" 
+      <Link
+        to="/tableau/reports"
         className={isReportsPage ? 'active' : ''}
       >
         Report config editor
       </Link>
       <span className="separator">|</span>
-      <Link 
-        to="/tableau/reports/stream" 
+      <Link
+        to="/tableau/reports/stream"
         className={isStreamReportsPage ? 'active' : ''}
       >
         Stream Reports
+      </Link>
+      <span className="separator">|</span>
+      <Link
+        to="/tableau/catalogue-of-aliases"
+        className={isCatalogueOfAliasesPage ? 'active' : ''}
+      >
+        Catalogue of Aliases
       </Link>
     </div>
   );
