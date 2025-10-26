@@ -240,8 +240,8 @@ export function getColumnTypes(entityClass: string) {
 /**
  * Get available mappers
  */
-export function getMappers() {
-  return axios.get('/platform-api/mappers');
+export function getMappers(params?: { inClass?: string }) {
+  return axios.get<import('../types').ReportMapper[]>('/platform-api/entity-info/fetch/mappers', { params });
 }
 
 /**

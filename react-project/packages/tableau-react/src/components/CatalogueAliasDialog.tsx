@@ -6,16 +6,18 @@
  */
 
 import React, { useState, useRef, forwardRef, useImperativeHandle, useEffect, useCallback } from 'react';
-import { Modal, Form, Input, Select, Button, Steps, Table, Space, message, Checkbox, Alert } from 'antd';
+import { Modal, Form, Input, Select, Button, Steps, Table, Space, message, Checkbox, Alert, Tooltip } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import type { TableColumnsType } from 'antd';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import MonacoEditor from '@monaco-editor/react';
-import type { CatalogItem, AliasDef, ColDef } from '@cyoda/http-api-react';
+import type { CatalogItem, AliasDef, ColDef, ReportMapper, NamedParameter, MapperParameters } from '@cyoda/http-api-react';
+import { getMappers } from '@cyoda/http-api-react';
 import { ModellingPopUpToggles } from './Modelling/ModellingPopUpToggles';
 import { ModellingPopUpSearch } from './Modelling/ModellingPopUpSearch';
 import { ModellingGroup } from './Modelling/ModellingGroup';
+import MapperParametersDialog, { MapperParametersDialogRef } from './MapperParametersDialog';
 import type { ReportingInfoRow, RelatedPath } from '../types/modelling';
 import { getReportingInfo, getReportingRelatedPaths } from '../api/modelling';
 import HelperModelling from '../utils/HelperModelling';
@@ -36,7 +38,7 @@ export interface CatalogueAliasDialogRef {
 interface AliasPath {
   colDef: ColDef;
   mapperClass: string;
-  mapperParameters?: string;
+  mapperParameters?: MapperParameters;
 }
 
 interface AliasForm {
@@ -61,6 +63,8 @@ export const CatalogueAliasDialog = forwardRef<CatalogueAliasDialogRef, Catalogu
     });
     const [editItem, setEditItem] = useState<CatalogItem | null>(null);
     const [selectedColumns, setSelectedColumns] = useState<ColDef[]>([]);
+    const mapperParametersDialogRef = useRef<MapperParametersDialogRef>(null);
+    const [selectedMapperRow, setSelectedMapperRow] = useState<{ index: number; paramName?: string } | null>(null);
 
     // State for inline tree view in Paths step
     const [reportingInfoRows, setReportingInfoRows] = useState<ReportingInfoRow[]>([]);
@@ -79,14 +83,17 @@ export const CatalogueAliasDialog = forwardRef<CatalogueAliasDialogRef, Catalogu
       },
     });
 
-    // Fetch available mappers
-    const { data: mappers = [] } = useQuery({
+    // Fetch available mappers with metadata
+    const { data: allMappers = [] } = useQuery({
       queryKey: ['mappers'],
       queryFn: async () => {
-        const { data } = await axios.get<string[]>(`${API_BASE}/platform-api/catalog/mappers`);
+        const { data } = await getMappers();
         return data;
       },
     });
+
+    // Fetch mappers by type for each path
+    const [mappersByType, setMappersByType] = useState<{ [key: string]: ReportMapper[] }>({});
 
     // Load entity model when entity class changes
     useEffect(() => {
@@ -94,6 +101,32 @@ export const CatalogueAliasDialog = forwardRef<CatalogueAliasDialogRef, Catalogu
         loadEntityModel();
       }
     }, [aliasForm.entityClass, currentStep]);
+
+    // Load mappers by type when paths change
+    useEffect(() => {
+      if (aliasForm.aliasPaths.length > 0 && currentStep === 3) {
+        loadMappersByTypes();
+      }
+    }, [aliasForm.aliasPaths, currentStep]);
+
+    const loadMappersByTypes = async () => {
+      try {
+        const uniqueTypes = Array.from(new Set(aliasForm.aliasPaths.map((p) => p.colDef.colType)));
+        const results = await Promise.all(
+          uniqueTypes.map((type) => getMappers({ inClass: type }))
+        );
+
+        const mappersByTypeObj: { [key: string]: ReportMapper[] } = {};
+        uniqueTypes.forEach((type, index) => {
+          const key = type.replace(/\./g, '_');
+          mappersByTypeObj[key] = results[index].data;
+        });
+
+        setMappersByType(mappersByTypeObj);
+      } catch (error) {
+        console.error('Failed to load mappers by type:', error);
+      }
+    };
 
     const loadEntityModel = async () => {
       try {
@@ -127,7 +160,13 @@ export const CatalogueAliasDialog = forwardRef<CatalogueAliasDialogRef, Catalogu
 
         if (item) {
           // Edit mode
+          console.log('🔧 Opening edit mode for item:', item);
           const paths = item.aliasDef.aliasPaths?.value || [];
+          console.log('📋 Paths from alias:', paths);
+
+          const columns = paths.map((p: any) => p.colDef);
+          console.log('✅ Selected columns:', columns);
+
           setAliasForm({
             name: item.name,
             desc: item.desc || '',
@@ -135,7 +174,7 @@ export const CatalogueAliasDialog = forwardRef<CatalogueAliasDialogRef, Catalogu
             aliasType: item.aliasDef.aliasType || 'SIMPLE',
             aliasPaths: paths,
           });
-          setSelectedColumns(paths.map((p: any) => p.colDef));
+          setSelectedColumns(columns);
           form.setFieldsValue({
             name: item.name,
             desc: item.desc,
@@ -191,11 +230,16 @@ export const CatalogueAliasDialog = forwardRef<CatalogueAliasDialogRef, Catalogu
       if (selectedColumns.length === 0) return;
 
       // Create alias paths from selected columns
-      const newPaths: AliasPath[] = selectedColumns.map((col) => ({
-        colDef: col,
-        mapperClass: 'com.cyoda.core.reports.mappers.SimpleMapper',
-        mapperParameters: undefined,
-      }));
+      const newPaths: AliasPath[] = selectedColumns.map((col) => {
+        // Try to preserve existing mapper settings if the column was already selected
+        const existingPath = aliasForm.aliasPaths.find((p) => p.colDef.fullPath === col.fullPath);
+
+        return {
+          colDef: col,
+          mapperClass: existingPath?.mapperClass || 'com.cyoda.core.reports.aliasmappers.BasicMapper',
+          mapperParameters: existingPath?.mapperParameters,
+        };
+      });
 
       // Auto-detect alias type from first column's colType
       const aliasType = selectedColumns.length > 0 ? selectedColumns[0].colType : 'SIMPLE';
@@ -238,23 +282,110 @@ export const CatalogueAliasDialog = forwardRef<CatalogueAliasDialogRef, Catalogu
 
     const handleMapperChange = (index: number, mapperClass: string) => {
       const newPaths = [...aliasForm.aliasPaths];
-      newPaths[index] = { ...newPaths[index], mapperClass };
+      // Clear parameters when mapper changes
+      newPaths[index] = {
+        ...newPaths[index],
+        mapperClass,
+        mapperParameters: undefined,
+      };
       setAliasForm((prev) => ({ ...prev, aliasPaths: newPaths }));
     };
 
-    const handleMapperParametersChange = (index: number, mapperParameters: string) => {
+    const handleAddParameter = (index: number) => {
+      const path = aliasForm.aliasPaths[index];
+
+      // Initialize mapperParameters if not exists
+      if (!path.mapperParameters) {
+        const newPaths = [...aliasForm.aliasPaths];
+        newPaths[index] = {
+          ...newPaths[index],
+          mapperParameters: {
+            '@bean': 'com.cyoda.core.reports.aliasmappers.SimpleTypeParameters',
+            parameters: {},
+          },
+        };
+        setAliasForm((prev) => ({ ...prev, aliasPaths: newPaths }));
+      }
+
+      setSelectedMapperRow({ index });
+      mapperParametersDialogRef.current?.open();
+    };
+
+    const handleEditParameter = (index: number, paramName: string) => {
+      const path = aliasForm.aliasPaths[index];
+      const parameter = path.mapperParameters?.parameters[paramName];
+
+      if (parameter) {
+        setSelectedMapperRow({ index, paramName });
+        mapperParametersDialogRef.current?.open(parameter);
+      }
+    };
+
+    const handleRemoveParameter = (index: number, paramName: string) => {
+      Modal.confirm({
+        title: 'Confirm',
+        content: 'Do you really want to remove this parameter?',
+        onOk: () => {
+          const newPaths = [...aliasForm.aliasPaths];
+          if (newPaths[index].mapperParameters?.parameters) {
+            delete newPaths[index].mapperParameters!.parameters[paramName];
+            setAliasForm((prev) => ({ ...prev, aliasPaths: newPaths }));
+          }
+        },
+      });
+    };
+
+    const handleParameterAdd = (parameter: NamedParameter) => {
+      if (selectedMapperRow === null) return;
+
       const newPaths = [...aliasForm.aliasPaths];
-      newPaths[index] = { ...newPaths[index], mapperParameters };
-      setAliasForm((prev) => ({ ...prev, aliasPaths: newPaths }));
+      const path = newPaths[selectedMapperRow.index];
+
+      if (path.mapperParameters) {
+        path.mapperParameters.parameters[parameter.name] = parameter;
+        setAliasForm((prev) => ({ ...prev, aliasPaths: newPaths }));
+      }
+    };
+
+    const handleParameterUpdate = (parameter: NamedParameter) => {
+      if (selectedMapperRow === null) return;
+
+      const newPaths = [...aliasForm.aliasPaths];
+      const path = newPaths[selectedMapperRow.index];
+
+      if (path.mapperParameters && parameter.oldName) {
+        // Remove old parameter
+        delete path.mapperParameters.parameters[parameter.oldName];
+        // Add updated parameter
+        const { oldName, ...newParam } = parameter;
+        path.mapperParameters.parameters[parameter.name] = newParam;
+        setAliasForm((prev) => ({ ...prev, aliasPaths: newPaths }));
+      }
+    };
+
+    const getMapperForPath = (colType: string): ReportMapper[] => {
+      const key = colType.replace(/\./g, '_');
+      return mappersByType[key] || [];
+    };
+
+    const isMapperParametrized = (mapperClass: string): boolean => {
+      const mapper = allMappers.find((m) => m.mapperClass === mapperClass);
+      return mapper?.parametrized || false;
     };
 
     const handleFinish = async () => {
       try {
-        await form.validateFields();
-        const values = form.getFieldsValue();
+        console.log('🔍 aliasForm state:', aliasForm);
+
+        // Validate that we have the required fields
+        if (!aliasForm.name || !aliasForm.entityClass) {
+          console.error('❌ Missing required fields:', { name: aliasForm.name, entityClass: aliasForm.entityClass });
+          message.error('Please fill in all required fields');
+          return;
+        }
 
         const aliasDef: AliasDef = {
-          name: values.name,
+          name: aliasForm.name,
           aliasType: aliasForm.aliasType,
           aliasPaths: {
             '@meta': 'com.cyoda.core.reports.columns.AliasPaths',
@@ -264,11 +395,13 @@ export const CatalogueAliasDialog = forwardRef<CatalogueAliasDialogRef, Catalogu
 
         const catalogItem: CatalogItem = {
           '@bean': 'com.cyoda.core.model.catalog.AliasCatalogItem',
-          name: values.name,
-          desc: values.desc || '',
-          entityClass: values.entityClass,
+          name: aliasForm.name,
+          desc: aliasForm.desc || '',
+          entityClass: aliasForm.entityClass,
           aliasDef: aliasDef,
         };
+
+        console.log('📤 Sending catalog item:', catalogItem);
 
         if (editItem?.id) {
           onUpdate(editItem.id, catalogItem);
@@ -278,6 +411,7 @@ export const CatalogueAliasDialog = forwardRef<CatalogueAliasDialogRef, Catalogu
 
         setVisible(false);
       } catch (error) {
+        console.error('❌ Error in handleFinish:', error);
         message.error('Please fill in all required fields');
       }
     };
@@ -290,45 +424,89 @@ export const CatalogueAliasDialog = forwardRef<CatalogueAliasDialogRef, Catalogu
         key: 'path',
       },
       {
-        title: 'Type',
-        dataIndex: ['colDef', 'colType'],
-        key: 'type',
-        width: 100,
-      },
-      {
         title: 'Mapper',
         key: 'mapper',
         width: 250,
-        render: (_, record, index) => (
-          <Select
-            value={record.mapperClass}
-            onChange={(value) => handleMapperChange(index, value)}
-            style={{ width: '100%' }}
-            options={mappers.map((m) => ({
-              value: m,
-              label: m.split('.').pop(),
-            }))}
-          />
-        ),
+        render: (_, record, index) => {
+          const availableMappers = getMapperForPath(record.colDef.colType);
+          return (
+            <Select
+              value={record.mapperClass}
+              onChange={(value) => handleMapperChange(index, value)}
+              style={{ width: '100%' }}
+              showSearch
+              filterOption={(input, option) =>
+                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+              }
+            >
+              {availableMappers.map((m) => (
+                <Select.Option key={m.mapperClass} value={m.mapperClass}>
+                  {m.shortName}
+                </Select.Option>
+              ))}
+            </Select>
+          );
+        },
       },
       {
         title: 'Parameters',
         key: 'parameters',
-        width: 150,
-        render: (_, record, index) => (
-          <Input
-            value={record.mapperParameters}
-            onChange={(e) => handleMapperParametersChange(index, e.target.value)}
-            placeholder="Optional"
-          />
-        ),
+        width: 250,
+        render: (_, record, index) => {
+          const parametrized = isMapperParametrized(record.mapperClass);
+
+          if (!parametrized) {
+            return <span style={{ color: '#999' }}>Not possible</span>;
+          }
+
+          const parameters = record.mapperParameters?.parameters || {};
+          const paramNames = Object.keys(parameters);
+
+          return (
+            <div>
+              {paramNames.length > 0 && (
+                <div style={{ marginBottom: 8 }}>
+                  {paramNames.map((name) => (
+                    <div key={name} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                      <Button
+                        type="link"
+                        size="small"
+                        onClick={() => handleEditParameter(index, name)}
+                        style={{ padding: 0, height: 'auto' }}
+                      >
+                        {name}
+                      </Button>
+                      <Button
+                        type="text"
+                        danger
+                        size="small"
+                        icon={<DeleteOutlined />}
+                        onClick={() => handleRemoveParameter(index, name)}
+                        style={{ padding: 0, height: 'auto' }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        },
       },
       {
         title: 'Action',
         key: 'action',
-        width: 80,
+        width: 180,
         render: (_, record, index) => (
-          <Button danger icon={<DeleteOutlined />} onClick={() => handleRemovePath(index)} />
+          <Space size="small">
+            <Tooltip title="Remove row">
+              <Button danger icon={<DeleteOutlined />} onClick={() => handleRemovePath(index)} />
+            </Tooltip>
+            {isMapperParametrized(record.mapperClass) && (
+              <Tooltip title="Add parameter">
+                <Button type="primary" icon={<PlusOutlined />} onClick={() => handleAddParameter(index)} />
+              </Tooltip>
+            )}
+          </Space>
         ),
       },
     ];
@@ -370,7 +548,31 @@ export const CatalogueAliasDialog = forwardRef<CatalogueAliasDialogRef, Catalogu
             {!aliasForm.entityClass ? (
               <Alert message="Please select an entity class first" type="info" showIcon />
             ) : (
-              <Checkbox.Group value={selectedColumns} onChange={(values) => setSelectedColumns(values as ColDef[])}>
+              <Checkbox.Group
+                value={selectedColumns.map(col => col.fullPath)}
+                onChange={(checkedPaths) => {
+                  console.log('📝 Checkbox.Group onChange:', checkedPaths);
+                  // Convert fullPaths back to ColDef objects
+                  const newColumns: ColDef[] = (checkedPaths as string[]).map(fullPath => {
+                    // Try to find existing column to preserve all properties
+                    const existing = selectedColumns.find(col => col.fullPath === fullPath);
+                    if (existing) {
+                      return existing;
+                    }
+
+                    // For new selections, try to find the colType from the checkbox element
+                    const checkbox = document.querySelector(`input[type="checkbox"][value="${fullPath}"]`);
+                    const colType = checkbox?.getAttribute('data-col-type') || 'LEAF';
+
+                    return {
+                      fullPath,
+                      colType,
+                    } as ColDef;
+                  });
+                  console.log('✅ New selected columns:', newColumns);
+                  setSelectedColumns(newColumns);
+                }}
+              >
                 {isVisibleGroup && (
                   <ModellingGroup
                     reportInfoRows={reportingInfoRows}
@@ -419,12 +621,13 @@ export const CatalogueAliasDialog = forwardRef<CatalogueAliasDialogRef, Catalogu
         title: 'Mappers',
         content: (
           <div>
-            <p>Configure mappers for each path:</p>
+            <h2>Selected: {aliasForm.aliasPaths.length}</h2>
             <Table
               columns={mapperColumns}
               dataSource={aliasForm.aliasPaths}
               rowKey={(record, index) => `${record.colDef.fullPath}-${index}`}
               pagination={false}
+              scroll={{ x: 'max-content' }}
             />
           </div>
         ),
@@ -523,6 +726,12 @@ export const CatalogueAliasDialog = forwardRef<CatalogueAliasDialogRef, Catalogu
             </Space>
           </div>
         </Modal>
+
+        <MapperParametersDialog
+          ref={mapperParametersDialogRef}
+          onAdd={handleParameterAdd}
+          onUpdate={handleParameterUpdate}
+        />
       </>
     );
   }

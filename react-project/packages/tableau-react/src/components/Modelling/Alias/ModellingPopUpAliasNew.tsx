@@ -6,12 +6,15 @@
  */
 
 import React, { useState, useRef, useCallback, forwardRef, useImperativeHandle, useEffect } from 'react';
-import { Modal, Form, Input, Select, Button, Steps, Table, Space, message } from 'antd';
+import { Modal, Form, Input, Select, Button, Steps, Table, Space, message, Tooltip } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import type { TableColumnsType } from 'antd';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import axios from 'axios';
+import type { ReportMapper, NamedParameter, MapperParameters } from '@cyoda/http-api-react';
+import { getMappers } from '@cyoda/http-api-react';
 import { ModellingPopUp, ModellingPopUpRef } from '../ModellingPopUp';
+import MapperParametersDialog, { MapperParametersDialogRef } from '../../MapperParametersDialog';
 import type { ColDef, ReportDefinition, AliasDef } from '../../../types';
 import './ModellingPopUpAliasNew.scss';
 
@@ -31,7 +34,7 @@ export interface ModellingPopUpAliasNewRef {
 interface AliasPath {
   colDef: ColDef;
   mapperClass: string;
-  mapperParameters?: string;
+  mapperParameters?: MapperParameters;
 }
 
 interface AliasForm {
@@ -55,6 +58,8 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
     const [editItem, setEditItem] = useState<any>(null);
     const [selectedColumns, setSelectedColumns] = useState<ColDef[]>([]);
     const modellingPopUpRef = useRef<ModellingPopUpRef>(null);
+    const mapperParametersDialogRef = useRef<MapperParametersDialogRef>(null);
+    const [selectedMapperRow, setSelectedMapperRow] = useState<{ index: number; paramName?: string } | null>(null);
 
     useImperativeHandle(ref, () => ({
       open: (requestClass: string, item?: any) => {
@@ -91,14 +96,43 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
       close: () => setVisible(false),
     }));
 
-    // Fetch available mappers
-    const { data: mappers = [] } = useQuery({
+    // Fetch available mappers with metadata
+    const { data: allMappers = [] } = useQuery({
       queryKey: ['mappers'],
       queryFn: async () => {
-        const { data } = await axios.get(`${API_BASE}/platform-api/catalog/mappers`);
-        return data as string[];
+        const { data } = await getMappers();
+        return data;
       },
     });
+
+    // Fetch mappers by type for each path
+    const [mappersByType, setMappersByType] = useState<{ [key: string]: ReportMapper[] }>({});
+
+    // Load mappers by type when paths change
+    useEffect(() => {
+      if (aliasForm.aliasPaths.length > 0 && currentStep === 3) {
+        loadMappersByTypes();
+      }
+    }, [aliasForm.aliasPaths, currentStep]);
+
+    const loadMappersByTypes = async () => {
+      try {
+        const uniqueTypes = Array.from(new Set(aliasForm.aliasPaths.map((p) => p.colDef.colType)));
+        const results = await Promise.all(
+          uniqueTypes.map((type) => getMappers({ inClass: type }))
+        );
+
+        const mappersByTypeObj: { [key: string]: ReportMapper[] } = {};
+        uniqueTypes.forEach((type, index) => {
+          const key = type.replace(/\./g, '_');
+          mappersByTypeObj[key] = results[index].data;
+        });
+
+        setMappersByType(mappersByTypeObj);
+      } catch (error) {
+        console.error('Failed to load mappers by type:', error);
+      }
+    };
 
     // Create/Update mutation
     const saveMutation = useMutation({
@@ -209,18 +243,128 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
       setAliasForm((prev) => ({
         ...prev,
         aliasPaths: prev.aliasPaths.map((path, i) =>
-          i === index ? { ...path, mapperClass } : path
+          i === index ? { ...path, mapperClass, mapperParameters: undefined } : path
         ),
       }));
     };
 
-    const handleParametersChange = (index: number, parameters: string) => {
+    const handleAddParameter = (index: number) => {
+      const path = aliasForm.aliasPaths[index];
+
+      // Initialize mapperParameters if not exists
+      if (!path.mapperParameters) {
+        setAliasForm((prev) => ({
+          ...prev,
+          aliasPaths: prev.aliasPaths.map((p, i) =>
+            i === index
+              ? {
+                  ...p,
+                  mapperParameters: {
+                    '@bean': 'com.cyoda.core.reports.aliasmappers.SimpleTypeParameters',
+                    parameters: {},
+                  },
+                }
+              : p
+          ),
+        }));
+      }
+
+      setSelectedMapperRow({ index });
+      mapperParametersDialogRef.current?.open();
+    };
+
+    const handleEditParameter = (index: number, paramName: string) => {
+      const path = aliasForm.aliasPaths[index];
+      const parameter = path.mapperParameters?.parameters[paramName];
+
+      if (parameter) {
+        setSelectedMapperRow({ index, paramName });
+        mapperParametersDialogRef.current?.open(parameter);
+      }
+    };
+
+    const handleRemoveParameter = (index: number, paramName: string) => {
+      Modal.confirm({
+        title: 'Confirm',
+        content: 'Do you really want to remove this parameter?',
+        onOk: () => {
+          setAliasForm((prev) => ({
+            ...prev,
+            aliasPaths: prev.aliasPaths.map((path, i) => {
+              if (i === index && path.mapperParameters?.parameters) {
+                const newParams = { ...path.mapperParameters.parameters };
+                delete newParams[paramName];
+                return {
+                  ...path,
+                  mapperParameters: {
+                    ...path.mapperParameters,
+                    parameters: newParams,
+                  },
+                };
+              }
+              return path;
+            }),
+          }));
+        },
+      });
+    };
+
+    const handleParameterAdd = (parameter: NamedParameter) => {
+      if (selectedMapperRow === null) return;
+
       setAliasForm((prev) => ({
         ...prev,
-        aliasPaths: prev.aliasPaths.map((path, i) =>
-          i === index ? { ...path, mapperParameters: parameters } : path
-        ),
+        aliasPaths: prev.aliasPaths.map((path, i) => {
+          if (i === selectedMapperRow.index && path.mapperParameters) {
+            return {
+              ...path,
+              mapperParameters: {
+                ...path.mapperParameters,
+                parameters: {
+                  ...path.mapperParameters.parameters,
+                  [parameter.name]: parameter,
+                },
+              },
+            };
+          }
+          return path;
+        }),
       }));
+    };
+
+    const handleParameterUpdate = (parameter: NamedParameter) => {
+      if (selectedMapperRow === null) return;
+
+      setAliasForm((prev) => ({
+        ...prev,
+        aliasPaths: prev.aliasPaths.map((path, i) => {
+          if (i === selectedMapperRow.index && path.mapperParameters && parameter.oldName) {
+            const newParams = { ...path.mapperParameters.parameters };
+            delete newParams[parameter.oldName];
+            const { oldName, ...newParam } = parameter;
+            newParams[parameter.name] = newParam;
+
+            return {
+              ...path,
+              mapperParameters: {
+                ...path.mapperParameters,
+                parameters: newParams,
+              },
+            };
+          }
+          return path;
+        }),
+      }));
+    };
+
+    const getMapperForPath = (colType: string): ReportMapper[] => {
+      const key = colType.replace(/\./g, '_');
+      return mappersByType[key] || [];
+    };
+
+    const isMapperParametrized = (mapperClass: string): boolean => {
+      const mapper = allMappers.find((m) => m.mapperClass === mapperClass);
+      return mapper?.parametrized || false;
     };
 
     const handleFinish = async () => {
@@ -249,40 +393,88 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
       },
       {
         title: 'Mapper',
-        dataIndex: 'mapperClass',
         key: 'mapper',
-        render: (mapperClass: string, record, index) => (
-          <Select
-            value={mapperClass}
-            onChange={(value) => handleMapperChange(index, value)}
-            style={{ width: '100%' }}
-          >
-            {mappers.map((mapper) => (
-              <Select.Option key={mapper} value={mapper}>
-                {mapper.split('.').pop()}
-              </Select.Option>
-            ))}
-          </Select>
-        ),
+        width: 250,
+        render: (_, record, index) => {
+          const availableMappers = getMapperForPath(record.colDef.colType);
+          return (
+            <Select
+              value={record.mapperClass}
+              onChange={(value) => handleMapperChange(index, value)}
+              style={{ width: '100%' }}
+              showSearch
+              filterOption={(input, option) =>
+                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+              }
+            >
+              {availableMappers.map((m) => (
+                <Select.Option key={m.mapperClass} value={m.mapperClass}>
+                  {m.shortName}
+                </Select.Option>
+              ))}
+            </Select>
+          );
+        },
       },
       {
         title: 'Parameters',
-        dataIndex: 'mapperParameters',
         key: 'parameters',
-        render: (parameters: string | undefined, record, index) => (
-          <Input
-            value={parameters || ''}
-            onChange={(e) => handleParametersChange(index, e.target.value)}
-            placeholder="Optional parameters"
-          />
-        ),
+        width: 250,
+        render: (_, record, index) => {
+          const parametrized = isMapperParametrized(record.mapperClass);
+
+          if (!parametrized) {
+            return <span style={{ color: '#999' }}>Not possible</span>;
+          }
+
+          const parameters = record.mapperParameters?.parameters || {};
+          const paramNames = Object.keys(parameters);
+
+          return (
+            <div>
+              {paramNames.length > 0 && (
+                <div style={{ marginBottom: 8 }}>
+                  {paramNames.map((name) => (
+                    <div key={name} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                      <Button
+                        type="link"
+                        size="small"
+                        onClick={() => handleEditParameter(index, name)}
+                        style={{ padding: 0, height: 'auto' }}
+                      >
+                        {name}
+                      </Button>
+                      <Button
+                        type="text"
+                        danger
+                        size="small"
+                        icon={<DeleteOutlined />}
+                        onClick={() => handleRemoveParameter(index, name)}
+                        style={{ padding: 0, height: 'auto' }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        },
       },
       {
         title: 'Action',
         key: 'action',
-        width: 100,
+        width: 180,
         render: (_, record, index) => (
-          <Button danger icon={<DeleteOutlined />} onClick={() => handleRemovePath(index)} />
+          <Space size="small">
+            <Tooltip title="Remove row">
+              <Button danger icon={<DeleteOutlined />} onClick={() => handleRemovePath(index)} />
+            </Tooltip>
+            {isMapperParametrized(record.mapperClass) && (
+              <Tooltip title="Add parameter">
+                <Button type="primary" icon={<PlusOutlined />} onClick={() => handleAddParameter(index)} />
+              </Tooltip>
+            )}
+          </Space>
         ),
       },
     ];
@@ -366,12 +558,13 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
         title: 'Mappers',
         content: (
           <div>
-            <p>Configure mapper classes and parameters for each path:</p>
+            <h2>Selected: {aliasForm.aliasPaths.length}</h2>
             <Table
               columns={pathColumns}
               dataSource={aliasForm.aliasPaths}
               rowKey={(record, index) => `${record.colDef.fullPath}-${index}`}
               pagination={false}
+              scroll={{ x: 'max-content' }}
             />
           </div>
         ),
@@ -420,6 +613,12 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
           requestClass={aliasForm.entityClass}
           checked={selectedColumns}
           onChange={handleColumnsSelected}
+        />
+
+        <MapperParametersDialog
+          ref={mapperParametersDialogRef}
+          onAdd={handleParameterAdd}
+          onUpdate={handleParameterUpdate}
         />
       </>
     );

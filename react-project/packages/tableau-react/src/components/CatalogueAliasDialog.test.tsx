@@ -16,7 +16,7 @@ vi.mock('@cyoda/http-api-react', async () => {
   return {
     ...actual,
     getEntityClasses: vi.fn(),
-    getCatalogMappers: vi.fn(),
+    getMappers: vi.fn(),
   };
 });
 
@@ -42,6 +42,17 @@ vi.mock('./ModellingPopUp', () => ({
   }),
 }));
 
+// Mock MapperParametersDialog component
+vi.mock('./MapperParametersDialog', () => ({
+  default: React.forwardRef((props: any, ref: any) => {
+    React.useImperativeHandle(ref, () => ({
+      open: vi.fn(),
+      close: vi.fn(),
+    }));
+    return <div data-testid="mapper-parameters-dialog" />;
+  }),
+}));
+
 const mockEntityClasses = [
   { value: 'com.example.Entity1', label: 'Entity1' },
   { value: 'com.example.Entity2', label: 'Entity2' },
@@ -49,16 +60,22 @@ const mockEntityClasses = [
 
 const mockMappers = [
   {
-    name: 'Mapper1',
-    desc: 'Description 1',
-    params: [
-      { name: 'param1', type: 'STRING', required: true },
-    ],
+    shortName: 'BasicMapper',
+    mapperClass: 'com.cyoda.core.reports.aliasmappers.BasicMapper',
+    inType: 'java.lang.String',
+    outType: 'java.lang.String',
+    entityClass: 'com.example.Entity',
+    parametrized: false,
+    decision: 'SIMPLE',
   },
   {
-    name: 'Mapper2',
-    desc: 'Description 2',
-    params: [],
+    shortName: 'ParametrizedMapper',
+    mapperClass: 'com.cyoda.core.reports.aliasmappers.ParametrizedMapper',
+    inType: 'java.lang.String',
+    outType: 'java.lang.String',
+    entityClass: 'com.example.Entity',
+    parametrized: true,
+    decision: 'SIMPLE',
   },
 ];
 
@@ -84,7 +101,7 @@ describe('CatalogueAliasDialog', () => {
     (httpApiReact.getEntityClasses as any).mockResolvedValue({
       data: mockEntityClasses,
     });
-    (httpApiReact.getCatalogMappers as any).mockResolvedValue({
+    (httpApiReact.getMappers as any).mockResolvedValue({
       data: mockMappers,
     });
   });

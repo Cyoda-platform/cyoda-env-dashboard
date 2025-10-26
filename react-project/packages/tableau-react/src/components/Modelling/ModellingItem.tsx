@@ -269,9 +269,10 @@ export const ModellingItem: React.FC<ModellingItemProps> = ({
           <Checkbox
             disabled={isDisabled}
             checked={!!getChecked}
-            value={label}
+            value={fullPath}
             className={!isChildAvailable ? 'no-child' : ''}
             style={{ marginLeft: 8 }}
+            data-col-type={reportInfoRow.type}
           >
             {reportInfoRow.columnName}
             {isMap && (

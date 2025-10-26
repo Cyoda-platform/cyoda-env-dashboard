@@ -198,17 +198,25 @@ if (!global.catalogItems) {
 // Get all catalog items
 app.get('/platform-api/catalog/item/all', (req, res) => {
   const items = Object.values(global.catalogItems);
+  console.log(`📋 Returning ${items.length} catalog items`);
+  if (items.length > 0) {
+    console.log('First item sample:', JSON.stringify(items[0], null, 2));
+  }
   res.json(items);
 });
 
 // Get catalog items by entity class
 app.get('/platform-api/catalog/item/class', (req, res) => {
   const { entityClass } = req.query;
+  console.log(`🔍 GET /platform-api/catalog/item/class?entityClass=${entityClass}`);
+  console.log(`📊 Total catalog items: ${Object.keys(global.catalogItems).length}`);
 
   // Get catalog items for this entity class
   const items = Object.values(global.catalogItems).filter(
     (item) => item.entityClass === entityClass
   );
+
+  console.log(`✅ Found ${items.length} items for entity class: ${entityClass}`);
 
   res.json(items);
 });
@@ -218,18 +226,24 @@ app.post('/platform-api/catalog/item', (req, res) => {
   const catalogItem = req.body;
   const itemId = `CAT-${Date.now()}`;
 
-  console.log('Received catalog item:', JSON.stringify(catalogItem, null, 2));
+  console.log('📥 Received catalog item:', JSON.stringify(catalogItem, null, 2));
 
   // Extract the alias name from the structure
   const aliasName = catalogItem.name || catalogItem.aliasDef?.name || catalogItem.alias;
 
-  global.catalogItems[itemId] = {
+  const newItem = {
     ...catalogItem,
-    itemId,
+    id: itemId, // Use 'id' instead of 'itemId' to match CatalogItem interface
     alias: aliasName, // Store the alias name for easy access
+    createDate: catalogItem.createDate || new Date().toISOString(),
+    user: catalogItem.user || 'admin',
+    state: catalogItem.state || 'ACTIVE',
   };
 
+  global.catalogItems[itemId] = newItem;
+
   console.log(`✓ Created alias: ${aliasName || 'unnamed'} (${itemId})`);
+  console.log(`📤 Stored item:`, JSON.stringify(newItem, null, 2));
 
   res.json(itemId);
 });
@@ -240,11 +254,14 @@ app.put('/platform-api/catalog/item', (req, res) => {
   const catalogItem = req.body;
 
   if (global.catalogItems[itemId]) {
+    const aliasName = catalogItem.name || catalogItem.aliasDef?.name || catalogItem.alias;
     global.catalogItems[itemId] = {
       ...global.catalogItems[itemId],
       ...catalogItem,
+      id: itemId, // Preserve the id
+      alias: aliasName,
     };
-    console.log(`✓ Updated alias: ${catalogItem.alias}`);
+    console.log(`✓ Updated alias: ${aliasName || 'unnamed'} (${itemId})`);
   }
 
   res.json({ success: true });
@@ -255,7 +272,7 @@ app.delete('/platform-api/catalog/item', (req, res) => {
   const { itemId } = req.query;
 
   if (global.catalogItems[itemId]) {
-    const alias = global.catalogItems[itemId].alias;
+    const alias = global.catalogItems[itemId].alias || global.catalogItems[itemId].name;
     delete global.catalogItems[itemId];
     console.log(`✓ Deleted alias: ${alias}`);
   }
@@ -263,7 +280,80 @@ app.delete('/platform-api/catalog/item', (req, res) => {
   res.json({ success: true });
 });
 
-// Get mapper classes
+// Export catalog items by IDs
+app.get('/platform-api/catalog/item/export-by-ids', (req, res) => {
+  const { ids, isSingleFile } = req.query;
+
+  if (!ids) {
+    res.status(400).json({ error: 'Missing ids parameter' });
+    return;
+  }
+
+  const itemIds = ids.split(',');
+  const exportedItems = itemIds
+    .map(id => global.catalogItems[id])
+    .filter(item => item !== undefined);
+
+  console.log(`📦 Exporting ${exportedItems.length} catalog items`);
+
+  const exportContainer = {
+    '@bean': 'com.cyoda.core.model.catalog.AliasCatalogItemExportImportContainer',
+    aliases: exportedItems
+  };
+
+  res.json(exportContainer);
+});
+
+// Import catalog items
+app.post('/platform-api/catalog/item/import', (req, res) => {
+  const { needRewrite } = req.query;
+  const container = req.body;
+
+  console.log(`📥 Importing ${container.aliases?.length || 0} catalog items (needRewrite: ${needRewrite})`);
+
+  if (!container.aliases || !Array.isArray(container.aliases)) {
+    res.status(400).json({ error: 'Invalid import container' });
+    return;
+  }
+
+  let imported = 0;
+  let skipped = 0;
+
+  container.aliases.forEach(item => {
+    const itemId = item.id || `CAT-${Date.now()}-${imported}`;
+
+    // Check if item already exists
+    const exists = Object.values(global.catalogItems).some(
+      existing => existing.name === item.name && existing.entityClass === item.entityClass
+    );
+
+    if (exists && needRewrite !== 'true') {
+      console.log(`⏭️  Skipping existing item: ${item.name}`);
+      skipped++;
+    } else {
+      global.catalogItems[itemId] = {
+        ...item,
+        id: itemId,
+        createDate: item.createDate || new Date().toISOString(),
+        user: item.user || 'admin',
+        state: item.state || 'ACTIVE',
+      };
+      console.log(`✓ Imported: ${item.name} (${itemId})`);
+      imported++;
+    }
+  });
+
+  console.log(`📊 Import complete: ${imported} imported, ${skipped} skipped`);
+
+  res.json({
+    success: true,
+    imported,
+    skipped,
+    total: container.aliases.length
+  });
+});
+
+// Get mapper classes (old endpoint)
 app.get('/platform-api/catalog/mappers', (req, res) => {
   const mockMappers = [
     'com.cyoda.platform.mappers.IdentityMapper',
@@ -273,6 +363,77 @@ app.get('/platform-api/catalog/mappers', (req, res) => {
   ];
 
   res.json(mockMappers);
+});
+
+// Get mappers with metadata (new endpoint for alias parameters)
+app.get('/platform-api/entity-info/fetch/mappers', (req, res) => {
+  const { inClass } = req.query;
+
+  // Full list of mappers with metadata
+  const allMappers = [
+    {
+      shortName: 'IdentityMapper',
+      mapperClass: 'com.cyoda.core.reports.aliasmappers.IdentityMapper',
+      inType: 'java.lang.String',
+      outType: 'java.lang.String',
+      entityClass: 'com.cyoda.core.Entity',
+      parametrized: false,
+      decision: 'SIMPLE'
+    },
+    {
+      shortName: 'StringToIntegerMapper',
+      mapperClass: 'com.cyoda.core.reports.aliasmappers.StringToIntegerMapper',
+      inType: 'java.lang.String',
+      outType: 'java.lang.Integer',
+      entityClass: 'com.cyoda.core.Entity',
+      parametrized: true,
+      decision: 'SIMPLE'
+    },
+    {
+      shortName: 'DateFormatMapper',
+      mapperClass: 'com.cyoda.core.reports.aliasmappers.DateFormatMapper',
+      inType: 'java.util.Date',
+      outType: 'java.lang.String',
+      entityClass: 'com.cyoda.core.Entity',
+      parametrized: true,
+      decision: 'SIMPLE'
+    },
+    {
+      shortName: 'NumberMapper',
+      mapperClass: 'com.cyoda.core.reports.aliasmappers.NumberMapper',
+      inType: 'java.lang.Double',
+      outType: 'java.lang.Double',
+      entityClass: 'com.cyoda.core.Entity',
+      parametrized: false,
+      decision: 'SIMPLE'
+    },
+    {
+      shortName: 'BooleanMapper',
+      mapperClass: 'com.cyoda.core.reports.aliasmappers.BooleanMapper',
+      inType: 'java.lang.Boolean',
+      outType: 'java.lang.Boolean',
+      entityClass: 'com.cyoda.core.Entity',
+      parametrized: false,
+      decision: 'SIMPLE'
+    },
+    {
+      shortName: 'ListToStringMapper',
+      mapperClass: 'com.cyoda.core.reports.aliasmappers.ListToStringMapper',
+      inType: 'java.util.List',
+      outType: 'java.lang.String',
+      entityClass: 'com.cyoda.core.Entity',
+      parametrized: true,
+      decision: 'SIMPLE'
+    }
+  ];
+
+  // Filter by inClass if provided
+  if (inClass) {
+    const filtered = allMappers.filter(mapper => mapper.inType === inClass);
+    res.json(filtered);
+  } else {
+    res.json(allMappers);
+  }
 });
 
 // Stream Report Definitions

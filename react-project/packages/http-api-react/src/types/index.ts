@@ -143,7 +143,28 @@ export interface ReportDefinition {
 }
 
 export interface ReportMapper {
-  [key: string]: any;
+  shortName: string;
+  mapperClass: string;
+  inType: string;
+  outType: string;
+  entityClass: string;
+  parametrized: boolean;
+  decision: string;
+}
+
+export interface NamedParameter {
+  '@bean': string;
+  name: string;
+  value: string;
+  parameterType: string;
+  oldName?: string;
+}
+
+export interface MapperParameters {
+  '@bean': string;
+  parameters: {
+    [key: string]: NamedParameter;
+  };
 }
 
 export type ReportingReportStatus = 'STARTED' | 'RUNNING' | 'SUCCESSFUL' | 'CANCELLED' | 'FAILED';

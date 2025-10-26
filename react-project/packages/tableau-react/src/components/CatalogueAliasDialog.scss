@@ -15,5 +15,35 @@
   .ant-form-item {
     margin-bottom: 16px;
   }
+
+  .icon-trash-remove {
+    cursor: pointer;
+    color: #ff4d4f;
+    margin-left: 8px;
+
+    &:hover {
+      color: #ff7875;
+    }
+  }
+
+  .parameter-link {
+    color: #1890ff;
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .not-possible {
+    color: #999;
+    font-style: italic;
+  }
+
+  .actions-settings {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
 }
 
