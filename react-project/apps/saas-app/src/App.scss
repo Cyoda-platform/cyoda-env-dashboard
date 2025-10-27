@@ -117,17 +117,17 @@ code {
 
   // Table header
   .ant-table-thead > tr > th {
-    background: var(--refine-bg-tertiary);
-    color: var(--refine-text-secondary);
+    background: var(--refine-bg-tertiary) !important;
+    color: var(--refine-text-secondary) !important;
     font-weight: 600;
     font-size: 12px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
     padding: 12px 16px;
 
     &::before {
-      display: none; // Remove default Ant Design column resize handle
+      display: none !important; // Remove default Ant Design column resize handle
     }
   }
 
@@ -540,6 +540,39 @@ h1, h2, h3, h4, h5, h6 {
   .ant-tabs-ink-bar {
     background: var(--refine-primary) !important;
   }
+
+  // Card-type tabs styling
+  &.ant-tabs-card {
+    .ant-tabs-tab {
+      background: transparent !important;
+      border: 1px solid rgba(255, 255, 255, 0.1) !important;
+      border-bottom: none !important;
+
+      &:hover {
+        background: rgba(0, 212, 170, 0.05) !important;
+      }
+
+      &.ant-tabs-tab-active {
+        background: var(--refine-bg-secondary) !important;
+        border-color: rgba(0, 212, 170, 0.3) !important;
+        border-bottom: 1px solid var(--refine-bg-secondary) !important;
+
+        .ant-tabs-tab-btn {
+          color: var(--refine-primary) !important;
+        }
+      }
+    }
+
+    .ant-tabs-nav {
+      &::before {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+      }
+    }
+
+    .ant-tabs-content-holder {
+      border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+    }
+  }
 }
 
 // Checkbox and Radio styling
@@ -623,6 +656,221 @@ div[style*="background-color:#000"] {
   .ant-card,
   .ant-card-body {
     background: transparent !important;
+  }
+}
+
+// ============================================================================
+// Notifications and Messages - Dark Theme
+// ============================================================================
+
+// Ant Design Messages (toast notifications)
+.ant-message {
+  .ant-message-notice-content {
+    background: var(--refine-bg-tertiary) !important;
+    color: var(--refine-text-primary) !important;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 12px 16px;
+  }
+
+  .ant-message-success .anticon {
+    color: var(--refine-primary) !important;
+  }
+
+  .ant-message-error .anticon {
+    color: #EF4444 !important;
+  }
+
+  .ant-message-warning .anticon {
+    color: #F59E0B !important;
+  }
+
+  .ant-message-info .anticon {
+    color: #3B82F6 !important;
+  }
+}
+
+// Ant Design Notifications
+.ant-notification {
+  .ant-notification-notice {
+    background: var(--refine-bg-tertiary) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    padding: 16px 24px;
+
+    .ant-notification-notice-message {
+      color: var(--refine-text-primary) !important;
+      font-weight: 600;
+    }
+
+    .ant-notification-notice-description {
+      color: var(--refine-text-secondary) !important;
+    }
+
+    .ant-notification-notice-icon {
+      &.ant-notification-notice-icon-success {
+        color: var(--refine-primary) !important;
+      }
+
+      &.ant-notification-notice-icon-error {
+        color: #EF4444 !important;
+      }
+
+      &.ant-notification-notice-icon-warning {
+        color: #F59E0B !important;
+      }
+
+      &.ant-notification-notice-icon-info {
+        color: #3B82F6 !important;
+      }
+    }
+
+    .ant-notification-notice-close {
+      color: var(--refine-text-tertiary) !important;
+
+      &:hover {
+        color: var(--refine-text-primary) !important;
+      }
+    }
+  }
+}
+
+// Modal styling - Dark theme
+.ant-modal {
+  .ant-modal-content {
+    background: var(--refine-bg-secondary) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  }
+
+  .ant-modal-header {
+    background: var(--refine-bg-secondary) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+    .ant-modal-title {
+      color: var(--refine-text-primary) !important;
+      font-weight: 600;
+    }
+  }
+
+  .ant-modal-body {
+    background: var(--refine-bg-secondary) !important;
+    color: var(--refine-text-primary) !important;
+  }
+
+  .ant-modal-footer {
+    background: var(--refine-bg-secondary) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+
+    .ant-btn-default {
+      background: transparent !important;
+      border-color: rgba(255, 255, 255, 0.2) !important;
+      color: var(--refine-text-primary) !important;
+
+      &:hover {
+        border-color: var(--refine-primary) !important;
+        color: var(--refine-primary) !important;
+      }
+    }
+
+    .ant-btn-primary {
+      background: var(--refine-primary) !important;
+      border-color: var(--refine-primary) !important;
+      color: #FFFFFF !important;
+
+      &:hover {
+        background: var(--refine-primary-light) !important;
+        border-color: var(--refine-primary-light) !important;
+      }
+    }
+
+    .ant-btn-dangerous {
+      background: transparent !important;
+      border-color: #EF4444 !important;
+      color: #EF4444 !important;
+
+      &:hover {
+        background: rgba(239, 68, 68, 0.1) !important;
+      }
+    }
+  }
+
+  .ant-modal-close {
+    color: var(--refine-text-tertiary) !important;
+
+    &:hover {
+      color: var(--refine-text-primary) !important;
+      background: rgba(255, 255, 255, 0.05) !important;
+    }
+  }
+}
+
+// Confirm modal (delete confirmation, etc.)
+.ant-modal-confirm {
+  .ant-modal-content {
+    background: var(--refine-bg-secondary) !important;
+  }
+
+  .ant-modal-confirm-body {
+    .ant-modal-confirm-title {
+      color: var(--refine-text-primary) !important;
+    }
+
+    .ant-modal-confirm-content {
+      color: var(--refine-text-secondary) !important;
+    }
+
+    .anticon {
+      &.anticon-exclamation-circle {
+        color: #F59E0B !important;
+      }
+
+      &.anticon-check-circle {
+        color: var(--refine-primary) !important;
+      }
+
+      &.anticon-info-circle {
+        color: #3B82F6 !important;
+      }
+
+      &.anticon-close-circle {
+        color: #EF4444 !important;
+      }
+    }
+  }
+
+  .ant-modal-confirm-btns {
+    .ant-btn-default {
+      background: transparent !important;
+      border-color: rgba(255, 255, 255, 0.2) !important;
+      color: var(--refine-text-primary) !important;
+
+      &:hover {
+        border-color: var(--refine-primary) !important;
+        color: var(--refine-primary) !important;
+      }
+    }
+
+    .ant-btn-primary {
+      background: var(--refine-primary) !important;
+      border-color: var(--refine-primary) !important;
+
+      &:hover {
+        background: var(--refine-primary-light) !important;
+      }
+    }
+
+    .ant-btn-dangerous {
+      background: transparent !important;
+      border-color: #EF4444 !important;
+      color: #EF4444 !important;
+
+      &:hover {
+        background: rgba(239, 68, 68, 0.1) !important;
+      }
+    }
   }
 }
 

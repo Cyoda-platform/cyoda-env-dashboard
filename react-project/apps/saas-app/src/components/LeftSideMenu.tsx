@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Layout, Menu, Modal } from 'antd';
+import { Layout, Menu, Modal, Button } from 'antd';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   DatabaseOutlined,
@@ -10,6 +10,13 @@ import {
   ClusterOutlined,
   LogoutOutlined,
   InfoCircleOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+  BarChartOutlined,
+  LineChartOutlined,
+  TagsOutlined,
+  ProjectOutlined,
+  AppstoreOutlined,
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import './LeftSideMenu.scss';
@@ -18,10 +25,14 @@ const { Sider } = Layout;
 
 type MenuItem = Required<MenuProps>['items'][number];
 
-export const LeftSideMenu: React.FC = () => {
+interface LeftSideMenuProps {
+  collapsed: boolean;
+  onCollapse: (collapsed: boolean) => void;
+}
+
+export const LeftSideMenu: React.FC<LeftSideMenuProps> = ({ collapsed, onCollapse }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [collapsed, setCollapsed] = useState(false);
   const [versionModalVisible, setVersionModalVisible] = useState(false);
 
   const handleLogout = () => {
@@ -64,16 +75,19 @@ export const LeftSideMenu: React.FC = () => {
       children: [
         {
           key: '/tableau/reports',
+          icon: <BarChartOutlined />,
           label: 'Report config editor',
           onClick: () => navigate('/tableau/reports'),
         },
         {
           key: '/tableau/reports/stream',
+          icon: <LineChartOutlined />,
           label: 'Stream Reports',
           onClick: () => navigate('/tableau/reports/stream'),
         },
         {
           key: '/tableau/catalogue-of-aliases',
+          icon: <TagsOutlined />,
           label: 'Catalog of aliases',
           onClick: () => navigate('/tableau/catalogue-of-aliases'),
         },
@@ -86,11 +100,13 @@ export const LeftSideMenu: React.FC = () => {
       children: [
         {
           key: '/workflows',
+          icon: <ProjectOutlined />,
           label: 'Workflow',
           onClick: () => navigate('/workflows'),
         },
         {
           key: '/instances',
+          icon: <AppstoreOutlined />,
           label: 'Instances',
           onClick: () => navigate('/instances'),
         },
@@ -170,27 +186,50 @@ export const LeftSideMenu: React.FC = () => {
       <Sider
         collapsible
         collapsed={collapsed}
-        onCollapse={setCollapsed}
+        onCollapse={onCollapse}
         width={250}
+        collapsedWidth={80}
         theme="dark"
         className="saas-left-side-menu"
+        trigger={null}
         style={{
           overflow: 'auto',
-          height: '100vh',
+          height: 'calc(100vh - 64px)',
           position: 'fixed',
           left: 0,
           top: 64, // Below header
           bottom: 0,
         }}
       >
-        <Menu
-          theme="dark"
-          mode="inline"
-          selectedKeys={getSelectedKey()}
-          defaultOpenKeys={getOpenKeys()}
-          items={menuItems}
-          style={{ borderRight: 0 }}
-        />
+        <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+          <Menu
+            theme="dark"
+            mode="inline"
+            selectedKeys={getSelectedKey()}
+            defaultOpenKeys={getOpenKeys()}
+            items={menuItems}
+            style={{
+              borderRight: 0,
+              borderInlineEnd: 0,
+              flex: 1,
+              border: 'none',
+            }}
+          />
+          <div className="sidebar-collapse-trigger">
+            <Button
+              type="text"
+              icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+              onClick={() => onCollapse(!collapsed)}
+              style={{
+                width: '100%',
+                height: 48,
+                borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+                borderRadius: 0,
+                color: 'var(--refine-text-secondary)',
+              }}
+            />
+          </div>
+        </div>
       </Sider>
 
       {/* Version Info Modal */}

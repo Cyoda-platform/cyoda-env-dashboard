@@ -21,12 +21,26 @@
     border-radius: 2px;
   }
 
+  // Remove default menu borders and padding
+  .ant-menu {
+    border: none !important;
+    background: transparent !important;
+  }
+
+  .ant-menu-inline {
+    border-right: none !important;
+  }
+
   // Menu items styling
-  .ant-menu-item,
-  .ant-menu-submenu {
+  .ant-menu-item {
     border-radius: 8px;
-    margin: 4px 8px;
+    margin: 4px 8px !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
     transition: all var(--refine-transition-base);
+    border: none !important;
+    height: 40px !important;
+    line-height: 40px !important;
 
     &.ant-menu-item-selected {
       background: var(--refine-gradient-primary) !important;
@@ -68,11 +82,23 @@
     }
   }
 
-  // Submenu styling
+  // Submenu container
+  .ant-menu-submenu {
+    border-radius: 8px;
+    margin: 4px 8px !important;
+    border: none !important;
+  }
+
+  // Submenu title styling
   .ant-menu-submenu-title {
     border-radius: 8px;
-    margin: 4px 8px;
+    margin: 0 !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+    height: 40px !important;
+    line-height: 40px !important;
     transition: all var(--refine-transition-base);
+    border: none !important;
 
     &:hover {
       background: var(--refine-glass-bg) !important;
@@ -82,13 +108,21 @@
         color: var(--refine-primary-light) !important;
       }
     }
+
+    .anticon {
+      font-size: 16px;
+      transition: all var(--refine-transition-base);
+    }
   }
 
   .ant-menu-sub {
     background: rgba(0, 0, 0, 0.2) !important;
+    border: none !important;
 
     .ant-menu-item {
       padding-left: 48px !important;
+      margin: 2px 8px !important;
+      border: none !important;
 
       &::before {
         content: '';
@@ -118,16 +152,75 @@
     height: 1px;
   }
 
-  // Collapse button styling
-  .ant-layout-sider-trigger {
-    background: var(--refine-bg-tertiary) !important;
-    border-top: 1px solid var(--refine-border-primary);
-    color: var(--refine-text-secondary) !important;
-    transition: all var(--refine-transition-base);
+  // Custom collapse trigger button
+  .sidebar-collapse-trigger {
+    background: var(--refine-bg-tertiary);
 
-    &:hover {
-      background: var(--refine-primary) !important;
-      color: white !important;
+    .ant-btn {
+      transition: all var(--refine-transition-base);
+
+      &:hover {
+        background: var(--refine-primary) !important;
+        color: white !important;
+      }
+    }
+  }
+
+  // Collapsed state adjustments
+  &.ant-layout-sider-collapsed {
+    .ant-menu-item {
+      margin: 4px 0 !important;
+      padding: 0 !important;
+      width: 80px !important;
+      height: 48px !important;
+      line-height: 48px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      text-align: center !important;
+    }
+
+    .ant-menu-submenu {
+      margin: 4px 0 !important;
+      width: 80px !important;
+    }
+
+    .ant-menu-submenu-title {
+      margin: 0 !important;
+      padding: 0 !important;
+      width: 80px !important;
+      height: 48px !important;
+      line-height: 48px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      text-align: center !important;
+    }
+
+    .ant-menu-item-icon,
+    .anticon {
+      font-size: 20px !important;
+      margin: 0 !important;
+    }
+
+    // Hide text in collapsed state
+    .ant-menu-title-content {
+      display: none !important;
+      opacity: 0;
+      width: 0;
+    }
+
+    // Center the expand/collapse arrow for submenus
+    .ant-menu-submenu-arrow {
+      display: none !important;
+    }
+
+    .sidebar-collapse-trigger {
+      .ant-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
     }
   }
 }

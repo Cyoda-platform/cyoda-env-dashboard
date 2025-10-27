@@ -1,5 +1,4 @@
-// TODO: Replace with actual @cyoda/http-api-react once available
-import axios from '../__mocks__/@cyoda/http-api-react';
+import { axios } from '@cyoda/http-api-react';
 import type { SqlSchema, EntityModel, GeneratedTable, ApiResponse } from '../types';
 
 /**
@@ -12,7 +11,7 @@ export const sqlSchemaApi = {
    * @returns Promise with list of schemas
    */
   getListAll: (): Promise<ApiResponse<SqlSchema[]>> => {
-    return axios.get('/sql/schema/listAll');
+    return axios.get('/platform-api/sql/schema/listAll');
   },
 
   /**
@@ -21,7 +20,7 @@ export const sqlSchemaApi = {
    * @returns Promise with schema data
    */
   getSchemaById: (schemaId: string): Promise<ApiResponse<SqlSchema>> => {
-    return axios.get(`/sql/schema/${schemaId}`) as unknown as Promise<ApiResponse<SqlSchema>>;
+    return axios.get(`/platform-api/sql/schema/${schemaId}`) as unknown as Promise<ApiResponse<SqlSchema>>;
   },
 
   /**
@@ -30,7 +29,7 @@ export const sqlSchemaApi = {
    * @returns Promise with saved schema data
    */
   saveSchema: (data: SqlSchema): Promise<ApiResponse<SqlSchema>> => {
-    return axios.post('/sql/schema/', data);
+    return axios.post('/platform-api/sql/schema/', data);
   },
 
   /**
@@ -39,7 +38,7 @@ export const sqlSchemaApi = {
    * @returns Promise with deletion result
    */
   delete: (schemaId: string): Promise<ApiResponse<void>> => {
-    return axios.delete(`/sql/schema/${schemaId}`) as unknown as Promise<ApiResponse<void>>;
+    return axios.delete(`/platform-api/sql/schema/${schemaId}`) as unknown as Promise<ApiResponse<void>>;
   },
 
   /**
@@ -47,7 +46,7 @@ export const sqlSchemaApi = {
    * @returns Promise with list of entity models
    */
   getEntityModelList: (): Promise<ApiResponse<EntityModel[]>> => {
-    return axios.get('/model/');
+    return axios.get('/platform-api/model/');
   },
 
   /**
@@ -56,7 +55,7 @@ export const sqlSchemaApi = {
    * @returns Promise with generated tables
    */
   getGenTable: (id: string): Promise<ApiResponse<GeneratedTable[]>> => {
-    return axios.get(`/sql/schema/genTables/${id}`);
+    return axios.get(`/platform-api/sql/schema/genTables/${id}`);
   },
 
   /**
@@ -66,7 +65,7 @@ export const sqlSchemaApi = {
    * @returns Promise with updated tables
    */
   updateTables: (metaId: string, tables: any[]): Promise<ApiResponse<any[]>> => {
-    return axios.post(`/sql/schema/updateTables/${metaId}`, tables);
+    return axios.post(`/platform-api/sql/schema/updateTables/${metaId}`, tables);
   },
 
   /**
@@ -75,7 +74,7 @@ export const sqlSchemaApi = {
    * @returns Promise with import result
    */
   importData: (sampleData: any): Promise<ApiResponse<any>> => {
-    return axios.post('/model/import/JSON/SAMPLE_DATA/nobel_1/1', sampleData);
+    return axios.post('/platform-api/model/import/JSON/SAMPLE_DATA/nobel_1/1', sampleData);
   },
 };
 

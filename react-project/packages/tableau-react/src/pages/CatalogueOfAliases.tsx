@@ -17,7 +17,6 @@ import type { CatalogItem } from '@cyoda/http-api-react';
 import CatalogueOfAliasesFilter from '../components/CatalogueOfAliasesFilter';
 import CatalogueAliasDialog, { CatalogueAliasDialogRef } from '../components/CatalogueAliasDialog';
 import CatalogueAliasChangeStateDialog, { CatalogueAliasChangeStateDialogRef } from '../components/CatalogueAliasChangeStateDialog';
-import ReportsNavigation from '../components/ReportsNavigation';
 import './CatalogueOfAliases.scss';
 
 interface TableDataRow {
@@ -338,8 +337,6 @@ const CatalogueOfAliases: React.FC = () => {
 
   return (
     <div className="catalogue-of-aliases">
-      <ReportsNavigation />
-      
       <h1>Catalogue of Aliases</h1>
 
       <div className="flex-buttons">

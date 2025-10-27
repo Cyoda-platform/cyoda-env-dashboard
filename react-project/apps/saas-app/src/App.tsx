@@ -56,7 +56,11 @@ const theme = {
     },
     Table: {
       headerBg: '#243142',
+      headerColor: '#D1D5DB',
+      headerSortActiveBg: '#2A3A4F',
+      headerSortHoverBg: '#2A3A4F',
       rowHoverBg: 'rgba(0, 212, 170, 0.1)',
+      bodySortBg: 'rgba(0, 212, 170, 0.03)',
     },
     Pagination: {
       itemBg: 'transparent',
@@ -64,6 +68,17 @@ const theme = {
       itemLinkBg: 'transparent',
       itemInputBg: 'transparent',
       itemActiveBgDisabled: 'transparent',
+    },
+    Message: {
+      contentBg: '#243142',
+      contentPadding: '12px 16px',
+    },
+    Notification: {
+      colorBgElevated: '#243142',
+      colorText: '#F9FAFB',
+      colorTextHeading: '#FFFFFF',
+      colorIcon: '#00D4AA',
+      colorIconHover: '#00E5BF',
     },
   },
 };

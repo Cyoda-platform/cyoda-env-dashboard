@@ -109,30 +109,16 @@ const CreateReportDialog = forwardRef<CreateReportDialogRef, CreateReportDialogP
     }, [entityData, entityType]);
 
     // Expose methods to parent
-    useImperativeHandle(ref, () => {
-      console.log('CreateReportDialog: useImperativeHandle called, creating ref object');
-      return {
-        open: () => {
-          console.log('CreateReportDialog.open() called');
-          setVisible(true);
-          setCurrentStep(0);
-          form.resetFields();
-        },
-        close: () => {
-          console.log('CreateReportDialog.close() called');
-          setVisible(false);
-        },
-      };
-    });
-
-    useEffect(() => {
-      console.log('CreateReportDialog mounted');
-      return () => console.log('CreateReportDialog unmounted');
-    }, []);
-
-    useEffect(() => {
-      console.log('CreateReportDialog visible changed:', visible);
-    }, [visible]);
+    useImperativeHandle(ref, () => ({
+      open: () => {
+        setVisible(true);
+        setCurrentStep(0);
+        form.resetFields();
+      },
+      close: () => {
+        setVisible(false);
+      },
+    }));
 
     // Handle form submission
     const handleConfirm = async () => {
@@ -188,14 +174,8 @@ const CreateReportDialog = forwardRef<CreateReportDialogRef, CreateReportDialogP
     // Handle name input change (replace / with -)
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value.replace(/\//g, '-');
-      // Suppress circular reference warning from Ant Design
-      const originalWarn = console.warn;
-      console.warn = (...args: any[]) => {
-        if (args[0]?.includes?.('circular references')) return;
-        originalWarn(...args);
-      };
-      form.setFieldValue('name', value);
-      console.warn = originalWarn;
+      // Use setFieldsValue instead of setFieldValue to avoid circular reference warning
+      form.setFieldsValue({ name: value });
     };
 
     // Save entity type to storage

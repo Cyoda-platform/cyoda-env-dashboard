@@ -65,19 +65,18 @@ const CloneReportDialog = forwardRef<CloneReportDialogRef, CloneReportDialogProp
       }
     };
 
-    // Reset form when dialog closes
-    useEffect(() => {
-      if (!visible) {
-        form.resetFields();
-        setReportId('');
-      }
-    }, [visible, form]);
+    // Handle modal close
+    const handleCancel = () => {
+      setVisible(false);
+      setReportId('');
+      form.resetFields();
+    };
 
     return (
       <Modal
         title="Clone Report"
         open={visible}
-        onCancel={() => setVisible(false)}
+        onCancel={handleCancel}
         onOk={handleConfirm}
         confirmLoading={loading}
         width={500}

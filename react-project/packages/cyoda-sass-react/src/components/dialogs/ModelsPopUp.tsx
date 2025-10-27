@@ -112,12 +112,9 @@ const ModelsPopUp = forwardRef<ModelsPopUpRef, ModelsPopUpProps>(
     // Generate tables from model IDs
     const generateTableByIds = async (ids: string[]) => {
       try {
-        console.log('Generating tables for model IDs:', ids);
-
         const promises = ids.map(async (id) => {
           try {
             const response = await sqlSchemaApi.getGenTable(id);
-            console.log(`Response for model ${id}:`, response);
             return response.data;
           } catch (err) {
             console.error(`Error fetching tables for model ${id}:`, err);
@@ -126,21 +123,12 @@ const ModelsPopUp = forwardRef<ModelsPopUpRef, ModelsPopUpProps>(
         });
 
         const results = await Promise.all(promises);
-        console.log('All results:', results);
 
         // Filter out null/undefined values and flatten
         const tableList = results
-          .filter((result) => {
-            console.log('Filtering result:', result);
-            return result != null && Array.isArray(result);
-          })
+          .filter((result) => result != null && Array.isArray(result))
           .flat()
-          .filter((table) => {
-            console.log('Filtering table:', table);
-            return table != null && table.tableName;
-          });
-
-        console.log('Final table list:', tableList);
+          .filter((table) => table != null && table.tableName);
 
         // Convert table names to lowercase and replace dashes
         tableList.forEach((el: SqlTable) => {

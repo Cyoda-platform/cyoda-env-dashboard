@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Form, Input, Checkbox } from 'antd';
+import { Input, Checkbox } from 'antd';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { useSortable } from '@dnd-kit/sortable';
@@ -99,17 +99,18 @@ const SortableRow: React.FC<SortableRowProps> = ({
           />
         </div>
         <div className="cell cell-item col2">
-          <Form.Item
-            name={`${getPropPath(index)}.fieldName`}
-            validateStatus={validateFieldName(field) ? 'error' : ''}
-            help={validateFieldName(field)}
-            style={{ marginBottom: 0, width: '100%' }}
-          >
+          <div style={{ width: '100%' }}>
             <Input
               value={field.fieldName}
               onChange={(e) => handleFieldNameChange(e.target.value)}
+              status={validateFieldName(field) ? 'error' : ''}
             />
-          </Form.Item>
+            {validateFieldName(field) && (
+              <div style={{ color: '#ff4d4f', fontSize: '12px', marginTop: '4px' }}>
+                {validateFieldName(field)}
+              </div>
+            )}
+          </div>
         </div>
         <div className="cell col3">
           <span>{field.fieldKey || field.fieldName}</span>

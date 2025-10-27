@@ -13,7 +13,6 @@ import ReportTableGroup from '../components/ReportTableGroup';
 import ReportTableRows from '../components/ReportTableRows';
 import QuickRunReport from '../components/QuickRunReport';
 import ReportConfigs from './ReportConfigs';
-import ReportsNavigation from '../components/ReportsNavigation';
 import { HelperStorage } from '@cyoda/ui-lib-react';
 import type { ReportHistoryData, ConfigDefinition, HistorySettings } from '../types';
 import type { HistoryFilterForm } from '../utils/HelperReportDefinition';
@@ -170,22 +169,28 @@ const Reports: React.FC = () => {
     storage.set('configEditor:tab', 'reportConfig');
   }, [storage]);
 
+  const tabItems = [
+    {
+      key: 'reportConfig',
+      label: 'Report Config',
+      children: <ReportConfigs onResetState={handleResetState} />,
+    },
+    {
+      key: 'reports',
+      label: 'Reports',
+      children: <HistoryReportsTab onResetState={handleResetState} />,
+    },
+  ];
+
   return (
     <div className="config-editor">
-      <ReportsNavigation />
       <Tabs
         activeKey={activeTab}
         onChange={handleTabChange}
         type="card"
         className="reports-tabs"
-      >
-        <Tabs.TabPane tab="Report Config" key="reportConfig">
-          <ReportConfigs onResetState={handleResetState} />
-        </Tabs.TabPane>
-        <Tabs.TabPane tab="Reports" key="reports">
-          <HistoryReportsTab onResetState={handleResetState} />
-        </Tabs.TabPane>
-      </Tabs>
+        items={tabItems}
+      />
       <Divider />
     </div>
   );

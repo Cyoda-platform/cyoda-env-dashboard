@@ -42,12 +42,12 @@ const TrinoIndex: React.FC = () => {
 
   // Handle create schema
   const handleCreate = () => {
-    navigate('/cyoda-sass/trino/schema');
+    navigate('/trino/schema');
   };
 
   // Handle edit schema
   const handleEdit = (schema: SqlSchema) => {
-    navigate(`/cyoda-sass/trino/schema/${schema.id}`);
+    navigate(`/trino/schema/${schema.id}`);
   };
 
   // Handle delete schema

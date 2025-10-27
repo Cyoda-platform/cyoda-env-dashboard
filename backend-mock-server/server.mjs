@@ -30,6 +30,280 @@ app.use((req, res, next) => {
 // Mock Data
 // ============================================================================
 
+// SQL Schemas
+let mockSchemas = [
+  {
+    id: '550e8400-e29b-41d4-a716-446655440001',
+    schemaName: 'customer_analytics',
+    timestamp: Date.now(),
+    tables: [
+      {
+        metadataClassId: 'customer-class-001',
+        tableName: 'customers',
+        uniformedPath: 'data.customers',
+        hidden: false,
+        fields: [
+          { fieldName: 'customer_id', fieldKey: 'customer_id', fieldType: 'bigint', fieldCategory: 'DATA', hidden: false, flatten: false },
+          { fieldName: 'first_name', fieldKey: 'first_name', fieldType: 'varchar', fieldCategory: 'DATA', hidden: false, flatten: false },
+          { fieldName: 'last_name', fieldKey: 'last_name', fieldType: 'varchar', fieldCategory: 'DATA', hidden: false, flatten: false },
+          { fieldName: 'email', fieldKey: 'email', fieldType: 'varchar', fieldCategory: 'DATA', hidden: false, flatten: false },
+          { fieldName: 'phone', fieldKey: 'phone', fieldType: 'varchar', fieldCategory: 'DATA', hidden: false, flatten: false },
+          { fieldName: 'created_at', fieldKey: 'created_at', fieldType: 'timestamp', fieldCategory: 'DATA', hidden: false, flatten: false }
+        ]
+      },
+      {
+        metadataClassId: 'order-class-001',
+        tableName: 'orders',
+        uniformedPath: 'data.orders',
+        hidden: false,
+        fields: [
+          { fieldName: 'order_id', fieldKey: 'order_id', fieldType: 'bigint', fieldCategory: 'DATA', hidden: false, flatten: false },
+          { fieldName: 'customer_id', fieldKey: 'customer_id', fieldType: 'bigint', fieldCategory: 'DATA', hidden: false, flatten: false },
+          { fieldName: 'order_date', fieldKey: 'order_date', fieldType: 'timestamp', fieldCategory: 'DATA', hidden: false, flatten: false },
+          { fieldName: 'total_amount', fieldKey: 'total_amount', fieldType: 'decimal', fieldCategory: 'DATA', hidden: false, flatten: false },
+          { fieldName: 'status', fieldKey: 'status', fieldType: 'varchar', fieldCategory: 'DATA', hidden: false, flatten: false }
+        ]
+      }
+    ]
+  },
+  {
+    id: '550e8400-e29b-41d4-a716-446655440002',
+    schemaName: 'product_inventory',
+    timestamp: Date.now(),
+    tables: [
+      {
+        metadataClassId: 'product-class-001',
+        tableName: 'products',
+        uniformedPath: 'data.products',
+        hidden: false,
+        fields: [
+          { fieldName: 'product_id', fieldKey: 'product_id', fieldType: 'bigint', fieldCategory: 'DATA', hidden: false, flatten: false },
+          { fieldName: 'product_name', fieldKey: 'product_name', fieldType: 'varchar', fieldCategory: 'DATA', hidden: false, flatten: false },
+          { fieldName: 'category', fieldKey: 'category', fieldType: 'varchar', fieldCategory: 'DATA', hidden: false, flatten: false },
+          { fieldName: 'price', fieldKey: 'price', fieldType: 'decimal', fieldCategory: 'DATA', hidden: false, flatten: false },
+          { fieldName: 'stock_quantity', fieldKey: 'stock_quantity', fieldType: 'integer', fieldCategory: 'DATA', hidden: false, flatten: false }
+        ]
+      }
+    ]
+  }
+];
+
+// Entity Models
+const mockEntityModels = [
+  { id: 'model-001', name: 'Customer', className: 'com.cyoda.model.Customer' },
+  { id: 'model-002', name: 'Order', className: 'com.cyoda.model.Order' },
+  { id: 'model-003', name: 'Product', className: 'com.cyoda.model.Product' },
+  { id: 'model-004', name: 'Transaction', className: 'com.cyoda.model.Transaction' }
+];
+
+// Report Types
+const mockReportTypes = [
+  {
+    content: 'com.cyoda.model.Customer',
+    _links: {
+      '/history': {
+        href: '/platform-api/history?type=com.cyoda.model.Customer',
+        templated: false,
+        title: 'Customer Reports',
+        type: 'Customer'
+      }
+    }
+  },
+  {
+    content: 'com.cyoda.model.Order',
+    _links: {
+      '/history': {
+        href: '/platform-api/history?type=com.cyoda.model.Order',
+        templated: false,
+        title: 'Order Reports',
+        type: 'Order'
+      }
+    }
+  },
+  {
+    content: 'com.cyoda.model.Product',
+    _links: {
+      '/history': {
+        href: '/platform-api/history?type=com.cyoda.model.Product',
+        templated: false,
+        title: 'Product Reports',
+        type: 'Product'
+      }
+    }
+  }
+];
+
+// Report Definitions
+let mockReportDefinitions = [
+  {
+    '@bean': 'com.cyoda.core.reporting.ReportDefinition',
+    id: 'report-def-001',
+    description: 'Customer Analytics Report',
+    name: 'Customer Analytics',
+    requestClass: 'com.cyoda.model.Customer',
+    entityClass: 'com.cyoda.model.Customer',
+    columns: [],
+    colDefs: [],
+    aliasDefs: [],
+    sorting: [],
+    grouping: [],
+    summary: [],
+    condition: { '@bean': 'com.cyoda.core.reporting.Condition', operator: 'AND', conditions: [] },
+    hierarhyEnable: false,
+    reportVersion: 1,
+    singletonReport: false,
+    pointTime: null,
+    userId: 'admin',
+    creationDate: Date.now() - 86400000 * 7
+  },
+  {
+    '@bean': 'com.cyoda.core.reporting.ReportDefinition',
+    id: 'report-def-002',
+    description: 'Monthly Sales Report',
+    name: 'Monthly Sales',
+    requestClass: 'com.cyoda.model.Order',
+    entityClass: 'com.cyoda.model.Order',
+    columns: [],
+    colDefs: [],
+    aliasDefs: [],
+    sorting: [],
+    grouping: [],
+    summary: [],
+    condition: { '@bean': 'com.cyoda.core.reporting.Condition', operator: 'AND', conditions: [] },
+    hierarhyEnable: false,
+    reportVersion: 1,
+    singletonReport: false,
+    pointTime: null,
+    userId: 'admin',
+    creationDate: Date.now() - 86400000 * 3
+  },
+  {
+    '@bean': 'com.cyoda.core.reporting.ReportDefinition',
+    id: 'report-def-003',
+    description: 'Product Inventory Report',
+    name: 'Product Inventory',
+    requestClass: 'com.cyoda.model.Product',
+    entityClass: 'com.cyoda.model.Product',
+    columns: [],
+    colDefs: [],
+    aliasDefs: [],
+    sorting: [],
+    grouping: [],
+    summary: [],
+    condition: { '@bean': 'com.cyoda.core.reporting.Condition', operator: 'AND', conditions: [] },
+    hierarhyEnable: false,
+    reportVersion: 1,
+    singletonReport: false,
+    pointTime: null,
+    userId: 'john.doe',
+    creationDate: Date.now() - 86400000 * 1
+  }
+];
+
+// Report History
+const mockReportHistory = [
+  {
+    id: 'report-hist-001',
+    configName: 'Customer Analytics',
+    reportFailed: false,
+    finishTime: Date.now() - 3600000,
+    startTime: Date.now() - 3660000,
+    type: 'com.cyoda.model.Customer',
+    username: 'admin',
+    status: 'COMPLETED',
+    rowsCount: 1250
+  },
+  {
+    id: 'report-hist-002',
+    configName: 'Monthly Sales',
+    reportFailed: false,
+    finishTime: Date.now() - 7200000,
+    startTime: Date.now() - 7260000,
+    type: 'com.cyoda.model.Order',
+    username: 'admin',
+    status: 'COMPLETED',
+    rowsCount: 3420
+  },
+  {
+    id: 'report-hist-003',
+    configName: 'Product Inventory',
+    reportFailed: true,
+    finishTime: Date.now() - 10800000,
+    startTime: Date.now() - 10860000,
+    type: 'com.cyoda.model.Product',
+    username: 'john.doe',
+    status: 'FAILED',
+    rowsCount: 0,
+    errorMessage: 'Connection timeout'
+  }
+];
+
+// Stream Report Definitions
+let mockStreamDefinitions = [
+  {
+    '@bean': 'com.cyoda.core.streamdata.StreamDataDefinition',
+    id: 'stream-def-001',
+    name: 'Real-time Customer Stream',
+    description: 'Live customer data stream',
+    entityClass: 'com.cyoda.model.Customer',
+    userId: 'admin',
+    creationDate: Date.now() - 86400000 * 5,
+    streamDataDef: {
+      '@bean': 'com.cyoda.core.streamdata.StreamDataDef',
+      entityClass: 'com.cyoda.model.Customer',
+      columns: []
+    }
+  },
+  {
+    '@bean': 'com.cyoda.core.streamdata.StreamDataDefinition',
+    id: 'stream-def-002',
+    name: 'Order Processing Stream',
+    description: 'Real-time order processing',
+    entityClass: 'com.cyoda.model.Order',
+    userId: 'admin',
+    creationDate: Date.now() - 86400000 * 2,
+    streamDataDef: {
+      '@bean': 'com.cyoda.core.streamdata.StreamDataDef',
+      entityClass: 'com.cyoda.model.Order',
+      columns: []
+    }
+  }
+];
+
+// Catalog Items (Aliases)
+let mockCatalogItems = [
+  {
+    id: 'catalog-001',
+    name: 'Customer Full Name',
+    description: 'Concatenated first and last name',
+    entityClass: 'com.cyoda.model.Customer',
+    mapperClass: 'com.cyoda.mapper.StringConcatMapper',
+    currentState: 'ACTIVE',
+    userId: 'admin',
+    creationDate: Date.now() - 86400000 * 10
+  },
+  {
+    id: 'catalog-002',
+    name: 'Order Total Amount',
+    description: 'Total order amount with tax',
+    entityClass: 'com.cyoda.model.Order',
+    mapperClass: 'com.cyoda.mapper.SumMapper',
+    currentState: 'ACTIVE',
+    userId: 'admin',
+    creationDate: Date.now() - 86400000 * 8
+  },
+  {
+    id: 'catalog-003',
+    name: 'Product Price with Discount',
+    description: 'Product price after discount',
+    entityClass: 'com.cyoda.model.Product',
+    mapperClass: 'com.cyoda.mapper.DiscountMapper',
+    currentState: 'DRAFT',
+    userId: 'john.doe',
+    creationDate: Date.now() - 86400000 * 3
+  }
+];
+
 const mockNodes = [
   {
     id: 'node-1',
@@ -205,6 +479,568 @@ app.get('/api/tasks', (req, res) => {
       number: parseInt(page)
     }
   });
+});
+
+// ============================================================================
+// SQL Schema Endpoints
+// ============================================================================
+
+// Get all SQL schemas
+app.get('/platform-api/sql/schema/listAll', (req, res) => {
+  res.json(mockSchemas);
+});
+
+// Get schema by ID
+app.get('/platform-api/sql/schema/:id', (req, res) => {
+  const schema = mockSchemas.find(s => s.id === req.params.id);
+  if (schema) {
+    res.json(schema);
+  } else {
+    res.status(404).json({ error: 'Schema not found' });
+  }
+});
+
+// Create or update schema
+app.post('/platform-api/sql/schema/', (req, res) => {
+  const schema = req.body;
+
+  if (schema.id) {
+    // Update existing
+    const index = mockSchemas.findIndex(s => s.id === schema.id);
+    if (index >= 0) {
+      mockSchemas[index] = { ...schema, timestamp: Date.now() };
+      res.json(mockSchemas[index]);
+    } else {
+      res.status(404).json({ error: 'Schema not found' });
+    }
+  } else {
+    // Create new
+    const newSchema = {
+      ...schema,
+      id: `550e8400-e29b-41d4-a716-${Date.now()}`,
+      timestamp: Date.now()
+    };
+    mockSchemas.push(newSchema);
+    res.json(newSchema);
+  }
+});
+
+// Delete schema
+app.delete('/platform-api/sql/schema/:id', (req, res) => {
+  const index = mockSchemas.findIndex(s => s.id === req.params.id);
+  if (index >= 0) {
+    mockSchemas.splice(index, 1);
+    res.json({ success: true });
+  } else {
+    res.status(404).json({ error: 'Schema not found' });
+  }
+});
+
+// Get entity models
+app.get('/platform-api/model/', (req, res) => {
+  res.json(mockEntityModels);
+});
+
+// Generate tables from entity model
+app.get('/platform-api/sql/schema/genTables/:id', (req, res) => {
+  const model = mockEntityModels.find(m => m.id === req.params.id);
+  if (model) {
+    // Generate mock tables based on model
+    const tables = [
+      {
+        metadataClassId: model.id,
+        tableName: model.name.toLowerCase(),
+        uniformedPath: `data.${model.name.toLowerCase()}`,
+        hidden: false,
+        fields: [
+          { fieldName: 'id', fieldKey: 'id', fieldType: 'bigint', fieldCategory: 'DATA', hidden: false, flatten: false },
+          { fieldName: 'name', fieldKey: 'name', fieldType: 'varchar', fieldCategory: 'DATA', hidden: false, flatten: false },
+          { fieldName: 'created_at', fieldKey: 'created_at', fieldType: 'timestamp', fieldCategory: 'DATA', hidden: false, flatten: false }
+        ]
+      }
+    ];
+    res.json(tables);
+  } else {
+    res.status(404).json({ error: 'Model not found' });
+  }
+});
+
+// Update tables for a schema
+app.post('/platform-api/sql/schema/updateTables/:metaId', (req, res) => {
+  const tables = req.body;
+  res.json(tables);
+});
+
+// Import sample data
+app.post('/platform-api/model/import/:format/:dataset/:entity/:version', (req, res) => {
+  res.json({ success: true, imported: 1, message: 'Sample data imported successfully' });
+});
+
+// ============================================================================
+// Tableau Reporting Endpoints
+// ============================================================================
+
+// Get report types
+app.get('/platform-api/reporting/types', (req, res) => {
+  const { size = 20, page = 0 } = req.query;
+  const start = page * size;
+  const end = start + parseInt(size);
+
+  res.json({
+    _embedded: {
+      reportingTypesEmbeddedStrings: mockReportTypes.slice(start, end)
+    },
+    page: {
+      size: parseInt(size),
+      totalElements: mockReportTypes.length,
+      totalPages: Math.ceil(mockReportTypes.length / size),
+      number: parseInt(page)
+    }
+  });
+});
+
+// Get report types with fetch
+app.get('/platform-api/reporting/types/fetch', (req, res) => {
+  res.json(mockReportTypes);
+});
+
+// Get report definitions (both paths for compatibility)
+app.get('/platform-api/reporting/definitions', (req, res) => {
+  const { size = 20, page = 0, fields } = req.query;
+  const start = page * size;
+  const end = start + parseInt(size);
+
+  // Format response to match what frontend expects
+  const gridConfigFieldsViews = mockReportDefinitions.slice(start, end).map(def => ({
+    gridConfigFields: {
+      id: def.id,
+      name: def.name,
+      description: def.description,
+      type: def.entityClass,
+      userId: def.userId,
+      creationDate: def.creationDate,
+      modificationDate: def.creationDate,
+      entityClass: def.entityClass,
+      columns: def.columns || [],
+    }
+  }));
+
+  res.json({
+    _embedded: {
+      gridConfigFieldsViews: gridConfigFieldsViews
+    },
+    page: {
+      size: parseInt(size),
+      totalElements: mockReportDefinitions.length,
+      totalPages: Math.ceil(mockReportDefinitions.length / size),
+      number: parseInt(page)
+    }
+  });
+});
+
+app.get('/platform-api/definitions', (req, res) => {
+  const { size = 20, page = 0, fields } = req.query;
+  const start = page * size;
+  const end = start + parseInt(size);
+
+  res.json({
+    _embedded: {
+      definitions: mockReportDefinitions.slice(start, end)
+    },
+    page: {
+      size: parseInt(size),
+      totalElements: mockReportDefinitions.length,
+      totalPages: Math.ceil(mockReportDefinitions.length / size),
+      number: parseInt(page)
+    }
+  });
+});
+
+// Get specific definition
+app.get('/platform-api/definitions/:id', (req, res) => {
+  const definition = mockReportDefinitions.find(d => d.id === req.params.id);
+  if (definition) {
+    res.json(definition);
+  } else {
+    res.status(404).json({ error: 'Definition not found' });
+  }
+});
+
+// Create definition
+app.post('/platform-api/definitions', (req, res) => {
+  const newDefinition = {
+    ...req.body,
+    id: `report-def-${Date.now()}`,
+    creationDate: Date.now(),
+    userId: 'admin'
+  };
+  mockReportDefinitions.push(newDefinition);
+  res.json(newDefinition);
+});
+
+// Update definition
+app.put('/platform-api/definitions/:id', (req, res) => {
+  const index = mockReportDefinitions.findIndex(d => d.id === req.params.id);
+  if (index >= 0) {
+    mockReportDefinitions[index] = { ...mockReportDefinitions[index], ...req.body };
+    res.json(mockReportDefinitions[index]);
+  } else {
+    res.status(404).json({ error: 'Definition not found' });
+  }
+});
+
+// Delete definition
+app.delete('/platform-api/definitions/:id', (req, res) => {
+  const index = mockReportDefinitions.findIndex(d => d.id === req.params.id);
+  if (index >= 0) {
+    mockReportDefinitions.splice(index, 1);
+    res.json({ success: true });
+  } else {
+    res.status(404).json({ error: 'Definition not found' });
+  }
+});
+
+// Get report history (both paths for compatibility)
+app.get('/platform-api/reporting/history', (req, res) => {
+  const { size = 20, page = 0, username, type, entityType } = req.query;
+  let filtered = mockReportHistory;
+
+  if (username) {
+    filtered = filtered.filter(h => h.username === username);
+  }
+  if (type) {
+    filtered = filtered.filter(h => h.type === type);
+  }
+
+  const start = page * size;
+  const end = start + parseInt(size);
+
+  res.json({
+    _embedded: {
+      reportHistories: filtered.slice(start, end)
+    },
+    page: {
+      size: parseInt(size),
+      totalElements: filtered.length,
+      totalPages: Math.ceil(filtered.length / size),
+      number: parseInt(page)
+    }
+  });
+});
+
+app.get('/platform-api/history', (req, res) => {
+  const { size = 20, page = 0, username, type } = req.query;
+  let filtered = mockReportHistory;
+
+  if (username) {
+    filtered = filtered.filter(h => h.username === username);
+  }
+  if (type) {
+    filtered = filtered.filter(h => h.type === type);
+  }
+
+  const start = page * size;
+  const end = start + parseInt(size);
+
+  res.json({
+    _embedded: {
+      reportHistories: filtered.slice(start, end)
+    },
+    page: {
+      size: parseInt(size),
+      totalElements: filtered.length,
+      totalPages: Math.ceil(filtered.length / size),
+      number: parseInt(page)
+    }
+  });
+});
+
+// Create/run report
+app.post('/platform-api/report', (req, res) => {
+  const newReport = {
+    id: `report-hist-${Date.now()}`,
+    configName: req.body.description || 'New Report',
+    reportFailed: false,
+    finishTime: null,
+    startTime: Date.now(),
+    type: req.body.requestClass || 'com.cyoda.model.Customer',
+    username: 'admin',
+    status: 'RUNNING',
+    rowsCount: 0
+  };
+  mockReportHistory.unshift(newReport);
+  res.json(newReport);
+});
+
+// Get report status
+app.get('/platform-api/report/:id/status', (req, res) => {
+  const report = mockReportHistory.find(h => h.id === req.params.id);
+  if (report) {
+    res.json({
+      status: report.status,
+      failed: report.reportFailed,
+      rowsCount: report.rowsCount
+    });
+  } else {
+    res.status(404).json({ error: 'Report not found' });
+  }
+});
+
+// Delete report
+app.delete('/platform-api/report/:id', (req, res) => {
+  const index = mockReportHistory.findIndex(h => h.id === req.params.id);
+  if (index >= 0) {
+    mockReportHistory.splice(index, 1);
+    res.json({ success: true });
+  } else {
+    res.status(404).json({ error: 'Report not found' });
+  }
+});
+
+// Cancel report
+app.post('/platform-api/report/:id/cancel', (req, res) => {
+  const report = mockReportHistory.find(h => h.id === req.params.id);
+  if (report) {
+    report.status = 'CANCELLED';
+    report.finishTime = Date.now();
+    res.json({ success: true });
+  } else {
+    res.status(404).json({ error: 'Report not found' });
+  }
+});
+
+// Export reports by IDs
+app.get('/platform-api/reporting/export-by-ids', (req, res) => {
+  const { includeIds } = req.query;
+  const ids = includeIds ? includeIds.split(',') : [];
+  const exported = mockReportDefinitions.filter(d => ids.includes(d.id));
+  res.json({
+    data: {
+      value: exported
+    }
+  });
+});
+
+// Import reports
+app.post('/platform-api/reporting/import', (req, res) => {
+  const imported = req.body;
+  res.json({
+    success: true,
+    imported: Array.isArray(imported) ? imported.length : 1,
+    failed: 0,
+    errors: [],
+    message: `Successfully imported ${Array.isArray(imported) ? imported.length : 1} report definition(s)`
+  });
+});
+
+// ============================================================================
+// Stream Reports Endpoints
+// ============================================================================
+
+// Get stream definitions
+app.get('/platform-api/streams', (req, res) => {
+  const { size = 20, page = 0 } = req.query;
+  const start = page * size;
+  const end = start + parseInt(size);
+
+  res.json({
+    _embedded: {
+      streams: mockStreamDefinitions.slice(start, end)
+    },
+    page: {
+      size: parseInt(size),
+      totalElements: mockStreamDefinitions.length,
+      totalPages: Math.ceil(mockStreamDefinitions.length / size),
+      number: parseInt(page)
+    }
+  });
+});
+
+// Get specific stream definition
+app.get('/platform-api/streams/:id', (req, res) => {
+  const stream = mockStreamDefinitions.find(s => s.id === req.params.id);
+  if (stream) {
+    res.json(stream);
+  } else {
+    res.status(404).json({ error: 'Stream definition not found' });
+  }
+});
+
+// Create stream definition
+app.post('/platform-api/streams', (req, res) => {
+  const newStream = {
+    ...req.body,
+    id: `stream-def-${Date.now()}`,
+    creationDate: Date.now(),
+    userId: 'admin'
+  };
+  mockStreamDefinitions.push(newStream);
+  res.json(newStream);
+});
+
+// Update stream definition
+app.put('/platform-api/streams/:id', (req, res) => {
+  const index = mockStreamDefinitions.findIndex(s => s.id === req.params.id);
+  if (index >= 0) {
+    mockStreamDefinitions[index] = { ...mockStreamDefinitions[index], ...req.body };
+    res.json(mockStreamDefinitions[index]);
+  } else {
+    res.status(404).json({ error: 'Stream definition not found' });
+  }
+});
+
+// Delete stream definition
+app.delete('/platform-api/streams/:id', (req, res) => {
+  const index = mockStreamDefinitions.findIndex(s => s.id === req.params.id);
+  if (index >= 0) {
+    mockStreamDefinitions.splice(index, 1);
+    res.json({ success: true });
+  } else {
+    res.status(404).json({ error: 'Stream definition not found' });
+  }
+});
+
+// Get stream data
+app.post('/platform-api/streamdata/data', (req, res) => {
+  res.json({
+    _embedded: {
+      rows: [
+        { id: 1, name: 'Sample Data 1', value: 100 },
+        { id: 2, name: 'Sample Data 2', value: 200 },
+        { id: 3, name: 'Sample Data 3', value: 300 }
+      ]
+    },
+    page: {
+      size: 100,
+      totalElements: 3,
+      totalPages: 1,
+      number: 0
+    }
+  });
+});
+
+// ============================================================================
+// Catalog of Aliases Endpoints
+// ============================================================================
+
+// Get all catalog items
+app.get('/platform-api/catalog/item/all', (req, res) => {
+  res.json(mockCatalogItems);
+});
+
+// Get catalog items by entity class
+app.get('/platform-api/catalog/item/class', (req, res) => {
+  const { entityClass } = req.query;
+  const filtered = entityClass
+    ? mockCatalogItems.filter(item => item.entityClass === entityClass)
+    : mockCatalogItems;
+  res.json(filtered);
+});
+
+// Get specific catalog item
+app.get('/platform-api/catalog/item', (req, res) => {
+  const { itemId } = req.query;
+  const item = mockCatalogItems.find(i => i.id === itemId);
+  if (item) {
+    res.json(item);
+  } else {
+    res.status(404).json({ error: 'Catalog item not found' });
+  }
+});
+
+// Create catalog item
+app.post('/platform-api/catalog/item', (req, res) => {
+  const newItem = {
+    ...req.body,
+    id: `catalog-${Date.now()}`,
+    creationDate: Date.now(),
+    userId: 'admin'
+  };
+  mockCatalogItems.push(newItem);
+  res.json(newItem.id);
+});
+
+// Update catalog item
+app.put('/platform-api/catalog/item', (req, res) => {
+  const { itemId } = req.query;
+  const index = mockCatalogItems.findIndex(i => i.id === itemId);
+  if (index >= 0) {
+    mockCatalogItems[index] = { ...mockCatalogItems[index], ...req.body };
+    res.json(mockCatalogItems[index]);
+  } else {
+    res.status(404).json({ error: 'Catalog item not found' });
+  }
+});
+
+// Delete catalog item
+app.delete('/platform-api/catalog/item', (req, res) => {
+  const { itemId } = req.query;
+  const index = mockCatalogItems.findIndex(i => i.id === itemId);
+  if (index >= 0) {
+    mockCatalogItems.splice(index, 1);
+    res.json({ success: true });
+  } else {
+    res.status(404).json({ error: 'Catalog item not found' });
+  }
+});
+
+// Export catalog items
+app.get('/platform-api/catalog/item/export-by-ids', (req, res) => {
+  const { ids, isSingleFile = true } = req.query;
+  const idList = ids ? ids.split(',') : [];
+  const exported = mockCatalogItems.filter(item => idList.includes(item.id));
+  res.json({
+    items: exported,
+    isSingleFile: isSingleFile === 'true'
+  });
+});
+
+// Import catalog items
+app.post('/platform-api/catalog/item/import', (req, res) => {
+  const { needRewrite = true } = req.query;
+  const imported = req.body;
+  res.json({
+    success: true,
+    imported: imported.items ? imported.items.length : 0,
+    message: `Successfully imported ${imported.items ? imported.items.length : 0} catalog item(s)`
+  });
+});
+
+// Get mappers
+app.get('/platform-api/entity-info/fetch/mappers', (req, res) => {
+  res.json([
+    {
+      shortName: 'StringConcat',
+      mapperClass: 'com.cyoda.mapper.StringConcatMapper',
+      inType: 'String',
+      outType: 'String',
+      entityClass: 'com.cyoda.model.Customer',
+      parametrized: true,
+      decision: 'MAPPER'
+    },
+    {
+      shortName: 'Sum',
+      mapperClass: 'com.cyoda.mapper.SumMapper',
+      inType: 'Number',
+      outType: 'Number',
+      entityClass: 'com.cyoda.model.Order',
+      parametrized: false,
+      decision: 'MAPPER'
+    }
+  ]);
+});
+
+// Get users list
+app.post('/platform-api/users/list', (req, res) => {
+  const userIds = req.body;
+  const users = userIds.map(userId => ({
+    userId: userId,
+    username: userId,
+    firstName: userId === 'admin' ? 'Admin' : 'John',
+    lastName: userId === 'admin' ? 'User' : 'Doe',
+    email: `${userId}@example.com`
+  }));
+  res.json(users);
 });
 
 // ============================================================================

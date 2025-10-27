@@ -99,10 +99,10 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
         // Load user information
         const userIds = defs.map((el: any) => el.gridConfigFields.userId).filter(Boolean);
         const uniqueUserIds = [...new Set(userIds)];
-        
+
         if (uniqueUserIds.length > 0) {
           const { data: users } = await axios.post('/platform-api/users/list', uniqueUserIds);
-          
+
           return defs.map((el: any) => {
             el.gridConfigFields.user = users.find((user: any) => user.userId === el.gridConfigFields.userId);
             return el;
@@ -426,39 +426,50 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
       dataIndex: 'name',
       key: 'name',
       sorter: (a, b) => a.name.localeCompare(b.name),
-      width: 250,
+      width: 200,
+      ellipsis: true,
     },
     {
       title: 'Description',
       dataIndex: 'description',
       key: 'description',
       ellipsis: true,
+      width: 250,
     },
     {
       title: 'Type',
       dataIndex: 'entityClassNameLabel',
       key: 'entity',
-      width: 200,
+      width: 180,
+      ellipsis: {
+        showTitle: true,
+      },
       sorter: (a, b) => a.entityClassNameLabel.localeCompare(b.entityClassNameLabel),
+      render: (text: string) => (
+        <Tooltip title={text}>
+          <span>{text}</span>
+        </Tooltip>
+      ),
     },
     {
       title: 'User',
       dataIndex: 'username',
       key: 'username',
-      width: 150,
+      width: 120,
+      ellipsis: true,
       sorter: (a, b) => a.username.localeCompare(b.username),
     },
     {
       title: 'Created',
       dataIndex: 'createdHuman',
       key: 'created',
-      width: 180,
+      width: 150,
       sorter: (a, b) => a.created.localeCompare(b.created),
     },
     {
       title: 'Action',
       key: 'action',
-      width: 250,
+      width: 180,
       fixed: 'right',
       render: (_, record) => (
         <Space size="small">
@@ -603,7 +614,7 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
           showSizeChanger: true,
           showTotal: (total) => `Total ${total} items`,
         }}
-        scroll={{ x: 1200 }}
+        scroll={{ x: 1100 }}
       />
 
       <CreateReportDialog ref={createDialogRef} onConfirm={handleCreateReport} />

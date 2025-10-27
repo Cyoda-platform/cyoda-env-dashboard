@@ -121,7 +121,7 @@ const TrinoEdit: React.FC = () => {
 
       await saveSchema.mutateAsync(schemaData);
       message.success('Schema saved successfully');
-      navigate('/cyoda-sass/trino');
+      navigate('/trino');
     } catch (error) {
       console.error('Save error:', error);
     }
