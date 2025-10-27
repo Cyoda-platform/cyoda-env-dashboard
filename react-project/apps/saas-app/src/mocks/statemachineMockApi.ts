@@ -573,13 +573,12 @@ if (typeof window !== 'undefined') {
   console.log('🎭 Statemachine Mock API loaded. Use window.enableStatemachineMock() to enable.');
 }
 
-// Auto-enable if previously enabled OR if in development mode
+// Auto-enable ONLY if previously enabled (not automatically in dev mode)
+// This prevents the mock from interfering with real backend authentication
 if (isMockEnabled()) {
   console.log('🔄 Auto-enabling mock API (was previously enabled)');
   enableStatemachineMock();
-} else if (import.meta.env.DEV) {
-  // Auto-enable in development mode for easier testing
-  console.log('🔄 Auto-enabling mock API (development mode)');
-  enableStatemachineMock();
 }
+// REMOVED: Auto-enable in development mode
+// The mock should only be enabled manually to avoid interfering with real backend
 

@@ -31,28 +31,24 @@ export default defineConfig({
   server: {
     port: 3000,
     proxy: {
-      // Bypass proxy for statemachine endpoints to allow mock API to work
-      '/platform-api/statemachine': {
-        target: 'http://localhost:8080',
+      // Proxy all /api requests to Cyoda backend
+      // Based on old Vue project configuration
+      // Requests like /api/auth/login will be forwarded to https://cyoda-develop.kube.cyoda.org/api/auth/login
+      '/api': {
+        target: 'https://cyoda-develop.kube.cyoda.org',
         changeOrigin: true,
-        // Configure to bypass when backend is not available
+        secure: false,
         configure: (proxy, options) => {
           proxy.on('error', (err, req, res) => {
-            console.log('Proxy error for statemachine - mock API should handle this');
+            console.log('Proxy error:', err.message);
+          });
+          proxy.on('proxyReq', (proxyReq, req, res) => {
+            console.log('Proxying:', req.method, req.url, '→', options.target + req.url);
+          });
+          proxy.on('proxyRes', (proxyRes, req, res) => {
+            console.log('Response:', proxyRes.statusCode, req.method, req.url);
           });
         },
-      },
-      '/platform-api': {
-        target: 'http://localhost:8080',
-        changeOrigin: true,
-      },
-      '/platform-processing': {
-        target: 'http://localhost:8080',
-        changeOrigin: true,
-      },
-      '/api': {
-        target: 'http://localhost:8080',
-        changeOrigin: true,
       },
     },
   },

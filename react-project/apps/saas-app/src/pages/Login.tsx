@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Form, Input, Button, Card, App, Divider } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useAuth0 } from '@auth0/auth0-react';
+import * as authApi from '@cyoda/http-api-react/api/auth';
 import './Login.scss';
 
 interface LoginFormValues {
@@ -23,18 +24,24 @@ const Login: React.FC = () => {
         try {
           const token = await getAccessTokenSilently();
 
-          // Store auth token
+          // Call backend Auth0 login endpoint
+          const response = await authApi.loginAuth0(token);
+          const authData = response.data;
+
+          // Store auth token from backend
           localStorage.setItem('auth', JSON.stringify({
-            token,
-            user: user.name || user.email,
-            type: 'auth0',
-            userId: user.sub
+            token: authData.token,
+            refreshToken: authData.refreshToken,
+            user: authData.username,
+            userId: authData.userId,
+            legalEntityId: authData.legalEntityId,
+            type: 'auth0'
           }));
 
           message.success('Login successful!');
           navigate('/trino');
         } catch (error) {
-          console.error('Auth0 token error:', error);
+          console.error('Auth0 authentication error:', error);
           message.error('Authentication failed. Please try again.');
         }
       }
@@ -46,23 +53,26 @@ const Login: React.FC = () => {
   const onFinish = async (values: LoginFormValues) => {
     setLoading(true);
     try {
-      // TODO: Replace with actual authentication logic
-      console.log('Login attempt:', values);
+      // Call backend login endpoint
+      const response = await authApi.login(values.username, values.password);
+      const authData = response.data;
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // Store auth token (mock)
+      // Store auth token from backend
       localStorage.setItem('auth', JSON.stringify({
-        token: 'mock-token',
-        user: values.username,
+        token: authData.token,
+        refreshToken: authData.refreshToken,
+        user: authData.username,
+        userId: authData.userId,
+        legalEntityId: authData.legalEntityId,
         type: 'standard'
       }));
 
       message.success('Login successful!');
       navigate('/trino');
-    } catch (error) {
-      message.error('Login failed. Please try again.');
+    } catch (error: any) {
+      console.error('Login error:', error);
+      const errorMessage = error?.response?.data?.message || 'Login failed. Please check your credentials.';
+      message.error(errorMessage);
     } finally {
       setLoading(false);
     }
