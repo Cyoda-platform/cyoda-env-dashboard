@@ -69,7 +69,8 @@ describe('HelperErrors', () => {
 
       HelperErrors.handler(error);
 
-      expect(message.error).toHaveBeenCalledWith('Not Found: Resource not found');
+      // 404 errors are not shown to user (too noisy)
+      expect(message.error).not.toHaveBeenCalled();
     });
 
     it('should handle Axios error with status 500', () => {

@@ -55,14 +55,14 @@ describe('Entities API', () => {
   });
 
   describe('createEntity', () => {
-    it('should call POST /platform-api/entity/{entityClass}', async () => {
+    it('should call POST /platform-api/entity', async () => {
       const mockResponse = { data: { id: '123', name: 'New Entity' } };
-      const entityRequest = { entityClass: 'TestClass', values: { name: 'New Entity' } };
+      const entityRequest = { entityClass: 'TestClass', values: { name: 'New Entity' } } as any;
       vi.mocked(axios.post).mockResolvedValue(mockResponse);
 
       const result = await entitiesApi.createEntity(entityRequest);
 
-      expect(axios.post).toHaveBeenCalledWith('/platform-api/entity/TestClass', entityRequest);
+      expect(axios.post).toHaveBeenCalledWith('/platform-api/entity', entityRequest);
       expect(result).toEqual(mockResponse);
     });
   });
@@ -70,10 +70,10 @@ describe('Entities API', () => {
   describe('updateEntity', () => {
     it('should call PUT /platform-api/entity/{entityClass}/{entityId}', async () => {
       const mockResponse = { data: { id: '123', name: 'Updated Entity' } };
-      const entityRequest = { entityClass: 'TestClass', id: '123', values: { name: 'Updated Entity' } };
+      const entityRequest = { entityClass: 'TestClass', id: '123', values: { name: 'Updated Entity' } } as any;
       vi.mocked(axios.put).mockResolvedValue(mockResponse);
 
-      const result = await entitiesApi.updateEntity('123', entityRequest);
+      const result = await entitiesApi.updateEntity('TestClass', '123', entityRequest);
 
       expect(axios.put).toHaveBeenCalledWith('/platform-api/entity/TestClass/123', entityRequest);
       expect(result).toEqual(mockResponse);
@@ -181,13 +181,13 @@ describe('Entities API', () => {
   });
 
   describe('getTransactionDiff', () => {
-    it('should call GET /platform-api/entity/{entityClass}/{entityId}/transactions/{transactionId}/diff', async () => {
+    it('should call GET /platform-api/transaction/{transactionId}/diff', async () => {
       const mockResponse = { data: { changes: [] } };
       vi.mocked(axios.get).mockResolvedValue(mockResponse);
 
-      const result = await entitiesApi.getTransactionDiff('TestClass', '123', 'tx-456');
+      const result = await entitiesApi.getTransactionDiff('tx-456');
 
-      expect(axios.get).toHaveBeenCalledWith('/platform-api/entity/TestClass/123/transactions/tx-456/diff');
+      expect(axios.get).toHaveBeenCalledWith('/platform-api/transaction/tx-456/diff');
       expect(result).toEqual(mockResponse);
     });
   });
@@ -197,7 +197,7 @@ describe('Entities API', () => {
       const mockResponse = { data: new Blob() };
       vi.mocked(axios.get).mockResolvedValue(mockResponse);
 
-      const result = await entitiesApi.exportEntities('TestClass', 'csv');
+      const result = await entitiesApi.exportEntities('TestClass', undefined, 'csv');
 
       expect(axios.get).toHaveBeenCalledWith(
         '/platform-api/entity/TestClass/export?format=csv',

@@ -21,36 +21,36 @@ describe('EntityViewerStore', () => {
   });
 
   it('should add entity', () => {
-    const store = useEntityViewerStore.getState();
     const entity: EntityViewerEntity = { from: '', to: 'com.cyoda.core.Entity' };
-    
-    store.addEntity(entity);
-    
-    expect(store.entitys).toHaveLength(1);
-    expect(store.entitys[0]).toEqual(entity);
+
+    useEntityViewerStore.getState().addEntity(entity);
+
+    const state = useEntityViewerStore.getState();
+    expect(state.entitys).toHaveLength(1);
+    expect(state.entitys[0]).toEqual(entity);
   });
 
   it('should not add duplicate entity', () => {
-    const store = useEntityViewerStore.getState();
     const entity: EntityViewerEntity = { from: '', to: 'com.cyoda.core.Entity' };
-    
-    store.addEntity(entity);
-    store.addEntity(entity);
-    
-    expect(store.entitys).toHaveLength(1);
+
+    useEntityViewerStore.getState().addEntity(entity);
+    useEntityViewerStore.getState().addEntity(entity);
+
+    const state = useEntityViewerStore.getState();
+    expect(state.entitys).toHaveLength(1);
   });
 
   it('should remove entity', () => {
-    const store = useEntityViewerStore.getState();
     const entity1: EntityViewerEntity = { from: '', to: 'com.cyoda.core.Entity' };
     const entity2: EntityViewerEntity = { from: '', to: 'com.cyoda.core.User' };
-    
-    store.addEntity(entity1);
-    store.addEntity(entity2);
-    store.removeEntity(entity1);
-    
-    expect(store.entitys).toHaveLength(1);
-    expect(store.entitys[0]).toEqual(entity2);
+
+    useEntityViewerStore.getState().addEntity(entity1);
+    useEntityViewerStore.getState().addEntity(entity2);
+    useEntityViewerStore.getState().removeEntity(entity1);
+
+    const state = useEntityViewerStore.getState();
+    expect(state.entitys).toHaveLength(1);
+    expect(state.entitys[0]).toEqual(entity2);
   });
 
   it('should clear all entities', () => {
@@ -66,27 +66,25 @@ describe('EntityViewerStore', () => {
   });
 
   it('should set onlyDynamic flag', () => {
-    const store = useEntityViewerStore.getState();
-    
-    store.setOnlyDynamic(false);
-    expect(store.onlyDynamic).toBe(false);
-    
-    store.setOnlyDynamic(true);
-    expect(store.onlyDynamic).toBe(true);
+    useEntityViewerStore.getState().setOnlyDynamic(false);
+    expect(useEntityViewerStore.getState().onlyDynamic).toBe(false);
+
+    useEntityViewerStore.getState().setOnlyDynamic(true);
+    expect(useEntityViewerStore.getState().onlyDynamic).toBe(true);
   });
 
   it('should add multiple entities', () => {
-    const store = useEntityViewerStore.getState();
     const entities: EntityViewerEntity[] = [
       { from: '', to: 'com.cyoda.core.Entity' },
       { from: 'com.cyoda.core.Entity', to: 'com.cyoda.core.User' },
       { from: 'com.cyoda.core.User', to: 'com.cyoda.core.Transaction' },
     ];
-    
-    entities.forEach(entity => store.addEntity(entity));
-    
-    expect(store.entitys).toHaveLength(3);
-    expect(store.entitys).toEqual(entities);
+
+    entities.forEach(entity => useEntityViewerStore.getState().addEntity(entity));
+
+    const state = useEntityViewerStore.getState();
+    expect(state.entitys).toHaveLength(3);
+    expect(state.entitys).toEqual(entities);
   });
 });
 

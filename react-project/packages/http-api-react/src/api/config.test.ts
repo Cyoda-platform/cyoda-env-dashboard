@@ -92,14 +92,14 @@ describe('Configuration API', () => {
     });
   });
 
-  describe('getDefinitionStreams', () => {
-    it('should call GET /platform-api/definitions/{definitionId}/streams', async () => {
-      const mockResponse = { data: [] };
+  describe('getStreamDefinitions', () => {
+    it('should call GET /platform-api/streams', async () => {
+      const mockResponse = { data: { _embedded: { streams: [] } } };
       vi.mocked(axios.get).mockResolvedValue(mockResponse);
 
-      const result = await configApi.getDefinitionStreams('def-123');
+      const result = await configApi.getStreamDefinitions();
 
-      expect(axios.get).toHaveBeenCalledWith('/platform-api/definitions/def-123/streams');
+      expect(axios.get).toHaveBeenCalledWith('/platform-api/streams');
       expect(result).toEqual(mockResponse);
     });
   });
@@ -117,77 +117,77 @@ describe('Configuration API', () => {
   });
 
   describe('getCatalogItem', () => {
-    it('should call GET /platform-api/catalog/{itemId}', async () => {
+    it('should call GET /platform-api/catalog/item?itemId={itemId}', async () => {
       const mockResponse = { data: { id: 'item-123', name: 'Test Item' } };
       vi.mocked(axios.get).mockResolvedValue(mockResponse);
 
       const result = await configApi.getCatalogItem('item-123');
 
-      expect(axios.get).toHaveBeenCalledWith('/platform-api/catalog/item-123');
+      expect(axios.get).toHaveBeenCalledWith('/platform-api/catalog/item?itemId=item-123');
       expect(result).toEqual(mockResponse);
     });
   });
 
   describe('createCatalogItem', () => {
-    it('should call POST /platform-api/catalog', async () => {
-      const mockResponse = { data: { id: 'item-123', name: 'New Item' } };
-      const item = { name: 'New Item', type: 'report' };
+    it('should call POST /platform-api/catalog/item', async () => {
+      const mockResponse = { data: 'item-123' };
+      const item = { name: 'New Item', type: 'report' } as any;
       vi.mocked(axios.post).mockResolvedValue(mockResponse);
 
       const result = await configApi.createCatalogItem(item);
 
-      expect(axios.post).toHaveBeenCalledWith('/platform-api/catalog', item);
+      expect(axios.post).toHaveBeenCalledWith('/platform-api/catalog/item', item);
       expect(result).toEqual(mockResponse);
     });
   });
 
   describe('updateCatalogItem', () => {
-    it('should call PUT /platform-api/catalog/{itemId}', async () => {
+    it('should call PUT /platform-api/catalog/item?itemId={itemId}', async () => {
       const mockResponse = { data: { success: true } };
-      const item = { name: 'Updated Item' };
+      const item = { name: 'Updated Item' } as any;
       vi.mocked(axios.put).mockResolvedValue(mockResponse);
 
       const result = await configApi.updateCatalogItem('item-123', item);
 
-      expect(axios.put).toHaveBeenCalledWith('/platform-api/catalog/item-123', item);
+      expect(axios.put).toHaveBeenCalledWith('/platform-api/catalog/item?itemId=item-123', item);
       expect(result).toEqual(mockResponse);
     });
   });
 
   describe('deleteCatalogItem', () => {
-    it('should call DELETE /platform-api/catalog/{itemId}', async () => {
+    it('should call DELETE /platform-api/catalog/item?itemId={itemId}', async () => {
       const mockResponse = { data: { success: true } };
       vi.mocked(axios.delete).mockResolvedValue(mockResponse);
 
       const result = await configApi.deleteCatalogItem('item-123');
 
-      expect(axios.delete).toHaveBeenCalledWith('/platform-api/catalog/item-123');
+      expect(axios.delete).toHaveBeenCalledWith('/platform-api/catalog/item?itemId=item-123');
       expect(result).toEqual(mockResponse);
     });
   });
 
   describe('exportCatalogItems', () => {
-    it('should call POST /platform-api/catalog/export', async () => {
+    it('should call GET /platform-api/catalog/item/export-by-ids', async () => {
       const mockResponse = { data: { items: [] } };
       const itemIds = ['item-1', 'item-2'];
-      vi.mocked(axios.post).mockResolvedValue(mockResponse);
+      vi.mocked(axios.get).mockResolvedValue(mockResponse);
 
       const result = await configApi.exportCatalogItems(itemIds);
 
-      expect(axios.post).toHaveBeenCalledWith('/platform-api/catalog/export', { itemIds });
+      expect(axios.get).toHaveBeenCalledWith('/platform-api/catalog/item/export-by-ids?ids=item-1,item-2&isSingleFile=true');
       expect(result).toEqual(mockResponse);
     });
   });
 
   describe('importCatalogItems', () => {
-    it('should call POST /platform-api/catalog/import', async () => {
+    it('should call POST /platform-api/catalog/item/import', async () => {
       const mockResponse = { data: { imported: 2 } };
-      const container = { items: [] };
+      const container = { items: [] } as any;
       vi.mocked(axios.post).mockResolvedValue(mockResponse);
 
       const result = await configApi.importCatalogItems(container);
 
-      expect(axios.post).toHaveBeenCalledWith('/platform-api/catalog/import', container);
+      expect(axios.post).toHaveBeenCalledWith('/platform-api/catalog/item/import?needRewrite=true', container);
       expect(result).toEqual(mockResponse);
     });
   });
@@ -228,17 +228,7 @@ describe('Configuration API', () => {
     });
   });
 
-  describe('getNodeInfo', () => {
-    it('should call GET /platform-api/cluster/nodes/{nodeId}', async () => {
-      const mockResponse = { data: { id: 'node-1', status: 'active' } };
-      vi.mocked(axios.get).mockResolvedValue(mockResponse);
-
-      const result = await configApi.getNodeInfo('node-1');
-
-      expect(axios.get).toHaveBeenCalledWith('/platform-api/cluster/nodes/node-1');
-      expect(result).toEqual(mockResponse);
-    });
-  });
+  // Note: getNodeInfo function doesn't exist - use getClusterNodes() instead
 
   describe('getSystemConfig', () => {
     it('should call GET /platform-api/config', async () => {
@@ -266,25 +256,25 @@ describe('Configuration API', () => {
   });
 
   describe('getFeatureFlags', () => {
-    it('should call GET /platform-api/features', async () => {
+    it('should call GET /platform-api/feature-flags', async () => {
       const mockResponse = { data: { feature1: true, feature2: false } };
       vi.mocked(axios.get).mockResolvedValue(mockResponse);
 
       const result = await configApi.getFeatureFlags();
 
-      expect(axios.get).toHaveBeenCalledWith('/platform-api/features');
+      expect(axios.get).toHaveBeenCalledWith('/platform-api/feature-flags');
       expect(result).toEqual(mockResponse);
     });
   });
 
   describe('updateFeatureFlag', () => {
-    it('should call PUT /platform-api/features/{flagName}', async () => {
+    it('should call PUT /platform-api/feature-flags/{flagName}', async () => {
       const mockResponse = { data: { success: true } };
       vi.mocked(axios.put).mockResolvedValue(mockResponse);
 
       const result = await configApi.updateFeatureFlag('feature1', true);
 
-      expect(axios.put).toHaveBeenCalledWith('/platform-api/features/feature1', { enabled: true });
+      expect(axios.put).toHaveBeenCalledWith('/platform-api/feature-flags/feature1', { enabled: true });
       expect(result).toEqual(mockResponse);
     });
   });

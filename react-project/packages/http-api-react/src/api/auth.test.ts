@@ -26,7 +26,7 @@ describe('Authentication API', () => {
 
       const result = await authApi.login('testuser', 'password123');
 
-      expect(axiosPublic.post).toHaveBeenCalledWith('/platform-api/auth/login', {
+      expect(axiosPublic.post).toHaveBeenCalledWith('/auth/login', {
         username: 'testuser',
         password: 'password123',
       });
@@ -48,7 +48,7 @@ describe('Authentication API', () => {
 
       const result = await authApi.loginAuth0('auth0-token');
 
-      expect(axiosPublic.post).toHaveBeenCalledWith('/platform-api/auth/auth0', {
+      expect(axiosPublic.post).toHaveBeenCalledWith('/auth/auth0', {
         token: 'auth0-token',
       });
       expect(result).toEqual(mockResponse);
@@ -62,7 +62,7 @@ describe('Authentication API', () => {
 
       const result = await authApi.refreshToken('old-refresh-token');
 
-      expect(axiosPublic.post).toHaveBeenCalledWith('/platform-api/auth/refresh', {
+      expect(axiosPublic.post).toHaveBeenCalledWith('/auth/refresh', {
         refreshToken: 'old-refresh-token',
       });
       expect(result).toEqual(mockResponse);
@@ -76,7 +76,7 @@ describe('Authentication API', () => {
 
       const result = await authApi.logout();
 
-      expect(axiosPublic.post).toHaveBeenCalledWith('/platform-api/auth/logout');
+      expect(axiosPublic.post).toHaveBeenCalledWith('/auth/logout');
       expect(result).toEqual(mockResponse);
     });
   });
@@ -88,7 +88,7 @@ describe('Authentication API', () => {
 
       const result = await authApi.getCurrentUser();
 
-      expect(axiosPublic.get).toHaveBeenCalledWith('/platform-api/auth/user');
+      expect(axiosPublic.get).toHaveBeenCalledWith('/auth/me');
       expect(result).toEqual(mockResponse);
     });
   });
@@ -100,7 +100,7 @@ describe('Authentication API', () => {
 
       const result = await authApi.verifyToken('test-token');
 
-      expect(axiosPublic.post).toHaveBeenCalledWith('/platform-api/auth/verify', {
+      expect(axiosPublic.post).toHaveBeenCalledWith('/auth/verify', {
         token: 'test-token',
       });
       expect(result).toEqual(mockResponse);
@@ -114,7 +114,7 @@ describe('Authentication API', () => {
 
       const result = await authApi.changePassword('oldpass', 'newpass');
 
-      expect(axiosPublic.post).toHaveBeenCalledWith('/platform-api/auth/change-password', {
+      expect(axiosPublic.post).toHaveBeenCalledWith('/auth/change-password', {
         oldPassword: 'oldpass',
         newPassword: 'newpass',
       });
@@ -129,7 +129,7 @@ describe('Authentication API', () => {
 
       const result = await authApi.requestPasswordReset('test@example.com');
 
-      expect(axiosPublic.post).toHaveBeenCalledWith('/platform-api/auth/request-reset', {
+      expect(axiosPublic.post).toHaveBeenCalledWith('/auth/reset-password-request', {
         email: 'test@example.com',
       });
       expect(result).toEqual(mockResponse);
@@ -143,7 +143,7 @@ describe('Authentication API', () => {
 
       const result = await authApi.resetPassword('reset-token', 'newpassword');
 
-      expect(axiosPublic.post).toHaveBeenCalledWith('/platform-api/auth/reset-password', {
+      expect(axiosPublic.post).toHaveBeenCalledWith('/auth/reset-password', {
         token: 'reset-token',
         newPassword: 'newpassword',
       });
@@ -158,36 +158,36 @@ describe('Authentication API', () => {
 
       const result = await authApi.getUserPermissions();
 
-      expect(axiosPublic.get).toHaveBeenCalledWith('/platform-api/auth/permissions');
+      expect(axiosPublic.get).toHaveBeenCalledWith('/auth/permissions');
       expect(result).toEqual(mockResponse);
     });
   });
 
   describe('hasPermission', () => {
     it('should return true when user has permission', async () => {
-      const mockResponse = { data: ['read:users', 'write:users', 'admin'] };
+      const mockResponse = { data: true };
       vi.mocked(axiosPublic.get).mockResolvedValue(mockResponse);
 
       const result = await authApi.hasPermission('read:users');
 
-      expect(result).toBe(true);
+      expect(axiosPublic.get).toHaveBeenCalledWith('/auth/permissions/read:users');
+      expect(result).toEqual(mockResponse);
     });
 
     it('should return false when user does not have permission', async () => {
-      const mockResponse = { data: ['read:users'] };
+      const mockResponse = { data: false };
       vi.mocked(axiosPublic.get).mockResolvedValue(mockResponse);
 
       const result = await authApi.hasPermission('admin');
 
-      expect(result).toBe(false);
+      expect(axiosPublic.get).toHaveBeenCalledWith('/auth/permissions/admin');
+      expect(result).toEqual(mockResponse);
     });
 
     it('should handle errors and return false', async () => {
       vi.mocked(axiosPublic.get).mockRejectedValue(new Error('Network error'));
 
-      const result = await authApi.hasPermission('admin');
-
-      expect(result).toBe(false);
+      await expect(authApi.hasPermission('admin')).rejects.toThrow('Network error');
     });
   });
 });

@@ -28,9 +28,8 @@ describe('GlobalUiSettingsStore', () => {
     });
 
     it('should update entity type to PERSISTENCE', () => {
-      const store = useGlobalUiSettingsStore.getState();
-      store.setEntityType('PERSISTENCE');
-      expect(store.entityType).toBe('PERSISTENCE');
+      useGlobalUiSettingsStore.getState().setEntityType('PERSISTENCE');
+      expect(useGlobalUiSettingsStore.getState().entityType).toBe('PERSISTENCE');
     });
 
     it('should persist entity type to localStorage', () => {

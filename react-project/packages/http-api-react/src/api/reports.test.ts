@@ -246,12 +246,12 @@ describe('Reports API', () => {
   describe('regroupReport', () => {
     it('should call POST /platform-api/report/{reportId}/regroup', async () => {
       const mockResponse = { data: { success: true } };
-      const groupConfig = { groupBy: ['field1', 'field2'] };
+      const groupingColumns = ['field1', 'field2'];
       vi.mocked(axios.post).mockResolvedValue(mockResponse);
 
-      const result = await reportsApi.regroupReport('report-123', groupConfig);
+      const result = await reportsApi.regroupReport('report-123', groupingColumns);
 
-      expect(axios.post).toHaveBeenCalledWith('/platform-api/report/report-123/regroup', groupConfig);
+      expect(axios.post).toHaveBeenCalledWith('/platform-api/report/report-123/regroup', { groupingColumns });
       expect(result).toEqual(mockResponse);
     });
   });
@@ -269,53 +269,18 @@ describe('Reports API', () => {
   });
 
   describe('getReportChartData', () => {
-    it('should call GET /platform-api/report/{reportId}/chart', async () => {
+    it('should call POST /platform-api/report/{reportId}/chart', async () => {
       const mockResponse = { data: { labels: [], datasets: [] } };
-      vi.mocked(axios.get).mockResolvedValue(mockResponse);
-
-      const result = await reportsApi.getReportChartData('report-123', 'bar');
-
-      expect(axios.get).toHaveBeenCalledWith('/platform-api/report/report-123/chart?type=bar');
-      expect(result).toEqual(mockResponse);
-    });
-  });
-
-  describe('saveReportDefinition', () => {
-    it('should call POST /platform-api/definitions', async () => {
-      const mockResponse = { data: { id: 'def-123', name: 'Test Definition' } };
-      const definition = { name: 'Test Definition', fields: [] };
+      const chartConfig = { type: 'bar', xAxis: 'date', yAxis: 'value' };
       vi.mocked(axios.post).mockResolvedValue(mockResponse);
 
-      const result = await reportsApi.saveReportDefinition(definition);
+      const result = await reportsApi.getReportChartData('report-123', chartConfig);
 
-      expect(axios.post).toHaveBeenCalledWith('/platform-api/definitions', definition);
+      expect(axios.post).toHaveBeenCalledWith('/platform-api/report/report-123/chart', chartConfig);
       expect(result).toEqual(mockResponse);
     });
   });
 
-  describe('updateReportDefinition', () => {
-    it('should call PUT /platform-api/definitions/{definitionId}', async () => {
-      const mockResponse = { data: { success: true } };
-      const definition = { name: 'Updated Definition' };
-      vi.mocked(axios.put).mockResolvedValue(mockResponse);
-
-      const result = await reportsApi.updateReportDefinition('def-123', definition);
-
-      expect(axios.put).toHaveBeenCalledWith('/platform-api/definitions/def-123', definition);
-      expect(result).toEqual(mockResponse);
-    });
-  });
-
-  describe('deleteReportDefinition', () => {
-    it('should call DELETE /platform-api/definitions/{definitionId}', async () => {
-      const mockResponse = { data: { success: true } };
-      vi.mocked(axios.delete).mockResolvedValue(mockResponse);
-
-      const result = await reportsApi.deleteReportDefinition('def-123');
-
-      expect(axios.delete).toHaveBeenCalledWith('/platform-api/definitions/def-123');
-      expect(result).toEqual(mockResponse);
-    });
-  });
+  // Note: Definition management functions (create/update/delete) are in config.ts, not reports.ts
 });
 
