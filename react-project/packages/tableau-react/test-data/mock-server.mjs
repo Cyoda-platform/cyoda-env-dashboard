@@ -76,6 +76,252 @@ app.get('/actuator/health', (req, res) => {
   res.json({ status: 'UP' });
 });
 
+// SQL Schema endpoints
+// In-memory storage for SQL schemas
+if (!global.sqlSchemas) {
+  global.sqlSchemas = [];
+}
+
+// Get all SQL schemas
+app.get('/platform-api/sql/schema/listAll', (req, res) => {
+  console.log('📋 GET /platform-api/sql/schema/listAll');
+  console.log(`📋 Returning ${global.sqlSchemas.length} SQL schemas`);
+  res.json(global.sqlSchemas);
+});
+
+// Get SQL schema by ID
+app.get('/platform-api/sql/schema/:id', (req, res) => {
+  const { id } = req.params;
+  console.log(`📋 GET /platform-api/sql/schema/${id}`);
+  const schema = global.sqlSchemas.find(s => s.id === id);
+
+  if (schema) {
+    console.log(`📋 Returning schema: ${schema.name}`);
+    res.json(schema);
+  } else {
+    res.status(404).json({ error: 'SQL schema not found' });
+  }
+});
+
+// Create SQL schema
+app.post('/platform-api/sql/schema', (req, res) => {
+  const schema = req.body;
+  const id = `SCHEMA-${Date.now()}`;
+
+  const newSchema = {
+    ...schema,
+    id,
+    createDate: new Date().toISOString(),
+    updateDate: new Date().toISOString(),
+  };
+
+  global.sqlSchemas.push(newSchema);
+  console.log(`✓ Created SQL schema: ${schema.name} (${id})`);
+  res.json(newSchema);
+});
+
+// Update SQL schema
+app.put('/platform-api/sql/schema/:id', (req, res) => {
+  const { id } = req.params;
+  const updates = req.body;
+
+  const index = global.sqlSchemas.findIndex(s => s.id === id);
+  if (index !== -1) {
+    global.sqlSchemas[index] = {
+      ...global.sqlSchemas[index],
+      ...updates,
+      updateDate: new Date().toISOString(),
+    };
+    console.log(`✓ Updated SQL schema: ${id}`);
+    res.json(global.sqlSchemas[index]);
+  } else {
+    res.status(404).json({ error: 'SQL schema not found' });
+  }
+});
+
+// Delete SQL schema
+app.delete('/platform-api/sql/schema/:id', (req, res) => {
+  const { id } = req.params;
+
+  const index = global.sqlSchemas.findIndex(s => s.id === id);
+  if (index !== -1) {
+    const schema = global.sqlSchemas[index];
+    global.sqlSchemas.splice(index, 1);
+    console.log(`✓ Deleted SQL schema: ${schema.name} (${id})`);
+    res.json({ success: true });
+  } else {
+    res.status(404).json({ error: 'SQL schema not found' });
+  }
+});
+
+// Statemachine/Workflow endpoints
+// In-memory storage for workflows
+if (!global.workflows) {
+  global.workflows = [];
+}
+
+if (!global.workflowInstances) {
+  global.workflowInstances = [];
+}
+
+// Get all workflows
+app.get('/platform-api/statemachine/workflows', (req, res) => {
+  console.log('📋 GET /platform-api/statemachine/workflows');
+  console.log(`📋 Returning ${global.workflows.length} workflows`);
+  res.json(global.workflows);
+});
+
+// Get workflow-enabled types
+app.get('/platform-api/statemachine/workflow-enabled-types', (req, res) => {
+  console.log('📋 GET /platform-api/statemachine/workflow-enabled-types');
+
+  // Return entity types that have workflows enabled
+  const enabledTypes = Object.keys(entityStore).map(entityClass => ({
+    entityClass,
+    workflowEnabled: true,
+  }));
+
+  console.log(`📋 Returning ${enabledTypes.length} workflow-enabled types`);
+  res.json(enabledTypes);
+});
+
+// Get workflow by ID
+app.get('/platform-api/statemachine/workflows/:id', (req, res) => {
+  const { id } = req.params;
+  console.log(`📋 GET /platform-api/statemachine/workflows/${id}`);
+  const workflow = global.workflows.find(w => w.id === id);
+
+  if (workflow) {
+    console.log(`📋 Returning workflow: ${workflow.name}`);
+    res.json(workflow);
+  } else {
+    res.status(404).json({ error: 'Workflow not found' });
+  }
+});
+
+// Create workflow
+app.post('/platform-api/statemachine/workflows', (req, res) => {
+  const workflow = req.body;
+  const id = `WF-${Date.now()}`;
+
+  const newWorkflow = {
+    ...workflow,
+    id,
+    createDate: new Date().toISOString(),
+    updateDate: new Date().toISOString(),
+  };
+
+  global.workflows.push(newWorkflow);
+  console.log(`✓ Created workflow: ${workflow.name} (${id})`);
+  res.json(newWorkflow);
+});
+
+// Update workflow
+app.put('/platform-api/statemachine/workflows/:id', (req, res) => {
+  const { id } = req.params;
+  const updates = req.body;
+
+  const index = global.workflows.findIndex(w => w.id === id);
+  if (index !== -1) {
+    global.workflows[index] = {
+      ...global.workflows[index],
+      ...updates,
+      updateDate: new Date().toISOString(),
+    };
+    console.log(`✓ Updated workflow: ${id}`);
+    res.json(global.workflows[index]);
+  } else {
+    res.status(404).json({ error: 'Workflow not found' });
+  }
+});
+
+// Delete workflow
+app.delete('/platform-api/statemachine/workflows/:id', (req, res) => {
+  const { id } = req.params;
+
+  const index = global.workflows.findIndex(w => w.id === id);
+  if (index !== -1) {
+    const workflow = global.workflows[index];
+    global.workflows.splice(index, 1);
+    console.log(`✓ Deleted workflow: ${workflow.name} (${id})`);
+    res.json({ success: true });
+  } else {
+    res.status(404).json({ error: 'Workflow not found' });
+  }
+});
+
+// Get workflow instances
+app.get('/platform-api/statemachine/instances', (req, res) => {
+  console.log('📋 GET /platform-api/statemachine/instances');
+  console.log(`📋 Returning ${global.workflowInstances.length} workflow instances`);
+  res.json(global.workflowInstances);
+});
+
+// Get workflow instance by ID
+app.get('/platform-api/statemachine/instances/:id', (req, res) => {
+  const { id } = req.params;
+  console.log(`📋 GET /platform-api/statemachine/instances/${id}`);
+  const instance = global.workflowInstances.find(i => i.id === id);
+
+  if (instance) {
+    console.log(`📋 Returning workflow instance: ${id}`);
+    res.json(instance);
+  } else {
+    res.status(404).json({ error: 'Workflow instance not found' });
+  }
+});
+
+// Model endpoints
+// Get entity model list
+app.get('/platform-api/model/', (req, res) => {
+  console.log('📋 GET /platform-api/model/');
+
+  // Return list of entity models based on entity types
+  const models = Object.keys(entityStore).map(entityClass => {
+    const className = entityClass.split('.').pop();
+    return {
+      entityClass,
+      className,
+      fields: [
+        { name: 'id', type: 'String', required: true },
+        { name: 'name', type: 'String', required: false },
+        { name: 'description', type: 'String', required: false },
+        { name: 'createDate', type: 'Date', required: false },
+        { name: 'updateDate', type: 'Date', required: false },
+      ],
+    };
+  });
+
+  console.log(`📋 Returning ${models.length} entity models`);
+  res.json(models);
+});
+
+// Get entity model by class name
+app.get('/platform-api/model/:entityClass', (req, res) => {
+  const { entityClass } = req.params;
+  console.log(`📋 GET /platform-api/model/${entityClass}`);
+
+  if (entityStore[entityClass]) {
+    const className = entityClass.split('.').pop();
+    const model = {
+      entityClass,
+      className,
+      fields: [
+        { name: 'id', type: 'String', required: true },
+        { name: 'name', type: 'String', required: false },
+        { name: 'description', type: 'String', required: false },
+        { name: 'createDate', type: 'Date', required: false },
+        { name: 'updateDate', type: 'Date', required: false },
+      ],
+    };
+
+    console.log(`📋 Returning model for: ${className}`);
+    res.json(model);
+  } else {
+    res.status(404).json({ error: 'Entity model not found' });
+  }
+});
+
 // Get users list
 app.post('/platform-api/users/list', (req, res) => {
   const userIds = req.body;
@@ -447,65 +693,126 @@ if (!global.reportDefinitions) {
       name: 'Customer Report',
       description: 'List of all customers',
       type: 'STANDARD',
+      requestClass: 'com.cyoda.tms.model.entities.Customer',
       entityClass: 'com.cyoda.tms.model.entities.Customer',
       userId: 'admin',
       creationDate: new Date('2024-01-15').toISOString(),
       modificationDate: new Date('2024-01-15').toISOString(),
+      colDefs: [
+        {
+          '@bean': 'com.cyoda.core.reporting.model.ColDef',
+          fullPath: 'id',
+          alias: 'id',
+        },
+        {
+          '@bean': 'com.cyoda.core.reporting.model.ColDef',
+          fullPath: 'customerId',
+          alias: 'customerId',
+        },
+        {
+          '@bean': 'com.cyoda.core.reporting.model.ColDef',
+          fullPath: 'firstName',
+          alias: 'firstName',
+        },
+        {
+          '@bean': 'com.cyoda.core.reporting.model.ColDef',
+          fullPath: 'lastName',
+          alias: 'lastName',
+        },
+        {
+          '@bean': 'com.cyoda.core.reporting.model.ColDef',
+          fullPath: 'email',
+          alias: 'email',
+        },
+      ],
       columns: [
-        { name: 'id', label: 'ID' },
-        { name: 'customerId', label: 'Customer ID' },
-        { name: 'firstName', label: 'First Name' },
-        { name: 'lastName', label: 'Last Name' },
-        { name: 'email', label: 'Email' },
-        { name: 'phone', label: 'Phone' },
-        { name: 'country', label: 'Country' },
-        { name: 'city', label: 'City' },
-        { name: 'status', label: 'Status' },
-        { name: 'accountBalance', label: 'Account Balance' },
-        { name: 'customerType', label: 'Customer Type' }
-      ]
+        { '@bean': 'com.cyoda.core.reporting.model.Column', name: 'id' },
+        { '@bean': 'com.cyoda.core.reporting.model.Column', name: 'customerId' },
+        { '@bean': 'com.cyoda.core.reporting.model.Column', name: 'firstName' },
+        { '@bean': 'com.cyoda.core.reporting.model.Column', name: 'lastName' },
+      ],
+      condition: {
+        '@bean': 'com.cyoda.core.conditions.queryable.Group',
+        operator: 'AND',
+        conditions: [],
+      },
+      singletonReport: false,
     },
     'RPT-002': {
       id: 'RPT-002',
       name: 'Transaction Report',
       description: 'List of all transactions',
       type: 'STANDARD',
+      requestClass: 'com.cyoda.tms.model.entities.Transaction',
       entityClass: 'com.cyoda.tms.model.entities.Transaction',
       userId: 'admin',
       creationDate: new Date('2024-01-16').toISOString(),
       modificationDate: new Date('2024-01-16').toISOString(),
+      colDefs: [
+        {
+          '@bean': 'com.cyoda.core.reporting.model.ColDef',
+          fullPath: 'id',
+          alias: 'id',
+        },
+        {
+          '@bean': 'com.cyoda.core.reporting.model.ColDef',
+          fullPath: 'transactionId',
+          alias: 'transactionId',
+        },
+        {
+          '@bean': 'com.cyoda.core.reporting.model.ColDef',
+          fullPath: 'amount',
+          alias: 'amount',
+        },
+      ],
       columns: [
-        { name: 'id', label: 'ID' },
-        { name: 'transactionId', label: 'Transaction ID' },
-        { name: 'amount', label: 'Amount' },
-        { name: 'currency', label: 'Currency' },
-        { name: 'status', label: 'Status' },
-        { name: 'description', label: 'Description' },
-        { name: 'customerId', label: 'Customer ID' },
-        { name: 'transactionType', label: 'Type' },
-        { name: 'paymentMethod', label: 'Payment Method' }
-      ]
+        { '@bean': 'com.cyoda.core.reporting.model.Column', name: 'id' },
+        { '@bean': 'com.cyoda.core.reporting.model.Column', name: 'transactionId' },
+      ],
+      condition: {
+        '@bean': 'com.cyoda.core.conditions.queryable.Group',
+        operator: 'AND',
+        conditions: [],
+      },
+      singletonReport: false,
     },
     'RPT-003': {
       id: 'RPT-003',
       name: 'Product Report',
       description: 'List of all products',
       type: 'STANDARD',
+      requestClass: 'com.cyoda.tms.model.entities.Product',
       entityClass: 'com.cyoda.tms.model.entities.Product',
       userId: 'admin',
       creationDate: new Date('2024-01-17').toISOString(),
       modificationDate: new Date('2024-01-17').toISOString(),
+      colDefs: [
+        {
+          '@bean': 'com.cyoda.core.reporting.model.ColDef',
+          fullPath: 'id',
+          alias: 'id',
+        },
+        {
+          '@bean': 'com.cyoda.core.reporting.model.ColDef',
+          fullPath: 'productId',
+          alias: 'productId',
+        },
+        {
+          '@bean': 'com.cyoda.core.reporting.model.ColDef',
+          fullPath: 'name',
+          alias: 'name',
+        },
+      ],
       columns: [
-        { name: 'id', label: 'ID' },
-        { name: 'productId', label: 'Product ID' },
-        { name: 'name', label: 'Product Name' },
-        { name: 'category', label: 'Category' },
-        { name: 'price', label: 'Price' },
-        { name: 'currency', label: 'Currency' },
-        { name: 'stock', label: 'Stock' },
-        { name: 'status', label: 'Status' },
-        { name: 'manufacturer', label: 'Manufacturer' }
-      ]
+        { '@bean': 'com.cyoda.core.reporting.model.Column', name: 'id' },
+        { '@bean': 'com.cyoda.core.reporting.model.Column', name: 'productId' },
+      ],
+      condition: {
+        '@bean': 'com.cyoda.core.conditions.queryable.Group',
+        operator: 'AND',
+        conditions: [],
+      },
+      singletonReport: false,
     }
   };
 }
@@ -1490,6 +1797,21 @@ app.listen(PORT, () => {
   console.log('');
   console.log('Available endpoints:');
   console.log('  GET  /actuator/health');
+  console.log('  GET  /platform-api/sql/schema/listAll');
+  console.log('  GET  /platform-api/sql/schema/:id');
+  console.log('  POST /platform-api/sql/schema');
+  console.log('  PUT  /platform-api/sql/schema/:id');
+  console.log('  DELETE /platform-api/sql/schema/:id');
+  console.log('  GET  /platform-api/statemachine/workflows');
+  console.log('  GET  /platform-api/statemachine/workflow-enabled-types');
+  console.log('  GET  /platform-api/statemachine/workflows/:id');
+  console.log('  POST /platform-api/statemachine/workflows');
+  console.log('  PUT  /platform-api/statemachine/workflows/:id');
+  console.log('  DELETE /platform-api/statemachine/workflows/:id');
+  console.log('  GET  /platform-api/statemachine/instances');
+  console.log('  GET  /platform-api/statemachine/instances/:id');
+  console.log('  GET  /platform-api/model/');
+  console.log('  GET  /platform-api/model/:entityClass');
   console.log('  GET  /platform-api/entity-info/fetch/types');
   console.log('  GET  /platform-api/entity/:entityClass/:entityId');
   console.log('  GET  /platform-api/entity/:entityClass/search');

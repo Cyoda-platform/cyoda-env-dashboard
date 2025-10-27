@@ -91,5 +91,35 @@
     align-items: center;
     min-height: 400px;
   }
+
+  // Alert styling for dark theme
+  .ant-alert {
+    &.ant-alert-warning {
+      background-color: rgba(217, 119, 6, 0.1);
+      border: 1px solid rgba(217, 119, 6, 0.3);
+      border-radius: 8px;
+
+      .ant-alert-icon {
+        color: #f59e0b;
+      }
+
+      .ant-alert-message {
+        color: #fbbf24;
+        font-weight: 600;
+      }
+
+      .ant-alert-description {
+        color: #d1d5db;
+      }
+
+      .ant-alert-close-icon {
+        color: #9ca3af;
+
+        &:hover {
+          color: #e5e7eb;
+        }
+      }
+    }
+  }
 }
 
