@@ -31,8 +31,12 @@ export class HelperErrors {
     const status = error.response?.status;
     const data = error.response?.data as any;
 
-    // Don't show error for 401 (handled by interceptor)
-    if (status === 401) {
+    // Don't show error for 401 (handled by interceptor) or 404 (too noisy)
+    if (status === 401 || status === 404) {
+      // Log to console in development only
+      if (import.meta.env.DEV) {
+        console.warn(`API ${status}:`, error.config?.url);
+      }
       return;
     }
 
@@ -60,9 +64,6 @@ export class HelperErrors {
         break;
       case 403:
         message.error(`Forbidden: ${errorMessage}`);
-        break;
-      case 404:
-        message.error(`Not Found: ${errorMessage}`);
         break;
       case 500:
         message.error(`Server Error: ${errorMessage}`);

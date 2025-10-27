@@ -4,9 +4,10 @@
  * Migrated from: .old_project/packages/statemachine/src/views/InstancesDetailView.vue
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { Tabs, Card, Spin, Typography, Space, Alert, Descriptions, Button } from 'antd';
+import type { TabsProps } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import {
   useWorkflow,
@@ -18,7 +19,6 @@ import type { PersistedType } from '../types';
 import axios from 'axios';
 
 const { Title, Text } = Typography;
-const { TabPane } = Tabs;
 
 export const InstanceDetail: React.FC = () => {
   const { instanceId } = useParams<{ instanceId: string }>();
@@ -53,8 +53,69 @@ export const InstanceDetail: React.FC = () => {
     );
     return entityRow?.type === 'BUSINESS';
   };
-  
+
   const modelName = entityClassName.split('.').pop();
+
+  // Define tabs using the new items API
+  const tabItems: TabsProps['items'] = useMemo(() => {
+    const items: TabsProps['items'] = [
+      {
+        key: 'details',
+        label: 'Details',
+        children: isShowDetailJson() ? (
+          <DetailJsonView
+            instanceId={instanceId!}
+            entityClassName={entityClassName}
+          />
+        ) : (
+          <DetailView
+            instanceId={instanceId!}
+            entityClassName={entityClassName}
+            entityData={entityData}
+          />
+        ),
+      },
+      {
+        key: 'dataAudit',
+        label: 'Audit',
+        children: (
+          <AuditView
+            entityClassName={entityClassName}
+            instanceId={instanceId!}
+          />
+        ),
+      },
+      {
+        key: 'dataLineage',
+        label: 'Data Lineage',
+        children: (
+          <DataLineageView
+            entityClassName={entityClassName}
+            instanceId={instanceId!}
+          />
+        ),
+      },
+    ];
+
+    // Add Workflow tab conditionally
+    if (currentWorkflowId) {
+      items.splice(1, 0, {
+        key: 'workflow',
+        label: 'Workflow',
+        children: (
+          <WorkflowView
+            workflowId={currentWorkflowId}
+            entityClassName={entityClassName}
+            instanceId={instanceId!}
+            persistedType={persistedType}
+            entityData={entityData}
+          />
+        ),
+      });
+    }
+
+    return items;
+  }, [instanceId, entityClassName, entityData, currentWorkflowId, persistedType, workflowEnabledTypes]);
 
   return (
     <div style={{ padding: '16px' }}>
@@ -88,52 +149,8 @@ export const InstanceDetail: React.FC = () => {
               activeKey={activeTab}
               onChange={setActiveTab}
               destroyInactiveTabPane={false}
-            >
-              {/* Details Tab */}
-              <TabPane tab="Details" key="details">
-                {isShowDetailJson() ? (
-                  <DetailJsonView
-                    instanceId={instanceId!}
-                    entityClassName={entityClassName}
-                  />
-                ) : (
-                  <DetailView
-                    instanceId={instanceId!}
-                    entityClassName={entityClassName}
-                    entityData={entityData}
-                  />
-                )}
-              </TabPane>
-              
-              {/* Workflow Tab */}
-              {currentWorkflowId && (
-                <TabPane tab="Workflow" key="workflow">
-                  <WorkflowView
-                    workflowId={currentWorkflowId}
-                    entityClassName={entityClassName}
-                    instanceId={instanceId!}
-                    persistedType={persistedType}
-                    entityData={entityData}
-                  />
-                </TabPane>
-              )}
-              
-              {/* Audit Tab */}
-              <TabPane tab="Audit" key="dataAudit">
-                <AuditView
-                  entityClassName={entityClassName}
-                  instanceId={instanceId!}
-                />
-              </TabPane>
-              
-              {/* Data Lineage Tab */}
-              <TabPane tab="Data Lineage" key="dataLineage">
-                <DataLineageView
-                  entityClassName={entityClassName}
-                  instanceId={instanceId!}
-                />
-              </TabPane>
-            </Tabs>
+              items={tabItems}
+            />
           </Spin>
         </Space>
       </Card>

@@ -175,18 +175,29 @@ export const Instances: React.FC = () => {
           return { label: type, value: type };
         }
 
+        // Handle different API response formats:
+        // 1. { name: 'com.example.Entity', type: 'BUSINESS' }
+        // 2. { value: 'com.example.Entity', label: 'Entity' }
+        // 3. { entityClass: 'com.example.Entity', workflowEnabled: true }
+        const value = type.value || type.name || type.entityClass;
+        if (!value || typeof value !== 'string') {
+          console.warn('Invalid entity type:', type);
+          return null;
+        }
+
         // If entity has type info, add it to the label
-        let label = type.name || type.value || type;
+        let label = type.label || value;
         if (type.type) {
           const typeLabel = entityTypeMapper(type.type);
-          label = `${type.name} (${typeLabel})`;
+          label = `${value} (${typeLabel})`;
         }
 
         return {
           label,
-          value: type.value || type.name || type,
+          value,
         };
-      });
+      })
+      .filter(Boolean); // Remove any null entries
   }, [workflowEnabledTypes, entityType, isEnabledTechView]);
   
   // Table data

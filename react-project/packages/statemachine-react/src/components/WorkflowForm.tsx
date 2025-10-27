@@ -6,6 +6,7 @@
 
 import React, { useEffect, useState, useMemo } from 'react';
 import { Form, Input, Select, Switch, Button, Tabs, App, Space, Checkbox, Alert } from 'antd';
+import type { TabsProps } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import {
   useWorkflow,
@@ -18,7 +19,6 @@ import { useGlobalUiSettingsStore } from '../stores/globalUiSettingsStore';
 import type { PersistedType, WorkflowForm as WorkflowFormType } from '../types';
 
 const { TextArea } = Input;
-const { TabPane } = Tabs;
 
 interface WorkflowFormProps {
   workflowId?: string;
@@ -104,18 +104,29 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
           return { label: type, value: type };
         }
 
+        // Handle different API response formats:
+        // 1. { name: 'com.example.Entity', type: 'BUSINESS' }
+        // 2. { value: 'com.example.Entity', label: 'Entity' }
+        // 3. { entityClass: 'com.example.Entity', workflowEnabled: true }
+        const value = type.value || type.name || type.entityClass;
+        if (!value || typeof value !== 'string') {
+          console.warn('Invalid entity type:', type);
+          return null;
+        }
+
         // If entity has type info, add it to the label
-        let label = type.name || type.value || type;
+        let label = type.label || value;
         if (type.type) {
           const typeLabel = entityTypeMapper(type.type);
-          label = `${type.name} (${typeLabel})`;
+          label = `${value} (${typeLabel})`;
         }
 
         return {
           label,
-          value: type.value || type.name || type,
+          value,
         };
-      });
+      })
+      .filter(Boolean); // Remove any null entries
   }, [workflowEnabledTypes, entityType, isEnabledTechView]);
   
   // Criteria options
@@ -164,27 +175,14 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
   
   const pageTitle = isNew ? 'Create New Workflow' : workflow?.name || 'Workflow';
   const isLoading = isLoadingWorkflow || createWorkflowMutation.isPending || updateWorkflowMutation.isPending;
-  
-  return (
-    <div className="workflow-form">
-      <Form
-        form={form}
-        layout="vertical"
-        style={{ maxWidth: 600 }}
-      >
-        {/* Header with title and active toggle */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-          <h2>{pageTitle}</h2>
-          <Space>
-            <span>Active</span>
-            <Form.Item name="active" valuePropName="checked" noStyle>
-              <Switch disabled={isRuntime} />
-            </Form.Item>
-          </Space>
-        </div>
-        
-        <Tabs activeKey={activeTab} onChange={setActiveTab}>
-          <TabPane tab="Settings" key="settings">
+
+  // Define tabs using the new items API
+  const tabItems: TabsProps['items'] = useMemo(() => [
+    {
+      key: 'settings',
+      label: 'Settings',
+      children: (
+        <>
             <Form.Item
               label="Entity Class Name"
               name="entityClassName"
@@ -250,26 +248,57 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
                 Use Decision Tree
               </Checkbox>
             </Form.Item>
-          </TabPane>
+          </>
+      ),
+    },
+    {
+      key: 'decisionTree',
+      label: 'Decision Tree',
+      disabled: !useDecisionTreeEnabled,
+      children: (
+        <>
+          <Alert
+            message="Decision Tree Configuration"
+            description="Decision trees allow you to define complex conditional logic for state transitions. This feature enables you to create branching logic based on criteria evaluation."
+            type="info"
+            showIcon
+            style={{ marginBottom: '16px' }}
+          />
+          <div style={{ padding: '20px', textAlign: 'center', color: '#999' }}>
+            <p>Decision tree visual editor coming soon...</p>
+            <p style={{ fontSize: '12px', marginTop: '8px' }}>
+              Enable "Use Decision Tree" checkbox in Settings tab to activate this feature.
+            </p>
+          </div>
+        </>
+      ),
+    },
+  ], [entityOptions, isNew, isRuntime, isLoadingTypes, isLoadingCriteria, criteriaOptions, useDecisionTreeEnabled, handleEntityChange]);
 
-          {/* Decision Tree tab */}
-          <TabPane tab="Decision Tree" key="decisionTree" disabled={!useDecisionTreeEnabled}>
-            <Alert
-              message="Decision Tree Configuration"
-              description="Decision trees allow you to define complex conditional logic for state transitions. This feature enables you to create branching logic based on criteria evaluation."
-              type="info"
-              showIcon
-              style={{ marginBottom: '16px' }}
-            />
-            <div style={{ padding: '20px', textAlign: 'center', color: '#999' }}>
-              <p>Decision tree visual editor coming soon...</p>
-              <p style={{ fontSize: '12px', marginTop: '8px' }}>
-                Enable "Use Decision Tree" checkbox in Settings tab to activate this feature.
-              </p>
-            </div>
-          </TabPane>
-        </Tabs>
-        
+  return (
+    <div className="workflow-form">
+      <Form
+        form={form}
+        layout="vertical"
+        style={{ maxWidth: 600 }}
+      >
+        {/* Header with title and active toggle */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <h2>{pageTitle}</h2>
+          <Space>
+            <span>Active</span>
+            <Form.Item name="active" valuePropName="checked" noStyle>
+              <Switch disabled={isRuntime} />
+            </Form.Item>
+          </Space>
+        </div>
+
+        <Tabs
+          activeKey={activeTab}
+          onChange={setActiveTab}
+          items={tabItems}
+        />
+
         <Form.Item>
           <Button
             type="primary"
