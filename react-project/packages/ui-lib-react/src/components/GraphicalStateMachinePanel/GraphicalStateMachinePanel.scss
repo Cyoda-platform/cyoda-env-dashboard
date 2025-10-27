@@ -1,6 +1,25 @@
 .graphical-state-machine-panel {
-  button {
-    margin: 8px;
+  .ant-btn.ant-btn-default {
+    border-color: #14b8a6 !important;
+    color: #14b8a6 !important;
+    background: transparent !important;
+
+    &:hover {
+      border-color: #0d9488 !important;
+      color: #0d9488 !important;
+      background: rgba(20, 184, 166, 0.1) !important;
+    }
+
+    &.ant-btn-dangerous {
+      border-color: #ef4444 !important;
+      color: #ef4444 !important;
+
+      &:hover {
+        border-color: #dc2626 !important;
+        color: #dc2626 !important;
+        background: rgba(239, 68, 68, 0.1) !important;
+      }
+    }
   }
 }
 

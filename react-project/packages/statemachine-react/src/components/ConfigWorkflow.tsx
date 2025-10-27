@@ -7,7 +7,7 @@
 import React, { useEffect, useState } from 'react';
 import { Spin, Alert } from 'antd';
 import Prism from 'prismjs';
-import 'prismjs/themes/prism.css';
+import 'prismjs/themes/prism-tomorrow.css';
 import 'prismjs/components/prism-json';
 import { useWorkflow } from '../hooks/useStatemachine';
 import type { PersistedType } from '../types';
@@ -35,7 +35,7 @@ export const ConfigWorkflow: React.FC<ConfigWorkflowProps> = ({
         // Format JSON with 2-space indentation
         const formatted = JSON.stringify(workflow, null, 2);
 
-        // Apply syntax highlighting using Prism
+        // Apply syntax highlighting using Prism with dark theme
         const highlighted = Prism.highlight(
           formatted,
           Prism.languages.json,
@@ -87,20 +87,24 @@ export const ConfigWorkflow: React.FC<ConfigWorkflowProps> = ({
         description="This is the raw JSON configuration of the workflow. You can use this for debugging or exporting the workflow structure."
         type="info"
         showIcon
-        style={{ marginBottom: '16px' }}
+        style={{
+          marginBottom: '16px',
+          backgroundColor: '#1f2937',
+          border: '1px solid #374151',
+        }}
       />
-      
+
       <pre
         className="language-json"
         style={{
-          backgroundColor: '#f5f5f5',
-          border: '1px solid #d9d9d9',
-          borderRadius: '4px',
-          padding: '16px',
+          backgroundColor: '#1E2A3A',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          borderRadius: '6px',
+          padding: '20px',
           maxHeight: '600px',
           overflow: 'auto',
-          fontSize: '13px',
-          lineHeight: '1.5',
+          fontSize: '14px',
+          lineHeight: '1.6',
           fontFamily: 'Monaco, Menlo, "Ubuntu Mono", Consolas, source-code-pro, monospace',
           margin: 0,
         }}

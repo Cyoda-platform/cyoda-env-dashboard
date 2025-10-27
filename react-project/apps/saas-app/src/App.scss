@@ -1066,3 +1066,16 @@ div[style*="background-color:#000"] {
   background-color: rgba(0, 212, 170, 0.2) !important;
 }
 
+// ============================================
+// CYTOSCAPE CANVAS - FORCE LIGHT BACKGROUND
+// ============================================
+.graph-container,
+.graph-container *,
+.graph-container canvas,
+.graph-container > div,
+.graph-container > div > div,
+.graphical-state-machine canvas {
+  background-color: #f9fafb !important;
+  background: #f9fafb !important;
+}
+

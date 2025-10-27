@@ -72,15 +72,40 @@ export const WorkflowDetail: React.FC = () => {
                   onChange={(e) => setLayoutMode(e.target.value)}
                   size="large"
                   buttonStyle="solid"
+                  style={{
+                    display: 'inline-flex',
+                    gap: '0',
+                  }}
                 >
-                  <Radio.Button value="tabular">
-                    <TableOutlined style={{ fontSize: '22px' }} />
+                  <Radio.Button
+                    value="tabular"
+                    style={{
+                      borderColor: layoutMode === 'tabular' ? '#14b8a6' : '#d9d9d9',
+                      color: '#ffffff',
+                      backgroundColor: layoutMode === 'tabular' ? '#14b8a6' : 'transparent',
+                    }}
+                  >
+                    <TableOutlined style={{ fontSize: '22px', color: '#ffffff' }} />
                   </Radio.Button>
-                  <Radio.Button value="graphical">
-                    <ApartmentOutlined style={{ fontSize: '22px' }} />
+                  <Radio.Button
+                    value="graphical"
+                    style={{
+                      borderColor: layoutMode === 'graphical' ? '#14b8a6' : '#d9d9d9',
+                      color: '#ffffff',
+                      backgroundColor: layoutMode === 'graphical' ? '#14b8a6' : 'transparent',
+                    }}
+                  >
+                    <ApartmentOutlined style={{ fontSize: '22px', color: '#ffffff' }} />
                   </Radio.Button>
-                  <Radio.Button value="config">
-                    <SettingOutlined style={{ fontSize: '22px' }} />
+                  <Radio.Button
+                    value="config"
+                    style={{
+                      borderColor: layoutMode === 'config' ? '#14b8a6' : '#d9d9d9',
+                      color: '#ffffff',
+                      backgroundColor: layoutMode === 'config' ? '#14b8a6' : 'transparent',
+                    }}
+                  >
+                    <SettingOutlined style={{ fontSize: '22px', color: '#ffffff' }} />
                   </Radio.Button>
                 </Radio.Group>
               </div>

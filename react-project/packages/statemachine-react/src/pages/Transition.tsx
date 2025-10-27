@@ -457,7 +457,7 @@ export const Transition: React.FC = () => {
             <Col span={12}>
               {!isRuntime && (
                 <div style={{ marginTop: '30px' }}>
-                  <Button type="primary" size="large" onClick={handleAddNewCriteria}>
+                  <Button type="primary" onClick={handleAddNewCriteria}>
                     Add new <PlusOutlined />
                   </Button>
 
@@ -520,7 +520,7 @@ export const Transition: React.FC = () => {
             <Col span={12}>
               {!isRuntime && (
                 <div style={{ marginTop: '30px' }}>
-                  <Button type="primary" size="large" onClick={handleAddNewProcess}>
+                  <Button type="primary" onClick={handleAddNewProcess}>
                     Add new <PlusOutlined />
                   </Button>
 

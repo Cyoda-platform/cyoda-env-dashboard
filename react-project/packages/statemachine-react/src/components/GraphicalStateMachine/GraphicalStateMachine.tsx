@@ -80,6 +80,11 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
 
     const elements = getStatesTransitionsEles(activeTransitions, positionsMap, currentState);
 
+    // Set background color on container before initializing Cytoscape
+    if (containerRef.current) {
+      containerRef.current.style.backgroundColor = '#f9fafb';
+    }
+
     const cy = cytoscape({
       container: containerRef.current,
       elements,
@@ -92,6 +97,21 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
     });
 
     cyRef.current = cy;
+
+    // Force background color on the canvas element after Cytoscape renders
+    setTimeout(() => {
+      if (containerRef.current) {
+        const canvas = containerRef.current.querySelector('canvas');
+        if (canvas) {
+          (canvas as HTMLCanvasElement).style.backgroundColor = '#f9fafb';
+        }
+        // Also set on all child divs
+        const divs = containerRef.current.querySelectorAll('div');
+        divs.forEach((div) => {
+          (div as HTMLElement).style.backgroundColor = '#f9fafb';
+        });
+      }
+    }, 100);
 
     // Add criteria and processes
     addCriteria();
@@ -119,6 +139,36 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
     cy.nodes('.node-criteria').toggleClass('hidden', !showCriteria);
     cy.nodes('.compound-criteria').toggleClass('compound-criteria-hidden', !showCriteria);
   }, [activeTransitions, positionsMap, currentState, isInitialized]);
+
+  // Force canvas background color after initialization
+  useEffect(() => {
+    if (!isInitialized || !containerRef.current) return;
+
+    const forceBackgroundColor = () => {
+      if (!containerRef.current) return;
+
+      // Set background on container
+      containerRef.current.style.backgroundColor = '#f9fafb';
+
+      // Set background on all child elements
+      const allElements = containerRef.current.querySelectorAll('*');
+      allElements.forEach((el) => {
+        (el as HTMLElement).style.backgroundColor = '#f9fafb';
+      });
+
+      // Specifically target canvas
+      const canvas = containerRef.current.querySelector('canvas');
+      if (canvas) {
+        (canvas as HTMLCanvasElement).style.backgroundColor = '#f9fafb';
+      }
+    };
+
+    // Run immediately and after a delay to ensure it takes effect
+    forceBackgroundColor();
+    const timer = setTimeout(forceBackgroundColor, 100);
+
+    return () => clearTimeout(timer);
+  }, [isInitialized]);
 
   // Add processes to the graph
   const addProcesses = useCallback(() => {
@@ -392,22 +442,58 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
 
         {/* Graph Container */}
         <div className="graph-wrapper">
-          <div ref={containerRef} className="graph-container" />
-          
+          <div ref={containerRef} className="graph-container" style={{ background: '#f9fafb' }} />
+
           {/* Map Controls */}
           <div className="map-controls">
             <Space direction="vertical">
-              <Button icon={<AimOutlined />} onClick={fitGraph} title="Fit to screen" />
-              <Button icon={<ZoomInOutlined />} onClick={zoomIn} title="Zoom in" />
-              <Button icon={<ZoomOutOutlined />} onClick={zoomOut} title="Zoom out" />
-              <Button icon={<ArrowLeftOutlined />} onClick={panLeft} title="Pan left" />
-              <Button icon={<ArrowRightOutlined />} onClick={panRight} title="Pan right" />
-              <Button icon={<ArrowUpOutlined />} onClick={panTop} title="Pan up" />
-              <Button icon={<ArrowDownOutlined />} onClick={panBottom} title="Pan down" />
-              <Button 
-                icon={isFullscreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />} 
+              <Button
+                icon={<AimOutlined />}
+                onClick={fitGraph}
+                title="Fit to screen"
+                style={{ borderColor: '#14b8a6', color: '#14b8a6' }}
+              />
+              <Button
+                icon={<ZoomInOutlined />}
+                onClick={zoomIn}
+                title="Zoom in"
+                style={{ borderColor: '#14b8a6', color: '#14b8a6' }}
+              />
+              <Button
+                icon={<ZoomOutOutlined />}
+                onClick={zoomOut}
+                title="Zoom out"
+                style={{ borderColor: '#14b8a6', color: '#14b8a6' }}
+              />
+              <Button
+                icon={<ArrowLeftOutlined />}
+                onClick={panLeft}
+                title="Pan left"
+                style={{ borderColor: '#14b8a6', color: '#14b8a6' }}
+              />
+              <Button
+                icon={<ArrowRightOutlined />}
+                onClick={panRight}
+                title="Pan right"
+                style={{ borderColor: '#14b8a6', color: '#14b8a6' }}
+              />
+              <Button
+                icon={<ArrowUpOutlined />}
+                onClick={panTop}
+                title="Pan up"
+                style={{ borderColor: '#14b8a6', color: '#14b8a6' }}
+              />
+              <Button
+                icon={<ArrowDownOutlined />}
+                onClick={panBottom}
+                title="Pan down"
+                style={{ borderColor: '#14b8a6', color: '#14b8a6' }}
+              />
+              <Button
+                icon={isFullscreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}
                 onClick={toggleFullscreen}
                 title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}
+                style={{ borderColor: '#14b8a6', color: '#14b8a6' }}
               />
             </Space>
           </div>

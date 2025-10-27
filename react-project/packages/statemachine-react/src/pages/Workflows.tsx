@@ -258,17 +258,9 @@ export const Workflows: React.FC = () => {
   
   return (
     <div style={{ padding: '16px' }}>
-      {/* Header with Back button and Entity Type Switch */}
+      {/* Header with Entity Type Switch */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <Button
-            icon={<ArrowLeftOutlined />}
-            onClick={() => navigate('/menu')}
-          >
-            Back to Menu
-          </Button>
-          <h1 style={{ margin: 0 }}>Workflows</h1>
-        </div>
+        <h1 style={{ margin: 0 }}>Workflows</h1>
         <EntityTypeSwitch
           value={entityType}
           onChange={setEntityType}

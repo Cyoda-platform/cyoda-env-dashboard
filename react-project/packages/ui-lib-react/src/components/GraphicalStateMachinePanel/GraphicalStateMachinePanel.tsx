@@ -36,30 +36,40 @@ export const GraphicalStateMachinePanel: React.FC<GraphicalStateMachinePanelProp
   onResetPositions,
   className = ''
 }) => {
+  const buttonStyle: React.CSSProperties = {
+    borderColor: '#14b8a6 !important' as any,
+    color: '#14b8a6 !important' as any,
+  };
+
+  const dangerButtonStyle: React.CSSProperties = {
+    borderColor: '#ef4444 !important' as any,
+    color: '#ef4444 !important' as any,
+  };
+
   return (
     <div className={`graphical-state-machine-panel ${className}`}>
       <Space wrap>
-        <Button onClick={onToggleListOfTransitions}>
+        <Button onClick={onToggleListOfTransitions} style={buttonStyle}>
           {showListOfTransitions ? <EyeOutlined /> : <EyeInvisibleOutlined />}
           List of transitions
         </Button>
-        <Button onClick={onToggleProcesses}>
+        <Button onClick={onToggleProcesses} style={buttonStyle}>
           {showProcesses ? <EyeOutlined /> : <EyeInvisibleOutlined />}
           processes
         </Button>
-        <Button onClick={onToggleCriteria}>
+        <Button onClick={onToggleCriteria} style={buttonStyle}>
           {showCriteria ? <EyeOutlined /> : <EyeInvisibleOutlined />}
           criteria
         </Button>
-        <Button onClick={onToggleTitles}>
+        <Button onClick={onToggleTitles} style={buttonStyle}>
           {showTitles ? <EyeOutlined /> : <EyeInvisibleOutlined />}
           states
         </Button>
-        <Button onClick={onToggleEdgesTitles}>
+        <Button onClick={onToggleEdgesTitles} style={buttonStyle}>
           {showEdgesTitles ? <EyeOutlined /> : <EyeInvisibleOutlined />}
           transitions titles
         </Button>
-        <Button onClick={onResetPositions} type="default" danger>
+        <Button onClick={onResetPositions} type="default" danger style={dangerButtonStyle}>
           Reset positions
         </Button>
       </Space>
