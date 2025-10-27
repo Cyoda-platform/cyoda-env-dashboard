@@ -113,7 +113,7 @@ describe('PageEntityViewer', () => {
       render(<PageEntityViewer />);
 
       await waitFor(() => {
-        const infoIcon = screen.getByRole('img', { hidden: true });
+        const infoIcon = screen.getByRole('img', { name: 'info-circle', hidden: true });
         expect(infoIcon).toBeInTheDocument();
       });
     });
@@ -419,16 +419,23 @@ describe('PageEntityViewer', () => {
         expect(screen.getByTestId('card-component')).toBeInTheDocument();
       });
 
-      const removeEventListenerSpy = vi.spyOn(window, 'removeEventListener');
+      // Import eventBus to spy on it
+      const { eventBus } = await import('../../utils');
+      const eventBusOffSpy = vi.spyOn(eventBus, 'off');
 
       unmount();
 
-      expect(removeEventListenerSpy).toHaveBeenCalledWith(
-        'entity-viewer:draw-lines',
+      // Should cleanup both event listeners
+      expect(eventBusOffSpy).toHaveBeenCalledWith(
+        'entityInfo:update',
+        expect.any(Function)
+      );
+      expect(eventBusOffSpy).toHaveBeenCalledWith(
+        'streamGrid:open',
         expect.any(Function)
       );
 
-      removeEventListenerSpy.mockRestore();
+      eventBusOffSpy.mockRestore();
     });
   });
 });

@@ -35,26 +35,57 @@ global.IntersectionObserver = class IntersectionObserver {
   unobserve() {}
 } as any
 
-// Mock localStorage
-const localStorageMock = (() => {
-  let store: Record<string, string> = {}
+// Mock localStorage with proper Storage interface
+class LocalStorageMock implements Storage {
+  private store: Record<string, string> = {}
 
-  return {
-    getItem: (key: string) => store[key] || null,
-    setItem: (key: string, value: string) => {
-      store[key] = value.toString()
-    },
-    removeItem: (key: string) => {
-      delete store[key]
-    },
-    clear: () => {
-      store = {}
-    }
+  get length(): number {
+    return Object.keys(this.store).length
   }
-})()
 
+  clear(): void {
+    this.store = {}
+  }
+
+  getItem(key: string): string | null {
+    return this.store[key] || null
+  }
+
+  setItem(key: string, value: string): void {
+    this.store[key] = value.toString()
+  }
+
+  removeItem(key: string): void {
+    delete this.store[key]
+  }
+
+  key(index: number): string | null {
+    const keys = Object.keys(this.store)
+    return keys[index] || null
+  }
+
+  // Make the store enumerable so Object.keys() works
+  [key: string]: any
+}
+
+const localStorageMock = new LocalStorageMock()
+
+// Make localStorage enumerable
 Object.defineProperty(window, 'localStorage', {
-  value: localStorageMock
+  value: new Proxy(localStorageMock, {
+    ownKeys(target) {
+      return Object.keys((target as any).store)
+    },
+    getOwnPropertyDescriptor(target, prop) {
+      if (typeof prop === 'string' && (target as any).store.hasOwnProperty(prop)) {
+        return {
+          enumerable: true,
+          configurable: true,
+        }
+      }
+      return Object.getOwnPropertyDescriptor(target, prop)
+    }
+  })
 })
 
 // Mock ResizeObserver

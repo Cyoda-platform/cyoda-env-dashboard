@@ -87,21 +87,22 @@ async function refreshAccessToken(): Promise<void> {
   try {
     const auth = helperStorage.get('auth');
     const refreshToken = auth?.refreshToken;
-    
+
     if (!refreshToken) {
       throw new Error('No refresh token available');
     }
-    
-    const response = await axiosPublic.post('/platform-api/auth/refresh', {
+
+    // Use /auth/refresh endpoint (baseURL already includes /api)
+    const response = await axiosPublic.post('/auth/refresh', {
       refreshToken,
     });
-    
+
     const newAuth = {
       ...auth,
       token: response.data.token,
       refreshToken: response.data.refreshToken,
     };
-    
+
     helperStorage.set('auth', newAuth);
   } catch (error) {
     // Clear auth and redirect to login

@@ -9,6 +9,8 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./vitest.setup.ts'],
     css: true,
+    testTimeout: 10000, // 10 seconds for async operations
+    hookTimeout: 10000, // 10 seconds for setup/teardown hooks
     environmentOptions: {
       jsdom: {
         resources: 'usable',

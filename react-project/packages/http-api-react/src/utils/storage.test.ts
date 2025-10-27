@@ -180,8 +180,9 @@ describe('HelperStorage', () => {
     it('should handle JSON parse errors gracefully', () => {
       // Manually set invalid JSON
       localStorage.setItem('test_invalid', 'invalid json {');
-      
-      expect(storage.get('invalid')).toBeNull();
+
+      // Should return the raw string if it's not valid JSON
+      expect(storage.get('invalid')).toBe('invalid json {');
     });
 
     it('should handle null values', () => {

@@ -19,9 +19,11 @@ import {
   AppstoreOutlined,
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
+import { HelperStorage } from '@cyoda/http-api-react/utils/storage';
 import './LeftSideMenu.scss';
 
 const { Sider } = Layout;
+const helperStorage = new HelperStorage();
 
 type MenuItem = Required<MenuProps>['items'][number];
 
@@ -43,12 +45,13 @@ export const LeftSideMenu: React.FC<LeftSideMenuProps> = ({ collapsed, onCollaps
       cancelText: 'Logout and Clear Data',
       onOk: () => {
         // Logout without clearing data
-        localStorage.removeItem('auth');
+        helperStorage.remove('auth');
         navigate('/login');
       },
       onCancel: () => {
         // Logout and clear all data
-        localStorage.clear();
+        helperStorage.clear();
+        localStorage.clear(); // Also clear non-prefixed items
         navigate('/login');
       },
       okButtonProps: {

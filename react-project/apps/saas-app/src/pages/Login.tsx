@@ -4,7 +4,10 @@ import { Form, Input, Button, Card, App, Divider } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useAuth0 } from '@auth0/auth0-react';
 import * as authApi from '@cyoda/http-api-react/api/auth';
+import { HelperStorage } from '@cyoda/http-api-react/utils/storage';
 import './Login.scss';
+
+const helperStorage = new HelperStorage();
 
 interface LoginFormValues {
   username: string;
@@ -28,15 +31,15 @@ const Login: React.FC = () => {
           const response = await authApi.loginAuth0(token);
           const authData = response.data;
 
-          // Store auth token from backend
-          localStorage.setItem('auth', JSON.stringify({
+          // Store auth token from backend using HelperStorage
+          helperStorage.set('auth', {
             token: authData.token,
             refreshToken: authData.refreshToken,
             user: authData.username,
             userId: authData.userId,
             legalEntityId: authData.legalEntityId,
             type: 'auth0'
-          }));
+          });
 
           message.success('Login successful!');
           navigate('/trino');
@@ -57,15 +60,15 @@ const Login: React.FC = () => {
       const response = await authApi.login(values.username, values.password);
       const authData = response.data;
 
-      // Store auth token from backend
-      localStorage.setItem('auth', JSON.stringify({
+      // Store auth token from backend using HelperStorage
+      helperStorage.set('auth', {
         token: authData.token,
         refreshToken: authData.refreshToken,
         user: authData.username,
         userId: authData.userId,
         legalEntityId: authData.legalEntityId,
         type: 'standard'
-      }));
+      });
 
       message.success('Login successful!');
       navigate('/trino');

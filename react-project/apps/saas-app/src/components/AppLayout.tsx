@@ -4,9 +4,11 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { AppHeader } from './AppHeader';
 import { LeftSideMenu } from './LeftSideMenu';
 import { MockApiToggle } from '@cyoda/processing-manager-react';
+import { HelperStorage } from '@cyoda/http-api-react/utils/storage';
 import './AppLayout.scss';
 
 const { Content } = Layout;
+const helperStorage = new HelperStorage();
 
 export const AppLayout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -15,22 +17,15 @@ export const AppLayout: React.FC = () => {
 
   // Check authentication on mount and location change
   useEffect(() => {
-    const authData = localStorage.getItem('auth');
+    const authData = helperStorage.get('auth');
     if (!authData) {
       // No auth data, redirect to login
       navigate('/login', { replace: true });
       return;
     }
 
-    try {
-      const parsed = JSON.parse(authData);
-      if (!parsed.token) {
-        // No token, redirect to login
-        navigate('/login', { replace: true });
-      }
-    } catch (e) {
-      // Invalid auth data, redirect to login
-      console.error('Invalid auth data:', e);
+    if (!authData.token) {
+      // No token, redirect to login
       navigate('/login', { replace: true });
     }
   }, [location.pathname, navigate]);
