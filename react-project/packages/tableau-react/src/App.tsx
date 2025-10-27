@@ -5,7 +5,7 @@
 
 import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { ConfigProvider } from 'antd';
+import { ConfigProvider, theme as antdTheme } from 'antd';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import routes from './routes';
 import './App.scss';
@@ -101,8 +101,42 @@ const App: React.FC = () => {
       <ConfigProvider
         theme={{
           token: {
-            colorPrimary: '#1890ff',
-            borderRadius: 4,
+            colorPrimary: '#00D4AA',
+            colorPrimaryHover: '#00E5BF',
+            colorLink: '#00D4AA',
+            colorLinkHover: '#00E5BF',
+            borderRadius: 6,
+          },
+          components: {
+            Button: {
+              // Primary button
+              colorPrimary: '#00D4AA',
+              colorPrimaryHover: '#00E5BF',
+              colorPrimaryActive: '#00B894',
+              primaryColor: '#FFFFFF',
+
+              // Default button
+              defaultBg: 'transparent',
+              defaultBorderColor: 'rgba(0, 212, 170, 0.5)',
+              defaultColor: '#00D4AA',
+              defaultHoverBg: 'rgba(0, 212, 170, 0.1)',
+              defaultHoverBorderColor: '#00D4AA',
+              defaultHoverColor: '#00E5BF',
+              defaultActiveBg: 'rgba(0, 212, 170, 0.15)',
+              defaultActiveBorderColor: '#00B894',
+              defaultActiveColor: '#00B894',
+
+              // Text button
+              textHoverBg: 'rgba(0, 212, 170, 0.1)',
+
+              // Link button
+              linkHoverBg: 'transparent',
+
+              // Danger button
+              dangerColor: '#EF4444',
+              colorErrorHover: '#F87171',
+              colorErrorActive: '#DC2626',
+            },
           },
         }}
       >

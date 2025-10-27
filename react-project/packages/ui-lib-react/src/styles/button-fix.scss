@@ -1,0 +1,260 @@
+/**
+ * Global Button Hover Fix
+ * Fixes the black hover color issue in Ant Design buttons across all themes
+ * 
+ * Import this file in your main App.scss or index.scss:
+ * @import '@cyoda/ui-lib-react/src/styles/button-fix.scss';
+ */
+
+// Fix button hover states - prevent black color on hover
+.ant-btn {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  // Primary button
+  &.ant-btn-primary {
+    background: #00D4AA !important;
+    border-color: #00D4AA !important;
+    color: #FFFFFF !important;
+    
+    &:hover:not(:disabled) {
+      background: #00E5BF !important;
+      border-color: #00E5BF !important;
+      color: #FFFFFF !important;
+      box-shadow: 0 2px 8px rgba(0, 212, 170, 0.3);
+    }
+    
+    &:active:not(:disabled) {
+      background: #00B894 !important;
+      border-color: #00B894 !important;
+    }
+    
+    &:focus:not(:disabled) {
+      background: #00D4AA !important;
+      border-color: #00D4AA !important;
+      outline: 2px solid rgba(0, 212, 170, 0.2);
+      outline-offset: 2px;
+    }
+  }
+  
+  // Default button
+  &.ant-btn-default {
+    background: transparent !important;
+    border-color: rgba(0, 212, 170, 0.5) !important;
+    color: #00D4AA !important;
+    
+    &:hover:not(:disabled) {
+      background: rgba(0, 212, 170, 0.1) !important;
+      border-color: #00D4AA !important;
+      color: #00E5BF !important;
+    }
+    
+    &:active:not(:disabled) {
+      background: rgba(0, 212, 170, 0.15) !important;
+      border-color: #00B894 !important;
+      color: #00B894 !important;
+    }
+    
+    &:focus:not(:disabled) {
+      border-color: #00D4AA !important;
+      outline: 2px solid rgba(0, 212, 170, 0.2);
+      outline-offset: 2px;
+    }
+  }
+  
+  // Text button
+  &.ant-btn-text {
+    color: #00D4AA !important;
+    background: transparent !important;
+    border-color: transparent !important;
+    
+    &:hover:not(:disabled) {
+      background: rgba(0, 212, 170, 0.1) !important;
+      color: #00E5BF !important;
+    }
+    
+    &:active:not(:disabled) {
+      background: rgba(0, 212, 170, 0.15) !important;
+      color: #00B894 !important;
+    }
+  }
+  
+  // Link button
+  &.ant-btn-link {
+    color: #00D4AA !important;
+    background: transparent !important;
+    border-color: transparent !important;
+    
+    &:hover:not(:disabled) {
+      color: #00E5BF !important;
+      background: transparent !important;
+    }
+    
+    &:active:not(:disabled) {
+      color: #00B894 !important;
+    }
+  }
+  
+  // Danger button
+  &.ant-btn-dangerous {
+    &.ant-btn-primary {
+      background: #EF4444 !important;
+      border-color: #EF4444 !important;
+      color: #FFFFFF !important;
+      
+      &:hover:not(:disabled) {
+        background: #F87171 !important;
+        border-color: #F87171 !important;
+        color: #FFFFFF !important;
+        box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+      }
+      
+      &:active:not(:disabled) {
+        background: #DC2626 !important;
+        border-color: #DC2626 !important;
+      }
+    }
+    
+    &.ant-btn-default {
+      color: #EF4444 !important;
+      border-color: rgba(239, 68, 68, 0.5) !important;
+      background: transparent !important;
+      
+      &:hover:not(:disabled) {
+        background: rgba(239, 68, 68, 0.1) !important;
+        border-color: #EF4444 !important;
+        color: #F87171 !important;
+      }
+      
+      &:active:not(:disabled) {
+        background: rgba(239, 68, 68, 0.15) !important;
+        border-color: #DC2626 !important;
+        color: #DC2626 !important;
+      }
+    }
+    
+    &.ant-btn-text {
+      color: #EF4444 !important;
+      
+      &:hover:not(:disabled) {
+        background: rgba(239, 68, 68, 0.1) !important;
+        color: #F87171 !important;
+      }
+    }
+    
+    &.ant-btn-link {
+      color: #EF4444 !important;
+      
+      &:hover:not(:disabled) {
+        color: #F87171 !important;
+      }
+    }
+  }
+  
+  // Disabled state
+  &:disabled,
+  &.ant-btn-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    
+    &:hover {
+      background: inherit !important;
+      border-color: inherit !important;
+      color: inherit !important;
+      box-shadow: none !important;
+    }
+  }
+  
+  // Loading state
+  &.ant-btn-loading {
+    opacity: 0.7;
+    cursor: wait;
+  }
+  
+  // Icon-only buttons
+  &.ant-btn-icon-only {
+    &:hover:not(:disabled) {
+      transform: scale(1.05);
+    }
+  }
+  
+  // Button groups
+  &.ant-btn-group {
+    .ant-btn {
+      &:not(:first-child):not(:last-child) {
+        border-left-color: rgba(255, 255, 255, 0.2) !important;
+        border-right-color: rgba(255, 255, 255, 0.2) !important;
+      }
+    }
+  }
+}
+
+// Fix for buttons in dark backgrounds
+.dark-theme,
+.ant-modal,
+.ant-drawer,
+[data-theme="dark"] {
+  .ant-btn {
+    &.ant-btn-default {
+      background: rgba(255, 255, 255, 0.05) !important;
+      border-color: rgba(0, 212, 170, 0.3) !important;
+      
+      &:hover:not(:disabled) {
+        background: rgba(0, 212, 170, 0.15) !important;
+        border-color: #00D4AA !important;
+      }
+    }
+  }
+}
+
+// Fix for compact buttons
+.ant-btn-sm {
+  &.ant-btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+  }
+}
+
+// Fix for large buttons
+.ant-btn-lg {
+  &.ant-btn:hover:not(:disabled) {
+    box-shadow: 0 4px 12px rgba(0, 212, 170, 0.25);
+  }
+}
+
+// Fix for button in forms
+.ant-form-item {
+  .ant-btn {
+    margin-right: 8px;
+    
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+}
+
+// Fix for buttons in modals
+.ant-modal-footer {
+  .ant-btn {
+    &.ant-btn-default {
+      background: transparent !important;
+      border-color: rgba(0, 212, 170, 0.5) !important;
+      
+      &:hover:not(:disabled) {
+        background: rgba(0, 212, 170, 0.1) !important;
+        border-color: #00D4AA !important;
+      }
+    }
+  }
+}
+
+// Fix for buttons in popovers and dropdowns
+.ant-popover,
+.ant-dropdown {
+  .ant-btn {
+    &.ant-btn-text {
+      &:hover:not(:disabled) {
+        background: rgba(0, 212, 170, 0.08) !important;
+      }
+    }
+  }
+}
+

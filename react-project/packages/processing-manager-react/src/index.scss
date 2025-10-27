@@ -4,6 +4,9 @@
 
 @import 'antd/dist/reset.css';
 
+// Import shared button fix styles
+@import '../ui-lib-react/src/styles/button-fix.scss';
+
 html,
 body {
   margin: 0;

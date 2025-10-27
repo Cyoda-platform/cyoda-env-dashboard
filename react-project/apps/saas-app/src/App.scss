@@ -1,4 +1,5 @@
 // Global styles for the SaaS app - Refine.dev Enterprise Theme
+
 * {
   margin: 0;
   padding: 0;
@@ -288,39 +289,97 @@ code {
   }
 }
 
-// Button styling improvements
+// Button styling improvements - Fixed black hover issue
 .ant-btn {
   border-radius: 6px;
   font-weight: 500;
   transition: all var(--refine-transition-base);
 
   &.ant-btn-primary {
-    background: var(--refine-primary);
-    border-color: var(--refine-primary);
+    background: var(--refine-primary) !important;
+    border-color: var(--refine-primary) !important;
+    color: #FFFFFF !important;
     box-shadow: 0 2px 4px rgba(0, 212, 170, 0.2);
 
-    &:hover {
-      background: var(--refine-primary-dark);
-      border-color: var(--refine-primary-dark);
+    &:hover:not(:disabled) {
+      background: var(--refine-primary-light) !important;
+      border-color: var(--refine-primary-light) !important;
+      color: #FFFFFF !important;
       box-shadow: 0 4px 8px rgba(0, 212, 170, 0.3);
+    }
+
+    &:active:not(:disabled) {
+      background: var(--refine-primary-dark) !important;
+      border-color: var(--refine-primary-dark) !important;
     }
   }
 
   &.ant-btn-default {
-    background: var(--refine-bg-tertiary);
-    border-color: rgba(255, 255, 255, 0.1);
-    color: var(--refine-text-primary);
+    background: transparent !important;
+    border-color: rgba(0, 212, 170, 0.5) !important;
+    color: var(--refine-primary) !important;
 
-    &:hover {
-      border-color: var(--refine-primary);
-      color: var(--refine-primary);
+    &:hover:not(:disabled) {
+      background: rgba(0, 212, 170, 0.1) !important;
+      border-color: var(--refine-primary) !important;
+      color: var(--refine-primary-light) !important;
+    }
+
+    &:active:not(:disabled) {
+      background: rgba(0, 212, 170, 0.15) !important;
+      border-color: var(--refine-primary-dark) !important;
+      color: var(--refine-primary-dark) !important;
+    }
+  }
+
+  &.ant-btn-text {
+    color: var(--refine-primary) !important;
+
+    &:hover:not(:disabled) {
+      background: rgba(0, 212, 170, 0.1) !important;
+      color: var(--refine-primary-light) !important;
+    }
+  }
+
+  &.ant-btn-link {
+    color: var(--refine-primary) !important;
+
+    &:hover:not(:disabled) {
+      color: var(--refine-primary-light) !important;
     }
   }
 
   &.ant-btn-dangerous {
-    &:hover {
-      box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+    &.ant-btn-primary {
+      background: #EF4444 !important;
+      border-color: #EF4444 !important;
+      color: #FFFFFF !important;
+
+      &:hover:not(:disabled) {
+        background: #F87171 !important;
+        border-color: #F87171 !important;
+        color: #FFFFFF !important;
+        box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+      }
     }
+
+    &.ant-btn-default {
+      color: #EF4444 !important;
+      border-color: rgba(239, 68, 68, 0.5) !important;
+
+      &:hover:not(:disabled) {
+        background: rgba(239, 68, 68, 0.1) !important;
+        border-color: #EF4444 !important;
+        color: #F87171 !important;
+        box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+      }
+    }
+  }
+
+  &:disabled,
+  &.ant-btn-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 }
 

@@ -6,6 +6,9 @@
 // Import global styles
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap");
 
+// Import shared button fix styles
+@import '../../ui-lib-react/src/styles/button-fix.scss';
+
 // App container
 #root {
   width: 100%;
