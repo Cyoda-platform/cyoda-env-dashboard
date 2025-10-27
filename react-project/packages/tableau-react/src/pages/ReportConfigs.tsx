@@ -3,7 +3,7 @@
  * Migrated from: .old_project/packages/http-api/src/views/ConfigEditor/ConfigEditorReports.vue
  */
 
-import React, { useState, useRef, useMemo, useCallback } from 'react';
+import React, { useState, useRef, useMemo, useCallback, useEffect } from 'react';
 import { Table, Button, Tooltip, Modal, message, Space, Divider, Upload } from 'antd';
 import {
   PlusOutlined,
@@ -17,6 +17,7 @@ import {
   DownloadOutlined,
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
+import type { ResizeCallbackData } from 'react-resizable';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -26,6 +27,7 @@ import CreateReportDialog, { type CreateReportDialogRef, type CreateReportFormDa
 import CloneReportDialog, { type CloneReportDialogRef } from '../components/CloneReportDialog';
 import ConfigEditorReportsFilter from '../components/ConfigEditorReportsFilter';
 import ReportTemplates from '../components/ReportTemplates';
+import { ResizableTitle } from '../components/ResizableTitle';
 import HelperReportDefinition from '../utils/HelperReportDefinition';
 import { HelperStorage } from '@cyoda/ui-lib-react';
 import type { ReportDefinition } from '../types';
@@ -81,6 +83,24 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
   const [showTemplates, setShowTemplates] = useState(false);
   const [exportLoading, setExportLoading] = useState(false);
   const [importLoading, setImportLoading] = useState(false);
+
+  // Column widths state - load from localStorage
+  const [columnWidths, setColumnWidths] = useState<Record<string, number>>(() => {
+    const saved = storage.get('reportConfigs:columnWidths', {});
+    return saved || {
+      name: 200,
+      description: 250,
+      entityClassNameLabel: 180,
+      username: 120,
+      createdHuman: 150,
+      action: 180,
+    };
+  });
+
+  // Save column widths to localStorage whenever they change
+  useEffect(() => {
+    storage.set('reportConfigs:columnWidths', columnWidths);
+  }, [columnWidths, storage]);
 
   // Load report definitions
   const { data: definitions = [], isLoading, refetch } = useQuery({
@@ -416,61 +436,124 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
   const handleResetState = useCallback(() => {
     setFilterForm({});
     storage.remove('tableSaveState:configEditorReports:table');
+    storage.remove('reportConfigs:columnWidths');
+    // Reset column widths to defaults
+    setColumnWidths({
+      name: 200,
+      description: 250,
+      entityClassNameLabel: 180,
+      username: 120,
+      createdHuman: 150,
+      action: 180,
+    });
     refetch();
   }, [storage, refetch]);
 
-  // Table columns
-  const columns: ColumnsType<ReportConfigRow> = [
-    {
-      title: 'Config',
-      dataIndex: 'name',
-      key: 'name',
-      sorter: (a, b) => a.name.localeCompare(b.name),
-      width: 200,
-      ellipsis: true,
-    },
-    {
-      title: 'Description',
-      dataIndex: 'description',
-      key: 'description',
-      ellipsis: true,
-      width: 250,
-    },
-    {
-      title: 'Type',
-      dataIndex: 'entityClassNameLabel',
-      key: 'entity',
-      width: 180,
-      ellipsis: {
-        showTitle: true,
+  // Handle column resize
+  const handleResize = useCallback((key: string) => {
+    return (_: React.SyntheticEvent, { size }: ResizeCallbackData) => {
+      setColumnWidths((prev) => ({
+        ...prev,
+        [key]: size.width,
+      }));
+    };
+  }, []);
+
+  // Table columns with resizable widths
+  const columns: ColumnsType<ReportConfigRow> = useMemo(() => {
+    const resizableColumns: ColumnsType<ReportConfigRow> = [
+      {
+        title: 'Config',
+        dataIndex: 'name',
+        key: 'name',
+        sorter: (a, b) => a.name.localeCompare(b.name),
+        width: columnWidths.name,
+        ellipsis: true,
+        onHeaderCell: () => {
+          const w = columnWidths.name;
+          return {
+            width: w,
+            onResize: handleResize('name'),
+          } as any;
+        },
       },
-      sorter: (a, b) => a.entityClassNameLabel.localeCompare(b.entityClassNameLabel),
-      render: (text: string) => (
-        <Tooltip title={text}>
-          <span>{text}</span>
-        </Tooltip>
-      ),
-    },
-    {
-      title: 'User',
-      dataIndex: 'username',
-      key: 'username',
-      width: 120,
-      ellipsis: true,
-      sorter: (a, b) => a.username.localeCompare(b.username),
-    },
-    {
-      title: 'Created',
-      dataIndex: 'createdHuman',
-      key: 'created',
-      width: 150,
-      sorter: (a, b) => a.created.localeCompare(b.created),
-    },
-    {
-      title: 'Action',
-      key: 'action',
-      width: 180,
-      fixed: 'right',
+      {
+        title: 'Description',
+        dataIndex: 'description',
+        key: 'description',
+        ellipsis: true,
+        width: columnWidths.description,
+        onHeaderCell: () => {
+          const w = columnWidths.description;
+          return {
+            width: w,
+            onResize: handleResize('description'),
+          } as any;
+        },
+      },
+      {
+        title: 'Type',
+        dataIndex: 'entityClassNameLabel',
+        key: 'entity',
+        width: columnWidths.entityClassNameLabel,
+        ellipsis: {
+          showTitle: true,
+        },
+        sorter: (a, b) => a.entityClassNameLabel.localeCompare(b.entityClassNameLabel),
+        render: (text: string) => (
+          <Tooltip title={text}>
+            <span>{text}</span>
+          </Tooltip>
+        ),
+        onHeaderCell: () => {
+          const w = columnWidths.entityClassNameLabel;
+          return {
+            width: w,
+            onResize: handleResize('entityClassNameLabel'),
+          } as any;
+        },
+      },
+      {
+        title: 'User',
+        dataIndex: 'username',
+        key: 'username',
+        width: columnWidths.username,
+        ellipsis: true,
+        sorter: (a, b) => a.username.localeCompare(b.username),
+        onHeaderCell: () => {
+          const w = columnWidths.username;
+          return {
+            width: w,
+            onResize: handleResize('username'),
+          } as any;
+        },
+      },
+      {
+        title: 'Created',
+        dataIndex: 'createdHuman',
+        key: 'created',
+        width: columnWidths.createdHuman,
+        sorter: (a, b) => a.created.localeCompare(b.created),
+        onHeaderCell: () => {
+          const w = columnWidths.createdHuman;
+          return {
+            width: w,
+            onResize: handleResize('createdHuman'),
+          } as any;
+        },
+      },
+      {
+        title: 'Action',
+        key: 'action',
+        width: columnWidths.action,
+        fixed: 'right',
+        onHeaderCell: () => {
+          const w = columnWidths.action;
+          return {
+            width: w,
+            onResize: handleResize('action'),
+          } as any;
+        },
       render: (_, record) => (
         <Space size="small">
           <Tooltip title="Edit">
@@ -526,6 +609,9 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
       ),
     },
   ];
+
+  return resizableColumns;
+}, [columnWidths, handleResize, handleEditReport, handleCloneClick, handleRunReport, handleCancelReport, handleDeleteReport]);
 
   return (
     <div className="report-configs">
@@ -615,6 +701,11 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
           showTotal: (total) => `Total ${total} items`,
         }}
         scroll={{ x: 1100 }}
+        components={{
+          header: {
+            cell: ResizableTitle,
+          },
+        }}
       />
 
       <CreateReportDialog ref={createDialogRef} onConfirm={handleCreateReport} />

@@ -7,21 +7,21 @@
     padding: 4px 0;
 
     &.checked-path {
-      background-color: #f0f7ff;
+      background-color: rgba(0, 212, 170, 0.1);
     }
 
     &.inner-related {
-      border-left: 3px solid #1890ff;
+      border-left: 3px solid var(--refine-primary);
       padding-left: 8px;
     }
   }
 
   .eye {
     cursor: pointer;
-    color: #8c8c8c;
-    
+    color: var(--refine-text-secondary);
+
     &:hover {
-      color: #1890ff;
+      color: var(--refine-primary);
     }
 
     &.is-leaf {
@@ -35,18 +35,18 @@
 
   .join-link {
     cursor: pointer;
-    color: #8c8c8c;
+    color: var(--refine-text-secondary);
 
     &:hover {
-      color: #1890ff;
+      color: var(--refine-primary);
     }
 
     &.active {
-      color: #1890ff;
+      color: var(--refine-primary);
     }
 
     &.disabled {
-      color: #d9d9d9;
+      color: rgba(255, 255, 255, 0.3);
       cursor: not-allowed;
     }
   }
@@ -56,9 +56,11 @@
   }
 
   .name {
+    color: var(--refine-text-primary);
+
     a {
       cursor: pointer;
-      color: #1890ff;
+      color: var(--refine-primary);
 
       &:hover {
         text-decoration: underline;
@@ -67,7 +69,7 @@
   }
 
   .entity-class-name {
-    color: #8c8c8c;
+    color: var(--refine-text-secondary);
     font-size: 0.9em;
   }
 
@@ -82,19 +84,19 @@
 
   &.has-join {
     .inner-related {
-      background-color: #f6ffed;
+      background-color: rgba(82, 196, 26, 0.1);
     }
   }
 
   &.rel-active {
     .inner {
-      background-color: #fff7e6;
+      background-color: rgba(250, 173, 20, 0.1);
     }
   }
 
   &.generic-field {
     .inner {
-      background-color: #f9f0ff;
+      background-color: rgba(114, 46, 209, 0.1);
     }
   }
 }
