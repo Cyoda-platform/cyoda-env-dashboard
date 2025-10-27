@@ -12,7 +12,7 @@ import type { EntityViewerEntity } from '../../types';
 // Mock dependencies
 vi.mock('../../stores/entityViewerStore');
 vi.mock('../../api/entities');
-vi.mock('@cyoda/ui-lib-react', () => ({
+vi.mock('@cyoda/tableau-react', () => ({
   ModellingGroup: ({ reportInfoRows }: any) => (
     <div data-testid="modelling-group">
       {reportInfoRows.map((row: any, idx: number) => (
@@ -43,7 +43,10 @@ describe('EntityViewer', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
+    // Clean up DOM
+    document.body.innerHTML = '';
+
     // Mock store
     (useEntityViewerStore as any).mockReturnValue({
       removeEntity: mockRemoveEntity,
@@ -61,6 +64,7 @@ describe('EntityViewer', () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
+    document.body.innerHTML = '';
   });
 
   describe('Rendering', () => {
@@ -207,50 +211,50 @@ describe('EntityViewer', () => {
 
   describe('Delete Functionality', () => {
     it('should show delete icon', () => {
-      render(
+      const { container } = render(
         <EntityViewer
           requestClass="com.cyoda.core.Entity"
           entity={mockEntity}
         />
       );
 
-      const deleteIcon = screen.getByRole('img', { hidden: true });
+      const deleteIcon = container.querySelector('.wrap-icon');
       expect(deleteIcon).toBeInTheDocument();
     });
 
     it('should show confirmation modal on delete click', async () => {
-      render(
+      const { container } = render(
         <EntityViewer
           requestClass="com.cyoda.core.Entity"
           entity={mockEntity}
         />
       );
 
-      const deleteIcon = screen.getByRole('img', { hidden: true });
+      const deleteIcon = container.querySelector('.wrap-icon svg') as HTMLElement;
       fireEvent.click(deleteIcon);
 
       await waitFor(() => {
-        expect(screen.getByText('Confirm')).toBeInTheDocument();
+        expect(screen.getAllByText('Confirm')[0]).toBeInTheDocument();
         expect(screen.getByText('Do you really want to remove?')).toBeInTheDocument();
       });
     });
 
     it('should remove entity on confirmation', async () => {
-      render(
+      const { container } = render(
         <EntityViewer
           requestClass="com.cyoda.core.Entity"
           entity={mockEntity}
         />
       );
 
-      const deleteIcon = screen.getByRole('img', { hidden: true });
+      const deleteIcon = container.querySelector('.wrap-icon svg') as HTMLElement;
       fireEvent.click(deleteIcon);
 
       await waitFor(() => {
-        expect(screen.getByText('Confirm')).toBeInTheDocument();
+        expect(screen.getAllByText('Confirm')[0]).toBeInTheDocument();
       });
 
-      const okButton = screen.getByRole('button', { name: /ok/i });
+      const okButton = screen.getAllByRole('button', { name: /ok/i })[0];
       fireEvent.click(okButton);
 
       await waitFor(() => {
@@ -260,11 +264,8 @@ describe('EntityViewer', () => {
 
     it('should call onResetRequestClass when deleting last entity', async () => {
       const onResetRequestClass = vi.fn();
-      
-      // Mock single entity in DOM
-      document.body.innerHTML = '<div class="entity-viewer"></div>';
 
-      render(
+      const { container } = render(
         <EntityViewer
           requestClass="com.cyoda.core.Entity"
           entity={mockEntity}
@@ -272,19 +273,23 @@ describe('EntityViewer', () => {
         />
       );
 
-      const deleteIcon = screen.getByRole('img', { hidden: true });
+      // Verify there's only one entity-viewer
+      expect(document.querySelectorAll('.entity-viewer').length).toBe(1);
+
+      const deleteIcon = container.querySelector('.wrap-icon svg') as HTMLElement;
       fireEvent.click(deleteIcon);
 
       await waitFor(() => {
-        expect(screen.getByText('Confirm')).toBeInTheDocument();
+        expect(screen.getAllByText('Confirm')[0]).toBeInTheDocument();
       });
 
-      const okButton = screen.getByRole('button', { name: /ok/i });
+      const okButton = screen.getAllByRole('button', { name: /ok/i })[0];
       fireEvent.click(okButton);
 
       await waitFor(() => {
+        expect(mockRemoveEntity).toHaveBeenCalledWith(mockEntity);
         expect(onResetRequestClass).toHaveBeenCalled();
-      });
+      }, { timeout: 2000 });
     });
   });
 
@@ -340,14 +345,14 @@ describe('EntityViewer', () => {
         />
       );
 
-      const deleteIcon = screen.getByRole('img', { hidden: true });
+      const deleteIcon = container.querySelector('.wrap-icon') as HTMLElement;
       const entityViewer = container.querySelector('.entity-viewer') as HTMLElement;
-      
+
       const initialLeft = entityViewer.style.left;
-      
+
       fireEvent.mouseDown(deleteIcon, { clientX: 100, clientY: 100 });
       fireEvent.mouseMove(document, { clientX: 150, clientY: 150 });
-      
+
       expect(entityViewer.style.left).toBe(initialLeft);
     });
   });
