@@ -15,8 +15,8 @@ export * from './hooks';
 // Utils
 export * from './utils';
 
-// Components (will be added as we migrate them)
-// export * from './components';
+// Components
+export * from './components';
 
 // Pages
 export * from './pages';
