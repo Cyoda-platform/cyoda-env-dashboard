@@ -601,7 +601,21 @@ app.get('/platform-api/reporting/types', (req, res) => {
 
 // Get report types with fetch
 app.get('/platform-api/reporting/types/fetch', (req, res) => {
-  res.json(mockReportTypes);
+  const { withModels } = req.query;
+
+  // Return entity classes in the format expected by CreateReportDialog
+  const entityClasses = [
+    { name: 'com.cyoda.model.Customer', label: 'Customer', type: 'BUSINESS' },
+    { name: 'com.cyoda.model.Order', label: 'Order', type: 'BUSINESS' },
+    { name: 'com.cyoda.model.Product', label: 'Product', type: 'BUSINESS' },
+    { name: 'com.cyoda.model.Transaction', label: 'Transaction', type: 'BUSINESS' },
+    { name: 'com.cyoda.model.Invoice', label: 'Invoice', type: 'BUSINESS' },
+    { name: 'com.cyoda.model.Payment', label: 'Payment', type: 'BUSINESS' },
+    { name: 'com.cyoda.technical.SystemLog', label: 'System Log', type: 'TECHNICAL' },
+    { name: 'com.cyoda.technical.AuditTrail', label: 'Audit Trail', type: 'TECHNICAL' },
+  ];
+
+  res.json(entityClasses);
 });
 
 // Get report definitions (both paths for compatibility)
@@ -666,6 +680,66 @@ app.get('/platform-api/definitions/:id', (req, res) => {
   }
 });
 
+// Get specific report definition (alternative path)
+app.get('/platform-api/reporting/definitions/:id', (req, res) => {
+  const definition = mockReportDefinitions.find(d => d.id === req.params.id);
+  if (definition) {
+    console.log(`📖 Fetching report definition: ${req.params.id}`);
+    console.log(`   Name: ${definition.name}`);
+    console.log(`   Entity Class: ${definition.requestClass}`);
+    res.json(definition);
+  } else {
+    res.status(404).json({ error: 'Definition not found' });
+  }
+});
+
+// Create new report definition
+app.post('/platform-api/reporting/definitions', (req, res) => {
+  const { name } = req.query;
+  const configDefinition = req.body;
+
+  // Generate a new ID
+  const newId = `report-def-${String(mockReportDefinitions.length + 1).padStart(3, '0')}`;
+
+  // Create new report definition
+  const newDefinition = {
+    '@bean': 'com.cyoda.core.reporting.ReportDefinition',
+    id: newId,
+    name: name || 'New Report',
+    description: configDefinition.description || '',
+    requestClass: configDefinition.requestClass || '',
+    entityClass: configDefinition.requestClass || '',
+    userId: 'admin',
+    creationDate: new Date().toISOString(),
+    columns: configDefinition.columns || [],
+    colDefs: configDefinition.colDefs || [],
+    aliasDefs: configDefinition.aliasDefs || [],
+    sorting: configDefinition.sorting || [],
+    grouping: configDefinition.grouping || [],
+    summary: configDefinition.summary || [],
+    condition: configDefinition.condition || {
+      '@bean': 'com.cyoda.core.conditions.GroupCondition',
+      operator: 'OR',
+      conditions: [],
+    },
+    filterBuilder: configDefinition.filterBuilder || null,
+  };
+
+  // Add to mock data
+  mockReportDefinitions.push(newDefinition);
+
+  console.log(`✅ Created new report definition:`);
+  console.log(`   Name: ${name}`);
+  console.log(`   ID: ${newId}`);
+  console.log(`   Entity Class: ${configDefinition.requestClass}`);
+
+  // Return response in the format expected by frontend
+  res.json({
+    content: newId,
+    message: 'Report definition created successfully'
+  });
+});
+
 // Create definition
 app.post('/platform-api/definitions', (req, res) => {
   const newDefinition = {
@@ -689,6 +763,18 @@ app.put('/platform-api/definitions/:id', (req, res) => {
   }
 });
 
+// Update report definition (alternative path)
+app.put('/platform-api/reporting/definitions/:id', (req, res) => {
+  const index = mockReportDefinitions.findIndex(d => d.id === req.params.id);
+  if (index >= 0) {
+    mockReportDefinitions[index] = { ...mockReportDefinitions[index], ...req.body };
+    console.log(`✅ Updated report definition: ${req.params.id}`);
+    res.json(mockReportDefinitions[index]);
+  } else {
+    res.status(404).json({ error: 'Definition not found' });
+  }
+});
+
 // Delete definition
 app.delete('/platform-api/definitions/:id', (req, res) => {
   const index = mockReportDefinitions.findIndex(d => d.id === req.params.id);
@@ -698,6 +784,21 @@ app.delete('/platform-api/definitions/:id', (req, res) => {
   } else {
     res.status(404).json({ error: 'Definition not found' });
   }
+});
+
+// Run report
+app.post('/platform-api/reporting/report/:id/run', (req, res) => {
+  const reportId = `report-run-${Date.now()}`;
+  console.log(`✅ Running report: ${req.params.id} (Run ID: ${reportId})`);
+
+  // Return a mock report run response
+  res.json({
+    id: reportId,
+    definitionId: req.params.id,
+    status: 'RUNNING',
+    startTime: new Date().toISOString(),
+    message: 'Report execution started'
+  });
 });
 
 // Get report history (both paths for compatibility)
@@ -1216,15 +1317,6 @@ app.get('/platform-api/reporting/types', (req, res) => {
     { id: 'report-type-1', name: 'Sales Report', category: 'Financial' },
     { id: 'report-type-2', name: 'Customer Analytics', category: 'Analytics' },
     { id: 'report-type-3', name: 'Inventory Report', category: 'Operations' }
-  ]);
-});
-
-// Report types with models
-app.get('/platform-api/reporting/types/fetch', (req, res) => {
-  res.json([
-    { id: 'report-type-1', name: 'Sales Report', category: 'Financial', models: [] },
-    { id: 'report-type-2', name: 'Customer Analytics', category: 'Analytics', models: [] },
-    { id: 'report-type-3', name: 'Inventory Report', category: 'Operations', models: [] }
   ]);
 });
 

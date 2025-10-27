@@ -6,7 +6,7 @@
 .builder-condition-row:before {
   content: "";
   height: calc(50% + 20px);
-  border-color: #e0e0e0;
+  border-color: rgba(255, 255, 255, 0.15);
   border-style: dotted;
   border-width: 0 0 2px 2px;
   left: 10px;
@@ -19,7 +19,7 @@
   height: 25px;
   top: calc(50% - 3px);
   content: "";
-  border-color: #e0e0e0;
+  border-color: rgba(255, 255, 255, 0.15);
   border-style: dotted;
   border-width: 0 0 0 2px;
   width: 10px;

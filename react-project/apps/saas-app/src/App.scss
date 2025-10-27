@@ -527,7 +527,7 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--refine-text-secondary) !important;
 
     &:hover {
-      color: var(--refine-primary) !important;
+      color: var(--refine-text-secondary) !important;
     }
 
     &.ant-tabs-tab-active {
@@ -550,6 +550,7 @@ h1, h2, h3, h4, h5, h6 {
 
       &:hover {
         background: rgba(0, 212, 170, 0.05) !important;
+        color: var(--refine-text-secondary) !important;
       }
 
       &.ant-tabs-tab-active {

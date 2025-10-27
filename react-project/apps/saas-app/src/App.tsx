@@ -80,6 +80,14 @@ const theme = {
       colorIcon: '#00D4AA',
       colorIconHover: '#00E5BF',
     },
+    Tabs: {
+      itemColor: '#D1D5DB',
+      itemHoverColor: '#D1D5DB',
+      itemSelectedColor: '#00D4AA',
+      itemActiveColor: '#00D4AA',
+      inkBarColor: '#00D4AA',
+      cardBg: 'transparent',
+    },
   },
 };
 
