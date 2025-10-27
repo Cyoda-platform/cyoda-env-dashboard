@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Form, Input, Button, Card, message } from 'antd';
+import { Form, Input, Button, Card, App, Divider } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import { useAuth0 } from '@auth0/auth0-react';
 import './Login.scss';
 
 interface LoginFormValues {
@@ -12,22 +13,52 @@ interface LoginFormValues {
 const Login: React.FC = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const { message } = App.useApp();
+  const { loginWithRedirect, isAuthenticated, isLoading: auth0Loading, user, getAccessTokenSilently } = useAuth0();
+
+  // Handle Auth0 authentication success
+  useEffect(() => {
+    const handleAuth0Success = async () => {
+      if (isAuthenticated && user) {
+        try {
+          const token = await getAccessTokenSilently();
+
+          // Store auth token
+          localStorage.setItem('auth', JSON.stringify({
+            token,
+            user: user.name || user.email,
+            type: 'auth0',
+            userId: user.sub
+          }));
+
+          message.success('Login successful!');
+          navigate('/trino');
+        } catch (error) {
+          console.error('Auth0 token error:', error);
+          message.error('Authentication failed. Please try again.');
+        }
+      }
+    };
+
+    handleAuth0Success();
+  }, [isAuthenticated, user, getAccessTokenSilently, message, navigate]);
 
   const onFinish = async (values: LoginFormValues) => {
     setLoading(true);
     try {
       // TODO: Replace with actual authentication logic
       console.log('Login attempt:', values);
-      
+
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       // Store auth token (mock)
-      localStorage.setItem('auth', JSON.stringify({ 
+      localStorage.setItem('auth', JSON.stringify({
         token: 'mock-token',
-        user: values.username 
+        user: values.username,
+        type: 'standard'
       }));
-      
+
       message.success('Login successful!');
       navigate('/trino');
     } catch (error) {
@@ -35,6 +66,10 @@ const Login: React.FC = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleAuth0Login = () => {
+    loginWithRedirect();
   };
 
   return (
@@ -48,7 +83,6 @@ const Login: React.FC = () => {
               className="logo"
             />
           </div>
-          <h1>Cyoda SaaS Platform</h1>
         </div>
         
         <Card className="login-card">
@@ -91,6 +125,25 @@ const Login: React.FC = () => {
                 Log in
               </Button>
             </Form.Item>
+
+            <Divider style={{ margin: '24px 0', borderColor: 'rgba(255, 255, 255, 0.1)' }}>
+              <span style={{ color: 'rgba(209, 213, 219, 0.6)', fontSize: '13px' }}>OR</span>
+            </Divider>
+
+            <Button
+              type="default"
+              size="large"
+              block
+              loading={auth0Loading}
+              onClick={handleAuth0Login}
+              style={{
+                borderColor: 'rgba(0, 212, 170, 0.3)',
+                color: '#D1D5DB',
+                background: 'rgba(26, 35, 50, 0.6)',
+              }}
+            >
+              Login with Auth0
+            </Button>
           </Form>
         </Card>
         

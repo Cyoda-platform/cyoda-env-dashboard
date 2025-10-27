@@ -1,8 +1,10 @@
 import React, { Suspense } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ConfigProvider, Spin, theme as antdTheme } from 'antd';
+import { ConfigProvider, Spin, theme as antdTheme, App as AntdApp } from 'antd';
+import { Auth0Provider } from '@auth0/auth0-react';
 import { AppRoutes } from './routes';
+import { auth0Config } from './config/auth0';
 import './App.scss';
 
 // Create a client
@@ -106,20 +108,30 @@ const LoadingFallback: React.FC = () => (
 
 function App() {
   return (
-    <ConfigProvider theme={theme}>
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter
-          future={{
-            v7_startTransition: true,
-            v7_relativeSplatPath: true,
-          }}
-        >
-          <Suspense fallback={<LoadingFallback />}>
-            <AppRoutes />
-          </Suspense>
-        </BrowserRouter>
-      </QueryClientProvider>
-    </ConfigProvider>
+    <Auth0Provider
+      domain={auth0Config.domain}
+      clientId={auth0Config.clientId}
+      authorizationParams={auth0Config.authorizationParams}
+      cacheLocation={auth0Config.cacheLocation}
+      useRefreshTokens={auth0Config.useRefreshTokens}
+    >
+      <ConfigProvider theme={theme}>
+        <AntdApp>
+          <QueryClientProvider client={queryClient}>
+            <BrowserRouter
+              future={{
+                v7_startTransition: true,
+                v7_relativeSplatPath: true,
+              }}
+            >
+              <Suspense fallback={<LoadingFallback />}>
+                <AppRoutes />
+              </Suspense>
+            </BrowserRouter>
+          </QueryClientProvider>
+        </AntdApp>
+      </ConfigProvider>
+    </Auth0Provider>
   );
 }
 
