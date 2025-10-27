@@ -1,13 +1,16 @@
 /**
- * QuickRunReport Styles
+ * QuickRunReport Styles - Dark Theme
  * Migrated from: .old_project/packages/http-api/src/views/History/HistoryReportQuickRun.vue
  */
 
 .quick-run-report {
+  background: transparent !important;
+
   h2 {
     margin-bottom: 16px;
     font-size: 18px;
     font-weight: 600;
+    color: var(--refine-text-primary) !important;
   }
 
   .inner {

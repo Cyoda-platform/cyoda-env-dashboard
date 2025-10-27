@@ -1,28 +1,51 @@
 /**
- * ReportTableGroup Styles
+ * ReportTableGroup Styles - Dark Theme
  * Migrated from: .old_project/packages/http-api/src/components/ReportTable/ReportTableGroup.vue
  */
 
 .report-table-group {
   .ant-table {
     font-size: 12px;
+    background: transparent !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
 
     .ant-table-thead > tr > th {
-      background: #fafafa;
+      background: rgba(30, 42, 58, 0.6) !important;
+      color: var(--refine-text-secondary) !important;
       font-weight: 600;
+      font-size: 11px;
       padding: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+      border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
     }
 
-    .ant-table-tbody > tr > td {
-      padding: 8px;
-    }
+    .ant-table-tbody {
+      background: transparent !important;
 
-    .ant-table-tbody > tr.selected-row {
-      background-color: #e6f7ff;
-    }
+      > tr {
+        background: transparent !important;
 
-    .ant-table-tbody > tr:hover {
-      cursor: pointer;
+        > td {
+          padding: 8px;
+          background: transparent !important;
+          color: var(--refine-text-primary) !important;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+        }
+
+        &:hover {
+          cursor: pointer;
+
+          > td {
+            background: rgba(0, 212, 170, 0.05) !important;
+          }
+        }
+
+        &.selected-row > td {
+          background: rgba(0, 212, 170, 0.15) !important;
+        }
+      }
     }
   }
 

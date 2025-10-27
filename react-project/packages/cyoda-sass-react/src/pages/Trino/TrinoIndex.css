@@ -1,10 +1,21 @@
 .trino-index {
-  padding: 24px;
+  padding: 0;
 }
 
 .trino-index h4 {
   font-size: 18px;
   margin-bottom: 16px;
+}
+
+.trino-index .card {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.trino-index .card-body {
+  background: transparent;
+  padding: 0;
 }
 
 .trino-index-header {

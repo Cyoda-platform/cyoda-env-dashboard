@@ -1,6 +1,6 @@
 .config-editor-reports-filter {
   padding: 20px;
-  background: #fff;
+  background: transparent !important;
   border-radius: 4px;
   margin-bottom: 20px;
 
@@ -8,7 +8,7 @@
     margin-bottom: 20px;
     font-size: 18px;
     font-weight: 600;
-    color: #333;
+    color: var(--refine-text-primary) !important;
   }
 
   .ant-form-item {
@@ -20,7 +20,10 @@
 
     > label {
       font-weight: 500;
-      color: #666;
+      color: var(--refine-text-secondary) !important;
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 0.5px;
     }
   }
 

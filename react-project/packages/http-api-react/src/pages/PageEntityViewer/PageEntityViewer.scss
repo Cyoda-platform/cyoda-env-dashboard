@@ -20,7 +20,7 @@
     margin-bottom: 20px;
     font-size: 24px;
     font-weight: 600;
-    color: #333;
+    color: var(--refine-text-primary) !important;
   }
 
   ul {
@@ -70,16 +70,16 @@
 
   .wrap-entity-view-box {
     margin-top: 30px;
-    border: 1px solid #e8e8e8;
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 4px;
-    background: #fafafa;
+    background: rgba(30, 42, 58, 0.3);
 
     .wrap-entity-view-box-inner {
       overflow: hidden;
       position: relative;
       width: 100%;
       min-height: 600px;
-      background: #fff;
+      background: rgba(30, 42, 58, 0.5) !important;
     }
   }
 
@@ -91,9 +91,9 @@
     flex-wrap: nowrap;
     flex-shrink: 0;
     height: 40px;
-    border-bottom: 1px solid #dedede;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     padding: 0 15px;
-    background: #fafafa;
+    background: rgba(30, 42, 58, 0.3);
 
     .buttons {
       display: flex;

@@ -1,40 +1,171 @@
+// Refine.dev Enterprise Theme - Left Side Menu
 .saas-left-side-menu {
+  background: var(--refine-bg-secondary) !important;
+  border-right: none !important;
+
+  // Glassmorphism effect
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+
+  // Custom scrollbar for sidebar
+  &::-webkit-scrollbar {
+    width: 3px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 212, 170, 0.4);
+    border-radius: 2px;
+  }
+
+  // Menu items styling
   .ant-menu-item,
   .ant-menu-submenu {
+    border-radius: 8px;
+    margin: 4px 8px;
+    transition: all var(--refine-transition-base);
+
+    &.ant-menu-item-selected {
+      background: var(--refine-gradient-primary) !important;
+      color: white !important;
+      font-weight: 600;
+      box-shadow: var(--refine-shadow-md);
+
+      .anticon {
+        color: white !important;
+      }
+    }
+
+    &:hover:not(.ant-menu-item-selected) {
+      background: var(--refine-glass-bg) !important;
+      color: var(--refine-text-primary) !important;
+
+      .anticon {
+        color: var(--refine-primary-light) !important;
+      }
+    }
+
     &.ant-menu-item-danger {
       color: #ff4d4f;
 
       &:hover {
-        background-color: rgba(255, 77, 79, 0.1);
+        background: rgba(255, 77, 79, 0.15) !important;
+        color: #ff6b6b !important;
+      }
+
+      &.ant-menu-item-selected {
+        background: linear-gradient(135deg, #ff4d4f 0%, #ff6b6b 100%) !important;
+        color: white !important;
+      }
+    }
+
+    .anticon {
+      font-size: 16px;
+      transition: all var(--refine-transition-base);
+    }
+  }
+
+  // Submenu styling
+  .ant-menu-submenu-title {
+    border-radius: 8px;
+    margin: 4px 8px;
+    transition: all var(--refine-transition-base);
+
+    &:hover {
+      background: var(--refine-glass-bg) !important;
+      color: var(--refine-text-primary) !important;
+
+      .anticon {
+        color: var(--refine-primary-light) !important;
+      }
+    }
+  }
+
+  .ant-menu-sub {
+    background: rgba(0, 0, 0, 0.2) !important;
+
+    .ant-menu-item {
+      padding-left: 48px !important;
+
+      &::before {
+        content: '';
+        position: absolute;
+        left: 32px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background: var(--refine-text-tertiary);
+        transition: all var(--refine-transition-base);
+      }
+
+      &.ant-menu-item-selected::before,
+      &:hover::before {
+        background: var(--refine-primary-light);
+        width: 6px;
+        height: 6px;
       }
     }
   }
 
   .ant-menu-item-divider {
-    margin: 8px 0;
+    margin: 12px 16px;
+    background: var(--refine-border-primary);
+    height: 1px;
+  }
+
+  // Collapse button styling
+  .ant-layout-sider-trigger {
+    background: var(--refine-bg-tertiary) !important;
+    border-top: 1px solid var(--refine-border-primary);
+    color: var(--refine-text-secondary) !important;
+    transition: all var(--refine-transition-base);
+
+    &:hover {
+      background: var(--refine-primary) !important;
+      color: white !important;
+    }
   }
 }
 
 // Version Info Modal Styling
 .detail-tree-item {
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 
   .title-value {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 8px 0;
+    padding: 12px 16px;
+    background: var(--refine-glass-bg);
+    border: 1px solid var(--refine-border-primary);
+    border-radius: 8px;
+    transition: all var(--refine-transition-base);
+
+    &:hover {
+      background: rgba(99, 102, 241, 0.1);
+      border-color: rgba(99, 102, 241, 0.3);
+    }
 
     .name {
-      font-weight: 500;
-      color: #595959;
-      min-width: 120px;
+      font-weight: 600;
+      color: var(--refine-text-secondary);
+      min-width: 140px;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     .value {
-      color: #262626;
+      color: var(--refine-text-primary);
       flex: 1;
       text-align: right;
+      font-family: 'Fira Code', monospace;
+      font-size: 13px;
     }
   }
 }

@@ -1,8 +1,17 @@
 .entity-type-switch {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
 
   span {
-    margin-right: 8px;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 400;
+    white-space: nowrap;
+  }
+
+  .ant-switch {
+    min-width: 60px;
   }
 }
 

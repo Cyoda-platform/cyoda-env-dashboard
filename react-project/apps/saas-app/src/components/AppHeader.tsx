@@ -21,16 +21,15 @@ export const AppHeader: React.FC = () => {
           <AppLogo size="m" />
         </div>
 
-        <Space className="header-right" size="large">
+        <div className="header-right">
           <div className="entity-type-section">
-            <Text className="entity-type-label">Entity Type:</Text>
             <EntityTypeSwitch
               value={entityType}
               onChange={handleEntityTypeChange}
               visible={true}
             />
           </div>
-        </Space>
+        </div>
       </div>
     </Header>
   );

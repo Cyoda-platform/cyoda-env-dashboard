@@ -13,7 +13,7 @@ export const AppLayout: React.FC = () => {
       <AppHeader />
       <Layout hasSider>
         <LeftSideMenu />
-        <Layout style={{ marginLeft: 250, marginTop: 64 }}>
+        <Layout style={{ marginLeft: 250, marginTop: 56 }}>
           <Content className="saas-app-content">
             <div className="content-wrapper">
               <Outlet />
