@@ -1,12 +1,12 @@
 /**
  * ReportEditorTabJson Component
  * Tab for viewing/editing raw JSON configuration
- * 
+ *
  * Migrated from: .old_project/packages/http-api/src/views/ConfigEditor/tabs/ConfigEditorReportsTabJson.vue
  */
 
 import React, { useState, useEffect } from 'react';
-import MonacoEditor from '@monaco-editor/react';
+import MonacoEditor, { BeforeMount } from '@monaco-editor/react';
 import type { ReportDefinition } from '../types';
 import './ReportEditorTabJson.scss';
 
@@ -34,6 +34,32 @@ const ReportEditorTabJson: React.FC<ReportEditorTabJsonProps> = ({
     }
   }, [configDefinition]);
 
+  // Define custom theme before editor mounts
+  const handleEditorWillMount: BeforeMount = (monaco) => {
+    monaco.editor.defineTheme('cyoda-dark', {
+      base: 'vs-dark',
+      inherit: true,
+      rules: [],
+      colors: {
+        'editor.background': '#1E2A3A',
+        'editor.foreground': '#F9FAFB',
+        'editorLineNumber.foreground': '#6B7280',
+        'editorLineNumber.activeForeground': '#00D4AA',
+        'editor.lineHighlightBackground': '#243142',
+        'editor.selectionBackground': '#00D4AA33',
+        'editor.inactiveSelectionBackground': '#00D4AA22',
+        'editorCursor.foreground': '#00D4AA',
+        'editorWhitespace.foreground': '#374151',
+        'editorIndentGuide.background': '#374151',
+        'editorIndentGuide.activeBackground': '#4B5563',
+        'scrollbar.shadow': '#00000000',
+        'scrollbarSlider.background': '#374151',
+        'scrollbarSlider.hoverBackground': '#4B5563',
+        'scrollbarSlider.activeBackground': '#00D4AA',
+      },
+    });
+  };
+
   const handleEditorChange = (value: string | undefined) => {
     if (!value) return;
 
@@ -60,9 +86,10 @@ const ReportEditorTabJson: React.FC<ReportEditorTabJsonProps> = ({
       <MonacoEditor
         height="600px"
         language="json"
-        theme="vs-light"
+        theme="cyoda-dark"
         value={jsonString}
         onChange={handleEditorChange}
+        beforeMount={handleEditorWillMount}
         options={{
           minimap: { enabled: false },
           scrollBeyondLastLine: false,

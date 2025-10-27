@@ -224,11 +224,11 @@ const FilterBuilderCondition: React.FC<FilterBuilderConditionProps> = ({
 
   return (
     <div className={`builder-condition-row ${isLast ? 'last' : ''}`}>
-      <Row gutter={20}>
-        <Col span={4} className={isExistErrorFieldName && showErrors ? 'col-err' : ''}>
+      <Row gutter={16}>
+        <Col span={5} className={isExistErrorFieldName && showErrors ? 'col-err' : ''}>
           <Select
             showSearch
-            placeholder="Select"
+            placeholder="Select field"
             value={condition.fieldName}
             onChange={handleFieldNameChange}
             disabled={disableColumn || readOnly}
@@ -240,10 +240,10 @@ const FilterBuilderCondition: React.FC<FilterBuilderConditionProps> = ({
           />
         </Col>
 
-        <Col span={4} className={isExistErrorOperation && showErrors ? 'col-err' : ''}>
+        <Col span={6} className={isExistErrorOperation && showErrors ? 'col-err' : ''}>
           <Select
             showSearch
-            placeholder="Select"
+            placeholder="Select operation"
             value={condition.operation}
             onChange={handleOperationChange}
             disabled={readOnly}
@@ -257,15 +257,15 @@ const FilterBuilderCondition: React.FC<FilterBuilderConditionProps> = ({
 
         {selectedConditionType.isRange ? (
           <>
-            <Col span={4}>{renderValueInput('from')}</Col>
-            <Col span={4}>{renderValueInput('to')}</Col>
+            <Col span={5}>{renderValueInput('from')}</Col>
+            <Col span={5}>{renderValueInput('to')}</Col>
           </>
         ) : selectedConditionType.disableValueField ? null : (
-          <Col span={4}>{renderValueInput('value')}</Col>
+          <Col span={6}>{renderValueInput('value')}</Col>
         )}
 
         {!disableRemove && !readOnly && (
-          <Col span={4}>
+          <Col span={2}>
             <Button type="primary" danger shape="circle" icon={<DeleteOutlined />} onClick={handleRemove} />
           </Col>
         )}

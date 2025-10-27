@@ -38,7 +38,7 @@ vi.mock('../components/CatalogueOfAliasesFilter', () => ({
   ),
 }));
 
-vi.mock('../components/CatalogueAliasDialog', () => ({
+vi.mock('../components/Modelling/Alias/ModellingPopUpAliasNew', () => ({
   default: React.forwardRef(({ onCreate, onUpdate }: any, ref: any) => {
     React.useImperativeHandle(ref, () => ({
       open: vi.fn(),

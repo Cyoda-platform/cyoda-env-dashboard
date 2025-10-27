@@ -5,11 +5,11 @@
  */
 
 import React, { useState, useMemo, useRef } from 'react';
-import { Button, Table, Modal, message } from 'antd';
+import { Button, Table, Modal, App } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
+import type { AliasDef } from '@cyoda/http-api-react';
 import ModellingPopUpAlias, { ModellingPopUpAliasRef } from './ModellingPopUpAlias';
 import ModellingPopUpAliasNew, { ModellingPopUpAliasNewRef } from './ModellingPopUpAliasNew';
-import type { AliasDef } from '../../../types/modelling';
 import './ModellingAliases.scss';
 
 interface ModellingAliasesProps {
@@ -19,7 +19,9 @@ interface ModellingAliasesProps {
 }
 
 export const ModellingAliases: React.FC<ModellingAliasesProps> = ({ configDefinition, onChange, readOnly = false }) => {
+  const { message } = App.useApp();
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const catalogRef = useRef<ModellingPopUpAliasRef>(null);
   const aliasNewRef = useRef<ModellingPopUpAliasNewRef>(null);
 
@@ -41,6 +43,14 @@ export const ModellingAliases: React.FC<ModellingAliasesProps> = ({ configDefini
   };
 
   const handleAliasSelected = (alias: AliasDef) => {
+    // Check if alias with same name already exists
+    const existingAlias = (configDefinition.aliasDefs || []).find((a: AliasDef) => a.name === alias.name);
+
+    if (existingAlias) {
+      message.warning(`Alias "${alias.name}" already exists in the report`);
+      return;
+    }
+
     const newAliasDefs = [...(configDefinition.aliasDefs || []), alias];
     if (onChange) {
       onChange({ aliasDefs: newAliasDefs });
@@ -78,10 +88,16 @@ export const ModellingAliases: React.FC<ModellingAliasesProps> = ({ configDefini
   };
 
   const handleEdit = (alias: AliasDef, index: number) => {
+    setEditingIndex(index);
     const catalogItem = {
       aliasDef: alias,
     };
     aliasNewRef.current?.open(configDefinition.requestClass || '', catalogItem);
+  };
+
+  const handleCreateNew = () => {
+    setEditingIndex(null);
+    aliasNewRef.current?.open(configDefinition.requestClass || '');
   };
 
   const handleSelectionChange = (selectedKeys: React.Key[]) => {
@@ -162,10 +178,6 @@ export const ModellingAliases: React.FC<ModellingAliasesProps> = ({ configDefini
     onChange: handleSelectionChange,
   };
 
-  const handleCreateNew = () => {
-    aliasNewRef.current?.open(configDefinition.requestClass || '');
-  };
-
   return (
     <div className="modelling-aliases">
       <div style={{ marginBottom: 16 }}>
@@ -214,15 +226,34 @@ export const ModellingAliases: React.FC<ModellingAliasesProps> = ({ configDefini
       <ModellingPopUpAliasNew
         ref={aliasNewRef}
         configDefinition={configDefinition}
+        allowSelectEntity={false}
+        allowConfigFile={false}
+        aliasEditType="report"
         onCreated={(aliasDef) => {
           console.log('Alias created, adding to report:', aliasDef);
           handleAliasSelected(aliasDef);
+          setEditingIndex(null);
         }}
-        onUpdated={() => {
-          message.success('Alias updated successfully');
-          // Trigger a re-render by updating the config
-          if (onChange) {
-            onChange({ aliasDefs: [...(configDefinition.aliasDefs || [])] });
+        onUpdated={(updatedAliasDef) => {
+          if (editingIndex !== null && configDefinition.aliasDefs) {
+            const oldName = configDefinition.aliasDefs[editingIndex].name;
+            const newAliasDefs = [...configDefinition.aliasDefs];
+            newAliasDefs[editingIndex] = updatedAliasDef;
+
+            if (onChange) {
+              onChange({ aliasDefs: newAliasDefs });
+            } else {
+              configDefinition.aliasDefs = newAliasDefs;
+            }
+
+            // If name changed, update references in other parts of the config
+            if (oldName !== updatedAliasDef.name) {
+              // TODO: Update alias references in colDefs, conditions, etc.
+              console.log('Alias name changed from', oldName, 'to', updatedAliasDef.name);
+            }
+
+            message.success('Alias updated successfully');
+            setEditingIndex(null);
           }
         }}
       />

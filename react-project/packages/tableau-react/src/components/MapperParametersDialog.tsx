@@ -6,7 +6,7 @@
  */
 
 import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
-import { Modal, Form, Input, Select, message } from 'antd';
+import { Modal, Form, Input, Select } from 'antd';
 import type { NamedParameter } from '@cyoda/http-api-react';
 import './MapperParametersDialog.scss';
 

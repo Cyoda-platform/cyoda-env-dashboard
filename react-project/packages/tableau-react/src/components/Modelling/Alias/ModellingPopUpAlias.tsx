@@ -11,8 +11,9 @@ import { PlusOutlined, SelectOutlined, EditOutlined, DeleteOutlined } from '@ant
 import type { TableColumnsType } from 'antd';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
+import type { AliasDef } from '@cyoda/http-api-react';
 import ModellingPopUpAliasNew, { ModellingPopUpAliasNewRef } from './ModellingPopUpAliasNew';
-import type { AliasDef, ReportDefinition } from '../../../types';
+import type { ReportDefinition } from '../../../types';
 import './ModellingPopUpAlias.scss';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
@@ -183,7 +184,10 @@ export const ModellingPopUpAlias = forwardRef<ModellingPopUpAliasRef, ModellingP
       setVisible(false);
     };
 
-    const handleAliasCreated = () => {
+    const handleAliasCreated = (aliasDef: AliasDef) => {
+      if (onChange) {
+        onChange(aliasDef);
+      }
       refetch();
     };
 
@@ -285,6 +289,9 @@ export const ModellingPopUpAlias = forwardRef<ModellingPopUpAliasRef, ModellingP
         <ModellingPopUpAliasNew
           ref={aliasNewRef}
           configDefinition={configDefinition}
+          allowSelectEntity={false}
+          allowConfigFile={false}
+          aliasEditType="report"
           onCreated={handleAliasCreated}
           onUpdated={handleAliasCreated}
         />

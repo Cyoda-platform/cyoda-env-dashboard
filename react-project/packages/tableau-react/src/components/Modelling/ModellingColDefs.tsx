@@ -5,7 +5,7 @@
  */
 
 import React, { useRef, useState, useMemo } from 'react';
-import { Button, Table, Modal, message } from 'antd';
+import { Button, Table, Modal, App } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import { ModellingPopUp, ModellingPopUpRef } from './ModellingPopUp';
 import type { ColDef } from '../../types/modelling';
@@ -18,17 +18,21 @@ interface ModellingColDefsProps {
 }
 
 export const ModellingColDefs: React.FC<ModellingColDefsProps> = ({ configDefinition, onChange, readOnly = false }) => {
+  const { message } = App.useApp();
   const popupRef = useRef<ModellingPopUpRef>(null);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
   const tableData = useMemo(() => {
-    return (
+    const data = (
       configDefinition.colDefs?.map((el: ColDef, index: number) => ({
         key: index,
         fullPath: el.fullPath,
         colDef: el,
       })) || []
     );
+    console.log('ModellingColDefs - tableData:', data);
+    console.log('ModellingColDefs - configDefinition.colDefs:', configDefinition.colDefs);
+    return data;
   }, [configDefinition.colDefs]);
 
   const checked = useMemo(() => {
@@ -101,12 +105,16 @@ export const ModellingColDefs: React.FC<ModellingColDefsProps> = ({ configDefini
 
   const columns = [
     {
-      title: 'Path',
+      title: 'PATH',
       dataIndex: 'fullPath',
       key: 'fullPath',
+      render: (text: string, record: any) => {
+        // Explicitly render the fullPath value
+        return <span style={{ color: 'var(--refine-text-primary, #e5e7eb)' }}>{text || record.fullPath || 'N/A'}</span>;
+      },
     },
     {
-      title: 'Action',
+      title: 'ACTION',
       key: 'action',
       width: 180,
       render: (_: any, record: any) => (

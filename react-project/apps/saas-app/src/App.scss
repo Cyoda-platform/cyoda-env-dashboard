@@ -875,3 +875,135 @@ div[style*="background-color:#000"] {
   }
 }
 
+// ============================================
+// TRANSFER COMPONENT - DARK THEME FIX
+// ============================================
+.ant-transfer {
+  color: var(--refine-text-primary, #F9FAFB) !important;
+
+  // Transfer list container
+  .ant-transfer-list {
+    background-color: #1E2A3A !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+
+    // Header
+    .ant-transfer-list-header {
+      background-color: #243142 !important;
+      border-color: rgba(255, 255, 255, 0.1) !important;
+      color: var(--refine-text-primary, #F9FAFB) !important;
+
+      .ant-transfer-list-header-title {
+        color: var(--refine-text-primary, #F9FAFB) !important;
+      }
+
+      .ant-checkbox-wrapper {
+        color: var(--refine-text-primary, #F9FAFB) !important;
+      }
+    }
+
+    // Body
+    .ant-transfer-list-body {
+      background-color: #1E2A3A !important;
+
+      // Search input
+      .ant-transfer-list-body-search-wrapper {
+        .ant-input-affix-wrapper {
+          background-color: rgba(255, 255, 255, 0.05) !important;
+          border-color: rgba(255, 255, 255, 0.1) !important;
+
+          .ant-input {
+            background-color: transparent !important;
+            color: var(--refine-text-primary, #F9FAFB) !important;
+
+            &::placeholder {
+              color: var(--refine-text-tertiary, #9CA3AF) !important;
+            }
+          }
+
+          .ant-input-prefix {
+            color: var(--refine-text-tertiary, #9CA3AF) !important;
+          }
+
+          &:hover {
+            border-color: var(--refine-primary, #00D4AA) !important;
+          }
+
+          &.ant-input-affix-wrapper-focused {
+            border-color: var(--refine-primary, #00D4AA) !important;
+            box-shadow: 0 0 0 2px rgba(0, 212, 170, 0.1) !important;
+          }
+        }
+      }
+
+      // Content list
+      .ant-transfer-list-content {
+        background-color: #1E2A3A !important;
+
+        .ant-transfer-list-content-item {
+          background-color: transparent !important;
+          border-color: rgba(255, 255, 255, 0.05) !important;
+          color: var(--refine-text-primary, #F9FAFB) !important;
+
+          &:hover {
+            background-color: rgba(0, 212, 170, 0.1) !important;
+          }
+
+          &.ant-transfer-list-content-item-checked {
+            background-color: rgba(0, 212, 170, 0.15) !important;
+          }
+
+          .ant-checkbox-wrapper {
+            color: var(--refine-text-primary, #F9FAFB) !important;
+          }
+        }
+      }
+    }
+  }
+
+  // Operation buttons
+  .ant-transfer-operation {
+    .ant-btn {
+      background-color: rgba(255, 255, 255, 0.05) !important;
+      border-color: rgba(255, 255, 255, 0.1) !important;
+      color: var(--refine-text-primary, #F9FAFB) !important;
+
+      &:hover:not(:disabled) {
+        background-color: var(--refine-primary, #00D4AA) !important;
+        border-color: var(--refine-primary, #00D4AA) !important;
+        color: #FFFFFF !important;
+      }
+
+      &:disabled {
+        background-color: rgba(255, 255, 255, 0.02) !important;
+        border-color: rgba(255, 255, 255, 0.05) !important;
+        color: rgba(255, 255, 255, 0.3) !important;
+      }
+    }
+  }
+}
+
+// ============================================
+// MONACO EDITOR - DARK THEME FIX
+// ============================================
+.monaco-editor,
+.monaco-editor-background,
+.monaco-editor .margin {
+  background-color: #1E2A3A !important;
+}
+
+.monaco-editor .view-lines {
+  color: #F9FAFB !important;
+}
+
+.monaco-editor .line-numbers {
+  color: #6B7280 !important;
+}
+
+.monaco-editor .current-line {
+  border-color: rgba(0, 212, 170, 0.2) !important;
+}
+
+.monaco-editor .selected-text {
+  background-color: rgba(0, 212, 170, 0.2) !important;
+}
+

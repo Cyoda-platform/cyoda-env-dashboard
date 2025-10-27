@@ -90,6 +90,36 @@ const theme = {
       inkBarColor: '#00D4AA',
       cardBg: 'transparent',
     },
+    Transfer: {
+      listBg: '#1E2A3A',
+      listHeaderBg: '#243142',
+      itemBg: 'transparent',
+      itemHoverBg: 'rgba(0, 212, 170, 0.1)',
+      itemSelectedBg: 'rgba(0, 212, 170, 0.15)',
+    },
+    Input: {
+      colorBgContainer: 'rgba(255, 255, 255, 0.05)',
+      colorBorder: 'rgba(255, 255, 255, 0.1)',
+      colorText: '#F9FAFB',
+      colorTextPlaceholder: '#9CA3AF',
+      hoverBorderColor: '#00D4AA',
+      activeBorderColor: '#00D4AA',
+      activeShadow: '0 0 0 2px rgba(0, 212, 170, 0.1)',
+    },
+    Select: {
+      colorBgContainer: 'rgba(255, 255, 255, 0.05)',
+      colorBorder: 'rgba(255, 255, 255, 0.1)',
+      colorText: '#F9FAFB',
+      colorTextPlaceholder: '#9CA3AF',
+      optionSelectedBg: 'rgba(0, 212, 170, 0.15)',
+      optionActiveBg: 'rgba(0, 212, 170, 0.1)',
+    },
+    Checkbox: {
+      colorBgContainer: 'rgba(255, 255, 255, 0.05)',
+      colorBorder: 'rgba(255, 255, 255, 0.2)',
+      colorPrimary: '#00D4AA',
+      colorPrimaryHover: '#00E5BF',
+    },
   },
 };
 

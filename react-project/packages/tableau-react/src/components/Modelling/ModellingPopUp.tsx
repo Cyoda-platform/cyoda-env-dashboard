@@ -134,7 +134,31 @@ export const ModellingPopUp = forwardRef<ModellingPopUpRef, ModellingPopUpProps>
         )}
 
         {reportingInfoRows.length > 0 ? (
-          <Checkbox.Group value={selected} onChange={(values) => setSelected(values as ColDef[])}>
+          <Checkbox.Group
+            value={selected.map(col => col.fullPath)}
+            onChange={(checkedPaths) => {
+              // Convert fullPaths back to ColDef objects
+              const newColumns: ColDef[] = (checkedPaths as string[]).map(fullPath => {
+                // Try to find existing column to preserve all properties
+                const existing = selected.find(col => col.fullPath === fullPath);
+                if (existing) {
+                  return existing;
+                }
+
+                // For new selections, try to find the colType from the checkbox element
+                const checkbox = document.querySelector(`input[type="checkbox"][value="${fullPath}"]`);
+                const colType = checkbox?.getAttribute('data-col-type') || 'LEAF';
+
+                return {
+                  '@bean': 'com.cyoda.core.reporting.model.ColDef',
+                  fullPath,
+                  alias: fullPath,
+                  colType,
+                } as ColDef;
+              });
+              setSelected(newColumns);
+            }}
+          >
             {isVisibleGroup && (
               <ModellingGroup
                 reportInfoRows={reportingInfoRows}

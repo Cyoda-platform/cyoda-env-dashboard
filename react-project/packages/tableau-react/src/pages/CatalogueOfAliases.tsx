@@ -15,7 +15,7 @@ import moment from 'moment';
 import { getAllCatalogItems, createCatalogItem, updateCatalogItem, deleteCatalogItem, exportCatalogItems, importCatalogItems } from '@cyoda/http-api-react';
 import type { CatalogItem } from '@cyoda/http-api-react';
 import CatalogueOfAliasesFilter from '../components/CatalogueOfAliasesFilter';
-import CatalogueAliasDialog, { CatalogueAliasDialogRef } from '../components/CatalogueAliasDialog';
+import ModellingPopUpAliasNew, { ModellingPopUpAliasNewRef } from '../components/Modelling/Alias/ModellingPopUpAliasNew';
 import CatalogueAliasChangeStateDialog, { CatalogueAliasChangeStateDialogRef } from '../components/CatalogueAliasChangeStateDialog';
 import './CatalogueOfAliases.scss';
 
@@ -44,7 +44,7 @@ const CatalogueOfAliases: React.FC = () => {
   const queryClient = useQueryClient();
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [filterForm, setFilterForm] = useState<FilterForm>({});
-  const aliasDialogRef = useRef<CatalogueAliasDialogRef>(null);
+  const aliasDialogRef = useRef<ModellingPopUpAliasNewRef>(null);
   const changeStateDialogRef = useRef<CatalogueAliasChangeStateDialogRef>(null);
 
   // Fetch catalog items
@@ -388,10 +388,13 @@ const CatalogueOfAliases: React.FC = () => {
         </div>
       )}
 
-      <CatalogueAliasDialog
+      <ModellingPopUpAliasNew
         ref={aliasDialogRef}
         onCreate={handleAliasCreated}
         onUpdate={handleAliasUpdated}
+        allowSelectEntity={true}
+        allowConfigFile={true}
+        aliasEditType="catalog"
       />
 
       <CatalogueAliasChangeStateDialog

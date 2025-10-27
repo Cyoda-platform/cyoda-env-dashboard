@@ -1,92 +1,149 @@
 /**
  * ModellingPopUpAliasNew Component
- * Create/Edit alias dialog with mapper configuration
- * 
+ * Unified alias creation/editing dialog for both Report Editor and Catalog of Aliases
+ *
  * Migrated from: .old_project/packages/http-api/src/views/ConfigEditor/tabs/CyodaModelling/CyodaModellingAlias/CyodaModellingPopUpAliasNew.vue
  */
 
 import React, { useState, useRef, useCallback, forwardRef, useImperativeHandle, useEffect } from 'react';
-import { Modal, Form, Input, Select, Button, Steps, Table, Space, message, Tooltip } from 'antd';
+import { Modal, Form, Input, Select, Button, Steps, Table, Space, App, Tooltip, Checkbox, Alert } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import type { TableColumnsType } from 'antd';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import type { ReportMapper, NamedParameter, MapperParameters } from '@cyoda/http-api-react';
+import MonacoEditor from '@monaco-editor/react';
+import type { ReportMapper, NamedParameter, MapperParameters, CatalogItem, AliasDef, AliasDefColDef } from '@cyoda/http-api-react';
 import { getMappers } from '@cyoda/http-api-react';
-import { ModellingPopUp, ModellingPopUpRef } from '../ModellingPopUp';
+import { ModellingPopUpToggles } from '../ModellingPopUpToggles';
+import { ModellingPopUpSearch } from '../ModellingPopUpSearch';
+import { ModellingGroup } from '../ModellingGroup';
 import MapperParametersDialog, { MapperParametersDialogRef } from '../../MapperParametersDialog';
-import type { ColDef, ReportDefinition, AliasDef } from '../../../types';
+import type { ColDef, ReportDefinition } from '../../../types';
+import type { ReportingInfoRow, RelatedPath } from '../../../types/modelling';
+import { getReportingInfo, getReportingRelatedPaths } from '../../../api/modelling';
+import HelperModelling from '../../../utils/HelperModelling';
 import './ModellingPopUpAliasNew.scss';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
 
 export interface ModellingPopUpAliasNewProps {
-  configDefinition: ReportDefinition;
+  configDefinition?: ReportDefinition;
   onCreated?: (aliasDef: AliasDef) => void;
-  onUpdated?: () => void;
+  onUpdated?: (aliasDef: AliasDef) => void;
+  // Catalog mode props
+  onCreate?: (item: CatalogItem) => void;
+  onUpdate?: (id: string, item: CatalogItem) => void;
+  // Control which steps to show
+  allowSelectEntity?: boolean;
+  allowConfigFile?: boolean;
+  aliasEditType?: 'catalog' | 'report';
 }
 
 export interface ModellingPopUpAliasNewRef {
-  open: (requestClass: string, editItem?: any) => void;
+  open: (requestClass?: string, editItem?: any) => void;
   close: () => void;
 }
 
-interface AliasPath {
+// Local type that extends AliasDefColDef to allow MapperParameters object
+interface AliasPathLocal {
   colDef: ColDef;
   mapperClass: string;
-  mapperParameters?: MapperParameters;
+  mapperParameters?: MapperParameters | string;
 }
 
 interface AliasForm {
   name: string;
+  desc: string;
   aliasType: string;
   entityClass: string;
-  aliasPaths: AliasPath[];
+  aliasPaths: AliasPathLocal[];
 }
 
 export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, ModellingPopUpAliasNewProps>(
-  ({ configDefinition, onCreated, onUpdated }, ref) => {
+  ({
+    configDefinition,
+    onCreated,
+    onUpdated,
+    onCreate,
+    onUpdate,
+    allowSelectEntity = false,
+    allowConfigFile = true,
+    aliasEditType = 'catalog'
+  }, ref) => {
+    const { message } = App.useApp();
     const [visible, setVisible] = useState(false);
     const [currentStep, setCurrentStep] = useState(0);
     const [form] = Form.useForm();
     const [aliasForm, setAliasForm] = useState<AliasForm>({
       name: '',
+      desc: '',
       aliasType: 'SIMPLE',
       entityClass: '',
       aliasPaths: [],
     });
     const [editItem, setEditItem] = useState<any>(null);
     const [selectedColumns, setSelectedColumns] = useState<ColDef[]>([]);
-    const modellingPopUpRef = useRef<ModellingPopUpRef>(null);
     const mapperParametersDialogRef = useRef<MapperParametersDialogRef>(null);
     const [selectedMapperRow, setSelectedMapperRow] = useState<{ index: number; paramName?: string } | null>(null);
 
+    // State for tree view in Paths step (catalog mode)
+    const [reportingInfoRows, setReportingInfoRows] = useState<ReportingInfoRow[]>([]);
+    const [relatedPaths, setRelatedPaths] = useState<RelatedPath[]>([]);
+    const [isVisibleGroup, setIsVisibleGroup] = useState(false);
+    const [isOpenAllSelected, setIsOpenAllSelected] = useState(false);
+    const [isCondenseThePaths, setIsCondenseThePaths] = useState(false);
+    const [search, setSearch] = useState('');
+
+    // Fetch entity classes (for catalog mode)
+    const { data: entityClasses = [] } = useQuery({
+      queryKey: ['entityClasses'],
+      queryFn: async () => {
+        const { data } = await axios.get<string[]>(`${API_BASE}/platform-api/entity/classes`);
+        return data;
+      },
+      enabled: allowSelectEntity,
+    });
+
     useImperativeHandle(ref, () => ({
-      open: (requestClass: string, item?: any) => {
+      open: (requestClass?: string, item?: any) => {
         setVisible(true);
         setCurrentStep(0);
         setEditItem(item || null);
-        
+
         if (item) {
           // Edit mode
           const paths = item.aliasDef.aliasPaths?.value || [];
+          const entityClass = requestClass || item.entityClass || '';
+
+          // Deserialize mapperParameters if it's a string
+          const deserializedPaths: AliasPathLocal[] = paths.map((p: any) => ({
+            ...p,
+            mapperParameters: typeof p.mapperParameters === 'string'
+              ? JSON.parse(p.mapperParameters)
+              : p.mapperParameters,
+          }));
+
           setAliasForm({
             name: item.aliasDef.name,
+            desc: item.desc || '',
             aliasType: item.aliasDef.aliasType || 'SIMPLE',
-            entityClass: requestClass,
-            aliasPaths: paths,
+            entityClass: entityClass,
+            aliasPaths: deserializedPaths,
           });
           setSelectedColumns(paths.map((p: any) => p.colDef));
           form.setFieldsValue({
             name: item.aliasDef.name,
+            desc: item.desc || '',
+            entityClass: entityClass,
             aliasType: item.aliasDef.aliasType || 'SIMPLE',
           });
         } else {
           // Create mode
           setAliasForm({
             name: '',
+            desc: '',
             aliasType: 'SIMPLE',
-            entityClass: requestClass,
+            entityClass: requestClass || '',
             aliasPaths: [],
           });
           setSelectedColumns([]);
@@ -105,8 +162,73 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
       },
     });
 
+    // Load entity model when entity class changes (for tree view in Paths step)
+    useEffect(() => {
+      // For catalog mode: load when on Paths step (step 1)
+      // For report mode: load when on Paths step (step 0)
+      const pathsStepIndex = allowSelectEntity ? 1 : 0;
+
+      if (aliasForm.entityClass && currentStep === pathsStepIndex) {
+        const loadEntityModel = async () => {
+          try {
+            const { data: reportingInfo } = await getReportingInfo(aliasForm.entityClass);
+            setReportingInfoRows(HelperModelling.sortData(HelperModelling.filterData(reportingInfo)));
+
+            const { data: relatedData } = await getReportingRelatedPaths(aliasForm.entityClass);
+            setRelatedPaths(relatedData);
+
+            setIsVisibleGroup(false);
+            setTimeout(() => setIsVisibleGroup(true), 0);
+          } catch (error) {
+            console.error('Failed to load entity model:', error);
+          }
+        };
+        loadEntityModel();
+      }
+    }, [aliasForm.entityClass, allowSelectEntity, currentStep]);
+
     // Fetch mappers by type for each path
     const [mappersByType, setMappersByType] = useState<{ [key: string]: ReportMapper[] }>({});
+
+    // Watch selectedColumns and update aliasPaths (for tree view mode)
+    useEffect(() => {
+      if (selectedColumns.length === 0) return;
+
+      // Create alias paths from selected columns
+      const newPaths: AliasPathLocal[] = selectedColumns.map((col) => {
+        // Try to preserve existing mapper settings if the column was already selected
+        const existingPath = aliasForm.aliasPaths.find((p) => p.colDef.fullPath === col.fullPath);
+
+        return {
+          colDef: col,
+          mapperClass: existingPath?.mapperClass || 'com.cyoda.core.reports.aliasmappers.BasicMapper',
+          mapperParameters: existingPath?.mapperParameters,
+        };
+      });
+
+      // Auto-detect alias type from first column's colType
+      const aliasType = selectedColumns.length > 0 ? selectedColumns[0].colType : 'SIMPLE';
+
+      // Auto-generate name from first column if name is empty
+      let autoName = aliasForm.name;
+      if (!autoName && selectedColumns.length > 0) {
+        const firstPath = selectedColumns[0].fullPath;
+        const shortPath = firstPath.split('.').pop() || firstPath;
+        autoName = shortPath.replaceAll('.', ':');
+      }
+
+      setAliasForm((prev) => ({
+        ...prev,
+        aliasPaths: newPaths,
+        aliasType: aliasType,
+        name: autoName || prev.name,
+      }));
+
+      // Update form field
+      if (autoName && !form.getFieldValue('name')) {
+        form.setFieldsValue({ name: autoName });
+      }
+    }, [selectedColumns, allowSelectEntity]);
 
     // Load mappers by type when paths change
     useEffect(() => {
@@ -134,33 +256,14 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
       }
     };
 
-    // Create/Update mutation
-    const saveMutation = useMutation({
-      mutationFn: async (payload: { catalogItem: any; aliasDef: AliasDef }) => {
-        if (editItem?.id) {
-          const { data } = await axios.put(
-            `${API_BASE}/platform-api/catalog/item?itemId=${editItem.id}`,
-            payload.catalogItem
-          );
-          return { data, aliasDef: payload.aliasDef };
-        } else {
-          const { data } = await axios.post(`${API_BASE}/platform-api/catalog/item`, payload.catalogItem);
-          return { data, aliasDef: payload.aliasDef };
-        }
-      },
-      onSuccess: (result) => {
-        message.success(editItem ? 'Alias updated successfully' : 'Alias created successfully');
-        setVisible(false);
-        if (editItem) {
-          onUpdated?.();
-        } else {
-          onCreated?.(result.aliasDef);
-        }
-      },
-      onError: () => {
-        message.error('Failed to save alias');
-      },
-    });
+    const handleTogglesChange = (toggles: { isOpenAllSelected: boolean; isCondenseThePaths: boolean }) => {
+      setIsOpenAllSelected(toggles.isOpenAllSelected);
+      setIsCondenseThePaths(toggles.isCondenseThePaths);
+    };
+
+    const handleSearchChange = (searchData: { input: string }) => {
+      setSearch(searchData.input);
+    };
 
     const handleNext = async () => {
       try {
@@ -175,53 +278,6 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
 
     const handlePrev = () => {
       setCurrentStep(currentStep - 1);
-    };
-
-    const handleAddColumns = () => {
-      modellingPopUpRef.current?.open();
-    };
-
-    const handleColumnsSelected = (columns: ColDef[]) => {
-      const newPaths = columns.map((col) => {
-        // Find existing mapper if editing
-        const existingPath = editItem?.aliasDef?.aliasPaths?.value?.find(
-          (p: any) => p.colDef.fullPath === col.fullPath
-        );
-
-        return {
-          colDef: col,
-          mapperClass: existingPath?.mapperClass || 'com.cyoda.core.reports.aliasmappers.BasicMapper',
-          mapperParameters: existingPath?.mapperParameters,
-        };
-      });
-
-      const allPaths = [...aliasForm.aliasPaths, ...newPaths];
-      const allColumns = [...selectedColumns, ...columns];
-
-      // Auto-detect alias type from first column's colType
-      const aliasType = allColumns.length > 0 ? allColumns[0].colType : 'SIMPLE';
-
-      // Auto-generate name from first column if name is empty
-      let autoName = aliasForm.name;
-      if (!autoName && allColumns.length > 0) {
-        const firstPath = allColumns[0].fullPath;
-        const shortPath = firstPath.split('.').pop() || firstPath;
-        autoName = shortPath.replaceAll('.', ':');
-      }
-
-      setAliasForm((prev) => ({
-        ...prev,
-        aliasPaths: allPaths,
-        aliasType: aliasType as 'SIMPLE' | 'COMPLEX',
-        name: autoName,
-      }));
-
-      setSelectedColumns(allColumns);
-
-      // Update form field
-      if (autoName && !form.getFieldValue('name')) {
-        form.setFieldsValue({ name: autoName });
-      }
     };
 
     const handleRemovePath = (index: number) => {
@@ -368,24 +424,65 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
     };
 
     const handleFinish = async () => {
-      const aliasDef: AliasDef = {
-        name: aliasForm.name,
-        aliasType: aliasForm.aliasType,
-        aliasPaths: {
-          '@bean': 'com.cyoda.core.reports.columns.AliasPaths',
-          value: aliasForm.aliasPaths,
-        },
-      };
+      try {
+        // Validate required fields
+        if (!aliasForm.name || !aliasForm.entityClass) {
+          message.error('Please fill in all required fields');
+          return;
+        }
 
-      const catalogItem = {
-        name: aliasForm.name,
-        aliasDef: aliasDef,
-      };
+        // Convert AliasPathLocal[] to AliasDefColDef[] (serialize mapperParameters if needed)
+        const aliasPaths: AliasDefColDef[] = aliasForm.aliasPaths.map((path) => ({
+          colDef: path.colDef,
+          mapperClass: path.mapperClass,
+          mapperParameters: typeof path.mapperParameters === 'object'
+            ? JSON.stringify(path.mapperParameters)
+            : path.mapperParameters,
+        }));
 
-      await saveMutation.mutateAsync({ catalogItem, aliasDef });
+        const aliasDef: AliasDef = {
+          name: aliasForm.name,
+          aliasType: aliasForm.aliasType,
+          aliasPaths: {
+            '@meta': 'com.cyoda.core.reports.columndefs.ReportAliasPathDef[]',
+            value: aliasPaths,
+          },
+        };
+
+        // Catalog mode - create/update catalog item via API
+        if (aliasEditType === 'catalog' && (onCreate || onUpdate)) {
+          const catalogItem: CatalogItem = {
+            '@bean': 'com.cyoda.core.model.catalog.AliasCatalogItem',
+            name: aliasForm.name,
+            desc: aliasForm.desc || '',
+            entityClass: aliasForm.entityClass,
+            aliasDef: aliasDef,
+          };
+
+          if (editItem?.id) {
+            onUpdate?.(editItem.id, catalogItem);
+          } else {
+            onCreate?.(catalogItem);
+          }
+          setVisible(false);
+        }
+        // Report mode - just call callbacks (no API save)
+        else {
+          if (editItem) {
+            onUpdated?.(aliasDef);
+          } else {
+            onCreated?.(aliasDef);
+          }
+          setVisible(false);
+          message.success(editItem ? 'Alias updated successfully' : 'Alias created successfully');
+        }
+      } catch (error) {
+        console.error('Error in handleFinish:', error);
+        message.error('Failed to save alias');
+      }
     };
 
-    const pathColumns: TableColumnsType<AliasPath> = [
+    const pathColumns: TableColumnsType<AliasPathLocal> = [
       {
         title: 'Path',
         dataIndex: ['colDef', 'fullPath'],
@@ -479,58 +576,122 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
       },
     ];
 
-    const steps = [
-      {
-        title: 'Paths',
+    // Build steps array based on props
+    const steps = [];
+
+    // Entity step (catalog mode only)
+    if (allowSelectEntity) {
+      steps.push({
+        title: 'Entity',
         content: (
-          <div>
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={handleAddColumns}
-              style={{ marginBottom: 16 }}
+          <Form form={form} layout="vertical">
+            <Form.Item
+              label="Entity Class"
+              name="entityClass"
+              rules={[{ required: true, message: 'Please select an entity class' }]}
             >
-              Add Columns
-            </Button>
-            {aliasForm.aliasPaths.length > 0 && (
-              <div style={{ marginBottom: 16 }}>
-                <strong>Selected Paths:</strong> {aliasForm.aliasPaths.length}
-                {aliasForm.aliasType && (
-                  <span style={{ marginLeft: 16 }}>
-                    <strong>Type:</strong> {aliasForm.aliasType}
-                  </span>
-                )}
-              </div>
-            )}
-            <Table
-              columns={[
-                {
-                  title: 'Path',
-                  dataIndex: ['colDef', 'fullPath'],
-                  key: 'path',
-                },
-                {
-                  title: 'Type',
-                  dataIndex: ['colDef', 'colType'],
-                  key: 'type',
-                },
-                {
-                  title: 'Action',
-                  key: 'action',
-                  width: 100,
-                  render: (_, record, index) => (
-                    <Button danger icon={<DeleteOutlined />} onClick={() => handleRemovePath(index)} />
-                  ),
-                },
-              ]}
-              dataSource={aliasForm.aliasPaths}
-              rowKey={(record, index) => `${record.colDef.fullPath}-${index}`}
-              pagination={false}
-            />
-          </div>
+              <Select
+                showSearch
+                placeholder="Select entity class"
+                options={entityClasses.map((ec) => ({
+                  value: ec,
+                  label: ec.split('.').pop(),
+                }))}
+                filterOption={(input, option) =>
+                  (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                }
+                onChange={(value) => setAliasForm((prev) => ({ ...prev, entityClass: value }))}
+              />
+            </Form.Item>
+          </Form>
         ),
-      },
-      {
+      });
+    }
+
+    // Paths step - different UI for catalog vs report mode
+    // Paths step - tree view with checkboxes (same for both modes)
+    steps.push({
+      title: 'Paths',
+      content: (
+        <div>
+          <div className="actions-settings" style={{ marginBottom: 16 }}>
+            <ModellingPopUpToggles onChange={handleTogglesChange} />
+            <ModellingPopUpSearch onChange={handleSearchChange} />
+          </div>
+          {!aliasForm.entityClass ? (
+            <Alert message="Please select an entity class first" type="info" showIcon />
+          ) : (
+            <Checkbox.Group
+              value={selectedColumns.map(col => col.fullPath)}
+              onChange={(checkedPaths) => {
+                // Convert fullPaths back to ColDef objects
+                const newColumns: ColDef[] = (checkedPaths as string[]).map(fullPath => {
+                  // Try to find existing column to preserve all properties
+                  const existing = selectedColumns.find(col => col.fullPath === fullPath);
+                  if (existing) {
+                    return existing;
+                  }
+
+                  // For new selections, try to find the colType from the checkbox element
+                  const checkbox = document.querySelector(`input[type="checkbox"][value="${fullPath}"]`);
+                  const colType = checkbox?.getAttribute('data-col-type') || 'LEAF';
+
+                  return {
+                    fullPath,
+                    colType,
+                  } as ColDef;
+                });
+                setSelectedColumns(newColumns);
+              }}
+            >
+              {isVisibleGroup && (
+                <ModellingGroup
+                  reportInfoRows={reportingInfoRows}
+                  relatedPaths={relatedPaths}
+                  requestClass={aliasForm.entityClass}
+                  checked={selectedColumns}
+                  isOpenAllSelected={isOpenAllSelected}
+                  isCondenseThePaths={isCondenseThePaths}
+                  search={search}
+                />
+              )}
+            </Checkbox.Group>
+          )}
+        </div>
+      ),
+    });
+    // Name step
+    if (aliasEditType === 'catalog') {
+      steps.push({
+        title: 'Name',
+        content: (
+          <Form form={form} layout="vertical">
+            <Form.Item
+              label="Name"
+              name="name"
+              rules={[{ required: true, message: 'Please input Name' }]}
+            >
+              <Input
+                placeholder="Enter alias name"
+                onChange={(e) => {
+                  const value = e.target.value.replaceAll('.', ':');
+                  form.setFieldsValue({ name: value });
+                  setAliasForm((prev) => ({ ...prev, name: value }));
+                }}
+              />
+            </Form.Item>
+            <Form.Item label="Description" name="desc">
+              <Input.TextArea
+                placeholder="Enter description"
+                rows={3}
+                onChange={(e) => setAliasForm((prev) => ({ ...prev, desc: e.target.value }))}
+              />
+            </Form.Item>
+          </Form>
+        ),
+      });
+    } else {
+      steps.push({
         title: 'Name',
         content: (
           <Form form={form} layout="vertical">
@@ -548,41 +709,80 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
                 }}
               />
             </Form.Item>
-            <Form.Item label="Alias Type (Auto-detected)">
-              <Input value={aliasForm.aliasType} disabled />
-            </Form.Item>
           </Form>
         ),
-      },
-      {
-        title: 'Mappers',
+      });
+    }
+
+    // Mappers step
+    steps.push({
+      title: 'Mappers',
+      content: (
+        <div>
+          <h2>Selected: {aliasForm.aliasPaths.length}</h2>
+          <Table
+            columns={pathColumns}
+            dataSource={aliasForm.aliasPaths}
+            rowKey={(record, index) => `${record.colDef.fullPath}-${index}`}
+            pagination={false}
+            scroll={{ x: 'max-content' }}
+          />
+        </div>
+      ),
+    });
+
+    // Config file step (catalog mode only)
+    if (allowConfigFile) {
+      steps.push({
+        title: 'Config file',
         content: (
           <div>
-            <h2>Selected: {aliasForm.aliasPaths.length}</h2>
-            <Table
-              columns={pathColumns}
-              dataSource={aliasForm.aliasPaths}
-              rowKey={(record, index) => `${record.colDef.fullPath}-${index}`}
-              pagination={false}
-              scroll={{ x: 'max-content' }}
+            <p style={{ marginBottom: 16 }}>Review and edit the alias configuration:</p>
+            <MonacoEditor
+              height="400px"
+              language="json"
+              theme="cyoda-dark"
+              value={JSON.stringify(
+                {
+                  '@bean': 'com.cyoda.core.model.catalog.AliasCatalogItem',
+                  name: aliasForm.name,
+                  desc: aliasForm.desc || '',
+                  entityClass: aliasForm.entityClass,
+                  aliasDef: {
+                    name: aliasForm.name,
+                    aliasType: aliasForm.aliasType,
+                    aliasPaths: {
+                      '@meta': 'com.cyoda.core.reports.columndefs.ReportAliasPathDef[]',
+                      value: aliasForm.aliasPaths,
+                    },
+                  },
+                },
+                null,
+                2
+              )}
+              options={{
+                readOnly: true,
+                minimap: { enabled: false },
+                scrollBeyondLastLine: false,
+              }}
             />
           </div>
         ),
-      },
-    ];
+      });
+    }
 
     return (
       <>
         <Modal
-          title={editItem ? 'Edit Alias' : 'Create New Alias'}
+          title={aliasEditType === 'catalog' ? 'Columns' : (editItem ? 'Edit Alias' : 'Create New Alias')}
           open={visible}
           onCancel={() => setVisible(false)}
-          width="80%"
+          width={aliasEditType === 'catalog' ? '90%' : '80%'}
           footer={null}
         >
           <Steps current={currentStep} items={steps} style={{ marginBottom: 24 }} />
 
-          <div style={{ minHeight: 300 }}>{steps[currentStep].content}</div>
+          <div style={{ minHeight: 300 }}>{steps[currentStep]?.content}</div>
 
           <div style={{ marginTop: 24, textAlign: 'right' }}>
             <Space>
@@ -598,7 +798,6 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
                 <Button
                   type="primary"
                   onClick={handleFinish}
-                  loading={saveMutation.isPending}
                   disabled={aliasForm.aliasPaths.length === 0}
                 >
                   {editItem ? 'Update' : 'Create'}
@@ -607,13 +806,6 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
             </Space>
           </div>
         </Modal>
-
-        <ModellingPopUp
-          ref={modellingPopUpRef}
-          requestClass={aliasForm.entityClass}
-          checked={selectedColumns}
-          onChange={handleColumnsSelected}
-        />
 
         <MapperParametersDialog
           ref={mapperParametersDialogRef}

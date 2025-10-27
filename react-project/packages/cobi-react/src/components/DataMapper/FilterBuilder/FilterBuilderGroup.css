@@ -36,17 +36,30 @@
 
 .builder-condition-group .button-add {
   margin-left: 10px;
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: var(--refine-primary, #00D4AA);
   border-color: var(--refine-primary, #00D4AA);
+  box-shadow: 0 2px 4px rgba(0, 212, 170, 0.3);
 }
 
 .builder-condition-group .button-add:hover {
   background: var(--refine-primary-dark, #00B894);
   border-color: var(--refine-primary-dark, #00B894);
+  box-shadow: 0 4px 8px rgba(0, 212, 170, 0.4);
+  transform: translateY(-1px);
 }
 
 .builder-condition-group .button-delete {
   margin-left: 10px !important;
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .builder-condition-group .wrap-actions,
@@ -67,18 +80,26 @@
   background: rgba(0, 0, 0, 0.2);
   border-radius: 8px;
   padding: 4px;
+  display: inline-flex;
+  align-items: center;
 }
 
 .builder-condition-group .ant-radio-button-wrapper {
   min-width: 120px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
   background: transparent;
   border: none;
   color: var(--refine-text-secondary, #D1D5DB);
   font-weight: 500;
+  font-size: 14px;
+  line-height: 1;
   transition: all 150ms;
   border-radius: 6px;
-  padding: 8px 20px;
+  padding: 0 20px;
 }
 
 .builder-condition-group .ant-radio-button-wrapper:not(:first-child)::before {
@@ -91,10 +112,17 @@
 }
 
 .builder-condition-group .ant-radio-button-wrapper-checked {
-  background: var(--refine-bg-primary, #1A2332);
-  color: var(--refine-text-primary, #F9FAFB);
+  background: var(--refine-primary, #00D4AA);
+  color: #FFFFFF;
   font-weight: 600;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--refine-primary, #00D4AA);
+  box-shadow: 0 2px 4px rgba(0, 212, 170, 0.3);
+}
+
+.builder-condition-group .ant-radio-button-wrapper-checked:hover {
+  background: var(--refine-primary-dark, #00B894);
+  border-color: var(--refine-primary-dark, #00B894);
+  color: #FFFFFF;
 }
 
 .builder-condition-group .ant-radio-button-wrapper-checked:hover {
