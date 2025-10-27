@@ -31,6 +31,17 @@ export default defineConfig({
   server: {
     port: 3000,
     proxy: {
+      // Bypass proxy for statemachine endpoints to allow mock API to work
+      '/platform-api/statemachine': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        // Configure to bypass when backend is not available
+        configure: (proxy, options) => {
+          proxy.on('error', (err, req, res) => {
+            console.log('Proxy error for statemachine - mock API should handle this');
+          });
+        },
+      },
       '/platform-api': {
         target: 'http://localhost:8080',
         changeOrigin: true,
