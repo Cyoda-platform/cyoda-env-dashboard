@@ -185,10 +185,15 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
     if (!positionsMap) {
       console.log('[GraphicalStateMachine] Running layout explicitly...');
       const layout = cy.layout(coreLayout('breadthfirst'));
-      layout.run();
 
-      // Wait for layout to finish
-      layout.on('layoutstop', () => {
+      // Use promiseOn instead of on for better reliability
+      layout.promiseOn('layoutstop').then(() => {
+        // Check if cy is still valid
+        if (!cy || cy.destroyed()) {
+          console.log('[GraphicalStateMachine] Cytoscape instance was destroyed');
+          return;
+        }
+
         console.log('[GraphicalStateMachine] Layout completed');
         console.log('[GraphicalStateMachine] Node positions AFTER layout:',
           cy.nodes().map((n: any) => ({
@@ -201,21 +206,63 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
         const eles = cy.nodes();
         setPositions(eles);
 
-        // Fit to view after layout
-        cy.fit();
-        cy.resize();
-        cy.center();
-        console.log('[GraphicalStateMachine] After fit - zoom:', cy.zoom(), 'pan:', cy.pan());
+        // Force a small delay to ensure DOM is ready, then fit
+        setTimeout(() => {
+          if (cy && !cy.destroyed()) {
+            const container = cy.container();
+            const canvas = container?.querySelector('canvas');
+            console.log('[GraphicalStateMachine] Container dimensions:', {
+              width: container?.clientWidth,
+              height: container?.clientHeight,
+              offsetWidth: container?.offsetWidth,
+              offsetHeight: container?.offsetHeight
+            });
+            console.log('[GraphicalStateMachine] Canvas element:', {
+              exists: !!canvas,
+              width: canvas?.width,
+              height: canvas?.height,
+              style: canvas?.style.cssText
+            });
+
+            cy.resize();
+            cy.fit(undefined, 50); // 50px padding
+
+            // Force complete redraw
+            cy.forceRender();
+
+            console.log('[GraphicalStateMachine] After fit - zoom:', cy.zoom(), 'pan:', cy.pan());
+            console.log('[GraphicalStateMachine] Viewport extent:', cy.extent());
+            console.log('[GraphicalStateMachine] Number of visible nodes:', cy.nodes(':visible').length);
+
+            // Log individual node details
+            cy.nodes().forEach((node: any) => {
+              console.log('[GraphicalStateMachine] Node:', node.id(),
+                'pos:', node.position(),
+                'visible:', node.visible(),
+                'renderedPosition:', node.renderedPosition(),
+                'style:', {
+                  width: node.style('width'),
+                  height: node.style('height'),
+                  backgroundColor: node.style('background-color'),
+                  opacity: node.style('opacity')
+                });
+            });
+          }
+        }, 100);
 
         // Mark as initialized after layout completes
         setIsInitialized(true);
+      }).catch((err: any) => {
+        console.error('[GraphicalStateMachine] Layout error:', err);
       });
+
+      layout.run();
     } else {
       // If we have saved positions, just fit to view
-      cy.fit();
+      cy.fit(undefined, 50); // 50px padding
       cy.resize();
-      cy.center();
       console.log('[GraphicalStateMachine] Using saved positions - zoom:', cy.zoom(), 'pan:', cy.pan());
+      console.log('[GraphicalStateMachine] Number of visible nodes:', cy.nodes(':visible').length);
     }
 
     // Event handlers
