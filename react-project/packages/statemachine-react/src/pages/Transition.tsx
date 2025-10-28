@@ -32,9 +32,9 @@ export const Transition: React.FC = () => {
   const workflowId = searchParams.get('workflowId') || '';
   const persistedType = (searchParams.get('persistedType') || 'persisted') as PersistedType;
   const entityClassName = searchParams.get('entityClassName') || '';
-  
+
   const isNew = !transitionId || transitionId === 'new';
-  const isRuntime = persistedType === 'transient';
+  const isRuntime = persistedType === 'runtime';
 
   // Local state for modals and new state creation
   const [isCriteriaModalVisible, setIsCriteriaModalVisible] = useState(false);

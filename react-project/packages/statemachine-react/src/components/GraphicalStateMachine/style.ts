@@ -10,19 +10,22 @@ export const style: Stylesheet[] = [
     selector: 'node',
     style: {
       'label': 'data(title)',
-      'text-background-color': '#f9fdfd',
+      'color': '#ffffff', // White text for dark theme
+      'text-background-color': '#374151', // Dark gray background for labels
       'text-background-opacity': 0.9,
       'text-max-width': 180,
       'text-wrap': 'wrap',
       'width': 40,
       'height': 40,
+      'background-color': '#cccccc', // Fallback color
     },
   },
   {
-    selector: '.edge',
+    selector: 'edge',
     style: {
       'label': 'data(title)',
-      'text-background-color': '#f9fdfd',
+      'color': '#ffffff', // White text for dark theme
+      'text-background-color': '#374151', // Dark gray background for labels
       'text-background-opacity': 0.9,
       'line-color': '#F7AD11',
       'z-compound-depth': 'bottom',
@@ -32,6 +35,13 @@ export const style: Stylesheet[] = [
       'arrow-scale': 1.1,
       'curve-style': 'bezier',
       'control-point-step-size': 240,
+    },
+  },
+  {
+    selector: '.edge',
+    style: {
+      'line-color': '#F7AD11',
+      'target-arrow-color': '#912624',
     },
   },
   {

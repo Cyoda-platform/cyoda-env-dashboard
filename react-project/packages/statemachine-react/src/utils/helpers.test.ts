@@ -11,8 +11,8 @@ describe('Helper Utilities', () => {
       expect(getPersistedType(true)).toBe('persisted');
     });
 
-    it('should return "transient" when input is false', () => {
-      expect(getPersistedType(false)).toBe('transient');
+    it('should return "runtime" when input is false', () => {
+      expect(getPersistedType(false)).toBe('runtime');
     });
 
     it('should handle truthy values', () => {
@@ -25,16 +25,16 @@ describe('Helper Utilities', () => {
 
     it('should handle falsy values', () => {
       // TypeScript will prevent this, but testing runtime behavior
-      expect(getPersistedType(0 as any)).toBe('transient');
-      expect(getPersistedType('' as any)).toBe('transient');
-      expect(getPersistedType(null as any)).toBe('transient');
-      expect(getPersistedType(undefined as any)).toBe('transient');
+      expect(getPersistedType(0 as any)).toBe('runtime');
+      expect(getPersistedType('' as any)).toBe('runtime');
+      expect(getPersistedType(null as any)).toBe('runtime');
+      expect(getPersistedType(undefined as any)).toBe('runtime');
     });
   });
 
   describe('isRuntime', () => {
-    it('should return true for "transient" type', () => {
-      expect(isRuntime('transient')).toBe(true);
+    it('should return true for "runtime" type', () => {
+      expect(isRuntime('runtime')).toBe(true);
     });
 
     it('should return false for "persisted" type', () => {
@@ -50,8 +50,8 @@ describe('Helper Utilities', () => {
     });
 
     it('should be case-sensitive', () => {
-      expect(isRuntime('Transient' as any)).toBe(false);
-      expect(isRuntime('TRANSIENT' as any)).toBe(false);
+      expect(isRuntime('Runtime' as any)).toBe(false);
+      expect(isRuntime('RUNTIME' as any)).toBe(false);
       expect(isRuntime('Persisted' as any)).toBe(false);
     });
   });
@@ -230,10 +230,10 @@ describe('Helper Utilities', () => {
     });
 
     it('should handle workflow lifecycle', () => {
-      // New workflow (transient)
-      const isTransient = false;
-      const type = getPersistedType(isTransient);
-      expect(type).toBe('transient');
+      // New workflow (runtime)
+      const isRuntime = false;
+      const type = getPersistedType(isRuntime);
+      expect(type).toBe('runtime');
       expect(isRuntime(type)).toBe(true);
 
       // Saved workflow (persisted)

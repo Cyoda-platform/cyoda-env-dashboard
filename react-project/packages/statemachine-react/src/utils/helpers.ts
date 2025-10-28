@@ -9,14 +9,14 @@ import type { PersistedType } from '../types';
  * Get persisted type from boolean value
  */
 export function getPersistedType(persisted: boolean): PersistedType {
-  return persisted ? 'persisted' : 'transient';
+  return persisted ? 'persisted' : 'runtime';
 }
 
 /**
- * Check if persisted type is runtime (transient)
+ * Check if persisted type is runtime
  */
 export function isRuntime(persistedType: PersistedType): boolean {
-  return persistedType === 'transient';
+  return persistedType === 'runtime';
 }
 
 /**

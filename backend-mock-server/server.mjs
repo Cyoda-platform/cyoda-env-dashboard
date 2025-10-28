@@ -1631,6 +1631,98 @@ app.get('/platform-api/entity-info/fetch/models-info', (req, res) => {
   }
 });
 
+// Instances endpoint
+app.post('/platform-api/statemachine/instances', (req, res) => {
+  const { entityClassName, entityIds, paging, rangeOrder, rangeCondition } = req.body;
+
+  console.log('📋 Fetching instances for:', entityClassName);
+
+  // Mock instances data
+  const mockInstances = [
+    {
+      entityId: 'inst-001',
+      entityClassName: 'com.cyoda.tdb.model.treenode.TreeNodeEntity',
+      currentWorkflowId: 'workflow-1',
+      state: 'ACTIVE',
+      creationDate: Date.now() - 86400000 * 10,
+      lastUpdateTime: Date.now() - 3600000,
+      deleted: false
+    },
+    {
+      entityId: 'inst-002',
+      entityClassName: 'com.cyoda.tdb.model.treenode.TreeNodeEntity',
+      currentWorkflowId: 'workflow-1',
+      state: 'PENDING',
+      creationDate: Date.now() - 86400000 * 5,
+      lastUpdateTime: Date.now() - 7200000,
+      deleted: false
+    },
+    {
+      entityId: 'inst-003',
+      entityClassName: 'com.cyoda.core.model.blob.CyodaBlobEntity',
+      currentWorkflowId: 'workflow-2',
+      state: 'COMPLETED',
+      creationDate: Date.now() - 86400000 * 15,
+      lastUpdateTime: Date.now() - 86400000,
+      deleted: false
+    },
+    {
+      entityId: 'inst-004',
+      entityClassName: 'com.cyoda.plugins.iam.model.entity.LegalEntityExtKey',
+      currentWorkflowId: 'workflow-3',
+      state: 'ACTIVE',
+      creationDate: Date.now() - 86400000 * 20,
+      lastUpdateTime: Date.now() - 1800000,
+      deleted: false
+    },
+    {
+      entityId: 'inst-005',
+      entityClassName: 'net.cyoda.saas.model.LegalEntity',
+      currentWorkflowId: 'workflow-4',
+      state: 'ACTIVE',
+      creationDate: Date.now() - 86400000 * 25,
+      lastUpdateTime: Date.now() - 900000,
+      deleted: false
+    },
+    {
+      entityId: 'inst-006',
+      entityClassName: 'net.cyoda.saas.model.TrinoSchemaDefinitionEntity',
+      currentWorkflowId: 'workflow-5',
+      state: 'PENDING',
+      creationDate: Date.now() - 86400000 * 30,
+      lastUpdateTime: Date.now() - 450000,
+      deleted: false
+    }
+  ];
+
+  // Filter by entity class name
+  let filteredInstances = entityClassName
+    ? mockInstances.filter(inst => inst.entityClassName === entityClassName)
+    : mockInstances;
+
+  // Filter by entity IDs if provided
+  if (entityIds && entityIds.length > 0) {
+    filteredInstances = filteredInstances.filter(inst => entityIds.includes(inst.entityId));
+  }
+
+  // Apply paging
+  const offset = paging?.offset || 0;
+  const maxResults = paging?.maxResults || 20;
+  const paginatedInstances = filteredInstances.slice(offset, offset + maxResults);
+
+  res.json({
+    '@bean': 'com.cyoda.core.model.PartialResultsListDto',
+    hasMore: offset + maxResults < filteredInstances.length,
+    items: paginatedInstances,
+    instances: paginatedInstances, // Some APIs use 'instances' instead of 'items'
+    rangeOrder: rangeOrder || 'ASC',
+    pagingFilter: {
+      offset: offset,
+      maxResults: maxResults
+    }
+  });
+});
+
 // ============================================================================
 // Platform Processing Endpoints
 // ============================================================================

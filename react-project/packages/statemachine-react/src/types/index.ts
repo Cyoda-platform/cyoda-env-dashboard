@@ -247,7 +247,7 @@ export interface ExportData {
 }
 
 // Persisted Type
-export type PersistedType = 'persisted' | 'transient';
+export type PersistedType = 'persisted' | 'runtime';
 
 // Layout Mode
 export type LayoutMode = 'tabular' | 'graphical';

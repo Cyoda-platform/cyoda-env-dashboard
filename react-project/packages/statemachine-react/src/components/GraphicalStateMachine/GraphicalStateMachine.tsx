@@ -22,6 +22,7 @@ import { GraphicalStateMachinePanel } from '@cyoda/ui-lib-react';
 import type { Transition, Process, Criteria, PositionsMap } from '../../types';
 import { style } from './style';
 import { coreLayout, childrenLayout } from './layouts';
+import './GraphicalStateMachine.scss';
 import { 
   getStatesTransitionsEles, 
   getProcessesEles, 
@@ -75,26 +76,82 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
   // Initialize Cytoscape
   const init = useCallback(() => {
     if (isInitialized || !containerRef.current) {
+      console.log('[GraphicalStateMachine] Skipping init - already initialized or no container');
       return;
     }
 
+    console.log('[GraphicalStateMachine] Initializing with:', {
+      transitions: transitions.length,
+      activeTransitions: activeTransitions.length,
+      processes: processes.length,
+      criteria: criteria.length,
+      positionsMap,
+    });
+
+    console.log('[GraphicalStateMachine] Active transitions data:', activeTransitions.map(t => ({
+      id: t.id,
+      name: t.name,
+      startStateId: t.startStateId,
+      startStateName: t.startStateName,
+      endStateId: t.endStateId,
+      endStateName: t.endStateName,
+      active: t.active,
+    })));
+
     const elements = getStatesTransitionsEles(activeTransitions, positionsMap, currentState);
+    console.log('[GraphicalStateMachine] Generated elements:', elements.length, elements);
 
     // Set background color on container before initializing Cytoscape
     if (containerRef.current) {
-      containerRef.current.style.backgroundColor = '#f9fafb';
+      containerRef.current.style.backgroundColor = '#1f2937'; // Dark theme background
+      console.log('[GraphicalStateMachine] Container dimensions:', {
+        width: containerRef.current.offsetWidth,
+        height: containerRef.current.offsetHeight,
+        clientWidth: containerRef.current.clientWidth,
+        clientHeight: containerRef.current.clientHeight,
+      });
     }
 
     const cy = cytoscape({
       container: containerRef.current,
       elements,
-      layout: coreLayout('breadthfirst'),
       style,
       zoom: 1,
       pan: { x: 0, y: 0 },
       minZoom: 0.1,
       maxZoom: 4,
     });
+
+    console.log('[GraphicalStateMachine] Cytoscape initialized:', {
+      nodes: cy.nodes().length,
+      edges: cy.edges().length,
+      container: containerRef.current,
+    });
+
+    console.log('[GraphicalStateMachine] Node details:',
+      cy.nodes().map((n: any) => ({
+        id: n.id(),
+        classes: n.classes(),
+        data: n.data(),
+        style: {
+          backgroundColor: n.style('background-color'),
+          width: n.style('width'),
+          height: n.style('height'),
+        }
+      }))
+    );
+
+    console.log('[GraphicalStateMachine] Edge details:',
+      cy.edges().map((e: any) => ({
+        id: e.id(),
+        classes: e.classes(),
+        data: e.data(),
+        style: {
+          lineColor: e.style('line-color'),
+          width: e.style('width'),
+        }
+      }))
+    );
 
     cyRef.current = cy;
 
@@ -103,12 +160,12 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
       if (containerRef.current) {
         const canvas = containerRef.current.querySelector('canvas');
         if (canvas) {
-          (canvas as HTMLCanvasElement).style.backgroundColor = '#f9fafb';
+          (canvas as HTMLCanvasElement).style.backgroundColor = '#1f2937'; // Dark theme
         }
         // Also set on all child divs
         const divs = containerRef.current.querySelectorAll('div');
         divs.forEach((div) => {
-          (div as HTMLElement).style.backgroundColor = '#f9fafb';
+          (div as HTMLElement).style.backgroundColor = '#1f2937'; // Dark theme
         });
       }
     }, 100);
@@ -117,9 +174,48 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
     addCriteria();
     addProcesses();
 
-    const eles = cy.nodes();
+    console.log('[GraphicalStateMachine] Node positions BEFORE layout:',
+      cy.nodes().map((n: any) => ({
+        id: n.id(),
+        position: n.position()
+      }))
+    );
+
+    // If no saved positions, run layout explicitly
     if (!positionsMap) {
-      setPositions(eles);
+      console.log('[GraphicalStateMachine] Running layout explicitly...');
+      const layout = cy.layout(coreLayout('breadthfirst'));
+      layout.run();
+
+      // Wait for layout to finish
+      layout.on('layoutstop', () => {
+        console.log('[GraphicalStateMachine] Layout completed');
+        console.log('[GraphicalStateMachine] Node positions AFTER layout:',
+          cy.nodes().map((n: any) => ({
+            id: n.id(),
+            position: n.position()
+          }))
+        );
+
+        // Save the new positions
+        const eles = cy.nodes();
+        setPositions(eles);
+
+        // Fit to view after layout
+        cy.fit();
+        cy.resize();
+        cy.center();
+        console.log('[GraphicalStateMachine] After fit - zoom:', cy.zoom(), 'pan:', cy.pan());
+
+        // Mark as initialized after layout completes
+        setIsInitialized(true);
+      });
+    } else {
+      // If we have saved positions, just fit to view
+      cy.fit();
+      cy.resize();
+      cy.center();
+      console.log('[GraphicalStateMachine] Using saved positions - zoom:', cy.zoom(), 'pan:', cy.pan());
     }
 
     // Event handlers
@@ -127,9 +223,12 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
     cy.on('dragfree', 'node', onDragFree);
     cy.on('tap', onTapBackground);
 
-    cy.fit();
     cy.userZoomingEnabled(false);
-    setIsInitialized(true);
+
+    // Set initialized flag (will be set after layout completes if no positionsMap)
+    if (positionsMap) {
+      setIsInitialized(true);
+    }
 
     // Apply initial visibility settings
     cy.nodes().toggleClass('hide-titles', !showTitles);
@@ -138,7 +237,7 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
     cy.edges('.edge-process').toggleClass('hidden', !showProcesses);
     cy.nodes('.node-criteria').toggleClass('hidden', !showCriteria);
     cy.nodes('.compound-criteria').toggleClass('compound-criteria-hidden', !showCriteria);
-  }, [activeTransitions, positionsMap, currentState, isInitialized]);
+  }, [activeTransitions, positionsMap, currentState, isInitialized, processes, criteria, showTitles, showEdgesTitles, showProcesses, showCriteria]);
 
   // Force canvas background color after initialization
   useEffect(() => {
@@ -148,18 +247,18 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
       if (!containerRef.current) return;
 
       // Set background on container
-      containerRef.current.style.backgroundColor = '#f9fafb';
+      containerRef.current.style.backgroundColor = '#1f2937'; // Dark theme
 
       // Set background on all child elements
       const allElements = containerRef.current.querySelectorAll('*');
       allElements.forEach((el) => {
-        (el as HTMLElement).style.backgroundColor = '#f9fafb';
+        (el as HTMLElement).style.backgroundColor = '#1f2937'; // Dark theme
       });
 
       // Specifically target canvas
       const canvas = containerRef.current.querySelector('canvas');
       if (canvas) {
-        (canvas as HTMLCanvasElement).style.backgroundColor = '#f9fafb';
+        (canvas as HTMLCanvasElement).style.backgroundColor = '#1f2937'; // Dark theme
       }
     };
 
@@ -383,27 +482,26 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
     setShowListOfTransitions((prev) => !prev);
   }, []);
 
-  // Initialize on mount
+  // Initialize on mount and when data changes
   useEffect(() => {
-    init();
+    // Only initialize if we have transitions data
+    if (transitions.length > 0 && !isInitialized) {
+      console.log('[GraphicalStateMachine] useEffect - calling init');
+      init();
+    }
+  }, [transitions, isInitialized, init]);
 
+  // Reinitialize when workflow changes
+  useEffect(() => {
     return () => {
       if (cyRef.current) {
+        console.log('[GraphicalStateMachine] Cleanup - destroying cytoscape');
         cyRef.current.destroy();
         cyRef.current = null;
         setIsInitialized(false);
       }
     };
-  }, []);
-
-  // Reinitialize when data changes
-  useEffect(() => {
-    if (isInitialized && cyRef.current) {
-      cyRef.current.destroy();
-      setIsInitialized(false);
-      init();
-    }
-  }, [workflowId, transitions, processes, criteria]);
+  }, [workflowId]);
 
   // Handle fullscreen change
   useEffect(() => {

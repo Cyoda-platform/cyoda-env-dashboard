@@ -85,7 +85,7 @@ export const StatesListModal: React.FC<StatesListModalProps> = ({
       cancelText: 'Cancel',
       onOk: async () => {
         try {
-          const statePersistedType = record.persisted ? 'persisted' : 'transient';
+          const statePersistedType = record.persisted ? 'persisted' : 'runtime';
           await deleteStateMutation.mutateAsync({
             persistedType: statePersistedType,
             workflowId,

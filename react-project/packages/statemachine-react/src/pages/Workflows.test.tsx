@@ -78,16 +78,21 @@ vi.mock('@cyoda/ui-lib-react', () => ({
 
 // Mock global UI settings store
 const mockSetEntityType = vi.fn();
-const mockEntityType = vi.fn(() => 'BUSINESS');
-const mockIsEnabledTechView = vi.fn(() => true);
+let mockEntityTypeValue = 'BUSINESS';
+const mockEntityType = vi.fn(() => mockEntityTypeValue);
 
-vi.mock('../stores/globalUiSettingsStore', () => ({
-  useGlobalUiSettingsStore: () => ({
-    entityType: mockEntityType(),
-    isEnabledTechView: mockIsEnabledTechView(),
-    setEntityType: mockSetEntityType,
-  }),
-}));
+vi.mock('@cyoda/http-api-react', async () => {
+  const actual = await vi.importActual('@cyoda/http-api-react');
+  return {
+    ...actual,
+    useGlobalUiSettingsStore: () => ({
+      get entityType() {
+        return mockEntityType();
+      },
+      setEntityType: mockSetEntityType,
+    }),
+  };
+});
 
 // Mock StateIndicator component
 vi.mock('../components/StateIndicator', () => ({
@@ -120,7 +125,6 @@ describe('Workflows', () => {
 
     // Reset mock functions
     mockEntityType.mockReturnValue('BUSINESS');
-    mockIsEnabledTechView.mockReturnValue(true);
 
     mockUseWorkflowsList.mockReturnValue({
       data: mockWorkflows,
@@ -156,9 +160,10 @@ describe('Workflows', () => {
 
   it('should display all workflows in the table', () => {
     render(<Workflows />, { wrapper: createWrapper() });
-    
+
     expect(screen.getByText('Test Workflow 1')).toBeInTheDocument();
-    expect(screen.getByText('Test Workflow 2')).toBeInTheDocument();
+    // Test Workflow 2 is filtered out because it's PERSISTENCE type and entityType is BUSINESS
+    expect(screen.queryByText('Test Workflow 2')).not.toBeInTheDocument();
     expect(screen.getByText('Another Workflow')).toBeInTheDocument();
   });
 
@@ -176,15 +181,19 @@ describe('Workflows', () => {
   });
 
   it('should filter workflows by entity class name', async () => {
+    // This test filters by text "Entity1" which matches the entity class name
+    // Entity1 is BUSINESS type, so it will be visible with default entityType
     render(<Workflows />, { wrapper: createWrapper() });
-    
+
     const filterInput = screen.getByPlaceholderText('Filter workflows');
-    fireEvent.change(filterInput, { target: { value: 'Entity 2' } });
-    
+    fireEvent.change(filterInput, { target: { value: 'Entity1' } });
+
     await waitFor(() => {
-      expect(screen.getByText('Test Workflow 2')).toBeInTheDocument();
-      expect(screen.queryByText('Test Workflow 1')).not.toBeInTheDocument();
-      expect(screen.queryByText('Another Workflow')).not.toBeInTheDocument();
+      // Both workflows with Entity1 should be visible
+      expect(screen.getByText('Test Workflow 1')).toBeInTheDocument();
+      expect(screen.getByText('Another Workflow')).toBeInTheDocument();
+      // Workflow with Entity2 should not be visible
+      expect(screen.queryByText('Test Workflow 2')).not.toBeInTheDocument();
     });
   });
 
@@ -204,37 +213,54 @@ describe('Workflows', () => {
   it('should display entity class labels', () => {
     render(<Workflows />, { wrapper: createWrapper() });
 
-    // Entity 1 appears twice (2 workflows with this entity class)
-    const entity1Elements = screen.getAllByText('Entity 1');
+    // Entity 1 appears twice (2 workflows with this entity class) with type label
+    const entity1Elements = screen.getAllByText(/Entity1.*Business/i);
     expect(entity1Elements.length).toBeGreaterThanOrEqual(1);
 
-    expect(screen.getByText('Entity 2')).toBeInTheDocument();
+    // Entity 2 is PERSISTENCE type, so it's filtered out when entityType is BUSINESS
+    expect(screen.queryByText(/Entity2/i)).not.toBeInTheDocument();
   });
 
-  it('should show active/inactive status', () => {
+  it('should show active/inactive status', async () => {
     render(<Workflows />, { wrapper: createWrapper() });
 
-    // Check for "Yes" in active column (2 active workflows)
-    const yesElements = screen.getAllByText('Yes');
-    // Should have at least 2 "Yes" (for active column)
-    expect(yesElements.length).toBeGreaterThanOrEqual(2);
+    // Wait for table to render
+    await waitFor(() => {
+      expect(screen.getByText('Test Workflow 1')).toBeInTheDocument();
+    });
 
-    // Check for "No" (1 inactive workflow)
-    const noElements = screen.getAllByText('No');
-    expect(noElements.length).toBeGreaterThanOrEqual(1);
+    // Only 2 BUSINESS workflows are shown (Entity1)
+    // StateIndicator is mocked with data-testid="state-indicator-default"
+    const stateIndicators = screen.getAllByTestId('state-indicator-default');
+    // Should have at least 4 indicators (2 rows × 2 columns: Active and Persisted)
+    expect(stateIndicators.length).toBeGreaterThanOrEqual(4);
+
+    // Check that we have both active (true) and inactive (false) states
+    const activeIndicators = stateIndicators.filter(el => el.getAttribute('data-state') === 'true');
+    const inactiveIndicators = stateIndicators.filter(el => el.getAttribute('data-state') === 'false');
+    expect(activeIndicators.length).toBeGreaterThanOrEqual(1);
+    expect(inactiveIndicators.length).toBeGreaterThanOrEqual(1);
   });
 
-  it('should show persisted/transient status', () => {
+  it('should show persisted/transient status', async () => {
     render(<Workflows />, { wrapper: createWrapper() });
 
-    // Check for "Yes" in persisted column (2 persisted workflows)
-    const yesElements = screen.getAllByText('Yes');
-    // Should have at least 2 "Yes" (for persisted column)
-    expect(yesElements.length).toBeGreaterThanOrEqual(2);
+    // Wait for table to render
+    await waitFor(() => {
+      expect(screen.getByText('Test Workflow 1')).toBeInTheDocument();
+    });
 
-    // Check for "No" (1 transient workflow)
-    const noElements = screen.getAllByText('No');
-    expect(noElements.length).toBeGreaterThanOrEqual(1);
+    // Only 2 BUSINESS workflows are shown (Entity1)
+    // StateIndicator is mocked with data-testid="state-indicator-default"
+    const stateIndicators = screen.getAllByTestId('state-indicator-default');
+    // Should have at least 4 indicators (2 rows × 2 columns: Active and Persisted)
+    expect(stateIndicators.length).toBeGreaterThanOrEqual(4);
+
+    // Check that we have both persisted (true) and transient (false) states
+    const persistedIndicators = stateIndicators.filter(el => el.getAttribute('data-state') === 'true');
+    const transientIndicators = stateIndicators.filter(el => el.getAttribute('data-state') === 'false');
+    expect(persistedIndicators.length).toBeGreaterThanOrEqual(1);
+    expect(transientIndicators.length).toBeGreaterThanOrEqual(1);
   });
 
   it('should allow row selection', async () => {
@@ -291,76 +317,38 @@ describe('Workflows', () => {
 
   it('should show total count in pagination', () => {
     render(<Workflows />, { wrapper: createWrapper() });
-    
-    expect(screen.getByText('Total 3 workflows')).toBeInTheDocument();
+
+    // Only 2 BUSINESS workflows are shown (Entity1 workflows)
+    expect(screen.getByText('Total 2 workflows')).toBeInTheDocument();
   });
 
   it('should clear filter when clear button is clicked', async () => {
     render(<Workflows />, { wrapper: createWrapper() });
-    
+
     const filterInput = screen.getByPlaceholderText('Filter workflows') as HTMLInputElement;
-    
+
     // Set filter
     fireEvent.change(filterInput, { target: { value: 'Test' } });
     expect(filterInput.value).toBe('Test');
-    
+
     // Clear filter
     fireEvent.change(filterInput, { target: { value: '' } });
-    
+
     await waitFor(() => {
       expect(filterInput.value).toBe('');
-      // All workflows should be visible again
+      // Only BUSINESS workflows should be visible (entity type filter still applies)
       expect(screen.getByText('Test Workflow 1')).toBeInTheDocument();
-      expect(screen.getByText('Test Workflow 2')).toBeInTheDocument();
+      expect(screen.queryByText('Test Workflow 2')).not.toBeInTheDocument(); // PERSISTENCE type
       expect(screen.getByText('Another Workflow')).toBeInTheDocument();
     });
   });
 
-  describe('Entity Type Toggle', () => {
-    it('should render the entity type switch when tech view is enabled', () => {
-      mockIsEnabledTechView.mockReturnValue(true);
-      render(<Workflows />, { wrapper: createWrapper() });
-
-      expect(screen.getByTestId('entity-type-switch')).toBeInTheDocument();
-      expect(screen.getByText('Entity Type:')).toBeInTheDocument();
-    });
-
-    it('should not render the entity type switch when tech view is disabled', () => {
-      mockIsEnabledTechView.mockReturnValue(false);
-      render(<Workflows />, { wrapper: createWrapper() });
-
-      expect(screen.queryByTestId('entity-type-switch')).not.toBeInTheDocument();
-    });
-
-    it('should display current entity type (Business)', () => {
-      mockEntityType.mockReturnValue('BUSINESS');
-      render(<Workflows />, { wrapper: createWrapper() });
-
-      expect(screen.getByTestId('entity-type-toggle')).toHaveTextContent('Business');
-    });
-
-    it('should display current entity type (Technical)', () => {
-      mockEntityType.mockReturnValue('PERSISTENCE');
-      render(<Workflows />, { wrapper: createWrapper() });
-
-      expect(screen.getByTestId('entity-type-toggle')).toHaveTextContent('Technical');
-    });
-
-    it('should call setEntityType when toggle is clicked', async () => {
-      mockEntityType.mockReturnValue('BUSINESS');
-      render(<Workflows />, { wrapper: createWrapper() });
-
-      const toggle = screen.getByTestId('entity-type-toggle');
-      fireEvent.click(toggle);
-
-      await waitFor(() => {
-        expect(mockSetEntityType).toHaveBeenCalledWith('PERSISTENCE');
-      });
-    });
+  describe('Entity Type Filtering', () => {
+    // Note: Entity type toggle is now in the global header (AppHeader), not on the Workflows page
+    // These tests verify that the Workflows page correctly filters based on the global entityType setting
 
     it('should filter workflows by BUSINESS entity type', () => {
       mockEntityType.mockReturnValue('BUSINESS');
-      mockIsEnabledTechView.mockReturnValue(true);
 
       // Update workflows to have entity types
       const workflowsWithTypes = [
@@ -387,7 +375,6 @@ describe('Workflows', () => {
 
     it('should filter workflows by PERSISTENCE entity type', () => {
       mockEntityType.mockReturnValue('PERSISTENCE');
-      mockIsEnabledTechView.mockReturnValue(true);
 
       const workflowsWithTypes = [
         { ...mockWorkflows[0], entityClassName: 'com.example.Entity1' }, // BUSINESS
@@ -411,30 +398,19 @@ describe('Workflows', () => {
       expect(screen.queryByText('Another Workflow')).not.toBeInTheDocument();
     });
 
-    it('should show all workflows when tech view is disabled', () => {
-      mockIsEnabledTechView.mockReturnValue(false);
-
-      render(<Workflows />, { wrapper: createWrapper() });
-
-      // Should show all workflows regardless of entity type
-      expect(screen.getByText('Test Workflow 1')).toBeInTheDocument();
-      expect(screen.getByText('Test Workflow 2')).toBeInTheDocument();
-      expect(screen.getByText('Another Workflow')).toBeInTheDocument();
-    });
-
     it('should display entity type labels in entity class names', () => {
       mockEntityType.mockReturnValue('BUSINESS');
-      mockIsEnabledTechView.mockReturnValue(true);
 
       render(<Workflows />, { wrapper: createWrapper() });
 
       // Entity class labels should include type information
-      expect(screen.getByText(/Entity 1.*Business/i)).toBeInTheDocument();
+      // Use getAllByText because Entity1 appears multiple times in the table
+      const entity1Elements = screen.getAllByText(/Entity1.*Business/i);
+      expect(entity1Elements.length).toBeGreaterThanOrEqual(1);
     });
 
     it('should update filtered workflows when entity type changes', async () => {
       mockEntityType.mockReturnValue('BUSINESS');
-      mockIsEnabledTechView.mockReturnValue(true);
 
       const { rerender } = render(<Workflows />, { wrapper: createWrapper() });
 
@@ -503,6 +479,183 @@ describe('Workflows', () => {
       indicators.forEach(indicator => {
         const state = indicator.getAttribute('data-state');
         expect(state).toMatch(/true|false/);
+      });
+    });
+  });
+
+  describe('Feature Flag Integration - Entity Type Info', () => {
+    describe('When feature flag is enabled (returns objects with type field)', () => {
+      beforeEach(() => {
+        // Mock returns objects with type field
+        mockUseWorkflowEnabledTypes.mockReturnValue({
+          data: [
+            { name: 'com.example.Entity1', label: 'Entity 1', type: 'BUSINESS' },
+            { name: 'com.example.Entity2', label: 'Entity 2', type: 'PERSISTENCE' },
+          ],
+          isLoading: false,
+        });
+      });
+
+      it('should display entity type labels with type suffix', () => {
+        mockEntityType.mockReturnValue('BUSINESS');
+
+        const workflowsWithTypes = [
+          { ...mockWorkflows[0], entityClassName: 'com.example.Entity1' },
+        ];
+
+        mockUseWorkflowsList.mockReturnValue({
+          data: workflowsWithTypes,
+          isLoading: false,
+          refetch: vi.fn(),
+        });
+
+        render(<Workflows />, { wrapper: createWrapper() });
+
+        // Should show entity name with type label
+        expect(screen.getByText(/Entity1.*Business/i)).toBeInTheDocument();
+      });
+
+      it('should filter workflows by BUSINESS type', () => {
+        mockEntityType.mockReturnValue('BUSINESS');
+
+        const workflowsWithTypes = [
+          { ...mockWorkflows[0], entityClassName: 'com.example.Entity1' }, // BUSINESS
+          { ...mockWorkflows[1], entityClassName: 'com.example.Entity2' }, // PERSISTENCE
+        ];
+
+        mockUseWorkflowsList.mockReturnValue({
+          data: workflowsWithTypes,
+          isLoading: false,
+          refetch: vi.fn(),
+        });
+
+        render(<Workflows />, { wrapper: createWrapper() });
+
+        // Should only show BUSINESS workflows
+        expect(screen.getByText('Test Workflow 1')).toBeInTheDocument();
+        expect(screen.queryByText('Test Workflow 2')).not.toBeInTheDocument();
+      });
+
+      it('should filter workflows by PERSISTENCE type', () => {
+        mockEntityType.mockReturnValue('PERSISTENCE');
+
+        const workflowsWithTypes = [
+          { ...mockWorkflows[0], entityClassName: 'com.example.Entity1' }, // BUSINESS
+          { ...mockWorkflows[1], entityClassName: 'com.example.Entity2' }, // PERSISTENCE
+        ];
+
+        mockUseWorkflowsList.mockReturnValue({
+          data: workflowsWithTypes,
+          isLoading: false,
+          refetch: vi.fn(),
+        });
+
+        render(<Workflows />, { wrapper: createWrapper() });
+
+        // Should only show PERSISTENCE workflows
+        expect(screen.getByText('Test Workflow 2')).toBeInTheDocument();
+        expect(screen.queryByText('Test Workflow 1')).not.toBeInTheDocument();
+      });
+
+      it('should handle workflows with unknown entity types', () => {
+        mockEntityType.mockReturnValue('BUSINESS');
+
+        const workflowsWithTypes = [
+          { ...mockWorkflows[0], entityClassName: 'com.example.Entity1' }, // BUSINESS
+          { ...mockWorkflows[1], entityClassName: 'com.example.UnknownEntity' }, // Not in enabled types
+        ];
+
+        mockUseWorkflowsList.mockReturnValue({
+          data: workflowsWithTypes,
+          isLoading: false,
+          refetch: vi.fn(),
+        });
+
+        render(<Workflows />, { wrapper: createWrapper() });
+
+        // Should show BUSINESS workflow
+        expect(screen.getByText('Test Workflow 1')).toBeInTheDocument();
+        // Unknown entity type should also show (no type = no filter)
+        expect(screen.getByText('Test Workflow 2')).toBeInTheDocument();
+      });
+    });
+
+    describe('When feature flag is disabled (returns array of strings)', () => {
+      beforeEach(() => {
+        // Mock returns array of strings (no type field)
+        mockUseWorkflowEnabledTypes.mockReturnValue({
+          data: ['com.example.Entity1', 'com.example.Entity2'],
+          isLoading: false,
+        });
+      });
+
+      it('should display entity names without type suffix', () => {
+        const workflowsWithTypes = [
+          { ...mockWorkflows[0], entityClassName: 'com.example.Entity1' },
+          { ...mockWorkflows[2], entityClassName: 'com.example.Entity1' },
+        ];
+
+        mockUseWorkflowsList.mockReturnValue({
+          data: workflowsWithTypes,
+          isLoading: false,
+          refetch: vi.fn(),
+        });
+
+        render(<Workflows />, { wrapper: createWrapper() });
+
+        // Should show entity name without type label (appears twice)
+        const entity1Elements = screen.getAllByText('Entity1');
+        expect(entity1Elements.length).toBeGreaterThanOrEqual(1);
+        expect(screen.queryByText(/Entity1.*Business/i)).not.toBeInTheDocument();
+        expect(screen.queryByText(/Entity1.*Technical/i)).not.toBeInTheDocument();
+      });
+
+      it('should show all workflows regardless of entity type filter', () => {
+        mockEntityType.mockReturnValue('BUSINESS');
+
+        const workflowsWithTypes = [
+          { ...mockWorkflows[0], entityClassName: 'com.example.Entity1' },
+          { ...mockWorkflows[1], entityClassName: 'com.example.Entity2' },
+        ];
+
+        mockUseWorkflowsList.mockReturnValue({
+          data: workflowsWithTypes,
+          isLoading: false,
+          refetch: vi.fn(),
+        });
+
+        render(<Workflows />, { wrapper: createWrapper() });
+
+        // Should show all workflows (no filtering when feature flag is disabled)
+        expect(screen.getByText('Test Workflow 1')).toBeInTheDocument();
+        expect(screen.getByText('Test Workflow 2')).toBeInTheDocument();
+      });
+    });
+
+    describe('When workflowEnabledTypes is empty', () => {
+      beforeEach(() => {
+        mockUseWorkflowEnabledTypes.mockReturnValue({
+          data: [],
+          isLoading: false,
+        });
+      });
+
+      it('should show all workflows without filtering', () => {
+        render(<Workflows />, { wrapper: createWrapper() });
+
+        // Should show all workflows
+        expect(screen.getByText('Test Workflow 1')).toBeInTheDocument();
+        expect(screen.getByText('Test Workflow 2')).toBeInTheDocument();
+        expect(screen.getByText('Another Workflow')).toBeInTheDocument();
+      });
+
+      it('should display entity names without type suffix', () => {
+        render(<Workflows />, { wrapper: createWrapper() });
+
+        // Should show short class names without type labels (appears multiple times)
+        const entity1Elements = screen.getAllByText('Entity1');
+        expect(entity1Elements.length).toBeGreaterThanOrEqual(1);
+        expect(screen.queryByText(/Entity1.*Business/i)).not.toBeInTheDocument();
       });
     });
   });

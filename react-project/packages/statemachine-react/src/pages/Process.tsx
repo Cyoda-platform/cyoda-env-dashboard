@@ -28,9 +28,9 @@ export const Process: React.FC = () => {
   const entityClassName = searchParams.get('entityClassName') || '';
   const workflowId = searchParams.get('workflowId') || '';
   const workflowPersistedType = searchParams.get('workflowPersistedType') || 'persisted';
-  
+
   const isNew = !processId || processId === 'new';
-  const isRuntime = persistedType === 'transient';
+  const isRuntime = persistedType === 'runtime';
   
   // Queries
   const { data: process, isLoading: isLoadingProcess } = useProcess(

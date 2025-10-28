@@ -176,12 +176,13 @@ export function useCopyWorkflow() {
 
 export function useStatesList(persistedType: PersistedType, workflowId: string, enabled = true) {
   const store = useStatemachineStore();
-  
+
   return useQuery({
     queryKey: statemachineKeys.statesList(persistedType, workflowId),
     queryFn: async () => {
       const response = await store.getStatesList(persistedType, workflowId);
-      return response.data;
+      // Real Cyoda backend returns data in response.data.Data
+      return response.data?.Data || response.data || [];
     },
     enabled: enabled && !!workflowId,
   });
@@ -280,12 +281,13 @@ export function useDeleteState() {
 
 export function useTransitionsList(persistedType: PersistedType, workflowId: string, enabled = true) {
   const store = useStatemachineStore();
-  
+
   return useQuery({
     queryKey: statemachineKeys.transitionsList(persistedType, workflowId),
     queryFn: async () => {
       const response = await store.getTransitionsList(persistedType, workflowId);
-      return response.data;
+      // Real Cyoda backend returns data in response.data.Data
+      return response.data?.Data || response.data || [];
     },
     enabled: enabled && !!workflowId,
   });

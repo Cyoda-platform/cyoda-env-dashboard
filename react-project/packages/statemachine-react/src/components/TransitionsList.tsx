@@ -42,7 +42,7 @@ export const TransitionsList: React.FC<TransitionsListProps> = ({
   entityClassName,
 }) => {
   const navigate = useNavigate();
-  const isRuntime = persistedType === 'transient';
+  const isRuntime = persistedType === 'runtime';
   const [statesModalVisible, setStatesModalVisible] = useState(false);
 
   // Queries

@@ -22,9 +22,9 @@ export const State: React.FC = () => {
   const workflowId = searchParams.get('workflowId') || '';
   const persistedType = (searchParams.get('persistedType') || 'persisted') as PersistedType;
   const entityClassName = searchParams.get('entityClassName') || '';
-  
+
   const isNew = !stateId || stateId === 'new';
-  const isRuntime = persistedType === 'transient';
+  const isRuntime = persistedType === 'runtime';
   
   // Queries
   const { data: state, isLoading: isLoadingState } = useStateHook(

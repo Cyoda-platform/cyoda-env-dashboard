@@ -14,7 +14,7 @@ import {
   useWorkflowsList,
   useInstances,
 } from '../hooks/useStatemachine';
-import { useGlobalUiSettingsStore } from '../stores/globalUiSettingsStore';
+import { useGlobalUiSettingsStore, HelperFeatureFlags } from '@cyoda/http-api-react';
 import { RangeCondition, type RangeConditionForm } from '../components/RangeCondition';
 import type { Instance, InstanceTableRow, InstancesResponse } from '../types';
 
@@ -45,7 +45,10 @@ export const Instances: React.FC = () => {
   });
 
   // Global UI settings
-  const { entityType, isEnabledTechView } = useGlobalUiSettingsStore();
+  const { entityType } = useGlobalUiSettingsStore();
+
+  // Check if entity type filtering is enabled via feature flag
+  const hasEntityTypeInfo = HelperFeatureFlags.isUseModelsInfo();
 
   // Queries
   const { data: workflowEnabledTypes = [], isLoading: isLoadingEntities } = useWorkflowEnabledTypes();
@@ -162,8 +165,8 @@ export const Instances: React.FC = () => {
   const entityOptions = useMemo(() => {
     return workflowEnabledTypes
       .filter((type: any) => {
-        // If tech view is enabled, filter by entity type
-        if (isEnabledTechView && typeof type === 'object' && type.type) {
+        // If feature flag is enabled and entity has type info, filter by entity type
+        if (hasEntityTypeInfo && typeof type === 'object' && type.type) {
           return type.type === entityType;
         }
         return true;
@@ -197,7 +200,7 @@ export const Instances: React.FC = () => {
         };
       })
       .filter(Boolean); // Remove any null entries
-  }, [workflowEnabledTypes, entityType, isEnabledTechView]);
+  }, [workflowEnabledTypes, entityType, hasEntityTypeInfo]);
   
   // Table data
   const tableData: InstanceTableRow[] = (instancesData?.instances || []).map((instance) => ({

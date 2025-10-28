@@ -25,6 +25,7 @@ import {
 import { ExportImport } from '../components/ExportImport';
 import { StateIndicator } from '../components/StateIndicator';
 import { useGlobalUiSettingsStore } from '@cyoda/http-api-react';
+import { getPersistedType } from '../utils/helpers';
 import type { Workflow, WorkflowTableRow } from '../types';
 
 export const Workflows: React.FC = () => {
@@ -45,32 +46,17 @@ export const Workflows: React.FC = () => {
   // 1. Array of objects with 'type' field when feature is enabled: [{name, value, label, type}, ...]
   // 2. Array of strings when feature is disabled: ['com.cyoda.model.Entity', ...]
   const hasEntityTypeInfo = useMemo(() => {
-    console.log('[Workflows] workflowEnabledTypes:', workflowEnabledTypes);
-    console.log('[Workflows] Feature flag VITE_FEATURE_FLAG_USE_MODELS_INFO:', import.meta.env.VITE_FEATURE_FLAG_USE_MODELS_INFO);
-
-    if (workflowEnabledTypes.length === 0) {
-      console.log('[Workflows] hasEntityTypeInfo: false (empty array)');
-      return false;
-    }
+    if (workflowEnabledTypes.length === 0) return false;
 
     // Check if first item is an object with 'type' field
     const firstItem = workflowEnabledTypes[0];
-    const hasType = typeof firstItem === 'object' && firstItem !== null && 'type' in firstItem;
-    console.log('[Workflows] First item:', firstItem);
-    console.log('[Workflows] hasEntityTypeInfo:', hasType);
-
-    return hasType;
+    return typeof firstItem === 'object' && firstItem !== null && 'type' in firstItem;
   }, [workflowEnabledTypes]);
 
   // Mutations
   const deleteWorkflowMutation = useDeleteWorkflow();
   const copyWorkflowMutation = useCopyWorkflow();
-  
-  // Helper function to get persisted type
-  const getPersistedType = (persisted: boolean): 'persisted' | 'transient' => {
-    return persisted ? 'persisted' : 'transient';
-  };
-  
+
   // Helper function to map entity type
   const entityTypeMapper = (type: string): string => {
     const map: Record<string, string> = {
@@ -82,72 +68,49 @@ export const Workflows: React.FC = () => {
 
   // Table data with filtering
   const tableData = useMemo<WorkflowTableRow[]>(() => {
-    console.log('[Workflows] Building table data...');
-    console.log('[Workflows] workflows count:', workflows.length);
-    console.log('[Workflows] entityType filter:', entityType);
+    return workflows
+      .map((workflow: Workflow) => {
+        // Get short class name (last part after the last dot)
+        const entityShortClassName = workflow.entityClassName.split('.').pop() || workflow.entityClassName;
+        let entityClassNameLabel = entityShortClassName;
+        let entityTypeValue = null;
 
-    const mapped = workflows.map((workflow: Workflow) => {
-      // Get short class name (last part after the last dot)
-      const entityShortClassName = workflow.entityClassName.split('.').pop() || workflow.entityClassName;
-      let entityClassNameLabel = entityShortClassName;
-      let entityTypeValue = null;
+        // Only use entity type info if available (feature flag equivalent)
+        if (hasEntityTypeInfo) {
+          // Find entity type info
+          const entityRow = workflowEnabledTypes.find(
+            (item: any) => item.name === workflow.entityClassName || item.value === workflow.entityClassName
+          );
 
-      // Only use entity type info if available (feature flag equivalent)
-      if (hasEntityTypeInfo) {
-        // Find entity type info
-        const entityRow = workflowEnabledTypes.find(
-          (item: any) => item.name === workflow.entityClassName || item.value === workflow.entityClassName
-        );
-
-        if (entityRow && entityRow.type) {
-          // Append entity type label to the short name
-          entityTypeValue = entityRow.type;
-          const typeLabel = entityTypeMapper(entityRow.type);
-          entityClassNameLabel = `${entityShortClassName} (${typeLabel})`;
-
-          console.log(`[Workflows] Workflow ${workflow.name} (${workflow.entityClassName}):`, {
-            found: true,
-            entityType: entityTypeValue,
-            typeLabel,
-            entityClassNameLabel,
-          });
-        } else {
-          console.log(`[Workflows] Workflow ${workflow.name} (${workflow.entityClassName}):`, {
-            found: !!entityRow,
-            hasType: entityRow ? 'type' in entityRow : false,
-            entityRow,
-          });
+          if (entityRow && entityRow.type) {
+            // Append entity type label to the short name
+            entityTypeValue = entityRow.type;
+            const typeLabel = entityTypeMapper(entityRow.type);
+            entityClassNameLabel = `${entityShortClassName} (${typeLabel})`;
+          }
         }
-      }
 
-      return {
-        ...workflow,
-        key: workflow.id,
-        entityClassNameLabel,
-        entityType: entityTypeValue,
-      };
-    });
+        return {
+          ...workflow,
+          key: workflow.id,
+          entityClassNameLabel,
+          entityType: entityTypeValue,
+        };
+      })
+      .filter((workflow) => {
+        // Filter by entity type only if entity type info is available
+        if (hasEntityTypeInfo && workflow.entityType && workflow.entityType !== entityType) {
+          return false;
+        }
 
-    console.log('[Workflows] Mapped workflows:', mapped);
-
-    const filtered = mapped.filter((workflow) => {
-      // Filter by entity type only if entity type info is available
-      if (hasEntityTypeInfo && workflow.entityType && workflow.entityType !== entityType) {
-        console.log(`[Workflows] Filtering out ${workflow.name}: type ${workflow.entityType} !== ${entityType}`);
-        return false;
-      }
-
-      // Filter by search text
-      if (!filter) return true;
-      const filterLower = filter.toLowerCase();
-      return (
-        workflow.name.toLowerCase().includes(filterLower) ||
-        workflow.entityClassNameLabel.toLowerCase().includes(filterLower)
-      );
-    });
-
-    console.log('[Workflows] Filtered workflows:', filtered);
-    return filtered;
+        // Filter by search text
+        if (!filter) return true;
+        const filterLower = filter.toLowerCase();
+        return (
+          workflow.name.toLowerCase().includes(filterLower) ||
+          workflow.entityClassNameLabel.toLowerCase().includes(filterLower)
+        );
+      });
   }, [workflows, workflowEnabledTypes, filter, entityType, hasEntityTypeInfo]);
 
   // Get selected workflows for export
