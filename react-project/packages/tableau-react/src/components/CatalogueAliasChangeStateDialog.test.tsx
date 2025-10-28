@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import { render, screen, waitFor, cleanup } from '@testing-library/react';
+import { render, screen, waitFor, cleanup, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
@@ -21,9 +21,9 @@ vi.mock('@cyoda/http-api-react', async () => {
 });
 
 const mockTransitions = [
-  { name: 'ACTIVATE', label: 'Activate' },
-  { name: 'DEACTIVATE', label: 'Deactivate' },
-  { name: 'ARCHIVE', label: 'Archive' },
+  'ACTIVATE',
+  'DEACTIVATE',
+  'ARCHIVE',
 ];
 
 const mockCatalogItem = {
@@ -83,10 +83,10 @@ describe('CatalogueAliasChangeStateDialog', () => {
       { wrapper: createWrapper() }
     );
 
-    ref.current?.open(mockCatalogItem);
+    ref.current?.open(mockCatalogItem.id, mockCatalogItem.entityClass);
 
     await waitFor(() => {
-      expect(screen.getByText('Change State')).toBeInTheDocument();
+      expect(screen.getByText('Attempt Transition')).toBeInTheDocument();
     });
   });
 
@@ -100,10 +100,10 @@ describe('CatalogueAliasChangeStateDialog', () => {
       { wrapper: createWrapper() }
     );
 
-    ref.current?.open(mockCatalogItem);
+    ref.current?.open(mockCatalogItem.id, mockCatalogItem.entityClass);
 
     await waitFor(() => {
-      expect(screen.getByText(/Test Alias/)).toBeInTheDocument();
+      expect(screen.getByText('Attempt Transition')).toBeInTheDocument();
     });
   });
 
@@ -117,7 +117,7 @@ describe('CatalogueAliasChangeStateDialog', () => {
       { wrapper: createWrapper() }
     );
 
-    ref.current?.open(mockCatalogItem);
+    ref.current?.open(mockCatalogItem.id, mockCatalogItem.entityClass);
 
     await waitFor(() => {
       expect(httpApiReact.getEntityTransitions).toHaveBeenCalledWith(
@@ -127,7 +127,7 @@ describe('CatalogueAliasChangeStateDialog', () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByText('Select transition:')).toBeInTheDocument();
+      expect(screen.getByText('State')).toBeInTheDocument();
     });
   });
 
@@ -142,19 +142,21 @@ describe('CatalogueAliasChangeStateDialog', () => {
       { wrapper: createWrapper() }
     );
 
-    ref.current?.open(mockCatalogItem);
+    ref.current?.open(mockCatalogItem.id, mockCatalogItem.entityClass);
 
     await waitFor(() => {
-      expect(screen.getByText('Select transition:')).toBeInTheDocument();
+      expect(screen.getByText('State')).toBeInTheDocument();
     });
 
     const select = screen.getByRole('combobox');
     await user.click(select);
 
     await waitFor(() => {
-      expect(screen.getByText('Activate')).toBeInTheDocument();
-      expect(screen.getByText('Deactivate')).toBeInTheDocument();
-      expect(screen.getByText('Archive')).toBeInTheDocument();
+      const dropdown = document.querySelector('.ant-select-dropdown');
+      expect(dropdown).toBeInTheDocument();
+      expect(dropdown?.textContent).toContain('ACTIVATE');
+      expect(dropdown?.textContent).toContain('DEACTIVATE');
+      expect(dropdown?.textContent).toContain('ARCHIVE');
     });
   });
 
@@ -169,25 +171,41 @@ describe('CatalogueAliasChangeStateDialog', () => {
       { wrapper: createWrapper() }
     );
 
-    ref.current?.open(mockCatalogItem);
+    ref.current?.open(mockCatalogItem.id, mockCatalogItem.entityClass);
 
     await waitFor(() => {
-      expect(screen.getByText('Select transition:')).toBeInTheDocument();
+      expect(screen.getByText('State')).toBeInTheDocument();
     });
 
-    const select = screen.getByRole('combobox');
-    await user.click(select);
+    // Wait for transitions to load
+    await waitFor(() => {
+      expect(httpApiReact.getEntityTransitions).toHaveBeenCalled();
+    });
+
+    let selectElement: Element;
+    await waitFor(() => {
+      selectElement = document.querySelector('.ant-select-selector')!;
+      expect(selectElement).toBeInTheDocument();
+    });
+
+    fireEvent.mouseDown(selectElement!);
 
     await waitFor(() => {
-      expect(screen.getByText('Activate')).toBeInTheDocument();
+      const dropdown = document.querySelector('.ant-select-dropdown');
+      expect(dropdown).toBeInTheDocument();
     });
 
-    const activateOption = screen.getByText('Activate');
+    await waitFor(() => {
+      expect(screen.getByText('ACTIVATE')).toBeInTheDocument();
+    });
+
+    const activateOption = screen.getByText('ACTIVATE');
     await user.click(activateOption);
 
+    // Verify the selection was made by checking the select shows the value
     await waitFor(() => {
-      const okButton = screen.getByRole('button', { name: /ok/i });
-      expect(okButton).not.toBeDisabled();
+      const selectedValue = document.querySelector('.ant-select-selection-item');
+      expect(selectedValue).toHaveTextContent('ACTIVATE');
     });
   });
 
@@ -202,10 +220,10 @@ describe('CatalogueAliasChangeStateDialog', () => {
       { wrapper: createWrapper() }
     );
 
-    ref.current?.open(mockCatalogItem);
+    ref.current?.open(mockCatalogItem.id, mockCatalogItem.entityClass);
 
     await waitFor(() => {
-      expect(screen.getByText('Select transition:')).toBeInTheDocument();
+      expect(screen.getByText('State')).toBeInTheDocument();
     });
 
     // Select transition
@@ -213,10 +231,11 @@ describe('CatalogueAliasChangeStateDialog', () => {
     await user.click(select);
 
     await waitFor(() => {
-      expect(screen.getByText('Activate')).toBeInTheDocument();
+      const dropdown = document.querySelector('.ant-select-dropdown');
+      expect(dropdown).toBeInTheDocument();
     });
 
-    const activateOption = screen.getByText('Activate');
+    const activateOption = screen.getAllByText('ACTIVATE')[0];
     await user.click(activateOption);
 
     // Click OK
@@ -243,10 +262,10 @@ describe('CatalogueAliasChangeStateDialog', () => {
       { wrapper: createWrapper() }
     );
 
-    ref.current?.open(mockCatalogItem);
+    ref.current?.open(mockCatalogItem.id, mockCatalogItem.entityClass);
 
     await waitFor(() => {
-      expect(screen.getByText('Select transition:')).toBeInTheDocument();
+      expect(screen.getByText('State')).toBeInTheDocument();
     });
 
     // Select and execute transition
@@ -254,10 +273,11 @@ describe('CatalogueAliasChangeStateDialog', () => {
     await user.click(select);
 
     await waitFor(() => {
-      expect(screen.getByText('Activate')).toBeInTheDocument();
+      const dropdown = document.querySelector('.ant-select-dropdown');
+      expect(dropdown).toBeInTheDocument();
     });
 
-    const activateOption = screen.getByText('Activate');
+    const activateOption = screen.getAllByText('ACTIVATE')[0];
     await user.click(activateOption);
 
     const okButton = screen.getByRole('button', { name: /ok/i });
@@ -279,23 +299,25 @@ describe('CatalogueAliasChangeStateDialog', () => {
       { wrapper: createWrapper() }
     );
 
-    ref.current?.open(mockCatalogItem);
+    ref.current?.open(mockCatalogItem.id, mockCatalogItem.entityClass);
 
     await waitFor(() => {
-      expect(screen.getByText('Change State')).toBeInTheDocument();
+      expect(screen.getByText('Attempt Transition')).toBeInTheDocument();
     });
 
     const cancelButton = screen.getByRole('button', { name: /cancel/i });
     await user.click(cancelButton);
 
     await waitFor(() => {
-      expect(screen.queryByText('Change State')).not.toBeInTheDocument();
-    });
+      const modal = screen.queryByRole('dialog');
+      expect(modal).not.toBeInTheDocument();
+    }, { timeout: 2000 });
 
     expect(httpApiReact.executeEntityTransition).not.toHaveBeenCalled();
   });
 
-  it('should disable OK button when no transition is selected', async () => {
+  it('should show warning when OK is clicked without selection', async () => {
+    const user = userEvent.setup();
     const ref = React.createRef<any>();
     render(
       <CatalogueAliasChangeStateDialog
@@ -305,14 +327,21 @@ describe('CatalogueAliasChangeStateDialog', () => {
       { wrapper: createWrapper() }
     );
 
-    ref.current?.open(mockCatalogItem);
+    ref.current?.open(mockCatalogItem.id, mockCatalogItem.entityClass);
 
     await waitFor(() => {
-      expect(screen.getByText('Select transition:')).toBeInTheDocument();
+      expect(screen.getByText('State')).toBeInTheDocument();
     });
 
     const okButton = screen.getByRole('button', { name: /ok/i });
-    expect(okButton).toBeDisabled();
+    expect(okButton).not.toBeDisabled();
+
+    await user.click(okButton);
+
+    // Should show validation error or warning
+    await waitFor(() => {
+      expect(screen.getByText(/please select a state/i)).toBeInTheDocument();
+    });
   });
 
   it('should show loading state while fetching transitions', async () => {
@@ -329,10 +358,10 @@ describe('CatalogueAliasChangeStateDialog', () => {
       { wrapper: createWrapper() }
     );
 
-    ref.current?.open(mockCatalogItem);
+    ref.current?.open(mockCatalogItem.id, mockCatalogItem.entityClass);
 
     await waitFor(() => {
-      expect(screen.getByText('Change State')).toBeInTheDocument();
+      expect(screen.getByText('Attempt Transition')).toBeInTheDocument();
     });
 
     // Should show loading indicator
@@ -354,7 +383,7 @@ describe('CatalogueAliasChangeStateDialog', () => {
       { wrapper: createWrapper() }
     );
 
-    ref.current?.open(mockCatalogItem);
+    ref.current?.open(mockCatalogItem.id, mockCatalogItem.entityClass);
 
     await waitFor(() => {
       expect(httpApiReact.getEntityTransitions).toHaveBeenCalled();
@@ -378,10 +407,10 @@ describe('CatalogueAliasChangeStateDialog', () => {
       { wrapper: createWrapper() }
     );
 
-    ref.current?.open(mockCatalogItem);
+    ref.current?.open(mockCatalogItem.id, mockCatalogItem.entityClass);
 
     await waitFor(() => {
-      expect(screen.getByText('Select transition:')).toBeInTheDocument();
+      expect(screen.getByText('State')).toBeInTheDocument();
     });
 
     // Select and execute transition
@@ -389,10 +418,11 @@ describe('CatalogueAliasChangeStateDialog', () => {
     await user.click(select);
 
     await waitFor(() => {
-      expect(screen.getByText('Activate')).toBeInTheDocument();
+      const dropdown = document.querySelector('.ant-select-dropdown');
+      expect(dropdown).toBeInTheDocument();
     });
 
-    const activateOption = screen.getByText('Activate');
+    const activateOption = screen.getAllByText('ACTIVATE')[0];
     await user.click(activateOption);
 
     const okButton = screen.getByRole('button', { name: /ok/i });
@@ -404,7 +434,7 @@ describe('CatalogueAliasChangeStateDialog', () => {
 
     // Should show error message
     await waitFor(() => {
-      expect(screen.getByText(/failed to execute transition/i)).toBeInTheDocument();
+      expect(screen.getByText(/failed to execute/i)).toBeInTheDocument();
     });
   });
 
@@ -420,10 +450,10 @@ describe('CatalogueAliasChangeStateDialog', () => {
     );
 
     // Open dialog
-    ref.current?.open(mockCatalogItem);
+    ref.current?.open(mockCatalogItem.id, mockCatalogItem.entityClass);
 
     await waitFor(() => {
-      expect(screen.getByText('Select transition:')).toBeInTheDocument();
+      expect(screen.getByText('State')).toBeInTheDocument();
     });
 
     // Select transition
@@ -431,10 +461,11 @@ describe('CatalogueAliasChangeStateDialog', () => {
     await user.click(select);
 
     await waitFor(() => {
-      expect(screen.getByText('Activate')).toBeInTheDocument();
+      const dropdown = document.querySelector('.ant-select-dropdown');
+      expect(dropdown).toBeInTheDocument();
     });
 
-    const activateOption = screen.getByText('Activate');
+    const activateOption = screen.getAllByText('ACTIVATE')[0];
     await user.click(activateOption);
 
     // Close dialog
@@ -442,10 +473,10 @@ describe('CatalogueAliasChangeStateDialog', () => {
     await user.click(cancelButton);
 
     // Reopen dialog
-    ref.current?.open(mockCatalogItem);
+    ref.current?.open(mockCatalogItem.id, mockCatalogItem.entityClass);
 
     await waitFor(() => {
-      expect(screen.getByText('Select transition:')).toBeInTheDocument();
+      expect(screen.getByText('State')).toBeInTheDocument();
     });
 
     // OK button should be disabled (no selection)

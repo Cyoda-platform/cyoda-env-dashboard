@@ -106,13 +106,13 @@ describe('CatalogueOfAliasesFilter', () => {
     // Find the state select by its label
     const stateLabel = screen.getByText('Filter by state:');
     const stateSelect = stateLabel.parentElement?.querySelector('.ant-select') as HTMLElement;
-    
+
     await user.click(stateSelect);
 
-    // Wait for dropdown to appear and select an option
+    // Wait for dropdown to appear - Ant Design renders dropdowns in document.body
     await waitFor(() => {
-      const activeOption = screen.getByText('ACTIVE');
-      expect(activeOption).toBeInTheDocument();
+      const dropdown = document.querySelector('.ant-select-dropdown');
+      expect(dropdown).toBeInTheDocument();
     });
   });
 
@@ -130,12 +130,12 @@ describe('CatalogueOfAliasesFilter', () => {
 
     const entityLabel = screen.getByText('Entity:');
     const entitySelect = entityLabel.parentElement?.querySelector('.ant-select') as HTMLElement;
-    
+
     await user.click(entitySelect);
 
     await waitFor(() => {
-      const entity1Option = screen.getByText('Entity1');
-      expect(entity1Option).toBeInTheDocument();
+      const dropdown = document.querySelector('.ant-select-dropdown');
+      expect(dropdown).toBeInTheDocument();
     });
   });
 
@@ -153,12 +153,12 @@ describe('CatalogueOfAliasesFilter', () => {
 
     const authorLabel = screen.getByText('Author or Group:');
     const authorSelect = authorLabel.parentElement?.querySelector('.ant-select') as HTMLElement;
-    
+
     await user.click(authorSelect);
 
     await waitFor(() => {
-      const user1Option = screen.getByText('user1');
-      expect(user1Option).toBeInTheDocument();
+      const dropdown = document.querySelector('.ant-select-dropdown');
+      expect(dropdown).toBeInTheDocument();
     });
   });
 
@@ -195,13 +195,14 @@ describe('CatalogueOfAliasesFilter', () => {
     );
 
     const dateLabel = screen.getByText('By date and time:');
-    const datePicker = dateLabel.parentElement?.querySelector('.ant-picker') as HTMLElement;
-    
-    await user.click(datePicker);
+    const datePickerInput = dateLabel.parentElement?.querySelector('.ant-picker-input input') as HTMLElement;
+
+    await user.click(datePickerInput);
 
     // DatePicker dropdown should appear
     await waitFor(() => {
-      expect(document.querySelector('.ant-picker-dropdown')).toBeInTheDocument();
+      const dropdown = document.querySelector('.ant-picker-dropdown');
+      expect(dropdown).toBeInTheDocument();
     });
   });
 

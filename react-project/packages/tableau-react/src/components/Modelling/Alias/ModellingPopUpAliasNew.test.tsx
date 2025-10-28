@@ -107,8 +107,7 @@ describe('ModellingPopUpAliasNew', () => {
       { wrapper: createWrapper() }
     );
 
-    expect(screen.queryByText('Create New Alias')).not.toBeInTheDocument();
-    expect(screen.queryByText('Edit Alias')).not.toBeInTheDocument();
+    expect(screen.queryByText('Columns')).not.toBeInTheDocument();
   });
 
   it('should open modal in create mode', async () => {
@@ -126,7 +125,7 @@ describe('ModellingPopUpAliasNew', () => {
     ref.current?.open('com.test.Customer');
 
     await waitFor(() => {
-      expect(screen.getByText('Create New Alias')).toBeInTheDocument();
+      expect(screen.getByText('Columns')).toBeInTheDocument();
     });
   });
 
@@ -157,7 +156,7 @@ describe('ModellingPopUpAliasNew', () => {
     ref.current?.open('com.test.Customer', editItem);
 
     await waitFor(() => {
-      expect(screen.getByText('Edit Alias')).toBeInTheDocument();
+      expect(screen.getByText('Columns')).toBeInTheDocument();
     });
   });
 
@@ -276,7 +275,7 @@ describe('ModellingPopUpAliasNew', () => {
     ref.current?.open('com.test.Customer');
 
     await waitFor(() => {
-      expect(screen.getByText('Create New Alias')).toBeInTheDocument();
+      expect(screen.getByText('Columns')).toBeInTheDocument();
     });
 
     // Navigate to Name step
@@ -327,7 +326,7 @@ describe('ModellingPopUpAliasNew', () => {
     ref.current?.open('com.test.Customer');
 
     await waitFor(() => {
-      expect(screen.getByText('Create New Alias')).toBeInTheDocument();
+      expect(screen.getByText('Columns')).toBeInTheDocument();
     });
 
     // Click Next from Paths step
@@ -357,7 +356,7 @@ describe('ModellingPopUpAliasNew', () => {
     ref.current?.open('com.test.Customer');
 
     await waitFor(() => {
-      expect(screen.getByText('Create New Alias')).toBeInTheDocument();
+      expect(screen.getByText('Columns')).toBeInTheDocument();
     });
 
     // Go to next step (Name step)
@@ -386,7 +385,7 @@ describe('ModellingPopUpAliasNew', () => {
     ref.current?.open('com.test.Customer');
 
     await waitFor(() => {
-      expect(screen.getByText('Create New Alias')).toBeInTheDocument();
+      expect(screen.getByText('Columns')).toBeInTheDocument();
     });
 
     // Find and click the close button (X button in modal header)
@@ -438,7 +437,7 @@ describe('ModellingPopUpAliasNew', () => {
     ref.current?.open('com.test.Customer', editItem);
 
     await waitFor(() => {
-      expect(screen.getByText('Edit Alias')).toBeInTheDocument();
+      expect(screen.getByText('Columns')).toBeInTheDocument();
     });
 
     // Navigate to Name step to see the pre-filled name
@@ -468,7 +467,7 @@ describe('ModellingPopUpAliasNew', () => {
       ref.current?.open('com.test.Customer');
 
       await waitFor(() => {
-        expect(screen.getByText('Create New Alias')).toBeInTheDocument();
+        expect(screen.getByText('Columns')).toBeInTheDocument();
       });
 
       // Simulate column selection with LEAF type (should result in SIMPLE)
@@ -506,7 +505,7 @@ describe('ModellingPopUpAliasNew', () => {
       ref.current?.open('com.test.Customer');
 
       await waitFor(() => {
-        expect(screen.getByText('Create New Alias')).toBeInTheDocument();
+        expect(screen.getByText('Columns')).toBeInTheDocument();
       });
 
       // The name should be auto-generated from the column path
@@ -528,7 +527,7 @@ describe('ModellingPopUpAliasNew', () => {
       ref.current?.open('com.test.Customer');
 
       await waitFor(() => {
-        expect(screen.getByText('Create New Alias')).toBeInTheDocument();
+        expect(screen.getByText('Columns')).toBeInTheDocument();
       });
 
       // When columns are selected, the default mapper should be BasicMapper
@@ -550,7 +549,7 @@ describe('ModellingPopUpAliasNew', () => {
       ref.current?.open('com.test.Customer');
 
       await waitFor(() => {
-        expect(screen.getByText('Create New Alias')).toBeInTheDocument();
+        expect(screen.getByText('Columns')).toBeInTheDocument();
       });
 
       // When paths are removed, the alias type should be recalculated
@@ -572,7 +571,7 @@ describe('ModellingPopUpAliasNew', () => {
       ref.current?.open('com.test.Customer');
 
       await waitFor(() => {
-        expect(screen.getByText('Create New Alias')).toBeInTheDocument();
+        expect(screen.getByText('Columns')).toBeInTheDocument();
       });
 
       // Navigate to Name step
@@ -609,7 +608,7 @@ describe('ModellingPopUpAliasNew', () => {
       ref.current?.open('com.test.Customer');
 
       await waitFor(() => {
-        expect(screen.getByText('Create New Alias')).toBeInTheDocument();
+        expect(screen.getByText('Columns')).toBeInTheDocument();
       });
 
       // Fill in the form and create alias

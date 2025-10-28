@@ -65,13 +65,6 @@ export const CatalogueAliasChangeStateDialog = forwardRef<
     close: () => setVisible(false),
   }));
 
-  // Set first transition as default when transitions are loaded
-  useEffect(() => {
-    if (transitions.length > 0 && !form.getFieldValue('transition')) {
-      form.setFieldsValue({ transition: transitions[0] });
-    }
-  }, [transitions, form]);
-
   const handleConfirm = async () => {
     try {
       const values = await form.validateFields();
