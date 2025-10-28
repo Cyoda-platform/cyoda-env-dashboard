@@ -25,7 +25,6 @@ import ReportEditorTabSummary from '../components/ReportEditorTabSummary';
 import ReportEditorTabJson from '../components/ReportEditorTabJson';
 import QueryPlanButton from '../components/QueryPlanButton';
 import ReportScheduling from '../components/ReportScheduling';
-import ReportTemplates from '../components/ReportTemplates';
 
 const ReportEditor: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -41,7 +40,6 @@ const ReportEditor: React.FC = () => {
   const [runningReportId, setRunningReportId] = useState<string | null>(null);
   const [reportExecutionTime, setReportExecutionTime] = useState(0);
   const [showScheduling, setShowScheduling] = useState(false);
-  const [showTemplates, setShowTemplates] = useState(false);
 
   // Load report definition
   const { data: reportData, isLoading } = useQuery({
@@ -291,13 +289,6 @@ const ReportEditor: React.FC = () => {
 
         <Button
           type="default"
-          onClick={() => setShowTemplates(true)}
-        >
-          Templates
-        </Button>
-
-        <Button
-          type="default"
           onClick={() => setShowScheduling(true)}
         >
           Schedule
@@ -344,17 +335,6 @@ const ReportEditor: React.FC = () => {
         visible={showScheduling}
         reportId={id}
         onClose={() => setShowScheduling(false)}
-      />
-
-      {/* Report Templates Modal */}
-      <ReportTemplates
-        visible={showTemplates}
-        onClose={() => setShowTemplates(false)}
-        onSelectTemplate={(template) => {
-          setConfigDefinition(template);
-          setShowTemplates(false);
-          message.success('Template applied successfully');
-        }}
       />
     </div>
   );

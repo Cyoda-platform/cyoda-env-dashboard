@@ -24,7 +24,6 @@ import {
 } from '../hooks/useStatemachine';
 import { ExportImport } from '../components/ExportImport';
 import { StateIndicator } from '../components/StateIndicator';
-import { EntityTypeSwitch } from '@cyoda/ui-lib-react';
 import { useGlobalUiSettingsStore } from '../stores/globalUiSettingsStore';
 import type { Workflow, WorkflowTableRow } from '../types';
 
@@ -35,7 +34,7 @@ export const Workflows: React.FC = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
   // Global UI settings
-  const { entityType, isEnabledTechView, setEntityType } = useGlobalUiSettingsStore();
+  const { entityType, isEnabledTechView } = useGlobalUiSettingsStore();
 
   // Queries
   const { data: workflows = [], isLoading, refetch } = useWorkflowsList();
@@ -258,14 +257,9 @@ export const Workflows: React.FC = () => {
   
   return (
     <div style={{ padding: '16px' }}>
-      {/* Header with Entity Type Switch */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+      {/* Header */}
+      <div style={{ marginBottom: '16px' }}>
         <h1 style={{ margin: 0 }}>Workflows</h1>
-        <EntityTypeSwitch
-          value={entityType}
-          onChange={setEntityType}
-          visible={isEnabledTechView}
-        />
       </div>
 
       <Card>

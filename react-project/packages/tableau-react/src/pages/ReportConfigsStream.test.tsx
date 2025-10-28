@@ -45,16 +45,6 @@ vi.mock('../components/CreateReportDialog', () => ({
     ) : null,
 }));
 
-// Mock ReportTemplates
-vi.mock('../components/ReportTemplates', () => ({
-  default: ({ visible, onClose }: any) =>
-    visible ? (
-      <div data-testid="report-templates">
-        <button onClick={onClose}>Close</button>
-      </div>
-    ) : null,
-}));
-
 // Mock ReportScheduling
 vi.mock('../components/ReportScheduling', () => ({
   default: ({ visible, onClose }: any) =>
@@ -94,19 +84,21 @@ describe('ReportConfigsStream Page', () => {
       id: 'stream-1',
       name: 'Test Stream Report 1',
       description: 'Description 1',
-      entityClass: 'com.test.Entity1',
-      entityClassNameLabel: 'Entity1',
+      streamDataDef: {
+        requestClass: 'com.test.Entity1',
+      },
+      createDate: '2024-01-01T10:00:00Z',
       username: 'user1',
-      created: '2024-01-01T10:00:00Z',
     },
     {
       id: 'stream-2',
       name: 'Test Stream Report 2',
       description: 'Description 2',
-      entityClass: 'com.test.Entity2',
-      entityClassNameLabel: 'Entity2',
+      streamDataDef: {
+        requestClass: 'com.test.Entity2',
+      },
+      createDate: '2024-01-02T10:00:00Z',
       username: 'user2',
-      created: '2024-01-02T10:00:00Z',
     },
   ];
 
@@ -115,20 +107,25 @@ describe('ReportConfigsStream Page', () => {
 
     // Mock API responses
     mockedAxios.get.mockImplementation((url: string) => {
-      if (url.includes('/platform-api/streamdata/definitions')) {
+      if (url.includes('/platform-api/reporting/stream-definitions')) {
         return Promise.resolve({ data: mockStreamReports });
+      }
+      if (url.includes('/platform-api/entity-info/fetch/types')) {
+        return Promise.resolve({
+          data: [
+            { name: 'com.test.Entity1', type: 'BUSINESS' },
+            { name: 'com.test.Entity2', type: 'BUSINESS' },
+          ]
+        });
       }
       if (url.includes('/platform-api/users')) {
         return Promise.resolve({ data: ['user1', 'user2'] });
-      }
-      if (url.includes('/platform-api/entity/types')) {
-        return Promise.resolve({ data: ['com.test.Entity1', 'com.test.Entity2'] });
       }
       return Promise.reject(new Error('Not found'));
     });
 
     mockedAxios.post.mockImplementation((url: string, data: any) => {
-      if (url.includes('/platform-api/streamdata/definitions')) {
+      if (url.includes('/platform-api/reporting/stream-definitions')) {
         return Promise.resolve({
           data: { id: 'new-stream-id', ...data },
         });

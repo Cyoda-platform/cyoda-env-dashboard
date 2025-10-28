@@ -227,30 +227,6 @@ export function getReportMetadata(reportId: string) {
 }
 
 /**
- * Save report as template
- */
-export function saveReportAsTemplate(reportId: string, templateName: string, description?: string) {
-  return axios.post(`/platform-api/report/${reportId}/save-as-template`, {
-    name: templateName,
-    description,
-  });
-}
-
-/**
- * Get available report templates
- */
-export function getReportTemplates() {
-  return axios.get('/platform-api/report-templates');
-}
-
-/**
- * Create report from template
- */
-export function createReportFromTemplate(templateId: string, params?: any) {
-  return axios.post(`/platform-api/report-templates/${templateId}/create`, params);
-}
-
-/**
  * Get report chart data
  */
 export function getReportChartData(reportId: string, chartConfig: any) {

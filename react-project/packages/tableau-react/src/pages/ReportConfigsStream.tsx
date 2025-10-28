@@ -26,7 +26,6 @@ import axios from 'axios';
 import moment from 'moment';
 import CreateReportDialog from '../components/CreateReportDialog';
 import HistoryFilter from '../components/HistoryFilter';
-import ReportTemplates from '../components/ReportTemplates';
 import ReportScheduling from '../components/ReportScheduling';
 import { ConfigEditorStreamGrid, ConfigEditorStreamGridRef } from '@cyoda/ui-lib-react';
 import { HelperStorage } from '@cyoda/ui-lib-react';
@@ -68,7 +67,6 @@ export const ReportConfigsStream: React.FC = () => {
   const [filterForm, setFilterForm] = useState<HistoryFilterForm>(
     HelperReportDefinition.reportHistoryDefaultFilter()
   );
-  const [showTemplates, setShowTemplates] = useState(false);
   const [showScheduling, setShowScheduling] = useState(false);
   const [selectedReportId, setSelectedReportId] = useState<string | undefined>();
   const [exportLoading, setExportLoading] = useState(false);
@@ -534,21 +532,6 @@ export const ReportConfigsStream: React.FC = () => {
         onCreate={handleCreateReport}
         title="Create New Stream Data Report Definition"
         hideFields={{ description: true }}
-      />
-
-      {/* Report Templates Modal */}
-      <ReportTemplates
-        visible={showTemplates}
-        onClose={() => setShowTemplates(false)}
-        onSelectTemplate={(template: ReportDefinition) => {
-          // Create a new stream report from template
-          handleCreateReport({
-            name: template.name || 'New Stream Report from Template',
-            entityClass: template.entityClass || '',
-            reportDefinition: template,
-          });
-          setShowTemplates(false);
-        }}
       />
 
       {/* Report Scheduling Modal */}

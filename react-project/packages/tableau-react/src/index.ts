@@ -45,7 +45,6 @@ export { default as ReportResultDialog } from './components/ReportResultDialog';
 export { default as ReportScheduling } from './components/ReportScheduling';
 export { default as ReportTableGroup } from './components/ReportTableGroup';
 export { default as ReportTableRows } from './components/ReportTableRows';
-export { default as ReportTemplates } from './components/ReportTemplates';
 export { default as ReportsNavigation } from './components/ReportsNavigation';
 export { default as StreamReportEditorTabRange } from './components/StreamReportEditorTabRange';
 

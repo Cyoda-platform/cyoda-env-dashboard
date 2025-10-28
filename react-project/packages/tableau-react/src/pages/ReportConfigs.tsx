@@ -26,7 +26,6 @@ import { exportReportsByIds, importReports } from '@cyoda/http-api-react';
 import CreateReportDialog, { type CreateReportDialogRef, type CreateReportFormData } from '../components/CreateReportDialog';
 import CloneReportDialog, { type CloneReportDialogRef } from '../components/CloneReportDialog';
 import ConfigEditorReportsFilter from '../components/ConfigEditorReportsFilter';
-import ReportTemplates from '../components/ReportTemplates';
 import { ResizableTitle } from '../components/ResizableTitle';
 import HelperReportDefinition from '../utils/HelperReportDefinition';
 import { HelperStorage } from '@cyoda/ui-lib-react';
@@ -80,7 +79,6 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
   const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
   const [filterForm, setFilterForm] = useState<FilterForm>({});
   const [runningReports, setRunningReports] = useState<RunningReport[]>([]);
-  const [showTemplates, setShowTemplates] = useState(false);
   const [exportLoading, setExportLoading] = useState(false);
   const [importLoading, setImportLoading] = useState(false);
 
@@ -626,12 +624,6 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
           >
             Create New
           </Button>
-          <Button
-            type="default"
-            onClick={() => setShowTemplates(true)}
-          >
-            Create from Template
-          </Button>
 
           <Divider type="vertical" />
 
@@ -710,22 +702,6 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
 
       <CreateReportDialog ref={createDialogRef} onConfirm={handleCreateReport} />
       <CloneReportDialog ref={cloneDialogRef} onConfirm={handleCloneReport} />
-
-      {/* Report Templates Modal */}
-      <ReportTemplates
-        visible={showTemplates}
-        onClose={() => setShowTemplates(false)}
-        onSelectTemplate={(template: ReportDefinition) => {
-          // Create a new report from template
-          handleCreateReport({
-            name: template.name || 'New Report from Template',
-            description: template.description || '',
-            entityClass: template.entityClass || '',
-            reportDefinition: template,
-          });
-          setShowTemplates(false);
-        }}
-      />
     </div>
   );
 };

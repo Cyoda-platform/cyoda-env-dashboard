@@ -14,7 +14,6 @@ import {
   useWorkflowsList,
   useInstances,
 } from '../hooks/useStatemachine';
-import { EntityTypeSwitch } from '@cyoda/ui-lib-react';
 import { useGlobalUiSettingsStore } from '../stores/globalUiSettingsStore';
 import { RangeCondition, type RangeConditionForm } from '../components/RangeCondition';
 import type { Instance, InstanceTableRow, InstancesResponse } from '../types';
@@ -46,7 +45,7 @@ export const Instances: React.FC = () => {
   });
 
   // Global UI settings
-  const { entityType, isEnabledTechView, setEntityType } = useGlobalUiSettingsStore();
+  const { entityType, isEnabledTechView } = useGlobalUiSettingsStore();
 
   // Queries
   const { data: workflowEnabledTypes = [], isLoading: isLoadingEntities } = useWorkflowEnabledTypes();
@@ -284,14 +283,9 @@ export const Instances: React.FC = () => {
   
   return (
     <div style={{ padding: '16px' }}>
-      {/* Header with Entity Type Switch */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+      {/* Header */}
+      <div style={{ marginBottom: '16px' }}>
         <h1 style={{ margin: 0 }}>Instances</h1>
-        <EntityTypeSwitch
-          value={entityType}
-          onChange={setEntityType}
-          visible={isEnabledTechView}
-        />
       </div>
 
       <Card>
