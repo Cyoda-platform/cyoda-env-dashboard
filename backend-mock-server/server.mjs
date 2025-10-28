@@ -26,6 +26,16 @@ app.use((req, res, next) => {
   next();
 });
 
+// Rewrite /api/platform-api/* to /platform-api/*
+// This allows the frontend to call /api/platform-api/... which gets proxied to /api/platform-api/...
+// and we rewrite it here to /platform-api/... to match our endpoint definitions
+app.use((req, res, next) => {
+  if (req.url.startsWith('/api/platform-api/')) {
+    req.url = req.url.replace('/api/platform-api/', '/platform-api/');
+  }
+  next();
+});
+
 // ============================================================================
 // Authentication Endpoints
 // ============================================================================

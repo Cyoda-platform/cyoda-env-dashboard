@@ -31,9 +31,8 @@ export default defineConfig({
   server: {
     port: 3000,
     proxy: {
-      // Proxy all /api requests to Cyoda backend
-      // Based on old Vue project configuration
-      // Requests like /api/auth/login will be forwarded to https://cyoda-develop.kube.cyoda.org/api/auth/login
+      // Proxy all /api requests to real Cyoda backend server
+      // Change target to http://localhost:8080 for local mock backend
       '/api': {
         target: 'https://cyoda-develop.kube.cyoda.org',
         changeOrigin: true,

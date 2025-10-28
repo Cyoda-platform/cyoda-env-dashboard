@@ -40,6 +40,11 @@ export const Workflows: React.FC = () => {
   const { data: workflows = [], isLoading, refetch } = useWorkflowsList();
   const { data: workflowEnabledTypes = [] } = useWorkflowEnabledTypes();
 
+  // Check if entity type info is available (feature flag equivalent)
+  const hasEntityTypeInfo = useMemo(() => {
+    return workflowEnabledTypes.length > 0 && workflowEnabledTypes.some((item: any) => item.type);
+  }, [workflowEnabledTypes]);
+
   // Mutations
   const deleteWorkflowMutation = useDeleteWorkflow();
   const copyWorkflowMutation = useCopyWorkflow();
@@ -62,22 +67,23 @@ export const Workflows: React.FC = () => {
   const tableData = useMemo<WorkflowTableRow[]>(() => {
     return workflows
       .map((workflow: Workflow) => {
-        let entityClassNameLabel = workflow.entityClassName;
+        // Get short class name (last part after the last dot)
+        const entityShortClassName = workflow.entityClassName.split('.').pop() || workflow.entityClassName;
+        let entityClassNameLabel = entityShortClassName;
         let entityTypeValue = null;
 
-        // Find entity type info
-        const entityRow = workflowEnabledTypes.find(
-          (item: any) => item.name === workflow.entityClassName || item.value === workflow.entityClassName
-        );
+        // Only use entity type info if available (feature flag equivalent)
+        if (hasEntityTypeInfo) {
+          // Find entity type info
+          const entityRow = workflowEnabledTypes.find(
+            (item: any) => item.name === workflow.entityClassName || item.value === workflow.entityClassName
+          );
 
-        if (entityRow) {
-          // If entity has type info, add it to the label
-          if (entityRow.type) {
+          if (entityRow && entityRow.type) {
+            // Append entity type label to the short name
             entityTypeValue = entityRow.type;
             const typeLabel = entityTypeMapper(entityRow.type);
-            entityClassNameLabel = `${entityRow.name || workflow.entityClassName} (${typeLabel})`;
-          } else {
-            entityClassNameLabel = entityRow.label || entityRow.name || workflow.entityClassName;
+            entityClassNameLabel = `${entityShortClassName} (${typeLabel})`;
           }
         }
 
@@ -89,11 +95,9 @@ export const Workflows: React.FC = () => {
         };
       })
       .filter((workflow) => {
-        // Filter by entity type if tech view is enabled
-        if (isEnabledTechView && workflow.entityType) {
-          if (workflow.entityType !== entityType) {
-            return false;
-          }
+        // Filter by entity type only if entity type info is available
+        if (hasEntityTypeInfo && workflow.entityType && workflow.entityType !== entityType) {
+          return false;
         }
 
         // Filter by search text
@@ -104,7 +108,7 @@ export const Workflows: React.FC = () => {
           workflow.entityClassNameLabel.toLowerCase().includes(filterLower)
         );
       });
-  }, [workflows, workflowEnabledTypes, filter, entityType, isEnabledTechView]);
+  }, [workflows, workflowEnabledTypes, filter, entityType, hasEntityTypeInfo]);
 
   // Get selected workflows for export
   const selectedWorkflows = useMemo(() => {
@@ -257,20 +261,9 @@ export const Workflows: React.FC = () => {
   
   return (
     <div style={{ padding: '16px' }}>
-      {/* Header with Entity Type Switch */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+      {/* Header */}
+      <div style={{ marginBottom: '16px' }}>
         <h1 style={{ margin: 0 }}>Workflows</h1>
-        {isEnabledTechView && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span>Entity Type: </span>
-            <Switch
-              checked={entityType === 'PERSISTENCE'}
-              onChange={(checked) => setEntityType(checked ? 'PERSISTENCE' : 'BUSINESS')}
-              checkedChildren="Technical"
-              unCheckedChildren="Business"
-            />
-          </div>
-        )}
       </div>
 
       <Card>
