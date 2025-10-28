@@ -1544,7 +1544,7 @@ app.get('/platform-api/statemachine/workflows', (req, res) => {
   ]);
 });
 
-// Workflow enabled types
+// Workflow enabled types (basic endpoint - returns objects with type info)
 app.get('/platform-api/statemachine/workflow-enabled-types', (req, res) => {
   res.json([
     {
@@ -1578,6 +1578,57 @@ app.get('/platform-api/statemachine/workflow-enabled-types', (req, res) => {
       type: 'BUSINESS'
     }
   ]);
+});
+
+// Models info endpoint (feature flag enabled - returns entity type info)
+app.get('/platform-api/entity-info/fetch/models-info', (req, res) => {
+  const stateEnabled = req.query.stateEnabled === 'true';
+
+  // Return all entities with type information
+  const allEntities = [
+    {
+      name: 'com.cyoda.tdb.model.treenode.TreeNodeEntity',
+      value: 'com.cyoda.tdb.model.treenode.TreeNodeEntity',
+      label: 'TreeNodeEntity',
+      type: 'PERSISTENCE',
+      stateEnabled: true
+    },
+    {
+      name: 'com.cyoda.core.model.blob.CyodaBlobEntity',
+      value: 'com.cyoda.core.model.blob.CyodaBlobEntity',
+      label: 'CyodaBlobEntity',
+      type: 'PERSISTENCE',
+      stateEnabled: true
+    },
+    {
+      name: 'com.cyoda.plugins.iam.model.entity.LegalEntityExtKey',
+      value: 'com.cyoda.plugins.iam.model.entity.LegalEntityExtKey',
+      label: 'LegalEntityExtKey',
+      type: 'BUSINESS',
+      stateEnabled: true
+    },
+    {
+      name: 'net.cyoda.saas.model.LegalEntity',
+      value: 'net.cyoda.saas.model.LegalEntity',
+      label: 'LegalEntity',
+      type: 'BUSINESS',
+      stateEnabled: true
+    },
+    {
+      name: 'net.cyoda.saas.model.TrinoSchemaDefinitionEntity',
+      value: 'net.cyoda.saas.model.TrinoSchemaDefinitionEntity',
+      label: 'TrinoSchemaDefinitionEntity',
+      type: 'BUSINESS',
+      stateEnabled: true
+    }
+  ];
+
+  // Filter by stateEnabled if requested
+  if (stateEnabled) {
+    res.json(allEntities.filter(e => e.stateEnabled));
+  } else {
+    res.json(allEntities);
+  }
 });
 
 // ============================================================================

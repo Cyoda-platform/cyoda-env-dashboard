@@ -7,6 +7,7 @@ export { HelperErrors } from './errors';
 export { serializeParams } from './serializeParams';
 export { default as HelperEntities } from './HelperEntities';
 export { default as HelperModelling } from './HelperModelling';
+export { default as HelperFeatureFlags } from './HelperFeatureFlags';
 export { default as eventBus } from './eventBus';
 export { EventBus } from './eventBus';
 

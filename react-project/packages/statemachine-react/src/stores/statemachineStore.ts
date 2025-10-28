@@ -6,7 +6,7 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { axios } from '@cyoda/http-api-react';
+import { axios, HelperFeatureFlags } from '@cyoda/http-api-react';
 import type {
   Workflow,
   WorkflowForm,
@@ -97,7 +97,14 @@ export const useStatemachineStore = create<StatemachineState>()(
       
       // Workflow API Methods
       getWorkflowEnabledTypes: async () => {
-        // TODO: Check feature flag for models-info
+        // Check feature flag to determine which endpoint to use
+        if (HelperFeatureFlags.isUseModelsInfo()) {
+          // When feature flag is enabled, use models-info endpoint which returns entity type info
+          return axios.get('/platform-api/entity-info/fetch/models-info', {
+            params: { stateEnabled: true }
+          });
+        }
+        // Otherwise use the basic workflow-enabled-types endpoint (returns just strings)
         return axios.get('/platform-api/statemachine/workflow-enabled-types');
       },
       
