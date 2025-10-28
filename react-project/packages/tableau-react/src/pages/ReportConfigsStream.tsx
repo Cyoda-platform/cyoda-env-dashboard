@@ -79,7 +79,8 @@ export const ReportConfigsStream: React.FC = () => {
     queryKey: ['streamReportDefinitions'],
     queryFn: async () => {
       const { data } = await axios.get(`${API_BASE}/platform-api/reporting/stream-definitions`);
-      return data as StreamReportConfig[];
+      // Ensure we always return an array
+      return Array.isArray(data) ? data : [];
     },
   });
 
@@ -107,10 +108,16 @@ export const ReportConfigsStream: React.FC = () => {
   });
 
   const tableData = useMemo(() => {
+    // Ensure definitions is an array
+    if (!Array.isArray(definitions)) {
+      console.error('definitions is not an array:', definitions);
+      return [];
+    }
+
     let data = definitions
       .map((report) => {
-        const entity = report.streamDataDef.requestClass.split('.').pop() || '';
-        const entityRow = entityData.find((el: any) => el.name === report.streamDataDef.requestClass);
+        const entity = report.streamDataDef?.requestClass?.split('.').pop() || '';
+        const entityRow = entityData.find((el: any) => el.name === report.streamDataDef?.requestClass);
         let entityClassNameLabel = entity;
         if (entityRow) {
           entityClassNameLabel += ` (${entityRow.type || 'BUSINESS'})`;

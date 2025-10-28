@@ -99,7 +99,8 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
       queryKey: ['entityClasses'],
       queryFn: async () => {
         const { data } = await axios.get<string[]>(`${API_BASE}/platform-api/entity/classes`);
-        return data;
+        // Ensure we always return an array
+        return Array.isArray(data) ? data : [];
       },
       enabled: allowSelectEntity,
     });
@@ -593,10 +594,10 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
               <Select
                 showSearch
                 placeholder="Select entity class"
-                options={entityClasses.map((ec) => ({
+                options={Array.isArray(entityClasses) ? entityClasses.map((ec) => ({
                   value: ec,
                   label: ec.split('.').pop(),
-                }))}
+                })) : []}
                 filterOption={(input, option) =>
                   (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                 }

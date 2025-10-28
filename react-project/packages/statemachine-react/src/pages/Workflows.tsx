@@ -24,7 +24,7 @@ import {
 } from '../hooks/useStatemachine';
 import { ExportImport } from '../components/ExportImport';
 import { StateIndicator } from '../components/StateIndicator';
-import { useGlobalUiSettingsStore } from '../stores/globalUiSettingsStore';
+import { useGlobalUiSettingsStore } from '@cyoda/http-api-react';
 import type { Workflow, WorkflowTableRow } from '../types';
 
 export const Workflows: React.FC = () => {
@@ -34,7 +34,7 @@ export const Workflows: React.FC = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
   // Global UI settings
-  const { entityType, isEnabledTechView } = useGlobalUiSettingsStore();
+  const { entityType } = useGlobalUiSettingsStore();
 
   // Queries
   const { data: workflows = [], isLoading, refetch } = useWorkflowsList();
@@ -257,9 +257,20 @@ export const Workflows: React.FC = () => {
   
   return (
     <div style={{ padding: '16px' }}>
-      {/* Header */}
-      <div style={{ marginBottom: '16px' }}>
+      {/* Header with Entity Type Switch */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
         <h1 style={{ margin: 0 }}>Workflows</h1>
+        {isEnabledTechView && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span>Entity Type: </span>
+            <Switch
+              checked={entityType === 'PERSISTENCE'}
+              onChange={(checked) => setEntityType(checked ? 'PERSISTENCE' : 'BUSINESS')}
+              checkedChildren="Technical"
+              unCheckedChildren="Business"
+            />
+          </div>
+        )}
       </div>
 
       <Card>

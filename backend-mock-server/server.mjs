@@ -27,6 +27,52 @@ app.use((req, res, next) => {
 });
 
 // ============================================================================
+// Authentication Endpoints
+// ============================================================================
+
+// Login endpoint
+app.post('/api/auth/login', (req, res) => {
+  const { username, password } = req.body;
+  console.log(`🔐 Login attempt: ${username}`);
+
+  // Mock authentication - accept any username/password
+  res.json({
+    token: 'mock-jwt-token-' + Date.now(),
+    refreshToken: 'mock-refresh-token-' + Date.now(),
+    username: username || 'admin',
+    userId: 'user-' + Date.now(),
+    legalEntityId: 'legal-entity-001'
+  });
+});
+
+// Auth0 login endpoint
+app.post('/api/auth/login/auth0', (req, res) => {
+  const authHeader = req.headers.authorization;
+  console.log(`🔐 Auth0 login attempt`);
+
+  // Mock Auth0 authentication
+  res.json({
+    token: 'mock-jwt-token-auth0-' + Date.now(),
+    refreshToken: 'mock-refresh-token-auth0-' + Date.now(),
+    username: 'auth0-user',
+    userId: 'user-auth0-' + Date.now(),
+    legalEntityId: 'legal-entity-001'
+  });
+});
+
+// Token refresh endpoint
+app.post('/api/auth/refresh', (req, res) => {
+  const { refreshToken } = req.body;
+  console.log(`🔄 Token refresh attempt`);
+
+  // Mock token refresh
+  res.json({
+    token: 'mock-jwt-token-refreshed-' + Date.now(),
+    refreshToken: 'mock-refresh-token-refreshed-' + Date.now()
+  });
+});
+
+// ============================================================================
 // Mock Data
 // ============================================================================
 
@@ -245,12 +291,11 @@ let mockStreamDefinitions = [
     id: 'stream-def-001',
     name: 'Real-time Customer Stream',
     description: 'Live customer data stream',
-    entityClass: 'com.cyoda.model.Customer',
-    userId: 'admin',
-    creationDate: Date.now() - 86400000 * 5,
+    owner: 'admin',
+    createDate: new Date(Date.now() - 86400000 * 5).toISOString(),
     streamDataDef: {
       '@bean': 'com.cyoda.core.streamdata.StreamDataDef',
-      entityClass: 'com.cyoda.model.Customer',
+      requestClass: 'com.cyoda.model.Customer',
       columns: []
     }
   },
@@ -259,12 +304,24 @@ let mockStreamDefinitions = [
     id: 'stream-def-002',
     name: 'Order Processing Stream',
     description: 'Real-time order processing',
-    entityClass: 'com.cyoda.model.Order',
-    userId: 'admin',
-    creationDate: Date.now() - 86400000 * 2,
+    owner: 'admin',
+    createDate: new Date(Date.now() - 86400000 * 2).toISOString(),
     streamDataDef: {
       '@bean': 'com.cyoda.core.streamdata.StreamDataDef',
-      entityClass: 'com.cyoda.model.Order',
+      requestClass: 'com.cyoda.model.Order',
+      columns: []
+    }
+  },
+  {
+    '@bean': 'com.cyoda.core.streamdata.StreamDataDefinition',
+    id: 'stream-def-003',
+    name: 'Product Updates Stream',
+    description: 'Real-time product updates',
+    owner: 'john.doe',
+    createDate: new Date(Date.now() - 86400000 * 10).toISOString(),
+    streamDataDef: {
+      '@bean': 'com.cyoda.core.streamdata.StreamDataDef',
+      requestClass: 'com.cyoda.model.Product',
       columns: []
     }
   }
@@ -273,34 +330,115 @@ let mockStreamDefinitions = [
 // Catalog Items (Aliases)
 let mockCatalogItems = [
   {
+    '@bean': 'com.cyoda.core.catalog.CatalogItem',
     id: 'catalog-001',
     name: 'Customer Full Name',
-    description: 'Concatenated first and last name',
+    desc: 'Concatenated first and last name',
     entityClass: 'com.cyoda.model.Customer',
-    mapperClass: 'com.cyoda.mapper.StringConcatMapper',
-    currentState: 'ACTIVE',
-    userId: 'admin',
-    creationDate: Date.now() - 86400000 * 10
+    state: 'ACTIVE',
+    user: 'admin',
+    createDate: new Date(Date.now() - 86400000 * 10).toISOString(),
+    aliasDef: {
+      name: 'Customer Full Name',
+      aliasType: 'SIMPLE',
+      aliasPaths: {
+        '@meta': 'com.cyoda.core.reports.columns.AliasPaths',
+        value: [
+          {
+            colDef: {
+              fullPath: 'firstName',
+              parts: {
+                '@meta': 'com.cyoda.core.reports.columns.ColDef',
+                value: [
+                  {
+                    rootClass: 'com.cyoda.model.Customer',
+                    path: 'firstName',
+                    type: 'LEAF'
+                  }
+                ]
+              },
+              colType: 'LEAF'
+            },
+            mapperClass: 'com.cyoda.mapper.StringConcatMapper',
+            mapperParameters: ''
+          }
+        ]
+      }
+    }
   },
   {
+    '@bean': 'com.cyoda.core.catalog.CatalogItem',
     id: 'catalog-002',
     name: 'Order Total Amount',
-    description: 'Total order amount with tax',
+    desc: 'Total order amount with tax',
     entityClass: 'com.cyoda.model.Order',
-    mapperClass: 'com.cyoda.mapper.SumMapper',
-    currentState: 'ACTIVE',
-    userId: 'admin',
-    creationDate: Date.now() - 86400000 * 8
+    state: 'ACTIVE',
+    user: 'admin',
+    createDate: new Date(Date.now() - 86400000 * 8).toISOString(),
+    aliasDef: {
+      name: 'Order Total Amount',
+      aliasType: 'SIMPLE',
+      aliasPaths: {
+        '@meta': 'com.cyoda.core.reports.columns.AliasPaths',
+        value: [
+          {
+            colDef: {
+              fullPath: 'totalAmount',
+              parts: {
+                '@meta': 'com.cyoda.core.reports.columns.ColDef',
+                value: [
+                  {
+                    rootClass: 'com.cyoda.model.Order',
+                    path: 'totalAmount',
+                    type: 'LEAF'
+                  }
+                ]
+              },
+              colType: 'LEAF'
+            },
+            mapperClass: 'com.cyoda.mapper.SumMapper',
+            mapperParameters: ''
+          }
+        ]
+      }
+    }
   },
   {
+    '@bean': 'com.cyoda.core.catalog.CatalogItem',
     id: 'catalog-003',
     name: 'Product Price with Discount',
-    description: 'Product price after discount',
+    desc: 'Product price after discount',
     entityClass: 'com.cyoda.model.Product',
-    mapperClass: 'com.cyoda.mapper.DiscountMapper',
-    currentState: 'DRAFT',
-    userId: 'john.doe',
-    creationDate: Date.now() - 86400000 * 3
+    state: 'DRAFT',
+    user: 'john.doe',
+    createDate: new Date(Date.now() - 86400000 * 3).toISOString(),
+    aliasDef: {
+      name: 'Product Price with Discount',
+      aliasType: 'SIMPLE',
+      aliasPaths: {
+        '@meta': 'com.cyoda.core.reports.columns.AliasPaths',
+        value: [
+          {
+            colDef: {
+              fullPath: 'price',
+              parts: {
+                '@meta': 'com.cyoda.core.reports.columns.ColDef',
+                value: [
+                  {
+                    rootClass: 'com.cyoda.model.Product',
+                    path: 'price',
+                    type: 'LEAF'
+                  }
+                ]
+              },
+              colType: 'LEAF'
+            },
+            mapperClass: 'com.cyoda.mapper.DiscountMapper',
+            mapperParameters: '10'
+          }
+        ]
+      }
+    }
   }
 ];
 
@@ -938,7 +1076,13 @@ app.post('/platform-api/reporting/import', (req, res) => {
 // Stream Reports Endpoints
 // ============================================================================
 
-// Get stream definitions
+// Get stream definitions (new endpoint for React app)
+app.get('/platform-api/reporting/stream-definitions', (req, res) => {
+  console.log('📊 Fetching stream report definitions');
+  res.json(mockStreamDefinitions);
+});
+
+// Get stream definitions (legacy endpoint)
 app.get('/platform-api/streams', (req, res) => {
   const { size = 20, page = 0 } = req.query;
   const start = page * size;
@@ -995,6 +1139,18 @@ app.delete('/platform-api/streams/:id', (req, res) => {
   const index = mockStreamDefinitions.findIndex(s => s.id === req.params.id);
   if (index >= 0) {
     mockStreamDefinitions.splice(index, 1);
+    res.json({ success: true });
+  } else {
+    res.status(404).json({ error: 'Stream definition not found' });
+  }
+});
+
+// Delete stream definition (new endpoint for React app)
+app.delete('/platform-api/reporting/stream-definitions/:id', (req, res) => {
+  const index = mockStreamDefinitions.findIndex(s => s.id === req.params.id);
+  if (index >= 0) {
+    const deleted = mockStreamDefinitions.splice(index, 1)[0];
+    console.log(`🗑️  Deleted stream definition: ${deleted.name} (${req.params.id})`);
     res.json({ success: true });
   } else {
     res.status(404).json({ error: 'Stream definition not found' });
@@ -1288,9 +1444,12 @@ app.get('/platform-api/entity-info/fetch/types', (req, res) => {
 // Entity classes
 app.get('/platform-api/entity/classes', (req, res) => {
   res.json([
-    { id: 'class-1', name: 'CustomerClass', type: 'Customer' },
-    { id: 'class-2', name: 'OrderClass', type: 'Order' },
-    { id: 'class-3', name: 'ProductClass', type: 'Product' }
+    'com.cyoda.model.Customer',
+    'com.cyoda.model.Order',
+    'com.cyoda.model.Product',
+    'com.cyoda.model.Transaction',
+    'com.cyoda.model.Invoice',
+    'com.cyoda.model.Payment'
   ]);
 });
 
@@ -1332,18 +1491,82 @@ app.get('/platform-api/reporting/definitions', (req, res) => {
 // Workflows
 app.get('/platform-api/statemachine/workflows', (req, res) => {
   res.json([
-    { id: 'workflow-1', name: 'Order Processing', status: 'Active', version: '1.0' },
-    { id: 'workflow-2', name: 'Customer Onboarding', status: 'Active', version: '2.1' },
-    { id: 'workflow-3', name: 'Product Approval', status: 'Draft', version: '1.5' }
+    {
+      id: 'workflow-1',
+      name: 'default-tdb-workflow',
+      entityClassName: 'com.cyoda.tdb.model.treenode.TreeNodeEntity',
+      active: true,
+      persisted: true,
+      creationDate: Date.now() - 86400000 * 30
+    },
+    {
+      id: 'workflow-2',
+      name: 'default-workflow',
+      entityClassName: 'com.cyoda.core.model.blob.CyodaBlobEntity',
+      active: true,
+      persisted: true,
+      creationDate: Date.now() - 86400000 * 25
+    },
+    {
+      id: 'workflow-3',
+      name: 'default-workflow',
+      entityClassName: 'com.cyoda.plugins.iam.model.entity.LegalEntityExtKey',
+      active: true,
+      persisted: true,
+      creationDate: Date.now() - 86400000 * 20
+    },
+    {
+      id: 'workflow-4',
+      name: 'default-workflow',
+      entityClassName: 'net.cyoda.saas.model.LegalEntity',
+      active: true,
+      persisted: true,
+      creationDate: Date.now() - 86400000 * 15
+    },
+    {
+      id: 'workflow-5',
+      name: 'default-workflow',
+      entityClassName: 'net.cyoda.saas.model.TrinoSchemaDefinitionEntity',
+      active: true,
+      persisted: true,
+      creationDate: Date.now() - 86400000 * 10
+    }
   ]);
 });
 
 // Workflow enabled types
 app.get('/platform-api/statemachine/workflow-enabled-types', (req, res) => {
   res.json([
-    { id: 'type-1', name: 'Customer', enabled: true },
-    { id: 'type-2', name: 'Order', enabled: true },
-    { id: 'type-3', name: 'Product', enabled: false }
+    {
+      name: 'com.cyoda.tdb.model.treenode.TreeNodeEntity',
+      value: 'com.cyoda.tdb.model.treenode.TreeNodeEntity',
+      label: 'TreeNodeEntity',
+      type: 'PERSISTENCE'
+    },
+    {
+      name: 'com.cyoda.core.model.blob.CyodaBlobEntity',
+      value: 'com.cyoda.core.model.blob.CyodaBlobEntity',
+      label: 'CyodaBlobEntity',
+      type: 'PERSISTENCE'
+    },
+    {
+      name: 'com.cyoda.plugins.iam.model.entity.LegalEntityExtKey',
+      value: 'com.cyoda.plugins.iam.model.entity.LegalEntityExtKey',
+      label: 'LegalEntityExtKey',
+      type: 'BUSINESS'
+    },
+    {
+      name: 'net.cyoda.saas.model.LegalEntity',
+      value: 'net.cyoda.saas.model.LegalEntity',
+      label: 'LegalEntity',
+      type: 'BUSINESS'
+    },
+    {
+      name: 'net.cyoda.saas.model.TrinoSchemaDefinitionEntity',
+      value: 'net.cyoda.saas.model.TrinoSchemaDefinitionEntity',
+      label: 'TrinoSchemaDefinitionEntity',
+      type: 'BUSINESS'
+    }
   ]);
 });
 
