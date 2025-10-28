@@ -80,6 +80,23 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
       return;
     }
 
+    // Check if container has dimensions
+    const containerWidth = containerRef.current.offsetWidth;
+    const containerHeight = containerRef.current.offsetHeight;
+
+    if (containerWidth === 0 || containerHeight === 0) {
+      console.warn('[GraphicalStateMachine] Container has no dimensions, retrying...', {
+        width: containerWidth,
+        height: containerHeight
+      });
+      // Retry after a short delay
+      setTimeout(() => {
+        setIsInitialized(false);
+        init();
+      }, 100);
+      return;
+    }
+
     console.log('[GraphicalStateMachine] Initializing with:', {
       transitions: transitions.length,
       activeTransitions: activeTransitions.length,
@@ -99,59 +116,32 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
     })));
 
     const elements = getStatesTransitionsEles(activeTransitions, positionsMap, currentState);
-    console.log('[GraphicalStateMachine] Generated elements:', elements.length, elements);
 
     // Set background color on container before initializing Cytoscape
     if (containerRef.current) {
       containerRef.current.style.backgroundColor = '#1f2937'; // Dark theme background
-      console.log('[GraphicalStateMachine] Container dimensions:', {
-        width: containerRef.current.offsetWidth,
-        height: containerRef.current.offsetHeight,
-        clientWidth: containerRef.current.clientWidth,
-        clientHeight: containerRef.current.clientHeight,
-      });
     }
 
     const cy = cytoscape({
       container: containerRef.current,
       elements,
       style,
+      layout: positionsMap ? { name: 'preset' } : {
+        name: 'breadthfirst',
+        directed: true,
+        nodeDimensionsIncludeLabels: true,
+        padding: 50,
+        fit: true,
+        avoidOverlap: true,
+      },
       zoom: 1,
       pan: { x: 0, y: 0 },
       minZoom: 0.1,
       maxZoom: 4,
     });
 
-    console.log('[GraphicalStateMachine] Cytoscape initialized:', {
-      nodes: cy.nodes().length,
-      edges: cy.edges().length,
-      container: containerRef.current,
-    });
-
-    console.log('[GraphicalStateMachine] Node details:',
-      cy.nodes().map((n: any) => ({
-        id: n.id(),
-        classes: n.classes(),
-        data: n.data(),
-        style: {
-          backgroundColor: n.style('background-color'),
-          width: n.style('width'),
-          height: n.style('height'),
-        }
-      }))
-    );
-
-    console.log('[GraphicalStateMachine] Edge details:',
-      cy.edges().map((e: any) => ({
-        id: e.id(),
-        classes: e.classes(),
-        data: e.data(),
-        style: {
-          lineColor: e.style('line-color'),
-          width: e.style('width'),
-        }
-      }))
-    );
+    // Force resize immediately after initialization
+    cy.resize();
 
     cyRef.current = cy;
 
@@ -174,96 +164,14 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
     addCriteria();
     addProcesses();
 
-    console.log('[GraphicalStateMachine] Node positions BEFORE layout:',
-      cy.nodes().map((n: any) => ({
-        id: n.id(),
-        position: n.position()
-      }))
-    );
-
-    // If no saved positions, run layout explicitly
+    // Save positions if no saved positions exist
     if (!positionsMap) {
-      console.log('[GraphicalStateMachine] Running layout explicitly...');
-      const layout = cy.layout(coreLayout('breadthfirst'));
-
-      // Use promiseOn instead of on for better reliability
-      layout.promiseOn('layoutstop').then(() => {
-        // Check if cy is still valid
-        if (!cy || cy.destroyed()) {
-          console.log('[GraphicalStateMachine] Cytoscape instance was destroyed');
-          return;
-        }
-
-        console.log('[GraphicalStateMachine] Layout completed');
-        console.log('[GraphicalStateMachine] Node positions AFTER layout:',
-          cy.nodes().map((n: any) => ({
-            id: n.id(),
-            position: n.position()
-          }))
-        );
-
-        // Save the new positions
-        const eles = cy.nodes();
-        setPositions(eles);
-
-        // Force a small delay to ensure DOM is ready, then fit
-        setTimeout(() => {
-          if (cy && !cy.destroyed()) {
-            const container = cy.container();
-            const canvas = container?.querySelector('canvas');
-            console.log('[GraphicalStateMachine] Container dimensions:', {
-              width: container?.clientWidth,
-              height: container?.clientHeight,
-              offsetWidth: container?.offsetWidth,
-              offsetHeight: container?.offsetHeight
-            });
-            console.log('[GraphicalStateMachine] Canvas element:', {
-              exists: !!canvas,
-              width: canvas?.width,
-              height: canvas?.height,
-              style: canvas?.style.cssText
-            });
-
-            cy.resize();
-            cy.fit(undefined, 50); // 50px padding
-
-            // Force complete redraw
-            cy.forceRender();
-
-            console.log('[GraphicalStateMachine] After fit - zoom:', cy.zoom(), 'pan:', cy.pan());
-            console.log('[GraphicalStateMachine] Viewport extent:', cy.extent());
-            console.log('[GraphicalStateMachine] Number of visible nodes:', cy.nodes(':visible').length);
-
-            // Log individual node details
-            cy.nodes().forEach((node: any) => {
-              console.log('[GraphicalStateMachine] Node:', node.id(),
-                'pos:', node.position(),
-                'visible:', node.visible(),
-                'renderedPosition:', node.renderedPosition(),
-                'style:', {
-                  width: node.style('width'),
-                  height: node.style('height'),
-                  backgroundColor: node.style('background-color'),
-                  opacity: node.style('opacity')
-                });
-            });
-          }
-        }, 100);
-
-        // Mark as initialized after layout completes
-        setIsInitialized(true);
-      }).catch((err: any) => {
-        console.error('[GraphicalStateMachine] Layout error:', err);
-      });
-
-      layout.run();
-    } else {
-      // If we have saved positions, just fit to view
-      cy.fit(undefined, 50); // 50px padding
-      cy.resize();
-      console.log('[GraphicalStateMachine] Using saved positions - zoom:', cy.zoom(), 'pan:', cy.pan());
-      console.log('[GraphicalStateMachine] Number of visible nodes:', cy.nodes(':visible').length);
+      const eles = cy.nodes();
+      setPositions(eles);
     }
+
+    // Mark as initialized
+    setIsInitialized(true);
 
     // Event handlers
     cy.on('tap', 'node, edge', onEleSelect);
@@ -273,17 +181,15 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
     cy.userZoomingEnabled(false);
 
     // Set initialized flag (will be set after layout completes if no positionsMap)
-    if (positionsMap) {
-      setIsInitialized(true);
+    if (!positionsMap) {
+      // Apply initial visibility settings for new layouts
+      cy.nodes().toggleClass('hide-titles', !showTitles);
+      cy.edges().toggleClass('hide-titles-edge', !showEdgesTitles);
+      cy.nodes('.compound-processes').toggleClass('hidden', !showProcesses);
+      cy.edges('.edge-process').toggleClass('hidden', !showProcesses);
+      cy.nodes('.node-criteria').toggleClass('hidden', !showCriteria);
+      cy.nodes('.compound-criteria').toggleClass('compound-criteria-hidden', !showCriteria);
     }
-
-    // Apply initial visibility settings
-    cy.nodes().toggleClass('hide-titles', !showTitles);
-    cy.edges().toggleClass('hide-titles-edge', !showEdgesTitles);
-    cy.nodes('.compound-processes').toggleClass('hidden', !showProcesses);
-    cy.edges('.edge-process').toggleClass('hidden', !showProcesses);
-    cy.nodes('.node-criteria').toggleClass('hidden', !showCriteria);
-    cy.nodes('.compound-criteria').toggleClass('compound-criteria-hidden', !showCriteria);
   }, [activeTransitions, positionsMap, currentState, isInitialized, processes, criteria, showTitles, showEdgesTitles, showProcesses, showCriteria]);
 
   // Force canvas background color after initialization
@@ -554,11 +460,32 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
   useEffect(() => {
     const handleFullscreenChange = () => {
       setIsFullscreen(!!document.fullscreenElement);
+      // Resize canvas when entering/exiting fullscreen
+      if (cyRef.current) {
+        setTimeout(() => {
+          cyRef.current?.resize();
+          cyRef.current?.fit(undefined, 50);
+        }, 100);
+      }
     };
 
     document.addEventListener('fullscreenchange', handleFullscreenChange);
     return () => {
       document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    };
+  }, []);
+
+  // Handle window resize
+  useEffect(() => {
+    const handleResize = () => {
+      if (cyRef.current) {
+        cyRef.current.resize();
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
     };
   }, []);
 
@@ -587,7 +514,7 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
 
         {/* Graph Container */}
         <div className="graph-wrapper">
-          <div ref={containerRef} className="graph-container" style={{ background: '#f9fafb' }} />
+          <div ref={containerRef} className="graph-container" />
 
           {/* Map Controls */}
           <div className="map-controls">
