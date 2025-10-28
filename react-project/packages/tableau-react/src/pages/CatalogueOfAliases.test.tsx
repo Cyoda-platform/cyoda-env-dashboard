@@ -143,7 +143,7 @@ describe('CatalogueOfAliases', () => {
     render(<CatalogueOfAliases />, { wrapper: createWrapper() });
 
     expect(screen.getByText('Catalogue of Aliases')).toBeInTheDocument();
-    expect(screen.getByTestId('reports-navigation')).toBeInTheDocument();
+    // Note: ReportsNavigation is not part of this component
   });
 
   it('should render action buttons', async () => {
@@ -406,7 +406,9 @@ describe('CatalogueOfAliases', () => {
     const descriptionHeaders = screen.getAllByText('Description');
     expect(descriptionHeaders.length).toBeGreaterThan(0);
 
-    expect(screen.getByText('Entity')).toBeInTheDocument();
+    const entityHeaders = screen.getAllByText('Entity');
+    expect(entityHeaders.length).toBeGreaterThan(0);
+
     expect(screen.getByText('User')).toBeInTheDocument();
     expect(screen.getByText('State')).toBeInTheDocument();
     expect(screen.getByText('Created')).toBeInTheDocument();

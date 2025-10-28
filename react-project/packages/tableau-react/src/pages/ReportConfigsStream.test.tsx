@@ -17,21 +17,18 @@ const mockedAxios = vi.mocked(axios);
 // Mock the ConfigEditorStreamGrid component
 vi.mock('@cyoda/ui-lib-react', async () => {
   const actual = await vi.importActual('@cyoda/ui-lib-react');
+  const React = await import('react');
   return {
     ...actual,
-    ConfigEditorStreamGrid: vi.fn().mockImplementation(
-      ({ onFetchDefinition, onLoadData }, ref) => {
-        // Expose methods via ref
-        if (ref) {
-          ref.current = {
-            open: vi.fn((id: string) => {
-              console.log('ConfigEditorStreamGrid.open called with:', id);
-            }),
-          };
-        }
-        return <div data-testid="config-editor-stream-grid">Stream Grid Mock</div>;
-      }
-    ),
+    ConfigEditorStreamGrid: React.forwardRef(({ onFetchDefinition, onLoadData }: any, ref: any) => {
+      // Expose methods via ref
+      React.useImperativeHandle(ref, () => ({
+        open: vi.fn((id: string) => {
+          console.log('ConfigEditorStreamGrid.open called with:', id);
+        }),
+      }));
+      return <div data-testid="config-editor-stream-grid">Stream Grid Mock</div>;
+    }),
   };
 });
 
