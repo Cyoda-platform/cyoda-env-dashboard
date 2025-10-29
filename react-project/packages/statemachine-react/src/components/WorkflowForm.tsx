@@ -15,7 +15,6 @@ import {
   useCreateWorkflow,
   useUpdateWorkflow,
 } from '../hooks/useStatemachine';
-import { useGlobalUiSettingsStore } from '../stores/globalUiSettingsStore';
 import type { PersistedType, WorkflowForm as WorkflowFormType } from '../types';
 
 const { TextArea } = Input;
@@ -38,9 +37,6 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
 
   const isNew = !workflowId || workflowId === 'new';
   const isRuntime = persistedType === 'transient';
-
-  // Global UI settings
-  const { entityType, isEnabledTechView } = useGlobalUiSettingsStore();
 
   // Queries
   const { data: workflow, isLoading: isLoadingWorkflow } = useWorkflow(
@@ -88,16 +84,11 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
     return map[type] || type;
   };
 
-  // Entity type options - filtered by selected entity type
+  // Entity type options - NOT filtered by global entity type toggle
+  // The WorkflowForm shows ALL entities regardless of the global toggle
+  // This matches the Vue implementation behavior
   const entityOptions = useMemo(() => {
     return workflowEnabledTypes
-      .filter((type: any) => {
-        // If tech view is enabled, filter by entity type
-        if (isEnabledTechView && typeof type === 'object' && type.type) {
-          return type.type === entityType;
-        }
-        return true;
-      })
       .map((type: any) => {
         // Handle both string arrays and object arrays
         if (typeof type === 'string') {
@@ -127,7 +118,7 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
         };
       })
       .filter(Boolean); // Remove any null entries
-  }, [workflowEnabledTypes, entityType, isEnabledTechView]);
+  }, [workflowEnabledTypes]);
   
   // Criteria options
   const criteriaOptions = criteriaList.map((criteria: any) => ({
@@ -177,7 +168,9 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
   const isLoading = isLoadingWorkflow || createWorkflowMutation.isPending || updateWorkflowMutation.isPending;
 
   // Define tabs using the new items API
-  const tabItems: TabsProps['items'] = useMemo(() => [
+  // Decision Tree tab is only shown when useDecisionTreeEnabled is true (matches Vue v-if behavior)
+  const tabItems: TabsProps['items'] = useMemo(() => {
+    const tabs = [
     {
       key: 'settings',
       label: 'Settings',
@@ -240,40 +233,48 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
               />
             </Form.Item>
 
-            <Form.Item name="useDecisionTree" valuePropName="checked">
-              <Checkbox
-                disabled={isRuntime}
-                onChange={(e) => setUseDecisionTreeEnabled(e.target.checked)}
-              >
-                Use Decision Tree
-              </Checkbox>
-            </Form.Item>
+            {/* Decision Tree feature is disabled - hidden like in Vue (v-if="false") */}
+            {false && (
+              <Form.Item name="useDecisionTree" valuePropName="checked">
+                <Checkbox
+                  disabled={isRuntime}
+                  onChange={(e) => setUseDecisionTreeEnabled(e.target.checked)}
+                >
+                  Use Decision Tree
+                </Checkbox>
+              </Form.Item>
+            )}
           </>
       ),
-    },
-    {
-      key: 'decisionTree',
-      label: 'Decision Tree',
-      disabled: !useDecisionTreeEnabled,
-      children: (
-        <>
-          <Alert
-            message="Decision Tree Configuration"
-            description="Decision trees allow you to define complex conditional logic for state transitions. This feature enables you to create branching logic based on criteria evaluation."
-            type="info"
-            showIcon
-            style={{ marginBottom: '16px' }}
-          />
-          <div style={{ padding: '20px', textAlign: 'center', color: '#999' }}>
-            <p>Decision tree visual editor coming soon...</p>
-            <p style={{ fontSize: '12px', marginTop: '8px' }}>
-              Enable "Use Decision Tree" checkbox in Settings tab to activate this feature.
-            </p>
-          </div>
-        </>
-      ),
-    },
-  ], [entityOptions, isNew, isRuntime, isLoadingTypes, isLoadingCriteria, criteriaOptions, useDecisionTreeEnabled, handleEntityChange]);
+    }];
+
+    // Only add Decision Tree tab if useDecisionTreeEnabled is true (matches Vue v-if="form.useDecisionTree")
+    if (useDecisionTreeEnabled) {
+      tabs.push({
+        key: 'decisionTree',
+        label: 'Decision Tree',
+        children: (
+          <>
+            <Alert
+              message="Decision Tree Configuration"
+              description="Decision trees allow you to define complex conditional logic for state transitions. This feature enables you to create branching logic based on criteria evaluation."
+              type="info"
+              showIcon
+              style={{ marginBottom: '16px' }}
+            />
+            <div style={{ padding: '20px', textAlign: 'center', color: '#999' }}>
+              <p>Decision tree visual editor coming soon...</p>
+              <p style={{ fontSize: '12px', marginTop: '8px' }}>
+                Enable "Use Decision Tree" checkbox in Settings tab to activate this feature.
+              </p>
+            </div>
+          </>
+        ),
+      });
+    }
+
+    return tabs;
+  }, [entityOptions, isNew, isRuntime, isLoadingTypes, isLoadingCriteria, criteriaOptions, useDecisionTreeEnabled, handleEntityChange]);
 
   return (
     <div className="workflow-form">

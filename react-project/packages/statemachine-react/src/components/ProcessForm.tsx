@@ -32,6 +32,7 @@ export const ProcessForm: React.FC<ProcessFormProps> = ({
   onSubmitted,
 }) => {
   const [form] = Form.useForm();
+  const [processParameters, setProcessParameters] = React.useState<any[]>([]);
 
   const isNew = !processId || processId === 'new';
   const isRuntime = persistedType === 'transient';
@@ -111,7 +112,49 @@ export const ProcessForm: React.FC<ProcessFormProps> = ({
     console.log('ProcessForm - Filtered processors:', filtered);
     return filtered;
   }, [processorsList, entityParentClasses, entityClassName]);
-  
+
+  // Get parameters for the selected processor
+  const getProcessorParameters = React.useCallback((processorClassName: string) => {
+    if (!processorClassName || !Array.isArray(processorsList)) {
+      return [];
+    }
+
+    const processor = processorsList.find((item: any) => {
+      if (typeof item === 'string') {
+        return item === processorClassName;
+      }
+      return item.name === processorClassName;
+    });
+
+    if (processor && typeof processor === 'object' && Array.isArray(processor.parameters)) {
+      return processor.parameters.map((p: any) => ({
+        name: p.name,
+        valueType: p.type,
+        availableValues: p.availableValues,
+        value: {
+          '@type': p.type.charAt(0).toUpperCase() + p.type.slice(1).toLowerCase(),
+          value: null,
+        },
+      }));
+    }
+
+    return [];
+  }, [processorsList]);
+
+  // Watch for processor changes and update parameters
+  const selectedProcessor = Form.useWatch('processorClassName', form);
+
+  React.useEffect(() => {
+    if (selectedProcessor && isNew) {
+      const newParams = getProcessorParameters(selectedProcessor);
+      console.log('ProcessForm - Processor changed, updating parameters:', {
+        processor: selectedProcessor,
+        parameters: newParams,
+      });
+      setProcessParameters(newParams);
+    }
+  }, [selectedProcessor, getProcessorParameters, isNew]);
+
   // Initialize form when process data loads
   useEffect(() => {
     if (process) {
@@ -123,6 +166,11 @@ export const ProcessForm: React.FC<ProcessFormProps> = ({
         newTransactionForAsync: process.newTransactionForAsync || false,
         isTemplate: process.isTemplate || false,
       });
+
+      // Set parameters from loaded process
+      if (process.parameters && Array.isArray(process.parameters)) {
+        setProcessParameters(process.parameters);
+      }
     } else if (isNew) {
       form.setFieldsValue({
         syncProcess: false,
@@ -135,17 +183,40 @@ export const ProcessForm: React.FC<ProcessFormProps> = ({
   // Handlers
   const handleSubmit = async () => {
     try {
-      const values = await form.validateFields();
+      // Validate required fields
+      await form.validateFields();
+
+      // Get all form values (including untouched fields with default values)
+      const values = form.getFieldsValue(true);
+
+      console.log('🔍 ProcessForm - Form values after validation:', values);
+
+      // Process parameters - convert integer values
+      const processedParameters = processParameters.map((param) => {
+        const paramValue = values[`param_${param.name}`];
+        const processedParam = { ...param };
+
+        if (paramValue !== undefined && paramValue !== null) {
+          processedParam.value = {
+            ...param.value,
+            value: param.value['@type'].toLowerCase() === 'integer'
+              ? parseInt(paramValue, 10)
+              : paramValue,
+          };
+        }
+
+        return processedParam;
+      });
 
       const formData: ProcessFormType = {
         '@bean': 'com.cyoda.core.model.stateMachine.dto.ProcessDto',
-        name: values.name,
+        name: values.name || '',
         description: values.description || '',
-        processorClassName: values.processorClassName,
-        syncProcess: values.syncProcess,
-        newTransactionForAsync: values.newTransactionForAsync,
-        isTemplate: values.isTemplate,
-        parameters: [],
+        processorClassName: values.processorClassName || '',
+        syncProcess: values.syncProcess ?? false,
+        newTransactionForAsync: values.newTransactionForAsync ?? false,
+        isTemplate: values.isTemplate ?? false,
+        parameters: processedParameters,
         entityClassName,
       };
 
@@ -153,7 +224,9 @@ export const ProcessForm: React.FC<ProcessFormProps> = ({
         persistedType,
         formData,
         isNew,
-        entityClassName
+        entityClassName,
+        processParameters,
+        processedParameters,
       });
 
       let resultId;
@@ -178,8 +251,10 @@ export const ProcessForm: React.FC<ProcessFormProps> = ({
       if (onSubmitted) {
         onSubmitted({ id: resultId });
       }
-    } catch (error) {
-      message.error('Failed to save process');
+    } catch (error: any) {
+      console.error('❌ ProcessForm - Error saving process:', error);
+      const errorMessage = error?.response?.data?.message || error?.message || 'Failed to save process';
+      message.error(`Failed to save process: ${errorMessage}`);
     }
   };
   
@@ -260,7 +335,61 @@ export const ProcessForm: React.FC<ProcessFormProps> = ({
           />
         </Form.Item>
       )}
-      
+
+      {/* Process Parameters */}
+      {processParameters.length > 0 && (
+        <>
+          <h2 style={{ marginTop: '24px', marginBottom: '16px' }}>Process parameters</h2>
+          {processParameters.map((param, index) => {
+            const fieldName = `param_${param.name}`;
+            const paramType = param.value['@type'];
+
+            // If parameter has available values, render as select
+            if (param.availableValues && Array.isArray(param.availableValues)) {
+              return (
+                <Form.Item
+                  key={index}
+                  label={param.name}
+                  name={fieldName}
+                  rules={[{ required: true, message: 'Please select a value' }]}
+                  initialValue={param.value.value}
+                >
+                  <Select
+                    disabled={isRuntime}
+                    placeholder={`Select ${param.name}`}
+                    options={param.availableValues.map((val: any) => ({
+                      label: val,
+                      value: val,
+                    }))}
+                  />
+                </Form.Item>
+              );
+            }
+
+            // Otherwise render as input with type hint
+            return (
+              <Form.Item
+                key={index}
+                label={
+                  <span>
+                    {param.name} <small style={{ color: '#999' }}>{paramType}</small>
+                  </span>
+                }
+                name={fieldName}
+                rules={[{ required: true, message: 'Please fill field' }]}
+                initialValue={param.value.value}
+              >
+                <Input
+                  disabled={isRuntime}
+                  placeholder={`Enter ${param.name}`}
+                  type={paramType.toLowerCase() === 'integer' ? 'number' : 'text'}
+                />
+              </Form.Item>
+            );
+          })}
+        </>
+      )}
+
       <Form.Item>
         <Space>
           <Button
