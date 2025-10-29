@@ -107,8 +107,9 @@ export const ConfigWorkflow: React.FC<ConfigWorkflowProps> = ({
           lineHeight: '1.5',
           fontFamily: 'monospace',
           margin: 0,
-          WebkitFontSmoothing: 'antialiased',
-          MozOsxFontSmoothing: 'grayscale',
+          WebkitFontSmoothing: 'none',
+          MozOsxFontSmoothing: 'unset',
+          textShadow: 'none',
         }}
       >
         <code

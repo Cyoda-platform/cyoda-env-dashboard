@@ -116,7 +116,7 @@
   }
 
   .ant-menu-sub {
-    background: rgba(0, 0, 0, 0.2) !important;
+    background: transparent !important;
     border: none !important;
 
     .ant-menu-item {
@@ -137,11 +137,36 @@
         transition: all var(--refine-transition-base);
       }
 
-      &.ant-menu-item-selected::before,
-      &:hover::before {
-        background: var(--refine-primary-light);
-        width: 6px;
-        height: 6px;
+      &.ant-menu-item-selected {
+        background: var(--refine-gradient-primary) !important;
+        color: white !important;
+        font-weight: 600;
+        box-shadow: var(--refine-shadow-md);
+
+        &::before {
+          background: white;
+          width: 6px;
+          height: 6px;
+        }
+
+        .anticon {
+          color: white !important;
+        }
+      }
+
+      &:hover:not(.ant-menu-item-selected) {
+        background: var(--refine-glass-bg) !important;
+        color: var(--refine-text-primary) !important;
+
+        &::before {
+          background: var(--refine-primary-light);
+          width: 6px;
+          height: 6px;
+        }
+
+        .anticon {
+          color: var(--refine-primary-light) !important;
+        }
       }
     }
   }
