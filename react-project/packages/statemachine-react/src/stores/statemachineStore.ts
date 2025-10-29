@@ -98,14 +98,23 @@ export const useStatemachineStore = create<StatemachineState>()(
       // Workflow API Methods
       getWorkflowEnabledTypes: async () => {
         // Check feature flag to determine which endpoint to use
-        if (HelperFeatureFlags.isUseModelsInfo()) {
+        const useModelsInfo = HelperFeatureFlags.isUseModelsInfo();
+        console.log('[statemachineStore] isUseModelsInfo:', useModelsInfo);
+
+        if (useModelsInfo) {
           // When feature flag is enabled, use models-info endpoint which returns entity type info
-          return axios.get('/platform-api/entity-info/fetch/models-info', {
+          console.log('[statemachineStore] Calling /platform-api/entity-info/fetch/models-info');
+          const response = await axios.get('/platform-api/entity-info/fetch/models-info', {
             params: { stateEnabled: true }
           });
+          console.log('[statemachineStore] models-info response:', response.data);
+          return response;
         }
         // Otherwise use the basic workflow-enabled-types endpoint (returns just strings)
-        return axios.get('/platform-api/statemachine/workflow-enabled-types');
+        console.log('[statemachineStore] Calling /platform-api/statemachine/workflow-enabled-types');
+        const response = await axios.get('/platform-api/statemachine/workflow-enabled-types');
+        console.log('[statemachineStore] workflow-enabled-types response:', response.data);
+        return response;
       },
       
       getAllWorkflowsList: async (entityClassName) => {

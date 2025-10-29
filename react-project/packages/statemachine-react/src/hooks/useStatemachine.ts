@@ -54,7 +54,7 @@ export const statemachineKeys = {
 
 export function useWorkflowEnabledTypes() {
   const store = useStatemachineStore();
-  
+
   return useQuery({
     queryKey: statemachineKeys.workflowEnabledTypes(),
     queryFn: async () => {
