@@ -58,6 +58,16 @@ export interface Transition {
   criteriaId?: string;
   processId?: string;
   automatic?: boolean;
+  // Extended fields for graphical view
+  startStateId?: string;
+  endStateId?: string;
+  startStateName?: string;
+  endStateName?: string;
+  automated?: boolean;
+  persisted?: boolean;
+  active?: boolean;
+  criteriaIds?: string[];
+  endProcessesIds?: string[];
 }
 
 export interface TransitionForm {
