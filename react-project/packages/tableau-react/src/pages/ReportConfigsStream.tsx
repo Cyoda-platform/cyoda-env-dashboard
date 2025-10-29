@@ -22,7 +22,7 @@ import {
 } from '@ant-design/icons';
 import type { TableColumnsType } from 'antd';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
+import { axios } from '@cyoda/http-api-react';
 import moment from 'moment';
 import CreateReportDialog from '../components/CreateReportDialog';
 import HistoryFilter from '../components/HistoryFilter';
@@ -192,7 +192,7 @@ export const ReportConfigsStream: React.FC = () => {
       };
 
       const { data } = await axios.post(
-        `${API_BASE}/platform-api/reporting/stream-definitions`,
+        `/api/platform-api/reporting/stream-definitions`,
         configDefinition
       );
 
@@ -246,7 +246,7 @@ export const ReportConfigsStream: React.FC = () => {
       console.log('Loading stream data with request:', request);
 
       const { data: streamData } = await axios.post(
-        `${API_BASE}/platform-api/streamdata/fetch`,
+        `/api/platform-api/streamdata/fetch`,
         request
       );
 

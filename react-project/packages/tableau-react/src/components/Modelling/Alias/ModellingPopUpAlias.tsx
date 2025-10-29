@@ -10,7 +10,7 @@ import { Modal, Button, Table, Space, message } from 'antd';
 import { PlusOutlined, SelectOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import type { TableColumnsType } from 'antd';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
+import { axios } from '@cyoda/http-api-react';
 import type { AliasDef } from '@cyoda/http-api-react';
 import ModellingPopUpAliasNew, { ModellingPopUpAliasNewRef } from './ModellingPopUpAliasNew';
 import type { ReportDefinition } from '../../../types';

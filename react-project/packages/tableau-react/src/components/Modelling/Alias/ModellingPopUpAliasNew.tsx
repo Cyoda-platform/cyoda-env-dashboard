@@ -10,7 +10,7 @@ import { Modal, Form, Input, Select, Button, Steps, Table, Space, App, Tooltip, 
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import type { TableColumnsType } from 'antd';
 import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
+import { axios } from '@cyoda/http-api-react';
 import MonacoEditor from '@monaco-editor/react';
 import type { ReportMapper, NamedParameter, MapperParameters, CatalogItem, AliasDef, AliasDefColDef } from '@cyoda/http-api-react';
 import { getMappers } from '@cyoda/http-api-react';

@@ -6,7 +6,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Table, Tag, Spin } from 'antd';
-import axios from 'axios';
+import { axios } from '@cyoda/http-api-react';
 import './EntityAudit.scss';
 
 interface ChangedFieldValue {

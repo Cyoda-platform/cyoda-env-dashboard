@@ -9,7 +9,7 @@ import { PlayCircleOutlined, EditOutlined, StopOutlined } from '@ant-design/icon
 import type { MenuProps } from 'antd';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { axios } from '@cyoda/http-api-react';
 import ReportResultDialog from './ReportResultDialog';
 import './QuickRunReport.scss';
 

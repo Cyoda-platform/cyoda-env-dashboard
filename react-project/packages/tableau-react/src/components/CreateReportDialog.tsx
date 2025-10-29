@@ -3,11 +3,12 @@
  * Migrated from: .old_project/packages/http-api/src/views/ConfigEditor/popup/ConfigEditorNew.vue
  */
 
-import React, { useState, useEffect, useImperativeHandle, forwardRef, useMemo } from 'react';
+import React, { useState, useImperativeHandle, forwardRef, useMemo } from 'react';
 import { Modal, Steps, Form, Input, Select, Button, message } from 'antd';
 import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
-import { HelperStorage } from '@cyoda/ui-lib-react';
+import { getReportingFetchTypes } from '@cyoda/http-api-react/api/entities';
+import { useGlobalUiSettingsStore } from '@cyoda/http-api-react/stores/globalUiSettingsStore';
+import HelperEntities from '@cyoda/http-api-react/utils/HelperEntities';
 import './CreateReportDialog.scss';
 
 const { Step } = Steps;
@@ -43,8 +44,6 @@ interface EntityOption {
   type?: string;
 }
 
-const ENTITY_TYPE_KEY = 'ConfigEditorNew:entityType';
-
 const CreateReportDialog = forwardRef<CreateReportDialogRef, CreateReportDialogProps>(
   ({
     title = 'Create New Report Definition',
@@ -54,14 +53,13 @@ const CreateReportDialog = forwardRef<CreateReportDialogRef, CreateReportDialogP
     visible: visibleProp,
     onCancel
   }, ref) => {
-    const storage = useMemo(() => new HelperStorage(), []);
     const [visibleState, setVisibleState] = useState(false);
     const [loading, setLoading] = useState(false);
     const [currentStep, setCurrentStep] = useState(0);
     const [form] = Form.useForm();
-    const [entityType, setEntityType] = useState<string>(
-      storage.get(ENTITY_TYPE_KEY, 'BUSINESS') || 'BUSINESS'
-    );
+
+    // Get entity type from global store (like the Vue version)
+    const { entityType } = useGlobalUiSettingsStore();
 
     // Support both controlled (via props) and uncontrolled (via ref) modes
     const visible = visibleProp !== undefined ? visibleProp : visibleState;
@@ -77,12 +75,13 @@ const CreateReportDialog = forwardRef<CreateReportDialogRef, CreateReportDialogP
       }
     };
 
-    // Load entity types
+    // Load entity types using the API function (like Vue version)
     const { data: entityData = [] } = useQuery({
       queryKey: ['reportingTypes'],
       queryFn: async () => {
         try {
-          const { data } = await axios.get('/platform-api/reporting/types/fetch?withModels=true');
+          const { data } = await getReportingFetchTypes(true);
+          console.log('Entity types loaded:', data);
           return data || [];
         } catch (error) {
           console.error('Failed to load entity types:', error);
@@ -91,21 +90,18 @@ const CreateReportDialog = forwardRef<CreateReportDialogRef, CreateReportDialogP
       },
     });
 
-    // Filter entity options based on entity type
+    // Filter entity options based on entity type using HelperEntities (like Vue version)
     const entityOptions = useMemo((): EntityOption[] => {
-      if (!entityData || !Array.isArray(entityData) || entityData.length === 0) return [];
+      console.log('Filtering entity options:', { entityData, entityType });
+      if (!entityData || !Array.isArray(entityData) || entityData.length === 0) {
+        console.log('No entity data available');
+        return [];
+      }
 
-      return entityData
-        .filter((entity: any) => {
-          if (entityType === 'ALL') return true;
-          return entity.type === entityType;
-        })
-        .map((entity: any) => ({
-          value: entity.name,
-          label: entity.label || entity.name,
-          type: entity.type,
-        }))
-        .sort((a: { label: string }, b: { label: string }) => a.label.localeCompare(b.label));
+      // Use HelperEntities.getOptionsFromData to filter and format options
+      const options = HelperEntities.getOptionsFromData(entityData, entityType);
+      console.log('Filtered options:', options);
+      return options;
     }, [entityData, entityType]);
 
     // Expose methods to parent
@@ -178,11 +174,6 @@ const CreateReportDialog = forwardRef<CreateReportDialogRef, CreateReportDialogP
       form.setFieldsValue({ name: value });
     };
 
-    // Save entity type to storage
-    useEffect(() => {
-      storage.set(ENTITY_TYPE_KEY, entityType);
-    }, [entityType, storage]);
-
     return (
       <Modal
         title={title}
@@ -244,18 +235,6 @@ const CreateReportDialog = forwardRef<CreateReportDialogRef, CreateReportDialogP
             </div>
 
             <div style={{ display: currentStep === 1 ? 'block' : 'none' }}>
-                <Form.Item label="Entity Type" style={{ marginBottom: 16 }}>
-                  <Select
-                    value={entityType}
-                    onChange={setEntityType}
-                    options={[
-                      { value: 'BUSINESS', label: 'Business' },
-                      { value: 'TECHNICAL', label: 'Technical' },
-                      { value: 'ALL', label: 'All' },
-                    ]}
-                  />
-                </Form.Item>
-
                 <Form.Item
                   label="Entity Class"
                   name="requestClass"

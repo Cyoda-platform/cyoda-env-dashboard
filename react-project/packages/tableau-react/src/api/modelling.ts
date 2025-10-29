@@ -3,7 +3,7 @@
  * API calls for CyodaModelling components
  */
 
-import axios from 'axios';
+import { axios } from '@cyoda/http-api-react';
 import type { ReportingInfoRow, RelatedPath, CatalogItem } from '../types/modelling';
 
 /**
@@ -73,7 +73,7 @@ export async function getReportingInfo(
     .join('&');
 
   try {
-    const response = await axios.get<ReportingInfoRow[]>(`/platform-api/entity-info/model-info?${query}`);
+    const response = await axios.get<ReportingInfoRow[]>(`/api/platform-api/entity-info/model-info?${query}`);
 
     // If response data is valid, return it
     if (Array.isArray(response.data) && response.data.length > 0) {
@@ -108,7 +108,7 @@ export async function getReportingInfo(
 export async function getReportingRelatedPaths(entityClass: string) {
   try {
     const response = await axios.get<RelatedPath[]>(
-      `/platform-api/entity-info/model-info/related/paths?entityModel=${entityClass}`
+      `/api/platform-api/entity-info/model-info/related/paths?entityModel=${entityClass}`
     );
 
     // If response data is valid, return it
@@ -141,34 +141,34 @@ export async function getReportingRelatedPaths(entityClass: string) {
  * Get catalog items for an entity class
  */
 export function getCatalogItems(entityClass: string) {
-  return axios.get<CatalogItem[]>(`/platform-api/catalog/item/class?entityClass=${entityClass}`);
+  return axios.get<CatalogItem[]>(`/api/platform-api/catalog/item/class?entityClass=${entityClass}`);
 }
 
 /**
  * Create a new catalog item
  */
 export function postCatalogItem(data: CatalogItem) {
-  return axios.post<string>(`/platform-api/catalog/item`, data);
+  return axios.post<string>(`/api/platform-api/catalog/item`, data);
 }
 
 /**
  * Update a catalog item
  */
 export function putCatalogItem(data: CatalogItem, id: string) {
-  return axios.put(`/platform-api/catalog/item?itemId=${id}`, data);
+  return axios.put(`/api/platform-api/catalog/item?itemId=${id}`, data);
 }
 
 /**
  * Delete a catalog item
  */
 export function deleteCatalogItem(id: string) {
-  return axios.delete(`/platform-api/catalog/item?itemId=${id}`);
+  return axios.delete(`/api/platform-api/catalog/item?itemId=${id}`);
 }
 
 /**
  * Get mapper classes
  */
 export function getMapperClasses() {
-  return axios.get<string[]>(`/platform-api/catalog/mappers`);
+  return axios.get<string[]>(`/api/platform-api/catalog/mappers`);
 }
 

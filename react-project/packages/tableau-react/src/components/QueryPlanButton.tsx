@@ -9,7 +9,7 @@ import React, { useState } from 'react';
 import { Button, Modal, Spin } from 'antd';
 import { EyeOutlined } from '@ant-design/icons';
 import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
+import { axios } from '@cyoda/http-api-react';
 import { CodeEditor } from '@cyoda/ui-lib-react';
 import type { ReportDefinition } from '../types';
 

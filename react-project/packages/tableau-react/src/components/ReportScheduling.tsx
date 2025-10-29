@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 import { Modal, Form, Select, DatePicker, TimePicker, Switch, Button, message, Space } from 'antd';
 import { ClockCircleOutlined } from '@ant-design/icons';
 import { useMutation } from '@tanstack/react-query';
-import axios from 'axios';
+import { axios } from '@cyoda/http-api-react';
 import type { ReportDefinition } from '../types';
 import moment from 'moment';
 

@@ -6,7 +6,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Form, Select, DatePicker, Row, Col, Input } from 'antd';
 import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
+import { axios } from '@cyoda/http-api-react';
 import dayjs, { Dayjs } from 'dayjs';
 import type { HistoryFilterForm } from '../utils/HelperReportDefinition';
 import HelperReportDefinition from '../utils/HelperReportDefinition';

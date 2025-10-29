@@ -157,6 +157,14 @@ export function createReport(config: any) {
 }
 
 /**
+ * Create report definition
+ * Migrated from Vue: createDefinitions(name, content)
+ */
+export function createReportDefinition(name: string, content: any) {
+  return axios.post(`/platform-api/reporting/definitions?name=${encodeURIComponent(name)}`, content);
+}
+
+/**
  * Update report configuration
  */
 export function updateReportConfig(reportId: string, config: any) {

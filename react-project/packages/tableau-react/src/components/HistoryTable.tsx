@@ -7,7 +7,7 @@ import React, { useState, useMemo } from 'react';
 import { Table, notification } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
+import { axios } from '@cyoda/http-api-react';
 import moment from 'moment';
 import type { ReportHistoryData, TableDataRow, HistorySettings, ConfigDefinition } from '@/types';
 import type { HistoryFilterForm } from '../utils/HelperReportDefinition';

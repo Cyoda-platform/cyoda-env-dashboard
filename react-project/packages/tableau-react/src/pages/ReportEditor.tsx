@@ -10,7 +10,7 @@ import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { Tabs, Button, message, Spin, Alert } from 'antd';
 import { ArrowLeftOutlined, SaveOutlined, PlayCircleOutlined, StopOutlined } from '@ant-design/icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
+import { axios } from '@cyoda/http-api-react';
 import HelperReportDefinition from '../utils/HelperReportDefinition';
 import type { ReportDefinition } from '../types';
 import './ReportEditor.scss';

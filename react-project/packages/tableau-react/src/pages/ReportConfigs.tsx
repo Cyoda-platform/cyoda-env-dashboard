@@ -20,9 +20,9 @@ import type { ColumnsType } from 'antd/es/table';
 import type { ResizeCallbackData } from 'react-resizable';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { axios } from '@cyoda/http-api-react';
 import moment from 'moment';
-import { exportReportsByIds, importReports } from '@cyoda/http-api-react';
+import { exportReportsByIds, importReports, createReportDefinition } from '@cyoda/http-api-react';
 import CreateReportDialog, { type CreateReportDialogRef, type CreateReportFormData } from '../components/CreateReportDialog';
 import CloneReportDialog, { type CloneReportDialogRef } from '../components/CloneReportDialog';
 import ConfigEditorReportsFilter from '../components/ConfigEditorReportsFilter';
@@ -229,10 +229,7 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
         },
       };
 
-      const { data } = await axios.post(
-        `/platform-api/reporting/definitions?name=${encodeURIComponent(formData.name)}`,
-        configDefinition
-      );
+      const { data } = await createReportDefinition(formData.name, configDefinition);
       return data;
     },
     onSuccess: (data) => {

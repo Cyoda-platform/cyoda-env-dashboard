@@ -8,7 +8,7 @@
 import React, { useState } from 'react';
 import { Button, Modal, Alert, Radio, Spin } from 'antd';
 import { ThunderboltOutlined } from '@ant-design/icons';
-import axios from 'axios';
+import { axios } from '@cyoda/http-api-react';
 import type { ReportDefinition } from '../types';
 import './FilterBuilderQueryPlan.scss';
 

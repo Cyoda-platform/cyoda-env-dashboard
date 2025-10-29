@@ -6,7 +6,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Modal, Tabs, Descriptions, Spin, Button, Switch } from 'antd';
-import axios from 'axios';
+import { axios } from '@cyoda/http-api-react';
 import type { ConfigDefinition } from '../types';
 import EntityDataLineage from './EntityDataLineage';
 import EntityAudit from './EntityAudit';

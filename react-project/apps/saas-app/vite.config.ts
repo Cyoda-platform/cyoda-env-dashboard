@@ -49,6 +49,23 @@ export default defineConfig({
           });
         },
       },
+      // Proxy all /platform-api requests to real Cyoda backend server
+      '/platform-api': {
+        target: 'https://cyoda-develop.kube.cyoda.org',
+        changeOrigin: true,
+        secure: false,
+        configure: (proxy, options) => {
+          proxy.on('error', (err, req, res) => {
+            console.log('Proxy error:', err.message);
+          });
+          proxy.on('proxyReq', (proxyReq, req, res) => {
+            console.log('Proxying:', req.method, req.url, '→', options.target + req.url);
+          });
+          proxy.on('proxyRes', (proxyRes, req, res) => {
+            console.log('Response:', proxyRes.statusCode, req.method, req.url);
+          });
+        },
+      },
     },
   },
   build: {

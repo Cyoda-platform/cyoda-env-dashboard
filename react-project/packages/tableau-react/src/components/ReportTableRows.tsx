@@ -7,7 +7,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Table } from 'antd';
-import axios from 'axios';
+import { axios } from '@cyoda/http-api-react';
 import type { ConfigDefinition, ReportingReportRows, TableColumn, TableauConnectionData } from '@/types';
 import EntityDetailModal from './EntityDetailModal';
 import './ReportTableRows.scss';

@@ -10,7 +10,7 @@ import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { Tabs, Button, Spin, message, Tooltip, Form, Select, Divider } from 'antd';
 import { ArrowLeftOutlined, SaveOutlined, PlayCircleOutlined } from '@ant-design/icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
+import { axios } from '@cyoda/http-api-react';
 import ReportEditorTabModel from '../components/ReportEditorTabModel';
 import ReportEditorTabColumns from '../components/ReportEditorTabColumns';
 import ReportEditorTabJson from '../components/ReportEditorTabJson';

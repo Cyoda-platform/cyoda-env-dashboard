@@ -7,7 +7,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Table } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
+import { axios } from '@cyoda/http-api-react';
 import ReportTableRows from './ReportTableRows';
 import HelperReportTable, { type ReportGroup, type WrappedEntityModel } from '../utils/HelperReportTable';
 import type { ConfigDefinition } from '../types';
