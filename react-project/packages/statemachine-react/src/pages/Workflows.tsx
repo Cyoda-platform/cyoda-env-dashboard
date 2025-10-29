@@ -4,7 +4,7 @@
  * Migrated from: .old_project/packages/statemachine/src/views/Workflows.vue
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Table, Button, Input, Space, Tooltip, App, Card } from 'antd';
 import {
@@ -22,6 +22,8 @@ import {
   useDeleteWorkflow,
   useCopyWorkflow,
 } from '../hooks/useStatemachine';
+import { useTableState } from '../hooks/useTableState';
+import { useQueryInvalidation } from '../hooks/useQueryInvalidation';
 import { ExportImport } from '../components/ExportImport';
 import { StateIndicator } from '../components/StateIndicator';
 import { useGlobalUiSettingsStore } from '@cyoda/http-api-react';
@@ -49,8 +51,17 @@ function getTimeFromUuid(uuid: string): number {
 export const Workflows: React.FC = () => {
   const { modal, message } = App.useApp();
   const navigate = useNavigate();
-  const [filter, setFilter] = useState('');
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+
+  // Table state persistence
+  const { tableState, handleTableChange, setFilter } = useTableState({
+    storageKey: 'workflowsTable',
+    defaultPageSize: 10,
+    syncWithUrl: true,
+  });
+
+  // Query invalidation (replaces event bus)
+  const { invalidateWorkflowsList } = useQueryInvalidation();
 
   // Global UI settings
   const { entityType } = useGlobalUiSettingsStore();
@@ -84,9 +95,9 @@ export const Workflows: React.FC = () => {
     return map[type] || type;
   };
 
-  // Table data with filtering
+  // Table data with filtering and sorting
   const tableData = useMemo<WorkflowTableRow[]>(() => {
-    return workflows
+    let filtered = workflows
       .map((workflow: Workflow) => {
         // Get short class name (last part after the last dot)
         const entityShortClassName = workflow.entityClassName.split('.').pop() || workflow.entityClassName;
@@ -122,14 +133,16 @@ export const Workflows: React.FC = () => {
         }
 
         // Filter by search text
-        if (!filter) return true;
-        const filterLower = filter.toLowerCase();
+        if (!tableState.filter) return true;
+        const filterLower = tableState.filter.toLowerCase();
         return (
           workflow.name.toLowerCase().includes(filterLower) ||
           workflow.entityClassNameLabel.toLowerCase().includes(filterLower)
         );
       });
-  }, [workflows, workflowEnabledTypes, filter, entityType, hasEntityTypeInfo]);
+
+    return filtered;
+  }, [workflows, workflowEnabledTypes, tableState.filter, entityType, hasEntityTypeInfo]);
 
   // Get selected workflows for export
   const selectedWorkflows = useMemo(() => {
@@ -186,8 +199,8 @@ export const Workflows: React.FC = () => {
           // Clear selection if deleted workflow was selected
           setSelectedRowKeys(prev => prev.filter(key => key !== record.key));
 
-          // Refetch to update the table
-          await refetch();
+          // Invalidate workflows list to refresh data
+          invalidateWorkflowsList();
         } catch (error) {
           message.error('Failed to delete workflow');
         }
@@ -326,7 +339,7 @@ export const Workflows: React.FC = () => {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Input
               placeholder="Filter workflows"
-              value={filter}
+              value={tableState.filter || ''}
               onChange={(e) => setFilter(e.target.value)}
               allowClear
               style={{ maxWidth: 400 }}
@@ -357,11 +370,13 @@ export const Workflows: React.FC = () => {
               onChange: setSelectedRowKeys,
             }}
             pagination={{
-              defaultPageSize: 10,
+              current: tableState.currentPage,
+              pageSize: tableState.pageSize,
               pageSizeOptions: ['5', '10', '20', '50'],
               showSizeChanger: true,
               showTotal: (total) => `Total ${total} workflows`,
             }}
+            onChange={handleTableChange}
             bordered
           />
         </Space>

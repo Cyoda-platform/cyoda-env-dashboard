@@ -15,6 +15,7 @@ import {
   useCreateWorkflow,
   useUpdateWorkflow,
 } from '../hooks/useStatemachine';
+import { useQueryInvalidation } from '../hooks/useQueryInvalidation';
 import type { PersistedType, WorkflowForm as WorkflowFormType } from '../types';
 
 const { TextArea } = Input;
@@ -34,6 +35,9 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
   const [activeTab, setActiveTab] = useState('settings');
   const [selectedEntityClassName, setSelectedEntityClassName] = useState<string>('');
   const [useDecisionTreeEnabled, setUseDecisionTreeEnabled] = useState<boolean>(false);
+
+  // Query invalidation (replaces event bus)
+  const { invalidateWorkflow, invalidateTransitions } = useQueryInvalidation();
 
   const isNew = !workflowId || workflowId === 'new';
   const isRuntime = persistedType === 'transient';
@@ -134,7 +138,7 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
   const handleSave = async () => {
     try {
       const values = await form.validateFields();
-      
+
       const formData: WorkflowFormType = {
         name: values.name,
         entityClassName: values.entityClassName,
@@ -145,10 +149,14 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
         criteriaIds: values.criteriaIds,
         useDecisionTree: values.useDecisionTree,
       };
-      
+
       if (isNew) {
         const newWorkflow = await createWorkflowMutation.mutateAsync(formData);
         message.success('Workflow created successfully');
+
+        // Invalidate transitions list (replaces eventBus.$emit('transitions:reload'))
+        invalidateTransitions(newWorkflow.id);
+
         navigate(
           `/workflow/${newWorkflow.id}?persistedType=persisted&entityClassName=${values.entityClassName}`
         );
@@ -158,6 +166,9 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
           id: workflowId!,
         });
         message.success('Workflow updated successfully');
+
+        // Invalidate workflow data (replaces eventBus.$emit('workflow:reload'))
+        invalidateWorkflow(workflowId);
       }
     } catch (error) {
       message.error('Failed to save workflow');

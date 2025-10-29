@@ -31,6 +31,10 @@ vi.mock('../hooks/useStatemachine', () => ({
     mutateAsync: mockUpdateCriteriaMutateAsync,
     isPending: false,
   })),
+  useEntityParentClasses: vi.fn(() => ({
+    data: [],
+    isLoading: false,
+  })),
 }));
 
 const createWrapper = () => {

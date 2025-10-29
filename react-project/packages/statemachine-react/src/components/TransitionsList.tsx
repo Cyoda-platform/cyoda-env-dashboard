@@ -10,6 +10,8 @@ import { Table, Button, Space, Tooltip, Modal, message } from 'antd';
 import { PlusOutlined, CopyOutlined, DeleteOutlined, UnorderedListOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { useTransitionsList, useDeleteTransition, useCopyTransition } from '../hooks/useStatemachine';
+import { useQueryInvalidation } from '../hooks/useQueryInvalidation';
+import { useTableState } from '../hooks/useTableState';
 import { StatesListModal } from './StatesListModal';
 import { StateIndicator } from './StateIndicator';
 import type { PersistedType } from '../types';
@@ -44,6 +46,16 @@ export const TransitionsList: React.FC<TransitionsListProps> = ({
   const navigate = useNavigate();
   const isRuntime = persistedType === 'runtime';
   const [statesModalVisible, setStatesModalVisible] = useState(false);
+
+  // Table state persistence
+  const { tableState, handleTableChange } = useTableState({
+    storageKey: `transitionsTable-${workflowId}`,
+    defaultPageSize: 10,
+    syncWithUrl: false, // Don't sync to URL for embedded component
+  });
+
+  // Query invalidation (replaces event bus)
+  const { invalidateWorkflow, invalidateTransitions } = useQueryInvalidation();
 
   // Queries
   const { data: transitions = [], isLoading, refetch } = useTransitionsList(persistedType, workflowId);
@@ -95,7 +107,9 @@ export const TransitionsList: React.FC<TransitionsListProps> = ({
       });
 
       message.success('Transition copied successfully');
-      refetch();
+
+      // Invalidate transitions list to refresh data (replaces eventBus.$emit('transitions:reload'))
+      invalidateTransitions(workflowId);
 
       // Navigate to the new transition
       navigate(
@@ -121,7 +135,10 @@ export const TransitionsList: React.FC<TransitionsListProps> = ({
             transitionId: record.id,
           });
           message.success('Transition deleted successfully');
-          refetch();
+
+          // Invalidate both transitions and workflow (replaces eventBus.$emit('workflow:reload'))
+          invalidateTransitions(workflowId);
+          invalidateWorkflow(workflowId);
         } catch (error) {
           message.error('Failed to delete transition');
         }
@@ -260,7 +277,14 @@ export const TransitionsList: React.FC<TransitionsListProps> = ({
         dataSource={tableData}
         loading={isLoading}
         bordered
-        pagination={false}
+        pagination={{
+          current: tableState.currentPage,
+          pageSize: tableState.pageSize,
+          pageSizeOptions: ['5', '10', '20', '50'],
+          showSizeChanger: true,
+          showTotal: (total) => `Total ${total} transitions`,
+        }}
+        onChange={handleTableChange}
       />
 
       <StatesListModal

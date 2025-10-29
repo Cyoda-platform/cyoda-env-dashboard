@@ -10,6 +10,7 @@ import { Table, Button, Space, Tooltip, Modal, message } from 'antd';
 import { PlusOutlined, CopyOutlined, DeleteOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { useProcessesList, useDeleteProcess, useCopyProcess } from '../hooks/useStatemachine';
+import { useTableState } from '../hooks/useTableState';
 import { StateIndicator } from './StateIndicator';
 import type { PersistedType } from '../types';
 
@@ -36,7 +37,14 @@ export const ProcessesList: React.FC<ProcessesListProps> = ({
   entityClassName,
 }) => {
   const navigate = useNavigate();
-  
+
+  // Table state persistence
+  const { tableState, handleTableChange } = useTableState({
+    storageKey: `processesTable-${entityClassName}`,
+    defaultPageSize: 10,
+    syncWithUrl: false, // Don't sync to URL for embedded component
+  });
+
   // Queries
   const { data: processes = [], isLoading, refetch } = useProcessesList(entityClassName);
 
@@ -190,7 +198,14 @@ export const ProcessesList: React.FC<ProcessesListProps> = ({
         dataSource={tableData}
         loading={isLoading}
         bordered
-        pagination={false}
+        pagination={{
+          current: tableState.currentPage,
+          pageSize: tableState.pageSize,
+          pageSizeOptions: ['5', '10', '20', '50'],
+          showSizeChanger: true,
+          showTotal: (total) => `Total ${total} processes`,
+        }}
+        onChange={handleTableChange}
       />
     </div>
   );

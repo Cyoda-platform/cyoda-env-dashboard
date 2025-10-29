@@ -10,6 +10,7 @@ import { Table, Button, Space, Tooltip, Modal, message } from 'antd';
 import { PlusOutlined, CopyOutlined, DeleteOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { useCriteriaList, useDeleteCriteria, useCopyCriteria } from '../hooks/useStatemachine';
+import { useTableState } from '../hooks/useTableState';
 import { StateIndicator } from './StateIndicator';
 import type { PersistedType } from '../types';
 
@@ -35,7 +36,14 @@ export const CriteriaList: React.FC<CriteriaListProps> = ({
   entityClassName,
 }) => {
   const navigate = useNavigate();
-  
+
+  // Table state persistence
+  const { tableState, handleTableChange } = useTableState({
+    storageKey: `criteriaTable-${entityClassName}`,
+    defaultPageSize: 10,
+    syncWithUrl: false, // Don't sync to URL for embedded component
+  });
+
   // Queries
   const { data: criteriaList = [], isLoading, refetch } = useCriteriaList(entityClassName);
 
@@ -180,7 +188,14 @@ export const CriteriaList: React.FC<CriteriaListProps> = ({
         dataSource={tableData}
         loading={isLoading}
         bordered
-        pagination={false}
+        pagination={{
+          current: tableState.currentPage,
+          pageSize: tableState.pageSize,
+          pageSizeOptions: ['5', '10', '20', '50'],
+          showSizeChanger: true,
+          showTotal: (total) => `Total ${total} criteria`,
+        }}
+        onChange={handleTableChange}
       />
     </div>
   );

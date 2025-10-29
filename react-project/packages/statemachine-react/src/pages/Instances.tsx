@@ -14,6 +14,7 @@ import {
   useWorkflowsList,
   useInstances,
 } from '../hooks/useStatemachine';
+import { useTableState } from '../hooks/useTableState';
 import { useGlobalUiSettingsStore, HelperFeatureFlags } from '@cyoda/http-api-react';
 import { RangeCondition, type RangeConditionForm } from '../components/RangeCondition';
 import type { Instance, InstanceTableRow, InstancesResponse } from '../types';
@@ -23,8 +24,15 @@ const PAGE_SIZE = 20;
 export const Instances: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+
+  // Table state persistence
+  const { tableState, setFilter, updateTableState } = useTableState({
+    storageKey: 'instancesTable',
+    defaultPageSize: PAGE_SIZE,
+    syncWithUrl: true,
+  });
+
   const [entityClassName, setEntityClassName] = useState(searchParams.get('entityClassName') || '');
-  const [filter, setFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [instancesData, setInstancesData] = useState<InstancesResponse | null>(null);
   const [isShowAdvanced, setIsShowAdvanced] = useState(false);
@@ -310,7 +318,7 @@ export const Instances: React.FC = () => {
             <Col span={6}>
               <Input
                 placeholder="Search by id (comma-separated)"
-                value={filter}
+                value={tableState.filter || ''}
                 onChange={(e) => setFilter(e.target.value)}
                 disabled={!entityClassName}
                 allowClear

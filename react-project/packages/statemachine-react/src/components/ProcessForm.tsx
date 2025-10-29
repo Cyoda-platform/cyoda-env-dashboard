@@ -145,32 +145,44 @@ export const ProcessForm: React.FC<ProcessFormProps> = ({
   const selectedProcessor = Form.useWatch('processorClassName', form);
 
   React.useEffect(() => {
-    if (selectedProcessor && isNew) {
+    if (selectedProcessor) {
       const newParams = getProcessorParameters(selectedProcessor);
       console.log('ProcessForm - Processor changed, updating parameters:', {
         processor: selectedProcessor,
         parameters: newParams,
+        isNew,
       });
-      setProcessParameters(newParams);
+
+      // Only update parameters for new processes or when processor changes
+      if (isNew || (process && process.processorClassName !== selectedProcessor)) {
+        setProcessParameters(newParams);
+      }
     }
-  }, [selectedProcessor, getProcessorParameters, isNew]);
+  }, [selectedProcessor, getProcessorParameters, isNew, process]);
 
   // Initialize form when process data loads
   useEffect(() => {
     if (process) {
-      form.setFieldsValue({
+      const formValues: any = {
         name: process.name,
         description: process.description || '',
         processorClassName: process.processorClassName || '',
         syncProcess: process.syncProcess || false,
         newTransactionForAsync: process.newTransactionForAsync || false,
         isTemplate: process.isTemplate || false,
-      });
+      };
 
       // Set parameters from loaded process
       if (process.parameters && Array.isArray(process.parameters)) {
         setProcessParameters(process.parameters);
+
+        // Set parameter values in form
+        process.parameters.forEach((param: any) => {
+          formValues[`param_${param.name}`] = param.value?.value;
+        });
       }
+
+      form.setFieldsValue(formValues);
     } else if (isNew) {
       form.setFieldsValue({
         syncProcess: false,
@@ -196,7 +208,13 @@ export const ProcessForm: React.FC<ProcessFormProps> = ({
         const paramValue = values[`param_${param.name}`];
         const processedParam = { ...param };
 
-        if (paramValue !== undefined && paramValue !== null) {
+        console.log('Processing parameter:', {
+          name: param.name,
+          type: param.value['@type'],
+          rawValue: paramValue,
+        });
+
+        if (paramValue !== undefined && paramValue !== null && paramValue !== '') {
           processedParam.value = {
             ...param.value,
             value: param.value['@type'].toLowerCase() === 'integer'

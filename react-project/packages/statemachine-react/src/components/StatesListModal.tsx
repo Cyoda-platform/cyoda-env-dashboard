@@ -10,6 +10,8 @@ import { Modal, Table, Input, Button, Space, Tooltip, App } from 'antd';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { useStatesList, useDeleteState } from '../hooks/useStatemachine';
+import { useQueryInvalidation } from '../hooks/useQueryInvalidation';
+import { useTableState } from '../hooks/useTableState';
 import { StateIndicator } from './StateIndicator';
 import type { PersistedType } from '../types';
 
@@ -39,10 +41,20 @@ export const StatesListModal: React.FC<StatesListModalProps> = ({
   const { modal, message } = App.useApp();
   const navigate = useNavigate();
   const [filter, setFilter] = useState('');
-  
+
+  // Table state persistence
+  const { tableState, handleTableChange, setFilter: setTableFilter } = useTableState({
+    storageKey: `statesTable-${workflowId}`,
+    defaultPageSize: 10,
+    syncWithUrl: false, // Don't sync to URL for modal
+  });
+
+  // Query invalidation (replaces event bus)
+  const { invalidateWorkflow } = useQueryInvalidation();
+
   // Queries
   const { data: states = [], isLoading, refetch } = useStatesList(persistedType, workflowId, visible);
-  
+
   // Mutations
   const deleteStateMutation = useDeleteState();
   
@@ -92,6 +104,10 @@ export const StatesListModal: React.FC<StatesListModalProps> = ({
             stateId: record.id,
           });
           message.success('State deleted successfully');
+
+          // Invalidate workflow data (replaces eventBus.$emit('workflow:reload'))
+          invalidateWorkflow(workflowId);
+
           refetch();
         } catch (error) {
           message.error('Failed to delete state');
@@ -174,10 +190,13 @@ export const StatesListModal: React.FC<StatesListModalProps> = ({
           bordered
           size="small"
           pagination={{
-            defaultPageSize: 10,
+            current: tableState.currentPage,
+            pageSize: tableState.pageSize,
+            pageSizeOptions: ['5', '10', '20', '50'],
             showSizeChanger: true,
             showTotal: (total) => `Total ${total} states`,
           }}
+          onChange={handleTableChange}
         />
       </Space>
     </Modal>
