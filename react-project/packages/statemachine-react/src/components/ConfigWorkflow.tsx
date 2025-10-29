@@ -104,10 +104,11 @@ export const ConfigWorkflow: React.FC<ConfigWorkflowProps> = ({
           maxHeight: '600px',
           overflow: 'auto',
           fontSize: '13px',
-          lineHeight: '1.7',
-          fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif",
+          lineHeight: '1.5',
+          fontFamily: 'monospace',
           margin: 0,
-          fontWeight: 400,
+          WebkitFontSmoothing: 'antialiased',
+          MozOsxFontSmoothing: 'grayscale',
         }}
       >
         <code

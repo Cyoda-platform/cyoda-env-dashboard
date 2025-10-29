@@ -7,17 +7,18 @@ code[class*="language-"],
 pre[class*="language-"] {
   color: #D1D5DB;
   background: none;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-family: monospace;
   font-size: 13px;
   text-align: left;
   white-space: pre;
   word-spacing: normal;
   word-break: normal;
   word-wrap: normal;
-  line-height: 1.7;
+  line-height: 1.5;
   tab-size: 2;
   hyphens: none;
-  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Code blocks */
