@@ -6,7 +6,8 @@
 
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import cytoscape, { Core } from 'cytoscape';
-import { Button, Space, Card } from 'antd';
+import { Button, Space, Card, Table } from 'antd';
+import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 import {
   FullscreenOutlined,
   FullscreenExitOutlined,
@@ -67,6 +68,7 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
   const [showTitles, setShowTitles] = useState(true);
   const [showEdgesTitles, setShowEdgesTitles] = useState(false);
   const [showListOfTransitions, setShowListOfTransitions] = useState(true);
+  const [hiddenTransitions, setHiddenTransitions] = useState<Set<string>>(new Set());
 
   // Filter active transitions
   const activeTransitions = transitions.filter((t) => t.active);
@@ -163,6 +165,15 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
     cy.on('dragfree', 'node', onDragFree);
     cy.on('tap', onTapBackground);
 
+    // Enable/disable dragging based on readonly mode
+    if (isReadonly) {
+      cy.nodes('.compound-processes').lock();
+      cy.nodes('.node-state').lock();
+    } else {
+      cy.nodes('.compound-processes').unlock();
+      cy.nodes('.node-state').unlock();
+    }
+
     cy.userZoomingEnabled(false);
 
     // Set initialized flag (will be set after layout completes if no positionsMap)
@@ -180,24 +191,19 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
         cy.fit(undefined, 50);
       }, 100);
     }
-  }, [activeTransitions, positionsMap, currentState, isInitialized, processes, criteria, showTitles, showEdgesTitles, showProcesses, showCriteria]);
+  }, [activeTransitions, positionsMap, currentState, isInitialized, processes, criteria, showTitles, showEdgesTitles, showProcesses, showCriteria, isReadonly]);
 
   // Add processes to the graph
   const addProcesses = useCallback(() => {
     if (!cyRef.current) return;
 
     const cy = cyRef.current;
-    const transitions = cy.edges('.edge').filter((edge: any) => !edge.hasClass('edge-process'));
 
-    transitions.forEach((transitionEdge: any) => {
-      const transitionId = transitionEdge.data('entityId');
-      const transition = activeTransitions.find((t) => t.id === transitionId);
-
-      if (!transition || !transition.endProcessesIds || !transition.endProcessesIds.length) {
-        return;
-      }
-
+    activeTransitions.forEach((transition) => {
+      const transitionEdge = cy.getElementById(transition.id);
+      const startStateEle = cy.getElementById(transition.startStateId || '');
       const endStateEle = cy.getElementById(transition.endStateId || '');
+
       const processesEles = getProcessesEles({
         transition,
         endStateEle,
@@ -206,33 +212,57 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
         transitionEdge,
       });
 
-      if (processesEles.source) {
-        cy.add(processesEles.source);
-        cy.add(processesEles.parent);
-        cy.add(processesEles.edge);
-        processesEles.children.forEach((child: any) => cy.add(child));
+      if (!processesEles.parent || !processesEles.children || !processesEles.edge) {
+        return;
+      }
+
+      const sourceEle = cy.add(processesEles.source);
+      const processesCompoundEle = cy.add(processesEles.parent);
+      cy.add(processesEles.edge);
+      processesEles.children.forEach((child: any) => cy.add(child));
+
+      // Layout children and position
+      processesCompoundEle.children().layout({
+        name: 'grid',
+        rows: 1,
+        padding: 5,
+      });
+
+      if (processesEles.position) {
+        processesCompoundEle.position(processesEles.position);
+      }
+
+      // Reposition source element to transition edge target endpoint
+      setTimeout(() => {
+        const tEdge = cy.getElementById(transition.id);
+        if (tEdge && tEdge.targetEndpoint) {
+          sourceEle.position(tEdge.targetEndpoint());
+        }
+      }, 0);
+
+      // Apply hidden class if processes are not shown
+      if (!showProcesses) {
+        cy.nodes('.compound-processes').addClass('hidden');
+        cy.edges('.edge-process').addClass('hidden');
       }
     });
-  }, [activeTransitions, processes, positionsMap]);
+  }, [activeTransitions, processes, positionsMap, showProcesses]);
 
   // Add criteria to the graph
   const addCriteria = useCallback(() => {
     if (!cyRef.current) return;
 
     const cy = cyRef.current;
-    const transitions = cy.edges('.edge').filter((edge: any) => !edge.hasClass('edge-process'));
 
-    transitions.forEach((transitionEdge: any) => {
-      const transitionId = transitionEdge.data('entityId');
-      const transition = activeTransitions.find((t) => t.id === transitionId);
-
-      if (!transition || !transition.criteriaIds || !transition.criteriaIds.length) {
+    activeTransitions.forEach((transition) => {
+      if (!transition.criteriaIds || !transition.criteriaIds.length) {
         return;
       }
 
-      const startStateEle = cy.getElementById(transition.startStateId || '');
-      const endStateEle = cy.getElementById(transition.endStateId || '');
-      const position = positionBetween(startStateEle.position(), endStateEle.position());
+      const edge = cy.getElementById(transition.id);
+      const startStateEle = edge.source();
+      const endStateEle = edge.target();
+      const position = edge.midpoint();
 
       const criteriaEles = getCriteriaEles({
         transition,
@@ -240,10 +270,31 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
         position,
       });
 
-      cy.add(criteriaEles.parent);
+      edge.data('compoundCriteria', criteriaEles.criteriaCompoundEleId);
+      const criteriaCompoundEle = cy.add(criteriaEles.parent);
       criteriaEles.children.forEach((child: any) => cy.add(child));
+
+      // Layout children
+      criteriaCompoundEle.children().layout({
+        name: 'grid',
+        rows: 1,
+        padding: 5,
+      });
+
+      // Position criteria at edge midpoint
+      setTimeout(() => {
+        const e = cy.getElementById(transition.id);
+        const p = e.midpoint();
+        criteriaCompoundEle.position(p);
+      }, 0);
+
+      // Apply hidden class if criteria are not shown
+      if (!showCriteria) {
+        cy.nodes('.node-criteria').addClass('hidden');
+        cy.nodes('.compound-criteria').addClass('compound-criteria-hidden');
+      }
     });
-  }, [activeTransitions, criteria]);
+  }, [activeTransitions, criteria, showCriteria]);
 
   // Set positions and save to store
   const setPositions = useCallback((eles: any) => {
@@ -475,6 +526,83 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
         {/* Graph Container */}
         <div className="graph-wrapper">
           <div className="wrap-map">
+            {/* Transitions List */}
+            {showListOfTransitions && (
+              <div className="gf-transitions-list">
+                <Table
+                  size="small"
+                  dataSource={activeTransitions.map((t) => ({
+                    key: t.id,
+                    id: t.id,
+                    name: t.name,
+                    startState: t.startStateName || 'None',
+                    endState: t.endStateName || '',
+                    automated: t.automated,
+                  }))}
+                  columns={[
+                    {
+                      title: 'Transition',
+                      dataIndex: 'name',
+                      key: 'name',
+                      width: 115,
+                      ellipsis: true,
+                    },
+                    {
+                      title: 'Start state',
+                      dataIndex: 'startState',
+                      key: 'startState',
+                      width: 115,
+                      ellipsis: true,
+                    },
+                    {
+                      title: 'End state',
+                      dataIndex: 'endState',
+                      key: 'endState',
+                      width: 115,
+                      ellipsis: true,
+                    },
+                    {
+                      title: 'View',
+                      key: 'view',
+                      width: 70,
+                      render: (_, record) => (
+                        <Button
+                          type="text"
+                          size="small"
+                          icon={hiddenTransitions.has(record.id) ? <EyeInvisibleOutlined /> : <EyeOutlined />}
+                          onClick={() => {
+                            const newHidden = new Set(hiddenTransitions);
+                            if (newHidden.has(record.id)) {
+                              newHidden.delete(record.id);
+                              // Show the transition
+                              if (cyRef.current) {
+                                const edge = cyRef.current.getElementById(record.id);
+                                edge.style({ display: 'element' });
+                              }
+                            } else {
+                              newHidden.add(record.id);
+                              // Hide the transition
+                              if (cyRef.current) {
+                                const edge = cyRef.current.getElementById(record.id);
+                                edge.style({ display: 'none' });
+                              }
+                            }
+                            setHiddenTransitions(newHidden);
+                          }}
+                        />
+                      ),
+                    },
+                  ]}
+                  pagination={false}
+                  bordered
+                  style={{
+                    maxHeight: '300px',
+                    overflow: 'auto',
+                  }}
+                />
+              </div>
+            )}
+
             <figure>
               <div ref={containerRef} className="map-container" />
             </figure>

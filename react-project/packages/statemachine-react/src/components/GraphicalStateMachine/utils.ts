@@ -173,14 +173,22 @@ export const getProcessesChildEles = ({
 }): NodeConfig[] => {
   if (!transition.endProcessesIds) return [];
   return transition.endProcessesIds.reduce((result: NodeConfig[], processId: any, index: number) => {
-    const process = processesList.find((p: any) => {
-      const pId = p.id.persisted ? p.id.persistedId : p.id.runtimeId;
-      const prId = processId.persisted ? processId.persistedId : processId.runtimeId;
-      return pId === prId;
-    });
-    
+    // Handle both string IDs and object IDs
+    let process;
+    if (typeof processId === 'string') {
+      // Simple string ID
+      process = processesList.find((p: any) => p.id === processId);
+    } else {
+      // Object ID with persisted/runtime structure
+      process = processesList.find((p: any) => {
+        const pId = p.id?.persisted ? p.id.persistedId : p.id?.runtimeId || p.id;
+        const prId = processId.persisted ? processId.persistedId : processId.runtimeId;
+        return pId === prId;
+      });
+    }
+
     if (!process) {
-      console.warn(`Couldn't find process ${processId}`);
+      console.warn(`Couldn't find process`, processId);
       return result;
     }
 
@@ -301,10 +309,23 @@ export const getCriteriaChildrenEles = ({
   criteriaList: Criteria[];
 }): NodeConfig[] => {
   if (!transition.criteriaIds) return [];
-  return transition.criteriaIds.reduce((result: NodeConfig[], criteriaId: string, index: number) => {
-    const criteria = criteriaList.find((c) => c.id === criteriaId);
+  return transition.criteriaIds.reduce((result: NodeConfig[], criteriaId: any, index: number) => {
+    // Handle both string IDs and object IDs
+    let criteria;
+    if (typeof criteriaId === 'string') {
+      // Simple string ID
+      criteria = criteriaList.find((c) => c.id === criteriaId);
+    } else {
+      // Object ID with persisted/runtime structure
+      criteria = criteriaList.find((c: any) => {
+        const cId = c.id?.persisted ? c.id.persistedId : c.id?.runtimeId || c.id;
+        const crId = criteriaId.persisted ? criteriaId.persistedId : criteriaId.runtimeId;
+        return cId === crId;
+      });
+    }
+
     if (!criteria) {
-      console.warn(`Couldn't find criteria ${criteriaId}`);
+      console.warn(`Couldn't find criteria`, criteriaId);
       return result;
     }
 

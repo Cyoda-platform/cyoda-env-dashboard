@@ -37,10 +37,108 @@ let mockWorkflows: any[] = [
   },
 ];
 
-let mockCriteria: any[] = [];
-let mockProcesses: any[] = [];
-let mockTransitions: any[] = [];
-let mockStates: any[] = [];
+let mockCriteria: any[] = [
+  { id: 'criteria-001', name: 'Payment Verified', description: 'Check if payment is verified', entityClassName: 'com.cyoda.tms.model.entities.Order', persisted: true },
+  { id: 'criteria-002', name: 'Stock Available', description: 'Check if items are in stock', entityClassName: 'com.cyoda.tms.model.entities.Order', persisted: true },
+  { id: 'criteria-003', name: 'Address Valid', description: 'Validate shipping address', entityClassName: 'com.cyoda.tms.model.entities.Order', persisted: true },
+  { id: 'criteria-004', name: 'User Verified', description: 'Check if user email is verified', entityClassName: 'com.cyoda.tms.model.entities.User', persisted: true },
+  { id: 'criteria-005', name: 'Profile Complete', description: 'Check if user profile is complete', entityClassName: 'com.cyoda.tms.model.entities.User', persisted: true },
+];
+
+let mockProcesses: any[] = [
+  { id: 'process-001', name: 'Send Confirmation Email', description: 'Send order confirmation to customer', entityClassName: 'com.cyoda.tms.model.entities.Order', persisted: true },
+  { id: 'process-002', name: 'Update Inventory', description: 'Decrease stock levels', entityClassName: 'com.cyoda.tms.model.entities.Order', persisted: true },
+  { id: 'process-003', name: 'Generate Invoice', description: 'Create invoice document', entityClassName: 'com.cyoda.tms.model.entities.Order', persisted: true },
+  { id: 'process-004', name: 'Send Welcome Email', description: 'Send welcome email to new user', entityClassName: 'com.cyoda.tms.model.entities.User', persisted: true },
+  { id: 'process-005', name: 'Create User Profile', description: 'Initialize user profile data', entityClassName: 'com.cyoda.tms.model.entities.User', persisted: true },
+];
+
+let mockTransitions: any[] = [
+  // Order Processing workflow transitions
+  {
+    id: 'trans-001',
+    name: 'Start Processing',
+    workflowId: 'workflow-001',
+    startStateId: 'state-001',
+    endStateId: 'state-002',
+    startStateName: 'CREATED',
+    endStateName: 'PROCESSING',
+    automated: true,
+    active: true,
+    persisted: true,
+    criteriaIds: ['criteria-001'],
+    endProcessesIds: ['process-001'],
+  },
+  {
+    id: 'trans-002',
+    name: 'Ship Order',
+    workflowId: 'workflow-001',
+    startStateId: 'state-002',
+    endStateId: 'state-003',
+    startStateName: 'PROCESSING',
+    endStateName: 'SHIPPED',
+    automated: false,
+    active: true,
+    persisted: true,
+    criteriaIds: ['criteria-002'],
+    endProcessesIds: ['process-002'],
+  },
+  {
+    id: 'trans-003',
+    name: 'Complete Order',
+    workflowId: 'workflow-001',
+    startStateId: 'state-003',
+    endStateId: 'state-004',
+    startStateName: 'SHIPPED',
+    endStateName: 'COMPLETED',
+    automated: false,
+    active: true,
+    persisted: true,
+    criteriaIds: ['criteria-003'],
+    endProcessesIds: ['process-003'],
+  },
+  // User Onboarding workflow transitions
+  {
+    id: 'trans-004',
+    name: 'Verify User',
+    workflowId: 'workflow-002',
+    startStateId: 'state-005',
+    endStateId: 'state-006',
+    startStateName: 'PENDING',
+    endStateName: 'VERIFIED',
+    automated: true,
+    active: true,
+    persisted: true,
+    criteriaIds: ['criteria-004'],
+    endProcessesIds: ['process-004'],
+  },
+  {
+    id: 'trans-005',
+    name: 'Activate User',
+    workflowId: 'workflow-002',
+    startStateId: 'state-006',
+    endStateId: 'state-007',
+    startStateName: 'VERIFIED',
+    endStateName: 'ACTIVE',
+    automated: false,
+    active: true,
+    persisted: true,
+    criteriaIds: ['criteria-005'],
+    endProcessesIds: ['process-005'],
+  },
+];
+
+let mockStates: any[] = [
+  // Order Processing workflow states
+  { id: 'state-001', name: 'CREATED', workflowId: 'workflow-001', initial: true, terminal: false, persisted: true },
+  { id: 'state-002', name: 'PROCESSING', workflowId: 'workflow-001', initial: false, terminal: false, persisted: true },
+  { id: 'state-003', name: 'SHIPPED', workflowId: 'workflow-001', initial: false, terminal: false, persisted: true },
+  { id: 'state-004', name: 'COMPLETED', workflowId: 'workflow-001', initial: false, terminal: true, persisted: true },
+  // User Onboarding workflow states
+  { id: 'state-005', name: 'PENDING', workflowId: 'workflow-002', initial: true, terminal: false, persisted: true },
+  { id: 'state-006', name: 'VERIFIED', workflowId: 'workflow-002', initial: false, terminal: false, persisted: true },
+  { id: 'state-007', name: 'ACTIVE', workflowId: 'workflow-002', initial: false, terminal: true, persisted: true },
+];
 
 // Load/save data from localStorage
 function loadMockData() {
@@ -94,8 +192,8 @@ export function enableStatemachineMock() {
     (config) => {
       const url = config.url || '';
 
-      // Intercept ALL statemachine endpoints and return mock data immediately
-      if (url.includes('/platform-api/statemachine/')) {
+      // Intercept statemachine endpoints and entity-info models-info endpoint
+      if (url.includes('/platform-api/statemachine/') || url.includes('/platform-api/entity-info/fetch/models-info')) {
         console.log('🔄 Mock intercepting:', config.method?.toUpperCase(), url);
 
         // Mark this request as mocked so we can handle it in response interceptor
@@ -129,8 +227,10 @@ export function enableStatemachineMock() {
       const config = error.config;
       const url = config?.url || '';
 
-      // Also handle errors for statemachine endpoints
-      if (config?.headers?.['X-Mock-Intercepted'] === 'true' || url.includes('/platform-api/statemachine/')) {
+      // Also handle errors for statemachine and entity-info endpoints
+      if (config?.headers?.['X-Mock-Intercepted'] === 'true' ||
+          url.includes('/platform-api/statemachine/') ||
+          url.includes('/platform-api/entity-info/fetch/models-info')) {
         const method = config?.method?.toLowerCase();
         console.log('🎭 Mock handling error:', method?.toUpperCase(), url, 'Status:', error.response?.status);
 
@@ -146,6 +246,27 @@ export function enableStatemachineMock() {
 // Helper function to handle mock responses
 function handleMockResponse(config: any, url: string, method?: string): Promise<any> {
   console.log('🎯 handleMockResponse called:', method?.toUpperCase(), url);
+
+  // GET /platform-api/entity-info/fetch/models-info (feature flag enabled)
+  if (url.includes('/platform-api/entity-info/fetch/models-info')) {
+    console.log('✅ Returning mock models-info');
+    const stateEnabled = config.params?.stateEnabled === true || config.params?.stateEnabled === 'true';
+
+    const allEntities = [
+      { name: 'com.cyoda.tms.model.entities.User', value: 'com.cyoda.tms.model.entities.User', label: 'User', type: 'BUSINESS', stateEnabled: true },
+      { name: 'com.cyoda.tms.model.entities.Order', value: 'com.cyoda.tms.model.entities.Order', label: 'Order', type: 'BUSINESS', stateEnabled: true },
+      { name: 'com.cyoda.tms.model.entities.Product', value: 'com.cyoda.tms.model.entities.Product', label: 'Product', type: 'BUSINESS', stateEnabled: true },
+      { name: 'com.cyoda.tms.model.entities.Invoice', value: 'com.cyoda.tms.model.entities.Invoice', label: 'Invoice', type: 'BUSINESS', stateEnabled: false },
+    ];
+
+    return Promise.resolve({
+      data: stateEnabled ? allEntities.filter(e => e.stateEnabled) : allEntities,
+      status: 200,
+      statusText: 'OK',
+      headers: {},
+      config,
+    });
+  }
 
   // GET /platform-api/statemachine/workflow-enabled-types
   if (url === '/platform-api/statemachine/workflow-enabled-types') {
