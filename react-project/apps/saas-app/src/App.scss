@@ -17,8 +17,7 @@ body {
 }
 
 code {
-  font-family: 'Fira Code', source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: 'Fira Code', 'JetBrains Mono', 'Cascadia Code', 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'Courier New', monospace;
 }
 
 // Ensure full height
@@ -1042,7 +1041,7 @@ div[style*="background-color:#000"] {
 }
 
 // ============================================
-// MONACO EDITOR - DARK THEME FIX
+// MONACO EDITOR - CYODA DARK THEME
 // ============================================
 .monaco-editor,
 .monaco-editor-background,
@@ -1051,19 +1050,30 @@ div[style*="background-color:#000"] {
 }
 
 .monaco-editor .view-lines {
-  color: #F9FAFB !important;
+  color: #E0E0E0 !important;
+  font-family: 'Fira Code', 'JetBrains Mono', 'Cascadia Code', 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'Courier New', monospace !important;
 }
 
 .monaco-editor .line-numbers {
   color: #6B7280 !important;
 }
 
+.monaco-editor .line-numbers.active-line-number {
+  color: #00D4AA !important;
+}
+
 .monaco-editor .current-line {
   border-color: rgba(0, 212, 170, 0.2) !important;
+  background-color: #243142 !important;
 }
 
 .monaco-editor .selected-text {
   background-color: rgba(0, 212, 170, 0.2) !important;
+}
+
+.monaco-editor .cursor {
+  background-color: #00D4AA !important;
+  color: #1E2A3A !important;
 }
 
 // ============================================

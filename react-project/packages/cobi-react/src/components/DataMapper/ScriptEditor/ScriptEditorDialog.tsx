@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import { Modal, Alert, Button, Space, message } from 'antd';
-import Editor from '@monaco-editor/react';
+import Editor, { BeforeMount } from '@monaco-editor/react';
 import type { EntityMappingConfigDto, MappingConfigDto } from '../../../types';
 import ScriptEditorFields from './ScriptEditorFields';
 import ScriptEditorFiles from './ScriptEditorFiles';
@@ -191,13 +191,49 @@ const ScriptEditorDialog = forwardRef<ScriptEditorDialogRef, ScriptEditorDialogP
                     defaultLanguage="javascript"
                     value={scriptBody}
                     onChange={handleScriptBodyChange}
-                    theme="vs-dark"
+                    theme="cyoda-dark"
+                    beforeMount={(monaco) => {
+                      monaco.editor.defineTheme('cyoda-dark', {
+                        base: 'vs-dark',
+                        inherit: true,
+                        rules: [
+                          { token: 'comment', foreground: '6B7280', fontStyle: 'italic' },
+                          { token: 'keyword', foreground: 'FB923C', fontStyle: 'bold' },
+                          { token: 'string', foreground: '34D399' },
+                          { token: 'number', foreground: 'FBBF24' },
+                          { token: 'function', foreground: 'A78BFA' },
+                          { token: 'variable', foreground: 'E0E0E0' },
+                          { token: 'type', foreground: '60A5FA' },
+                          { token: 'operator', foreground: '60A5FA' },
+                          { token: 'delimiter', foreground: 'A8B5C8' },
+                        ],
+                        colors: {
+                          'editor.background': '#1E2A3A',
+                          'editor.foreground': '#E0E0E0',
+                          'editorLineNumber.foreground': '#6B7280',
+                          'editorLineNumber.activeForeground': '#00D4AA',
+                          'editor.lineHighlightBackground': '#243142',
+                          'editor.selectionBackground': '#00D4AA33',
+                          'editorCursor.foreground': '#00D4AA',
+                          'scrollbarSlider.background': '#374151',
+                          'scrollbarSlider.hoverBackground': '#4B5563',
+                          'scrollbarSlider.activeBackground': '#00D4AA',
+                        },
+                      });
+                    }}
                     options={{
-                      minimap: { enabled: false },
+                      fontFamily: "'Fira Code', 'JetBrains Mono', 'Cascadia Code', 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'Courier New', monospace",
                       fontSize: 14,
+                      lineHeight: 22,
+                      fontLigatures: true,
+                      minimap: { enabled: false },
                       lineNumbers: 'on',
                       scrollBeyondLastLine: false,
                       automaticLayout: true,
+                      cursorBlinking: 'smooth',
+                      cursorSmoothCaretAnimation: 'on',
+                      smoothScrolling: true,
+                      padding: { top: 10, bottom: 10 },
                     }}
                   />
                 </div>

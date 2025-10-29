@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react'
 import * as monaco from 'monaco-editor'
+import { registerCyodaDarkTheme, CYODA_EDITOR_OPTIONS } from './monacoTheme'
 import './CodeEditor.scss'
 
 // Monaco editor worker setup
@@ -106,19 +107,19 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   useEffect(() => {
     if (!containerRef.current || isInitialized) return
 
+    // Register the Cyoda Dark theme
+    registerCyodaDarkTheme(monaco)
+
     const monacoLanguage = getMonacoLanguage(language)
 
     if (!diff) {
       // Standard editor
       const editor = monaco.editor.create(containerRef.current, {
+        ...CYODA_EDITOR_OPTIONS,
         value: formatValue(value),
         language: monacoLanguage,
-        automaticLayout: true,
+        theme: 'cyoda-dark',
         readOnly,
-        renderLineHighlight: 'none',
-        overviewRulerBorder: false,
-        minimap: { enabled: false },
-        padding: { top: 10 }
       })
 
       // Listen for content changes
@@ -145,11 +146,10 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
       const modifiedModel = monaco.editor.createModel(newString, monacoLanguage)
 
       const diffEditor = monaco.editor.createDiffEditor(containerRef.current, {
+        ...CYODA_EDITOR_OPTIONS,
         originalEditable: !diffReadonly,
-        automaticLayout: true,
+        theme: 'cyoda-dark',
         renderOverviewRuler: false,
-        minimap: { enabled: false },
-        padding: { top: 10 }
       })
 
       diffEditor.setModel({

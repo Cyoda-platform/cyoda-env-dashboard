@@ -7,7 +7,7 @@
 import React, { useEffect, useState } from 'react';
 import { Spin, Alert } from 'antd';
 import Prism from 'prismjs';
-import 'prismjs/themes/prism-tomorrow.css';
+import './prism-cyoda-dark.css';
 import 'prismjs/components/prism-json';
 import { useWorkflow } from '../hooks/useStatemachine';
 import type { PersistedType } from '../types';
@@ -103,10 +103,11 @@ export const ConfigWorkflow: React.FC<ConfigWorkflowProps> = ({
           padding: '20px',
           maxHeight: '600px',
           overflow: 'auto',
-          fontSize: '14px',
-          lineHeight: '1.6',
-          fontFamily: 'Monaco, Menlo, "Ubuntu Mono", Consolas, source-code-pro, monospace',
+          fontSize: '13px',
+          lineHeight: '1.7',
+          fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif",
           margin: 0,
+          fontWeight: 400,
         }}
       >
         <code
