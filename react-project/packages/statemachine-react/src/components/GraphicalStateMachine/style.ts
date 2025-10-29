@@ -3,9 +3,9 @@
  * Migrated from: .old_project/packages/cyoda-ui-lib/src/components-library/patterns/GraphicalStatemachineMap/style.ts
  */
 
-import type { Stylesheet } from 'cytoscape';
+import type { Stylesheet as CytoscapeStylesheet } from 'cytoscape';
 
-export const style: Stylesheet[] = [
+export const style: CytoscapeStylesheet[] = [
   {
     selector: 'node',
     style: {

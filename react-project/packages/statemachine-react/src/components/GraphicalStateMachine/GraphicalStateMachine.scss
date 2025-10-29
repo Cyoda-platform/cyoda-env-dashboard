@@ -4,46 +4,10 @@
  * Updated: Canvas and button styling
  */
 
-// Global React Flow dark theme override
-.react-flow__pane,
-.react-flow__viewport,
-.react-flow__container,
-.react-flow__renderer,
-.react-flow {
-  background-color: #0f172a !important;
-  background: #0f172a !important;
-}
-
-// Remove default React Flow edge label background
-.react-flow__edge-text,
-.react-flow__edge-textbg,
-.react-flow__edgelabel,
-.react-flow__edgelabel-renderer,
-.react-flow__edgelabel-renderer > div,
-foreignObject {
-  background: transparent !important;
-  background-color: transparent !important;
-  fill: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  pointer-events: none !important;
-}
-
-// Ensure edges are visible and on correct layer
-.react-flow__edges {
-  z-index: 1 !important;
-  pointer-events: all !important;
-}
-
-.react-flow__edge {
-  pointer-events: all !important;
-}
-
 .graphical-statemachine-wrapper {
   position: relative;
   width: 100%;
-  min-height: 600px;
-  background: #0f172a !important;
+  height: 100%;
 
   &.fullscreen {
     position: fixed;
@@ -52,8 +16,7 @@ foreignObject {
     right: 0;
     bottom: 0;
     z-index: 9999;
-    background: #0f172a !important;
-    height: 100vh;
+    background: #1f2937;
   }
 }
 
@@ -63,123 +26,40 @@ foreignObject {
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: #0f172a !important;
 
   .panel {
     padding: 16px;
-    background: #0f172a;
-    border-bottom: 1px solid #1e293b;
+    background: #1f2937;
+    border-bottom: 1px solid #374151;
   }
 
   .graph-wrapper {
-    position: relative;
-    flex: 1;
-    min-height: 600px;
+    padding-bottom: 50px;
     display: flex;
-    flex-direction: column;
-    background: #0f172a !important;
+    position: relative;
+    background: #1f2937; // Dark theme (was rgb(255, 255, 255) in Vue)
+    flex: 1;
   }
 
-  .graph-container {
+  .wrap-map {
+    display: flex;
+    flex: 1 1 auto;
     position: relative;
-    width: 100%;
-    height: 100%;
-    min-height: 600px;
-    background-color: #0f172a !important;
-    background: #0f172a !important;
 
-    // React Flow specific styles
-    .react-flow {
-      background-color: #0f172a !important;
-      width: 100%;
-      height: 100%;
+    figure {
+      flex: 1 1 auto;
+      position: relative;
+      margin: 0; // Reset default figure margin
     }
+  }
 
-    .react-flow__viewport {
-      background-color: #0f172a !important;
-    }
-
-    .react-flow__background {
-      background-color: #0f172a !important;
-    }
-
-    .react-flow__pane {
-      background-color: #0f172a !important;
-    }
-
-    .react-flow__renderer {
-      background-color: #0f172a !important;
-    }
-
-    .react-flow__controls {
-      background: rgba(15, 23, 42, 0.95);
-      border: 1px solid #1e293b;
-      border-radius: 8px;
-      padding: 4px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
-
-      button {
-        background-color: #1e293b;
-        border-color: #334155;
-        color: #f1f5f9;
-        border-radius: 4px;
-        transition: all 0.2s ease;
-
-        &:hover {
-          background-color: #334155;
-          border-color: #60a5fa;
-          color: #ffffff;
-        }
-
-        svg {
-          fill: #f1f5f9;
-        }
-      }
-    }
-
-    .react-flow__minimap {
-      background-color: #0f172a;
-      border: 2px solid #1e293b;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
-    }
-
-    .react-flow__panel {
-      background: transparent;
-
-      &.panel {
-        background: rgba(15, 23, 42, 0.95);
-        border: 1px solid #1e293b;
-        border-radius: 8px;
-        padding: 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
-
-        .ant-btn {
-          background-color: #1e293b;
-          border-color: #334155;
-          color: #f1f5f9;
-          transition: all 0.2s ease;
-
-          &:hover {
-            background-color: #334155;
-            border-color: #60a5fa;
-            color: #ffffff;
-          }
-
-          .anticon {
-            color: #f1f5f9;
-          }
-        }
-      }
-    }
-
-    .react-flow__edge-path {
-      stroke-width: 2.5;
-    }
-
-    .react-flow__edge.selected .react-flow__edge-path {
-      stroke-width: 3.5;
-    }
+  .map-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1; // Base layer for the diagram
   }
 
   .map-controls {
@@ -222,6 +102,17 @@ foreignObject {
 
     .ant-card {
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      background: #374151;
+      border-color: #4b5563;
+
+      .ant-card-head {
+        color: #f3f4f6;
+        border-bottom-color: #4b5563;
+      }
+
+      .ant-card-body {
+        color: #e5e7eb;
+      }
     }
 
     .legend-circle {
@@ -313,26 +204,3 @@ foreignObject {
   }
 }
 
-// Force dark background on React Flow canvas
-.graphical-statemachine-wrapper,
-.graphical-statemachine,
-.graph-container {
-  background-color: #0f172a !important;
-}
-
-.react-flow__pane {
-  background-color: #0f172a !important;
-}
-
-// Make sure React Flow node wrappers are transparent
-.react-flow__node {
-  background: transparent !important;
-}
-
-// Test node styling
-.react-flow__node .test-node-custom {
-  background: red !important;
-  opacity: 1 !important;
-  visibility: visible !important;
-  display: block !important;
-}

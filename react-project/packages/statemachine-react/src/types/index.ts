@@ -88,6 +88,7 @@ export interface Criteria {
   description?: string;
   entityClassName?: string;
   condition?: Condition;
+  persisted?: boolean;
 }
 
 export interface Condition {
@@ -124,6 +125,7 @@ export interface Process {
   processorId?: string;
   template?: string;
   config?: any;
+  persisted?: boolean;
 }
 
 export interface ProcessForm {

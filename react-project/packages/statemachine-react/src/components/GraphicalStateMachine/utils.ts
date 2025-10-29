@@ -24,9 +24,9 @@ export const getStartStateNode = (
   
   const node: NodeConfig = {
     data: {
-      entityId: transition.startStateId,
-      id: transition.startStateId,
-      title: transition.startStateName,
+      entityId: transition.startStateId || '',
+      id: transition.startStateId || '',
+      title: transition.startStateName || '',
       persisted: transition.persisted,
       type: 'state',
     },
@@ -37,7 +37,7 @@ export const getStartStateNode = (
     node.classes = 'node-state node-state-none';
   }
 
-  if (positionsMap) {
+  if (positionsMap && transition.startStateId) {
     node.position = positionsMap[transition.startStateId];
     if (node.position) {
       node.locked = true;
@@ -57,16 +57,16 @@ export const getEndStateNode = (
   
   const node: NodeConfig = {
     data: {
-      entityId: transition.endStateId,
-      id: transition.endStateId,
-      title: transition.endStateName,
+      entityId: transition.endStateId || '',
+      id: transition.endStateId || '',
+      title: transition.endStateName || '',
       persisted: transition.persisted,
       type: 'state',
     },
     classes: stateClasses.join(' '),
   };
 
-  if (positionsMap) {
+  if (positionsMap && transition.endStateId) {
     node.position = positionsMap[transition.endStateId];
 
     if (node.position) {
@@ -171,6 +171,7 @@ export const getProcessesChildEles = ({
   compoundPosition: Position;
   maxY: number;
 }): NodeConfig[] => {
+  if (!transition.endProcessesIds) return [];
   return transition.endProcessesIds.reduce((result: NodeConfig[], processId: any, index: number) => {
     const process = processesList.find((p: any) => {
       const pId = p.id.persisted ? p.id.persistedId : p.id.runtimeId;
@@ -197,7 +198,7 @@ export const getProcessesChildEles = ({
       position: getChildPosition({
         compoundPosition,
         index,
-        count: transition.endProcessesIds.length,
+        count: transition.endProcessesIds?.length || 0,
         maxY,
       }),
     });
@@ -230,7 +231,7 @@ export const getProcessesEles = ({
   positionsMap: PositionsMap;
   processesList: Process[];
 }): any => {
-  if (!transition.endProcessesIds.length) {
+  if (!transition.endProcessesIds || !transition.endProcessesIds.length) {
     return {};
   }
 
@@ -299,6 +300,7 @@ export const getCriteriaChildrenEles = ({
   position: Position;
   criteriaList: Criteria[];
 }): NodeConfig[] => {
+  if (!transition.criteriaIds) return [];
   return transition.criteriaIds.reduce((result: NodeConfig[], criteriaId: string, index: number) => {
     const criteria = criteriaList.find((c) => c.id === criteriaId);
     if (!criteria) {
@@ -322,7 +324,7 @@ export const getCriteriaChildrenEles = ({
       position: getChildPosition({
         compoundPosition: position,
         index,
-        count: transition.criteriaIds.length,
+        count: transition.criteriaIds?.length || 0,
       }),
     });
 
