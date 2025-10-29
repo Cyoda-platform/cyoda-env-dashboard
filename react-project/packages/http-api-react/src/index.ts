@@ -28,5 +28,5 @@ export * from './components';
 export * from './pages';
 
 // Export axios instances
-export { default as axios, axiosPublic, axiosProcessing, axiosGrafana, axiosAI } from './config/axios';
+export { default as axios, axiosPublic, axiosPlatform, axiosProcessing, axiosGrafana, axiosAI } from './config/axios';
 

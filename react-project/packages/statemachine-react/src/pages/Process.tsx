@@ -11,6 +11,7 @@ import { ArrowLeftOutlined } from '@ant-design/icons';
 import {
   useProcess,
   useProcessorsList,
+  useEntityParentClasses,
   useCreateProcess,
   useUpdateProcess,
 } from '../hooks/useStatemachine';
@@ -40,30 +41,62 @@ export const Process: React.FC = () => {
     !isNew
   );
   const { data: processors = [], isLoading: isLoadingProcessors } = useProcessorsList();
-  
+  const { data: entityParentClasses = [] } = useEntityParentClasses(entityClassName);
+
   // Mutations
   const createProcessMutation = useCreateProcess();
   const updateProcessMutation = useUpdateProcess();
-  
-  // Processor options
+
+  // Processor options - filtered by entity class hierarchy
   const processorOptions = useMemo(() => {
-    return processors.map((processor: any) => {
-      // Handle both string format (legacy) and object format
-      if (typeof processor === 'string') {
-        return {
-          label: processor,
-          value: processor,
-        };
-      }
-      // Object format with name and entityClass
-      const fullName = processor.name || processor.value || processor;
-      const shortName = fullName.split('.').pop() || fullName;
-      return {
-        label: shortName,
-        value: fullName,
-      };
+    if (!Array.isArray(processors)) {
+      return [];
+    }
+
+    // Build list of all classes (parent classes + current entity class)
+    const allClasses = [...entityParentClasses, entityClassName];
+
+    console.log('Process page - Filtering processors:', {
+      entityClassName,
+      entityParentClasses,
+      allClasses,
+      processorsCount: processors.length,
     });
-  }, [processors]);
+
+    // Filter processors by entity class and map to options
+    return processors
+      .filter((processor: any) => {
+        // Handle both string format (legacy) and object format
+        if (typeof processor === 'string') {
+          // Legacy format - include all processors
+          return true;
+        }
+        // Object format with entityClass - filter by class hierarchy
+        const matches = processor.entityClass && allClasses.includes(processor.entityClass);
+        console.log('Processor filter:', {
+          name: processor.name,
+          entityClass: processor.entityClass,
+          matches,
+        });
+        return matches;
+      })
+      .map((processor: any) => {
+        // Handle both string format (legacy) and object format
+        if (typeof processor === 'string') {
+          return {
+            label: processor,
+            value: processor,
+          };
+        }
+        // Object format with name and entityClass
+        const fullName = processor.name || processor.value || processor;
+        const shortName = fullName.split('.').pop() || fullName;
+        return {
+          label: shortName,
+          value: fullName,
+        };
+      });
+  }, [processors, entityParentClasses, entityClassName]);
   
   // Initialize form when process data loads
   useEffect(() => {

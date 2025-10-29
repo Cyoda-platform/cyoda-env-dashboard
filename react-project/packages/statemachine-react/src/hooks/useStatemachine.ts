@@ -41,8 +41,11 @@ export const statemachineKeys = {
   processesList: (entityClassName?: string) => [...statemachineKeys.processes(), 'list', entityClassName] as const,
   processItem: (persistedType: PersistedType, processId: string, entityClassName?: string) => [...statemachineKeys.processes(), persistedType, processId, entityClassName] as const,
   processorsList: () => [...statemachineKeys.processes(), 'processors'] as const,
-  
+
   instances: () => [...statemachineKeys.all, 'instances'] as const,
+
+  entityInfo: () => [...statemachineKeys.all, 'entity-info'] as const,
+  entityParentClasses: (entityClassName: string) => [...statemachineKeys.entityInfo(), 'parent-classes', entityClassName] as const,
 };
 
 // ============================================================================
@@ -63,12 +66,18 @@ export function useWorkflowEnabledTypes() {
 
 export function useWorkflowsList(entityClassName?: string) {
   const store = useStatemachineStore();
-  
+
   return useQuery({
     queryKey: statemachineKeys.workflowsList(entityClassName),
     queryFn: async () => {
       const response = await store.getAllWorkflowsList(entityClassName);
-      return response.data;
+      // Ensure we always return an array
+      const data = response.data;
+      if (Array.isArray(data)) {
+        return data;
+      }
+      console.error('Workflows API returned non-array data:', data);
+      return [];
     },
   });
 }
@@ -672,5 +681,26 @@ export function useProcesses(persistedType: PersistedType, workflowId: string, e
  */
 export function useCriteriaForWorkflow(persistedType: PersistedType, workflowId: string, entityClassName?: string, enabled = true) {
   return useCriteriaList(entityClassName);
+}
+
+// ============================================================================
+// Entity Info Hooks
+// ============================================================================
+
+/**
+ * Fetches parent classes and interfaces for an entity class
+ * Used to filter processors by entity class hierarchy
+ */
+export function useEntityParentClasses(entityClassName: string, enabled = true) {
+  const store = useStatemachineStore();
+
+  return useQuery({
+    queryKey: statemachineKeys.entityParentClasses(entityClassName),
+    queryFn: async () => {
+      const response = await store.getEntityParentClassesAndInterfaces(entityClassName);
+      return response.data;
+    },
+    enabled: enabled && !!entityClassName,
+  });
 }
 

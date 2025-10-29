@@ -8,6 +8,7 @@ import { Form, Input, Button, message, Space, Select, Switch } from 'antd';
 import {
   useProcess,
   useProcessorsList,
+  useEntityParentClasses,
   useCreateProcess,
   useUpdateProcess,
 } from '../hooks/useStatemachine';
@@ -31,10 +32,12 @@ export const ProcessForm: React.FC<ProcessFormProps> = ({
   onSubmitted,
 }) => {
   const [form] = Form.useForm();
-  
+
   const isNew = !processId || processId === 'new';
   const isRuntime = persistedType === 'transient';
-  
+
+  console.log('ProcessForm - Props:', { entityClassName, processId, persistedType });
+
   // Queries
   const { data: process, isLoading: isLoadingProcess } = useProcess(
     persistedType,
@@ -43,15 +46,52 @@ export const ProcessForm: React.FC<ProcessFormProps> = ({
     !isNew
   );
   const { data: processorsList = [], isLoading: isLoadingProcessors } = useProcessorsList();
-  
+  const { data: entityParentClasses = [], isLoading: isLoadingParentClasses } = useEntityParentClasses(entityClassName);
+
+  console.log('ProcessForm - Data loaded:', {
+    processorsListLength: processorsList?.length,
+    entityParentClasses,
+    isLoadingParentClasses,
+  });
+
   // Mutations
   const createProcessMutation = useCreateProcess();
   const updateProcessMutation = useUpdateProcess();
-  
-  // Processor options
+
+  // Processor options - filtered by entity class hierarchy
   const processorOptions = React.useMemo(() => {
-    if (Array.isArray(processorsList)) {
-      return processorsList.map((processor: any) => {
+    if (!Array.isArray(processorsList)) {
+      return [];
+    }
+
+    // Build list of all classes (parent classes + current entity class)
+    const allClasses = [...entityParentClasses, entityClassName];
+
+    console.log('ProcessForm - Filtering processors:', {
+      entityClassName,
+      entityParentClasses,
+      allClasses,
+      processorsCount: processorsList.length,
+    });
+
+    // Filter processors by entity class and map to options
+    const filtered = processorsList
+      .filter((processor: any) => {
+        // Handle both string format (legacy) and object format
+        if (typeof processor === 'string') {
+          // Legacy format - include all processors
+          return true;
+        }
+        // Object format with entityClass - filter by class hierarchy
+        const matches = processor.entityClass && allClasses.includes(processor.entityClass);
+        console.log('Processor filter:', {
+          name: processor.name,
+          entityClass: processor.entityClass,
+          matches,
+        });
+        return matches;
+      })
+      .map((processor: any) => {
         // Handle both string format (legacy) and object format
         if (typeof processor === 'string') {
           return {
@@ -67,9 +107,10 @@ export const ProcessForm: React.FC<ProcessFormProps> = ({
           value: fullName,
         };
       });
-    }
-    return [];
-  }, [processorsList]);
+
+    console.log('ProcessForm - Filtered processors:', filtered);
+    return filtered;
+  }, [processorsList, entityParentClasses, entityClassName]);
   
   // Initialize form when process data loads
   useEffect(() => {
@@ -99,7 +140,7 @@ export const ProcessForm: React.FC<ProcessFormProps> = ({
       const formData: ProcessFormType = {
         '@bean': 'com.cyoda.core.model.stateMachine.dto.ProcessDto',
         name: values.name,
-        description: values.description,
+        description: values.description || '',
         processorClassName: values.processorClassName,
         syncProcess: values.syncProcess,
         newTransactionForAsync: values.newTransactionForAsync,
@@ -107,13 +148,21 @@ export const ProcessForm: React.FC<ProcessFormProps> = ({
         parameters: [],
         entityClassName,
       };
-      
+
+      console.log('🔍 ProcessForm - Submitting data:', {
+        persistedType,
+        formData,
+        isNew,
+        entityClassName
+      });
+
       let resultId;
       if (isNew) {
         const result = await createProcessMutation.mutateAsync({
           persistedType,
           form: formData,
         });
+        console.log('✅ ProcessForm - Create result:', result);
         resultId = result?.id?.persistedId || result?.id || result?.Data?.id;
         message.success('Process created successfully');
       } else {

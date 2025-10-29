@@ -1540,6 +1540,14 @@ app.get('/platform-api/statemachine/workflows', (req, res) => {
       active: true,
       persisted: true,
       creationDate: Date.now() - 86400000 * 10
+    },
+    {
+      id: 'workflow-6',
+      name: 'default-workflow',
+      entityClassName: 'net.cyoda.saas.model.TrinoViewDefinitionEntity',
+      active: true,
+      persisted: true,
+      creationDate: Date.now() - 86400000 * 5
     }
   ]);
 });
@@ -1618,6 +1626,13 @@ app.get('/platform-api/entity-info/fetch/models-info', (req, res) => {
       name: 'net.cyoda.saas.model.TrinoSchemaDefinitionEntity',
       value: 'net.cyoda.saas.model.TrinoSchemaDefinitionEntity',
       label: 'TrinoSchemaDefinitionEntity',
+      type: 'BUSINESS',
+      stateEnabled: true
+    },
+    {
+      name: 'net.cyoda.saas.model.TrinoViewDefinitionEntity',
+      value: 'net.cyoda.saas.model.TrinoViewDefinitionEntity',
+      label: 'TrinoViewDefinitionEntity',
       type: 'BUSINESS',
       stateEnabled: true
     }

@@ -302,6 +302,11 @@ export const useStatemachineStore = create<StatemachineState>()(
       },
       
       postProcesses: async (persistedType, form) => {
+        console.log('🌐 API Call - POST processes:', {
+          url: `/platform-api/statemachine/${persistedType}/processes`,
+          payload: form
+        });
+        console.log('📦 Payload JSON:', JSON.stringify(form, null, 2));
         return axios.post(`/platform-api/statemachine/${persistedType}/processes`, form);
       },
       

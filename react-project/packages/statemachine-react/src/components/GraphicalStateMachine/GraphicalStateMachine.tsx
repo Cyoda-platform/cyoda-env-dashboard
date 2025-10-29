@@ -244,9 +244,16 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
 
       // Reposition source element to transition edge target endpoint
       const repositionProcesses = () => {
-        const tEdge = cy.getElementById(transition.id);
-        if (tEdge && tEdge.length > 0 && tEdge.targetEndpoint) {
-          sourceEle.position(tEdge.targetEndpoint());
+        try {
+          const tEdge = cy.getElementById(transition.id);
+          if (tEdge && tEdge.length > 0 && tEdge.targetEndpoint) {
+            const endpoint = tEdge.targetEndpoint();
+            if (endpoint) {
+              sourceEle.position(endpoint);
+            }
+          }
+        } catch (error) {
+          // Silently ignore errors during process repositioning
         }
       };
 
@@ -299,19 +306,48 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
 
       // Position criteria at edge midpoint
       setTimeout(() => {
-        const e = cy.getElementById(transition.id);
-        if (e && e.length > 0) {
-          const p = e.midpoint();
-          criteriaCompoundEle.position(p);
+        try {
+          const e = cy.getElementById(transition.id);
+          if (e && e.length > 0 && e.midpoint) {
+            const p = e.midpoint();
+            if (p) {
+              criteriaCompoundEle.position(p);
+            }
+          }
+        } catch (error) {
+          // Silently ignore errors during criteria positioning
+          console.warn('Error positioning criteria:', error);
         }
       }, 0);
 
       // Attach position event handlers to reposition criteria when nodes move
-      const repositionCriteria = () => {
-        const e = cy.getElementById(transition.id);
-        if (e && e.length > 0) {
-          const p = e.midpoint();
-          criteriaCompoundEle.position(p);
+      const repositionCriteria = (e: any) => {
+        try {
+          if (!e || !e.target) return;
+          const edges = e.target.connectedEdges();
+          if (!edges) return;
+
+          edges.forEach((edge: any) => {
+            try {
+              if (!edge || !edge.data) return;
+              const criteriaId = edge.data('compoundCriteria');
+              if (!criteriaId) return;
+
+              const compoundEle = cy.getElementById(criteriaId);
+              if (!compoundEle || compoundEle.length === 0) return;
+
+              if (edge.midpoint && typeof edge.midpoint === 'function') {
+                const position = edge.midpoint();
+                if (position) {
+                  compoundEle.position(position);
+                }
+              }
+            } catch (innerError) {
+              // Silently ignore errors for individual edges
+            }
+          });
+        } catch (error) {
+          // Silently ignore errors during criteria repositioning
         }
       };
       startStateEle.on('position', repositionCriteria);
@@ -402,17 +438,60 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
 
     const cy = cyRef.current;
     const layout = cy.layout(coreLayout('breadthfirst'));
+
+    // Listen for layout stop to reposition criteria and processes
+    cy.one('layoutstop', () => {
+      // Reposition all criteria boxes to edge midpoints
+      cy.edges().forEach((edge: any) => {
+        try {
+          const criteriaId = edge.data('compoundCriteria');
+          if (criteriaId) {
+            const compoundEle = cy.getElementById(criteriaId);
+            if (compoundEle && compoundEle.length > 0 && edge.midpoint && typeof edge.midpoint === 'function') {
+              const position = edge.midpoint();
+              if (position) {
+                compoundEle.position(position);
+              }
+            }
+          }
+        } catch (error) {
+          // Silently ignore errors
+        }
+      });
+
+      // Reposition all process boxes to edge target endpoints
+      cy.edges().forEach((edge: any) => {
+        try {
+          const processesId = edge.data('compoundProcesses');
+          if (processesId) {
+            const compoundEle = cy.getElementById(processesId);
+            if (compoundEle && compoundEle.length > 0 && edge.targetEndpoint && typeof edge.targetEndpoint === 'function') {
+              const endpoint = edge.targetEndpoint();
+              if (endpoint) {
+                const sourceEle = compoundEle.children('[id$="-source"]');
+                if (sourceEle && sourceEle.length > 0) {
+                  sourceEle.position(endpoint);
+                }
+              }
+            }
+          }
+        } catch (error) {
+          // Silently ignore errors
+        }
+      });
+
+      cy.fit();
+      // Apply offset to avoid transitions table
+      const currentPan = cy.pan();
+      cy.pan({ x: currentPan.x + 250, y: currentPan.y });
+    });
+
     layout.run();
 
     if (isSaveState) {
       const eles = cy.nodes();
       setPositions(eles);
     }
-
-    cy.fit();
-    // Apply offset to avoid transitions table
-    const currentPan = cy.pan();
-    cy.pan({ x: currentPan.x + 250, y: currentPan.y });
   }, [setPositions]);
 
   // Zoom controls

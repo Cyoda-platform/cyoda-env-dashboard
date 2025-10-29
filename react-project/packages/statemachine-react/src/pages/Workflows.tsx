@@ -28,6 +28,24 @@ import { useGlobalUiSettingsStore } from '@cyoda/http-api-react';
 import { getPersistedType } from '../utils/helpers';
 import type { Workflow, WorkflowTableRow } from '../types';
 
+/**
+ * Extract timestamp from UUID v1
+ * Migrated from: .old_project/packages/cyoda-ui-lib/src/helpers/HelperFormat.ts
+ */
+function getTimeFromUuid(uuid: string): number {
+  try {
+    const uuid_arr = uuid.split('-');
+    if (uuid_arr.length !== 5) return Date.now();
+
+    const time_str = [uuid_arr[2].substring(1), uuid_arr[1], uuid_arr[0]].join('');
+    const int_time = parseInt(time_str, 16) - 122192928000000000;
+
+    return Math.floor(int_time / 10000);
+  } catch (error) {
+    return Date.now();
+  }
+}
+
 export const Workflows: React.FC = () => {
   const { modal, message } = App.useApp();
   const navigate = useNavigate();
@@ -213,8 +231,41 @@ export const Workflows: React.FC = () => {
       dataIndex: 'creationDate',
       key: 'creationDate',
       width: 200,
-      render: (date: number) => new Date(date).toLocaleString(),
-      sorter: (a, b) => a.creationDate - b.creationDate,
+      render: (date: string | number, record: WorkflowTableRow) => {
+        let dateObj: Date;
+
+        if (date) {
+          dateObj = new Date(date);
+          if (isNaN(dateObj.getTime())) {
+            // If date is invalid, try to extract from UUID
+            dateObj = new Date(getTimeFromUuid(record.id));
+          }
+        } else {
+          // No creationDate - extract from UUID as fallback
+          dateObj = new Date(getTimeFromUuid(record.id));
+        }
+
+        if (isNaN(dateObj.getTime())) return '-';
+
+        // Format as DD.MM.YYYY HH:mm:ss to match Vue version
+        const day = String(dateObj.getDate()).padStart(2, '0');
+        const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const year = dateObj.getFullYear();
+        const hours = String(dateObj.getHours()).padStart(2, '0');
+        const minutes = String(dateObj.getMinutes()).padStart(2, '0');
+        const seconds = String(dateObj.getSeconds()).padStart(2, '0');
+        return `${day}.${month}.${year} ${hours}:${minutes}:${seconds}`;
+      },
+      sorter: (a, b) => {
+        const getTimestamp = (workflow: WorkflowTableRow) => {
+          if (workflow.creationDate) {
+            const time = new Date(workflow.creationDate).getTime();
+            if (!isNaN(time)) return time;
+          }
+          return getTimeFromUuid(workflow.id);
+        };
+        return getTimestamp(a) - getTimestamp(b);
+      },
       defaultSortOrder: 'descend',
     },
     {

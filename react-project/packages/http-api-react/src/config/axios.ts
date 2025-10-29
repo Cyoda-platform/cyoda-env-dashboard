@@ -123,6 +123,35 @@ export const axiosPublic: AxiosInstance = axios.create({
 });
 
 /**
+ * Platform API axios instance (for /platform-api endpoints)
+ * No baseURL prefix - allows full paths like /platform-api/...
+ */
+export const axiosPlatform: AxiosInstance = axios.create({
+  headers: {
+    'X-Requested-With': 'XMLHttpRequest',
+  },
+});
+
+axiosPlatform.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+  const auth = helperStorage.get('auth');
+  const token = auth?.token;
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return config;
+});
+
+axiosPlatform.interceptors.response.use(
+  (response: AxiosResponse) => response,
+  (error: AxiosError) => {
+    HelperErrors.handler(error);
+    return Promise.reject(error);
+  }
+);
+
+/**
  * Processing API axios instance
  */
 export const axiosProcessing: AxiosInstance = axios.create({
