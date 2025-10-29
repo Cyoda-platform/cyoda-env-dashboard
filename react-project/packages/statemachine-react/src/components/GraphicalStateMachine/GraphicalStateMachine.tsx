@@ -7,7 +7,7 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import cytoscape, { Core } from 'cytoscape';
 import { Button, Space, Card, Table } from 'antd';
-import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
+import { EyeOutlined, EyeInvisibleOutlined, PlusOutlined } from '@ant-design/icons';
 import {
   FullscreenOutlined,
   FullscreenExitOutlined,
@@ -43,6 +43,7 @@ export interface GraphicalStateMachineProps {
   minHeight?: string;
   onUpdatePositionsMap?: (positionsMap: PositionsMap) => void;
   onSelectElement?: (element: { type: string; id: string; title: string; persisted: boolean }) => void;
+  onAddTransition?: () => void;
 }
 
 export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
@@ -56,6 +57,7 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
   minHeight = '100vh',
   onUpdatePositionsMap,
   onSelectElement,
+  onAddTransition,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -125,12 +127,14 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
         name: 'breadthfirst',
         directed: true,
         nodeDimensionsIncludeLabels: true,
-        padding: 50,
+        padding: 100, // Increased padding for more spacing
+        spacingFactor: 1.5, // Extra spacing between nodes
         fit: true,
-        avoidOverlap: true,
+        avoidOverlap: true, // Prevent nodes from overlapping
+        avoidOverlapPadding: 50, // Minimum distance between nodes
       },
       zoom: 1,
-      pan: { x: 0, y: 0 },
+      pan: { x: 250, y: 0 }, // Offset diagram to the right to avoid transitions table
       minZoom: 0.1,
       maxZoom: 4,
     });
@@ -143,7 +147,10 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
     // Listen for layout stop event to fit the graph
     cy.one('layoutstop', () => {
       setTimeout(() => {
-        cy.fit(undefined, 50);
+        cy.fit(50);
+        // Apply offset to avoid transitions table
+        const currentPan = cy.pan();
+        cy.pan({ x: currentPan.x + 250, y: currentPan.y });
       }, 50);
     });
 
@@ -188,7 +195,10 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
     } else {
       // If we have saved positions, fit immediately since layout is preset
       setTimeout(() => {
-        cy.fit(undefined, 50);
+        cy.fit(50);
+        // Apply offset to avoid transitions table
+        const currentPan = cy.pan();
+        cy.pan({ x: currentPan.x + 250, y: currentPan.y });
       }, 100);
     }
   }, [activeTransitions, positionsMap, currentState, isInitialized, processes, criteria, showTitles, showEdgesTitles, showProcesses, showCriteria, isReadonly]);
@@ -233,12 +243,18 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
       }
 
       // Reposition source element to transition edge target endpoint
-      setTimeout(() => {
+      const repositionProcesses = () => {
         const tEdge = cy.getElementById(transition.id);
-        if (tEdge && tEdge.targetEndpoint) {
+        if (tEdge && tEdge.length > 0 && tEdge.targetEndpoint) {
           sourceEle.position(tEdge.targetEndpoint());
         }
-      }, 0);
+      };
+
+      setTimeout(repositionProcesses, 0);
+
+      // Attach position event handlers to reposition processes when nodes move
+      startStateEle.on('position', repositionProcesses);
+      endStateEle.on('position', repositionProcesses);
 
       // Apply hidden class if processes are not shown
       if (!showProcesses) {
@@ -284,9 +300,22 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
       // Position criteria at edge midpoint
       setTimeout(() => {
         const e = cy.getElementById(transition.id);
-        const p = e.midpoint();
-        criteriaCompoundEle.position(p);
+        if (e && e.length > 0) {
+          const p = e.midpoint();
+          criteriaCompoundEle.position(p);
+        }
       }, 0);
+
+      // Attach position event handlers to reposition criteria when nodes move
+      const repositionCriteria = () => {
+        const e = cy.getElementById(transition.id);
+        if (e && e.length > 0) {
+          const p = e.midpoint();
+          criteriaCompoundEle.position(p);
+        }
+      };
+      startStateEle.on('position', repositionCriteria);
+      endStateEle.on('position', repositionCriteria);
 
       // Apply hidden class if criteria are not shown
       if (!showCriteria) {
@@ -326,9 +355,37 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
   }, [isReadonly, onSelectElement]);
 
   // Handle drag end
-  const onDragFree = useCallback(() => {
+  const onDragFree = useCallback((event: any) => {
     if (!cyRef.current) return;
-    const eles = cyRef.current.nodes();
+
+    const cy = cyRef.current;
+    const draggedNode = event.target;
+
+    // Check for overlaps and adjust position if needed
+    const MIN_DISTANCE = 100; // Minimum distance between node centers
+    let hasOverlap = false;
+
+    cy.nodes().forEach((otherNode: any) => {
+      if (otherNode.id() === draggedNode.id()) return;
+
+      const draggedPos = draggedNode.position();
+      const otherPos = otherNode.position();
+
+      const dx = draggedPos.x - otherPos.x;
+      const dy = draggedPos.y - otherPos.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      if (distance < MIN_DISTANCE) {
+        hasOverlap = true;
+        // Push the dragged node away from the overlapping node
+        const angle = Math.atan2(dy, dx);
+        const newX = otherPos.x + Math.cos(angle) * MIN_DISTANCE;
+        const newY = otherPos.y + Math.sin(angle) * MIN_DISTANCE;
+        draggedNode.position({ x: newX, y: newY });
+      }
+    });
+
+    const eles = cy.nodes();
     setPositions(eles);
   }, [setPositions]);
 
@@ -353,6 +410,9 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
     }
 
     cy.fit();
+    // Apply offset to avoid transitions table
+    const currentPan = cy.pan();
+    cy.pan({ x: currentPan.x + 250, y: currentPan.y });
   }, [setPositions]);
 
   // Zoom controls
@@ -369,6 +429,9 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
   const fitGraph = useCallback(() => {
     if (!cyRef.current) return;
     cyRef.current.fit();
+    // Apply offset to avoid transitions table
+    const currentPan = cyRef.current.pan();
+    cyRef.current.pan({ x: currentPan.x + 250, y: currentPan.y });
   }, []);
 
   // Pan controls
@@ -475,7 +538,7 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
       if (cyRef.current) {
         setTimeout(() => {
           cyRef.current?.resize();
-          cyRef.current?.fit(undefined, 50);
+          cyRef.current?.fit(50);
         }, 100);
       }
     };
@@ -611,6 +674,14 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
           {/* Map Controls */}
           <div className="map-controls">
             <Space direction="vertical">
+              {!isReadonly && onAddTransition && (
+                <Button
+                  icon={<PlusOutlined />}
+                  onClick={onAddTransition}
+                  title="Add transition"
+                  style={{ borderColor: '#14b8a6', color: '#14b8a6' }}
+                />
+              )}
               <Button
                 icon={<AimOutlined />}
                 onClick={fitGraph}
@@ -664,16 +735,13 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
 
           {/* Legend */}
           <div className="map-legend">
-            <Card size="small" title="Legend">
-              <Space direction="vertical" size="small">
-                <div><span className="legend-circle state" /> State</div>
-                <div><span className="legend-circle current-state" /> Current State</div>
-                <div><span className="legend-diamond" /> Criteria</div>
-                <div><span className="legend-heptagon" /> Process</div>
-                <div><span className="legend-line automated" /> Automated Transition</div>
-                <div><span className="legend-line manual" /> Manual Transition</div>
-              </Space>
-            </Card>
+            <Space size="large">
+              <div><span className="legend-circle state" /> State</div>
+              <div><span className="legend-line automated" /> Automated Transition</div>
+              <div><span className="legend-line manual" /> Manual Transition</div>
+              <div><span className="legend-line criteria" /> Transition with Criteria</div>
+              <div><span className="legend-line process" /> Process</div>
+            </Space>
           </div>
         </div>
       </div>

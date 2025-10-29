@@ -39,7 +39,14 @@ export const WorkflowDetail: React.FC = () => {
 
   // Graphical state machine store
   const { positionsMap, updatePositionsMap } = useGraphicalStatemachineStore();
-  
+
+  // Handler for adding new transition from graphical view
+  const handleAddTransition = () => {
+    navigate(
+      `/transition/new?workflowId=${workflowId}&persistedType=${persistedType}&entityClassName=${entityClassName}`
+    );
+  };
+
   return (
     <div style={{ padding: '16px' }}>
       {/* Back Button */}
@@ -146,6 +153,8 @@ export const WorkflowDetail: React.FC = () => {
                   criteria={criteria}
                   positionsMap={positionsMap}
                   onUpdatePositionsMap={updatePositionsMap}
+                  onAddTransition={handleAddTransition}
+                  isReadonly={persistedType === 'runtime'}
                   minHeight="600px"
                 />
               )}
