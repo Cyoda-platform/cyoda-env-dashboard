@@ -72,7 +72,7 @@ export const ModellingItem: React.FC<ModellingItemProps> = ({
   }, [reportInfoRow]);
 
   const joinItem = useMemo(() => {
-    return relatedPaths.find((el) => el.path.replace('.[*]', '') === reportInfoRow.columnName);
+    return relatedPaths.find((el) => el?.path?.replace('.[*]', '') === reportInfoRow.columnName);
   }, [relatedPaths, reportInfoRow.columnName]);
 
   const isJoinAvailable = useMemo(() => {

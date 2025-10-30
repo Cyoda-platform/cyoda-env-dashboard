@@ -31,5 +31,14 @@
       align-items: center;
     }
   }
+
+  // Remove any unwanted backgrounds from checkbox group
+  .ant-checkbox-group {
+    background: transparent !important;
+
+    .ant-checkbox-wrapper {
+      background: transparent !important;
+    }
+  }
 }
 

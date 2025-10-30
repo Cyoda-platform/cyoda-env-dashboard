@@ -63,6 +63,9 @@ export const ReportEditorStream: React.FC = () => {
     rangeOrder: 'ASC',
   });
 
+  // Keep a copy of the full report definition (with @bean, id, name, etc.)
+  const [fullReportData, setFullReportData] = useState<any>(null);
+
   const [showErrors, setShowErrors] = useState(false);
   const [showErrorsRange, setShowErrorsRange] = useState(false);
   const [indexList, setIndexList] = useState<any[]>([]);
@@ -76,7 +79,10 @@ export const ReportEditorStream: React.FC = () => {
       const url = `${API_BASE}/platform-api/stream-data/config?configId=${encodeURIComponent(id!)}`;
       console.log('Fetch URL:', url);
       const { data } = await axios.get(url);
-      console.log('Fetched stream report data:', data);
+      console.log('=== FETCHED DATA ===');
+      console.log('Full fetched data:', JSON.stringify(data, null, 2));
+      console.log('data.@bean:', data['@bean']);
+      console.log('data.streamDataDef:', data.streamDataDef);
       return data;
     },
     enabled: !!id,
@@ -91,10 +97,26 @@ export const ReportEditorStream: React.FC = () => {
 
   // Update mutation
   const updateMutation = useMutation({
-    mutationFn: async (definition: StreamReportDefinition) => {
+    mutationFn: async () => {
+      // Send the full object with updated streamDataDef (like Vue project does)
+      // Vue line 250-251: creates copy of full data and sets streamDataDef to current configDefinition
+      const saveData = JSON.parse(JSON.stringify(fullReportData));
+
+      // Remove rangeColDefs from configDefinition before sending
+      // rangeColDefs is only for UI, not part of the server model
+      const { rangeColDefs: _, ...streamDataDefToSave } = configDefinition;
+      saveData.streamDataDef = streamDataDefToSave;
+
+      console.log('=== MUTATION SAVING ===');
+      console.log('Full saveData:', JSON.stringify(saveData, null, 2));
+      console.log('saveData.streamDataDef:', JSON.stringify(saveData.streamDataDef, null, 2));
+      console.log('saveData.@bean:', saveData['@bean']);
+      console.log('saveData.id:', saveData.id);
+      console.log('saveData.name:', saveData.name);
+
       const { data } = await axios.put(
         `${API_BASE}/platform-api/stream-data/config?configId=${encodeURIComponent(id!)}`,
-        definition
+        saveData
       );
       return data;
     },
@@ -102,14 +124,46 @@ export const ReportEditorStream: React.FC = () => {
       message.success('Stream report updated successfully');
       queryClient.invalidateQueries({ queryKey: ['streamReport', id] });
     },
-    onError: () => {
+    onError: (error) => {
+      console.error('Failed to update stream report:', error);
       message.error('Failed to update stream report');
     },
   });
 
   useEffect(() => {
     if (reportData) {
-      setConfigDefinition(reportData.streamDataDef || reportData);
+      // Store the full report data (with @bean, id, name, etc.)
+      setFullReportData(reportData);
+
+      // Work with just the streamDataDef part
+      const streamDataDef = reportData.streamDataDef || reportData;
+
+      // Initialize rangeColDefs from rangeCondition if it exists (Vue lines 221-227)
+      // This is for existing reports that have been saved with a range condition
+      if (streamDataDef.rangeCondition && streamDataDef.rangeCondition.fieldName) {
+        // Only create rangeColDefs if:
+        // 1. There are already columns selected (existing report with data), OR
+        // 2. The fieldName is not the default 'creationDate' (user has customized it)
+        const hasColumns = streamDataDef.columns && streamDataDef.columns.length > 0;
+        const isNotDefaultField = streamDataDef.rangeCondition.fieldName !== 'creationDate';
+
+        if (hasColumns || isNotDefaultField) {
+          streamDataDef.rangeColDefs = [
+            {
+              fullPath: streamDataDef.rangeCondition.fieldName,
+              colType: (typeof streamDataDef.rangeCondition.value === 'object' &&
+                       streamDataDef.rangeCondition.value['@type']) || '',
+            },
+          ];
+        } else {
+          // New report with default values - don't show range column
+          streamDataDef.rangeColDefs = [];
+        }
+      } else {
+        streamDataDef.rangeColDefs = [];
+      }
+
+      setConfigDefinition(streamDataDef);
     }
   }, [reportData]);
 
@@ -172,25 +226,95 @@ export const ReportEditorStream: React.FC = () => {
   }, []);
 
   const handleRangeColDefsChange = useCallback((ranges: ColDef[]) => {
-    setConfigDefinition((prev) => ({ ...prev, rangeColDefs: ranges }));
+    setConfigDefinition((prev) => {
+      const updated = { ...prev, rangeColDefs: ranges };
+
+      // Update rangeCondition.fieldName based on the first range column
+      // This matches the Vue implementation (lines 289-296 in ConfigEditorStream.vue)
+      if (ranges && ranges.length > 0) {
+        updated.rangeCondition = {
+          ...prev.rangeCondition,
+          fieldName: ranges[0].fullPath,
+        };
+      } else {
+        // Reset to default condition if no ranges
+        updated.rangeCondition = {
+          '@bean': 'com.cyoda.core.conditions.queryable.GreaterThan',
+          fieldName: 'creationDate',
+          operation: 'GREATER_THAN',
+          value: {
+            '@type': 'java.util.Date',
+            value: new Date().toISOString(),
+          },
+        };
+      }
+
+      return updated;
+    });
   }, []);
 
   const handleBack = () => {
     navigate('/tableau/reports/stream');
   };
 
-  const handleUpdate = async () => {
-    await updateMutation.mutateAsync(configDefinition);
-  };
+  const handleUpdate = useCallback(() => {
+    setShowErrors(false);
+    setShowErrorsRange(false);
 
-  const handleUpdateAndRun = async () => {
-    await updateMutation.mutateAsync(configDefinition);
-    if (streamGridRef.current && id) {
-      // Set the definition ID and open the dialog
-      streamGridRef.current.setDefinitionId(id);
-      streamGridRef.current.setDialogVisible(true);
+    // Create a copy for validation (like Vue does at line 244)
+    const configDefinitionLocal = JSON.parse(JSON.stringify(configDefinition));
+
+    // Log the data being sent for debugging
+    console.log('=== VALIDATING STREAM REPORT ===');
+    console.log('Config definition:', configDefinitionLocal);
+
+    // Validate the configuration (Vue line 245)
+    const validate = HelperReportDefinition.validateConfigDefinition(
+      configDefinitionLocal.condition?.conditions || []
+    );
+
+    // Validate range condition has @bean (Vue line 247)
+    const validateRange = !!configDefinitionLocal.rangeCondition?.['@bean'];
+
+    if (validate && validateRange) {
+      // Mutation will use current configDefinition state (Vue line 251)
+      updateMutation.mutate();
+    } else {
+      message.error('Stream report contains errors. Please check the configuration.');
+      setShowErrors(!validate);
+      setShowErrorsRange(!validateRange);
     }
-  };
+  }, [configDefinition, updateMutation]);
+
+  const handleUpdateAndRun = useCallback(() => {
+    setShowErrors(false);
+    setShowErrorsRange(false);
+
+    // Create a copy for validation
+    const configDefinitionLocal = JSON.parse(JSON.stringify(configDefinition));
+
+    // Validate the configuration
+    const validate = HelperReportDefinition.validateConfigDefinition(
+      configDefinitionLocal.condition?.conditions || []
+    );
+
+    // Validate range condition has @bean
+    const validateRange = !!configDefinitionLocal.rangeCondition?.['@bean'];
+
+    if (validate && validateRange) {
+      // Mutation will use current configDefinition state
+      updateMutation.mutate();
+      if (streamGridRef.current && id) {
+        // Set the definition ID and open the dialog
+        streamGridRef.current.setDefinitionId(id);
+        streamGridRef.current.setDialogVisible(true);
+      }
+    } else {
+      message.error('Stream report contains errors. Please check the configuration.');
+      setShowErrors(!validate);
+      setShowErrorsRange(!validateRange);
+    }
+  }, [configDefinition, updateMutation, id]);
 
   // Fetch stream definition
   const handleFetchDefinition = async (definitionId: string) => {
