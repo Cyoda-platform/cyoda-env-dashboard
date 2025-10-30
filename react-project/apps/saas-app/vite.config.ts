@@ -31,8 +31,26 @@ export default defineConfig({
   server: {
     port: 3000,
     proxy: {
+      // Proxy all /platform-processing requests to real Cyoda backend server
+      // This must come BEFORE /api to match more specific paths first
+      '/platform-processing': {
+        target: 'https://cyoda-develop.kube.cyoda.org/api',
+        changeOrigin: true,
+        secure: false,
+        configure: (proxy, options) => {
+          proxy.on('error', (err, req, res) => {
+            console.log('Proxy error:', err.message);
+          });
+          proxy.on('proxyReq', (proxyReq, req, res) => {
+            console.log('Proxying:', req.method, req.url, '→', options.target + req.url);
+          });
+          proxy.on('proxyRes', (proxyRes, req, res) => {
+            console.log('Response:', proxyRes.statusCode, req.method, req.url);
+          });
+        },
+      },
       // Proxy all /api requests to real Cyoda backend server
-      // Change target to http://localhost:8080 for local mock backend
+      // CONNECTED TO REAL CYODA INSTANCE: cyoda-develop.kube.cyoda.org
       '/api': {
         target: 'https://cyoda-develop.kube.cyoda.org',
         changeOrigin: true,

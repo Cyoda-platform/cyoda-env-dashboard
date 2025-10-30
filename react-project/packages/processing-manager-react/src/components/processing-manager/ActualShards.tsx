@@ -50,6 +50,7 @@ export const ActualShards: React.FC<ActualShardsProps> = ({ actualShardsTable = 
           pageSizeOptions: ['5', '10', '15', '20', '50'],
           defaultPageSize: 10,
           showSizeChanger: true,
+          position: ['bottomCenter'],
         }}
       />
     </Card>

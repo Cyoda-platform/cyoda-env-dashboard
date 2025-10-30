@@ -1745,7 +1745,7 @@ app.post('/platform-api/statemachine/instances', (req, res) => {
 // Cluster stats full
 app.get('/platform-processing/pm-cluster-stats-full.do', (req, res) => {
   res.json({
-    nodes: [
+    pmNodes: [
       {
         hostname: 'processing-node-1',
         baseUrl: 'http://localhost:8081',

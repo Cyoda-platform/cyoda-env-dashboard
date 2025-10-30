@@ -4,18 +4,43 @@
  * Redesigned to integrate with saas-app layout
  */
 
-import { Card, Typography, Row, Col, Statistic } from 'antd';
-import { ClusterOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { Card, Typography, Row, Col, Statistic, Spin, Alert } from 'antd';
+import { ClusterOutlined, CheckCircleOutlined, CloseCircleOutlined, DatabaseOutlined } from '@ant-design/icons';
 import { useClusterStats } from '../hooks';
+import { useNavigate } from 'react-router-dom';
+import './Home.scss';
 
 const { Title, Paragraph } = Typography;
 
-export default function Home() {
-  const { data, isLoading } = useClusterStats();
+interface NodeData {
+  hostname: string;
+  baseUrl: string;
+  status: string;
+  version?: string;
+  uptime?: number;
+  grafana?: any;
+}
 
-  const onlineNodes = data?.pmNodes?.filter((node: any) => node.status === 'ONLINE').length || 0;
-  const offlineNodes = data?.pmNodes?.filter((node: any) => node.status === 'OFFLINE').length || 0;
+export default function Home() {
+  const { data, isLoading, error } = useClusterStats();
+  const navigate = useNavigate();
+
+  const onlineNodes = data?.pmNodes?.filter((node: any) => node.status === 'ONLINE' || node.status === 'Running').length || 0;
+  const offlineNodes = data?.pmNodes?.filter((node: any) => node.status === 'OFFLINE' || node.status === 'Stopped').length || 0;
   const totalNodes = data?.pmNodes?.length || 0;
+
+  const handleNodeClick = (hostname: string) => {
+    navigate(`/processing-ui/nodes/${hostname}`);
+  };
+
+  const nodes: NodeData[] = data?.pmNodes?.map((node: any) => ({
+    hostname: node.hostname || node.name,
+    baseUrl: node.baseUrl || '-',
+    status: node.status || 'Unknown',
+    version: node.version,
+    uptime: node.uptime,
+    grafana: node.grafana,
+  })) || [];
 
   return (
     <div style={{ padding: '24px' }}>
@@ -59,12 +84,76 @@ export default function Home() {
         </Col>
       </Row>
 
-      <Card title="Nodes (1)" style={{ marginBottom: '24px' }}>
-        <Paragraph>
-          View and manage processing nodes in your cluster. Click on a node to see detailed information,
-          metrics, and transaction history.
-        </Paragraph>
-      </Card>
+      <div style={{ marginBottom: '24px' }}>
+        <h3 style={{ fontSize: '24px', marginBottom: '16px' }}>Nodes ({totalNodes})</h3>
+
+        {isLoading && (
+          <div style={{ textAlign: 'center', padding: '50px' }}>
+            <Spin size="large" />
+          </div>
+        )}
+
+        {error && (
+          <Alert
+            message="Error"
+            description="Failed to load cluster statistics"
+            type="error"
+            showIcon
+            style={{ marginBottom: '16px' }}
+          />
+        )}
+
+        {data && nodes.length > 0 && (
+          <div className="nodes-list">
+            {nodes.map((node, index) => {
+              const isOnline = node.status === 'ONLINE' || node.status === 'Running';
+
+              // Build description with node details
+              const descriptionParts = [];
+              if (node.baseUrl && node.baseUrl !== '-') {
+                descriptionParts.push(`URL: ${node.baseUrl}`);
+              }
+              if (node.version) {
+                descriptionParts.push(`Version: ${node.version}`);
+              }
+              if (node.status) {
+                descriptionParts.push(`Status: ${node.status}`);
+              }
+
+              const description = descriptionParts.length > 0
+                ? descriptionParts.join(' • ')
+                : (node.grafana ? 'Connected to Grafana' : 'This IP is not connected to Grafana');
+
+              return (
+                <div
+                  key={index}
+                  className="node-item"
+                  onClick={() => handleNodeClick(node.hostname)}
+                >
+                  <Row align="middle" style={{ minHeight: '50px', padding: '10px 0' }}>
+                    <Col flex="none" style={{ marginRight: '16px' }}>
+                      <div className={`status-indicator ${isOnline ? 'active' : 'deactive'}`}></div>
+                    </Col>
+                    <Col flex="none" style={{ marginRight: '16px' }}>
+                      <DatabaseOutlined style={{ fontSize: '20px' }} />
+                    </Col>
+                    <Col flex="auto">
+                      <div className="node-title">{node.hostname || 'Unknown Node'}</div>
+                      <div className="node-description">{description}</div>
+                    </Col>
+                  </Row>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {data && nodes.length === 0 && !isLoading && (
+          <div style={{ textAlign: 'center', padding: '50px', color: '#999' }}>
+            No nodes available
+          </div>
+        )}
+      </div>
     </div>
   );
 }
