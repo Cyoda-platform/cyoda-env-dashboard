@@ -17,6 +17,11 @@ export interface ReportingInfoRow {
 export interface ElementInfo {
   columnPath: string;
   type: string;
+  columnName?: string;
+  declaredClass?: DeclaredClass;
+  subClasses?: SubClass[];
+  elementType?: ElementInfo;
+  elementInfo?: ElementInfo;
 }
 
 export interface DeclaredClass {

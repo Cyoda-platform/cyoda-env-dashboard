@@ -158,6 +158,21 @@ export default class HelperModelling {
         });
     }
 
+    // Handle elementType (for MAP types)
+    if (row.elementType) {
+      if ((row as any).keyInfo) {
+        const type = (row as any).keyInfo.split('.').pop();
+        types.push(type);
+      }
+      allRequestParams.push(...this.getClasses(requestClass, row.elementType, baseColumnPath, types));
+    }
+
+    // Handle elementInfo (for LIST types)
+    if (row.elementInfo) {
+      types.push('Integer');
+      allRequestParams.push(...this.getClasses(requestClass, row.elementInfo, baseColumnPath, types));
+    }
+
     return allRequestParams;
   }
 
