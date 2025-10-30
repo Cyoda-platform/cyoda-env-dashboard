@@ -147,6 +147,7 @@ export const ProcessingEventsErrorViewTable: React.FC<ProcessingEventsErrorViewT
         pageSizeOptions: ['5', '10', '15', '20', '50'],
         defaultPageSize: 10,
         showSizeChanger: true,
+        position: ['bottomCenter'],
       }}
     />
   );

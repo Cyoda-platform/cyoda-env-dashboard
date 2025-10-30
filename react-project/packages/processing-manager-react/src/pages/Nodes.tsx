@@ -97,6 +97,7 @@ export default function Nodes() {
               pageSize: 10,
               showSizeChanger: true,
               showTotal: (total) => `Total ${total} nodes`,
+              position: ['bottomCenter'],
             }}
           />
         )}
