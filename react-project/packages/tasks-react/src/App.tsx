@@ -15,29 +15,9 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import './App.css';
 import './styles/accessibility.css';
 
-// Development mode - bypass authentication
-const DEV_MODE = import.meta.env.DEV;
-
-// Set up mock authentication in development mode
-if (DEV_MODE) {
-  const mockAuth = {
-    token: 'mock-token-for-testing',
-    username: 'test@example.com',
-    refreshToken: 'mock-refresh-token',
-  };
-  localStorage.setItem('cyoda_auth', JSON.stringify(mockAuth));
-  console.log('🔓 Development Mode: Mock authentication enabled');
-  console.log('👤 Logged in as:', mockAuth.username);
-}
-
 // Protected Route wrapper
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated } = useAuth();
-
-  // In development mode, always allow access
-  if (DEV_MODE) {
-    return <>{children}</>;
-  }
 
   if (!isAuthenticated) {
     return <Navigate to="/tasks/login" replace />;
@@ -65,7 +45,7 @@ const RouteWithLayout: React.FC<{
 const AppContent: React.FC = () => {
   const location = useLocation();
   const queryClient = useQueryClient();
-  const { token } = useAuth();
+  const { getToken } = useAuth();
   const { isApplyRealData, getAllTasks } = useTasksStore();
 
   // Get current task ID from route
@@ -78,6 +58,9 @@ const AppContent: React.FC = () => {
     // Invalidate tasks queries to trigger refetch
     queryClient.invalidateQueries({ queryKey: ['tasks'] });
   };
+
+  // Get token value
+  const token = getToken();
 
   return (
     <div id="app">
@@ -116,7 +99,7 @@ function App() {
   return (
     <ErrorBoundary>
       <ErrorHandlerProvider>
-        <QueryProvider showDevtools={import.meta.env.DEV}>
+        <QueryProvider showDevtools={false}>
           <BrowserRouter>
             <AppContent />
           </BrowserRouter>
