@@ -7,7 +7,7 @@
  */
 
 import React, { useState, useMemo, useRef } from 'react';
-import { Table, Button, Space, message, Modal, Divider } from 'antd';
+import { Table, Button, Space, App, Modal, Divider } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, ExportOutlined, ImportOutlined } from '@ant-design/icons';
 import type { TableColumnsType } from 'antd';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -41,6 +41,7 @@ interface FilterForm {
 }
 
 const CatalogueOfAliases: React.FC = () => {
+  const { message } = App.useApp();
   const queryClient = useQueryClient();
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [filterForm, setFilterForm] = useState<FilterForm>({});

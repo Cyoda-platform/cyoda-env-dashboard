@@ -774,7 +774,7 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
           <Table
             columns={pathColumns}
             dataSource={aliasForm.aliasPaths}
-            rowKey={(record, index) => `${record.colDef.fullPath}-${index}`}
+            rowKey={(record) => record.colDef.fullPath}
             pagination={false}
             scroll={{ x: 'max-content' }}
           />
