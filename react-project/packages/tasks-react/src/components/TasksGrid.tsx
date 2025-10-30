@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { HelperDictionary, HelperFormat } from '@cyoda/ui-lib-react';
 import { useTasksPerPage, useTasksState } from '../hooks/useTasks';
 import { BulkUpdateForm } from './BulkUpdateForm';
+import { TasksNotifications, taskEventBus, type TaskEvent } from './TasksNotifications';
 import type { Task, TaskFilterType, TableRow } from '../types';
 import type { ColumnsType } from 'antd/es/table';
 
@@ -62,6 +63,7 @@ export const TasksGrid: React.FC<TasksGridProps> = memo(({ filter, isApplyRealDa
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const [localTasks, setLocalTasks] = useState<Task[]>([]);
 
   // Build query params
   const params = useMemo(() => {
@@ -80,11 +82,67 @@ export const TasksGrid: React.FC<TasksGridProps> = memo(({ filter, isApplyRealDa
   // Fetch tasks
   const { data, isLoading, refetch } = useTasksPerPage(params);
 
+  // Update local tasks when data changes
+  useEffect(() => {
+    if (data?.content) {
+      setLocalTasks(data.content);
+    }
+  }, [data]);
+
+  // Handle real-time task updates (matching Vue implementation)
+  useEffect(() => {
+    if (!isApplyRealData) return;
+
+    const handleTaskUpdate = (taskEvent: TaskEvent) => {
+      const updatedTask = taskEvent.alertTask;
+
+      setLocalTasks((prevTasks) => {
+        // Check if task matches current filters (matching Vue logic)
+        let shouldInclude = true;
+
+        if (filter.status_id !== '' && filter.status_id !== updatedTask.state) {
+          shouldInclude = false;
+        }
+        if (filter.assignee_id !== '' && filter.assignee_id !== updatedTask.assignee) {
+          shouldInclude = false;
+        }
+        if (filter.priority_id !== '' && filter.priority_id !== String(updatedTask.priority)) {
+          shouldInclude = false;
+        }
+
+        if (!shouldInclude) {
+          return prevTasks;
+        }
+
+        // Find existing task
+        const existingIndex = prevTasks.findIndex(t => t.id === updatedTask.id);
+
+        if (existingIndex !== -1) {
+          // Update existing task
+          const newTasks = [...prevTasks];
+          newTasks[existingIndex] = updatedTask;
+          return newTasks;
+        } else {
+          // Add new task at the beginning
+          const newTasks = [updatedTask, ...prevTasks];
+          // Keep only pageSize tasks
+          if (newTasks.length > pageSize) {
+            newTasks.pop();
+          }
+          return newTasks;
+        }
+      });
+    };
+
+    taskEventBus.on(handleTaskUpdate);
+    return () => taskEventBus.off(handleTaskUpdate);
+  }, [isApplyRealData, filter, pageSize]);
+
   // Transform tasks to table rows
   const tableData: TableRow[] = useMemo(() => {
-    if (!data?.content) return [];
-    
-    return data.content.map((task: Task): TableRow => ({
+    if (localTasks.length === 0) return [];
+
+    return localTasks.map((task: Task): TableRow => ({
       id: task.id,
       title: task.title,
       state: HelperFormat.toLowerCase(task.state),
@@ -96,7 +154,7 @@ export const TasksGrid: React.FC<TasksGridProps> = memo(({ filter, isApplyRealDa
       agent_event: task.message,
       task,
     }));
-  }, [data]);
+  }, [localTasks]);
 
   // Handle view task - memoized to prevent re-creating on every render
   const handleView = useCallback((row: TableRow) => {
@@ -181,6 +239,7 @@ export const TasksGrid: React.FC<TasksGridProps> = memo(({ filter, isApplyRealDa
 
   return (
     <div className="tasks-grid" role="region" aria-label="Tasks management">
+      <TasksNotifications />
       <div>
         <h2 id="tasks-heading">Tasks</h2>
       </div>
