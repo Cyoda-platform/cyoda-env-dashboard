@@ -5,7 +5,6 @@
 
 import React from 'react';
 import { Card, Progress } from 'antd';
-import _ from 'lodash';
 import './Resources.scss';
 
 interface ResourceInfo {
@@ -18,6 +17,29 @@ interface ResourceInfo {
 interface ResourcesProps {
   poolInfo: ResourceInfo[];
 }
+
+/**
+ * Format resource name from uppercase to title case
+ * Examples:
+ * - "MAIN-DEFAULT" -> "Main-Default"
+ * - "TRANSACTION_EXEC_SEQ" -> "Transaction Exec Seq"
+ * - "SYSTEM" -> "System"
+ */
+const formatResourceName = (str: string): string => {
+  // Replace underscores with spaces, preserve hyphens
+  return str
+    .toLowerCase()
+    .replace(/_/g, ' ')
+    .split(/(\s+|-)/) // Split by spaces or hyphens but keep the separators
+    .map(part => {
+      // Only capitalize words, not separators
+      if (part.trim() && part !== '-') {
+        return part.charAt(0).toUpperCase() + part.slice(1);
+      }
+      return part;
+    })
+    .join('');
+};
 
 export const Resources: React.FC<ResourcesProps> = ({ poolInfo = [] }) => {
   const getUsed = (resource: ResourceInfo) => {
@@ -47,7 +69,7 @@ export const Resources: React.FC<ResourcesProps> = ({ poolInfo = [] }) => {
     <Card title="Resources">
       {poolInfo.map((resource) => (
         <div key={resource.type} className="progress-container">
-          <div className="title">{_.capitalize(resource.type)}</div>
+          <div className="title">{formatResourceName(resource.type)}</div>
           <Progress
             percent={getPercentage(resource)}
             status={getStatus(resource)}

@@ -43,6 +43,7 @@ export const LeftSideMenu: React.FC<LeftSideMenuProps> = ({ collapsed, onCollaps
       content: 'Do you really want to logout?',
       okText: 'Logout',
       cancelText: 'Logout and Clear Data',
+      closable: true,
       onOk: () => {
         // Logout without clearing data
         helperStorage.remove('auth');

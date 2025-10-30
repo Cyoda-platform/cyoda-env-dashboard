@@ -152,6 +152,7 @@ export default function TransactionMembersTable({ transactionId }: TransactionMe
           total: filteredData?.length || 0,
           showSizeChanger: true,
           showTotal: (total) => `Total ${total} members`,
+          position: ['bottomCenter'],
         }}
         onChange={handleTableChange}
         scroll={{ x: 800 }}

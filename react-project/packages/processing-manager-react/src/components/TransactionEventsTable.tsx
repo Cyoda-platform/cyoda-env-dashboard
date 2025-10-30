@@ -137,6 +137,7 @@ export default function TransactionEventsTable({ transactionId }: TransactionEve
           pageSize: 10,
           showSizeChanger: true,
           showTotal: (total) => `Total ${total} events`,
+          position: ['bottomCenter'],
         }}
         scroll={{ x: 800 }}
       />

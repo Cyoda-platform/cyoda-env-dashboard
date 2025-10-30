@@ -214,6 +214,7 @@ export default function TransitionChanges() {
                 pageSize: 20,
                 showSizeChanger: true,
                 showTotal: (total) => `Total ${total} changes`,
+                position: ['bottomCenter'],
               }}
               scroll={{ x: 1000 }}
             />

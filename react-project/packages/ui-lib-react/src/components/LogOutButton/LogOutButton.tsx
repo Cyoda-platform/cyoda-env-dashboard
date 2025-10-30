@@ -38,6 +38,7 @@ export const LogOutButton: React.FC<LogOutButtonProps> = ({
       content: confirmMessage,
       okText: confirmButtonText,
       cancelText: cancelButtonText,
+      closable: true,
       onOk: async () => {
         // Logout without clearing data
         await onLogout?.(false)

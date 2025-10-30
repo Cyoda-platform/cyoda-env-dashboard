@@ -178,6 +178,7 @@ export default function TransitionVersions() {
                 pageSize: 20,
                 showSizeChanger: true,
                 showTotal: (total) => `Total ${total} versions`,
+                position: ['bottomCenter'],
               }}
               scroll={{ x: 900 }}
             />

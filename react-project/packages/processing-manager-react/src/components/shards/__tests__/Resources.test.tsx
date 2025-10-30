@@ -32,9 +32,9 @@ describe('Resources', () => {
     expect(progressBars.length).toBe(3);
   });
 
-  it('should capitalize resource type names', () => {
+  it('should format resource type names to title case', () => {
     render(<Resources poolInfo={mockPoolInfo} />);
-    
+
     expect(screen.getByText('Cpu')).toBeInTheDocument();
     expect(screen.getByText('Memory')).toBeInTheDocument();
     expect(screen.getByText('Disk')).toBeInTheDocument();
@@ -139,11 +139,25 @@ describe('Resources', () => {
     expect(screen.getByText('50/100')).toBeInTheDocument();
   });
 
-  it('should capitalize first letter only', () => {
+  it('should format camelCase names correctly', () => {
     const resource = [{ type: 'networkBandwidth', available: 5, poolSize: 10, size: 10 }];
     render(<Resources poolInfo={resource} />);
-    
-    expect(screen.getByText('NetworkBandwidth')).toBeInTheDocument();
+
+    expect(screen.getByText('Networkbandwidth')).toBeInTheDocument();
+  });
+
+  it('should format uppercase names with underscores', () => {
+    const resource = [{ type: 'TRANSACTION_EXEC_SEQ', available: 5, poolSize: 10, size: 10 }];
+    render(<Resources poolInfo={resource} />);
+
+    expect(screen.getByText('Transaction Exec Seq')).toBeInTheDocument();
+  });
+
+  it('should format uppercase names with hyphens', () => {
+    const resource = [{ type: 'MAIN-DEFAULT', available: 5, poolSize: 10, size: 10 }];
+    render(<Resources poolInfo={resource} />);
+
+    expect(screen.getByText('Main-Default')).toBeInTheDocument();
   });
 });
 

@@ -297,14 +297,16 @@ export const ProcessingEventsView: React.FC = () => {
               </Form.Item>
             </Col>
             <Col span={6}>
-              <Button
-                className="reset-button"
-                disabled={isDisableFilter}
-                onClick={resetFilter}
-                icon={<SyncOutlined />}
-              >
-                Reset Filter
-              </Button>
+              <Form.Item label=" ">
+                <Button
+                  className="reset-button"
+                  disabled={isDisableFilter}
+                  onClick={resetFilter}
+                  icon={<SyncOutlined />}
+                >
+                  Reset Filter
+                </Button>
+              </Form.Item>
             </Col>
           </Row>
         </Form>
