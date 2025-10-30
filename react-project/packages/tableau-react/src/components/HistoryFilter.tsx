@@ -195,13 +195,13 @@ const HistoryFilter: React.FC<HistoryFilterProps> = ({
         onValuesChange={handleValuesChange}
       >
         <Row gutter={20}>
-          <Col span={12}>
+          <Col span={8}>
             <Form.Item label="Author or Group:" name="authors">
               <Select
                 mode="multiple"
                 allowClear
                 showSearch
-                placeholder="Select authors"
+                placeholder="Select"
                 filterOption={(input, option) =>
                   (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                 }
@@ -209,35 +209,21 @@ const HistoryFilter: React.FC<HistoryFilterProps> = ({
               />
             </Form.Item>
           </Col>
-          <Col span={12}>
-            <Form.Item label="Filter by state:" name="states">
+          <Col span={8}>
+            <Form.Item label="Entity:" name="entities">
               <Select
                 mode="multiple"
                 allowClear
                 showSearch
-                placeholder="Select states"
+                placeholder="Select"
                 filterOption={(input, option) =>
                   (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                 }
-                options={stateOptions}
+                options={entityOptions}
               />
             </Form.Item>
           </Col>
-          <Col span={12}>
-            <Form.Item label="Types:" name="types">
-              <Select
-                mode="multiple"
-                allowClear
-                showSearch
-                placeholder="Select types"
-                filterOption={(input, option) =>
-                  (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                }
-                options={reportTypes}
-              />
-            </Form.Item>
-          </Col>
-          <Col span={12}>
+          <Col span={8}>
             <Form.Item label="By date and time:" name="time_custom">
               <DatePicker
                 showTime
@@ -252,22 +238,6 @@ const HistoryFilter: React.FC<HistoryFilterProps> = ({
               />
             </Form.Item>
           </Col>
-          {entityOptions.length > 0 && (
-            <Col span={24}>
-              <Form.Item label="Entity:" name="entities">
-                <Select
-                  mode="multiple"
-                  allowClear
-                  showSearch
-                  placeholder="Select entity types"
-                  filterOption={(input, option) =>
-                    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                  }
-                  options={entityOptions}
-                />
-              </Form.Item>
-            </Col>
-          )}
           <Col span={24}>
             <Form.Item label="Search:" name="search">
               <Input

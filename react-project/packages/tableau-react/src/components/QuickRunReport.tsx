@@ -157,7 +157,7 @@ const QuickRunReport: React.FC<QuickRunReportProps> = ({
             onCancelReport(isRunningReport.reportId);
           } else {
             // Default implementation
-            await axios.post(`/platform-api/reporting/report/${isRunningReport.reportId}/cancel`);
+            await axios.post(`/platform-api/reporting/report/${encodeURIComponent(isRunningReport.reportId)}/cancel`);
             message.success('Report cancelled');
             queryClient.invalidateQueries({ queryKey: ['reports', 'history'] });
           }

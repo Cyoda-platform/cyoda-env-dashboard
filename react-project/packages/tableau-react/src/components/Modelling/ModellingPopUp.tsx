@@ -149,10 +149,9 @@ export const ModellingPopUp = forwardRef<ModellingPopUpRef, ModellingPopUpProps>
                 const checkbox = document.querySelector(`input[type="checkbox"][value="${fullPath}"]`);
                 const colType = checkbox?.getAttribute('data-col-type') || 'LEAF';
 
+                // ColDef should NOT have @bean property - it's not a bean, just a data structure
                 return {
-                  '@bean': 'com.cyoda.core.reporting.model.ColDef',
                   fullPath,
-                  alias: fullPath,
                   colType,
                 } as ColDef;
               });

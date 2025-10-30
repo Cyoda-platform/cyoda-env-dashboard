@@ -114,17 +114,23 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
 
         const defs = data._embedded?.gridConfigFieldsViews || [];
 
-        // Load user information
+        // Load user information (optional - gracefully handle if endpoint doesn't exist)
         const userIds = defs.map((el: any) => el.gridConfigFields.userId).filter(Boolean);
         const uniqueUserIds = [...new Set(userIds)];
 
         if (uniqueUserIds.length > 0) {
-          const { data: users } = await axios.post('/platform-api/users/list', uniqueUserIds);
+          try {
+            const { data: users } = await axios.post('/platform-api/users/get-by-ids', uniqueUserIds);
 
-          return defs.map((el: any) => {
-            el.gridConfigFields.user = users.find((user: any) => user.userId === el.gridConfigFields.userId);
-            return el;
-          });
+            return defs.map((el: any) => {
+              el.gridConfigFields.user = users.find((user: any) => user.userId === el.gridConfigFields.userId);
+              return el;
+            });
+          } catch (userError) {
+            // If user endpoint doesn't exist, just return defs without user info
+            console.warn('Failed to load user information (endpoint may not exist):', userError);
+            return defs;
+          }
         }
 
         return defs;
@@ -140,10 +146,13 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
     let data = definitions.map((report: any) => {
       const runningReport = runningReports.find((el) => el.configName === report.gridConfigFields.id);
 
+      // Extract name from ID: "CYODA-Activity-fff" -> "fff"
+      const name = report.gridConfigFields.id.split('-').slice(2).join('-');
+
       return {
         id: report.gridConfigFields.id,
         groupingVersion: runningReport?.groupingVersion,
-        name: report.gridConfigFields.name || report.gridConfigFields.id,
+        name,
         entity: report.gridConfigFields.type,
         entityClassNameLabel: report.gridConfigFields.type,
         username: report.gridConfigFields.user?.username || '',
@@ -246,12 +255,12 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
   const cloneReportMutation = useMutation({
     mutationFn: async ({ reportId, newName, newDescription }: { reportId: string; newName: string; newDescription: string }) => {
       // Load existing config
-      const { data: configData } = await axios.get(`/platform-api/reporting/definitions/${reportId}`);
+      const { data: configData } = await axios.get(`/platform-api/reporting/definitions/${encodeURIComponent(reportId)}`);
       const configDefinition = { ...configData.content, description: newDescription };
 
       // Create new config with cloned data
       const { data } = await axios.post(
-        `/platform-api/reporting/definitions/${newName}`,
+        `/platform-api/reporting/definitions/${encodeURIComponent(newName)}`,
         configDefinition
       );
       return data;
@@ -269,9 +278,10 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
   // Delete report mutation
   const deleteReportMutation = useMutation({
     mutationFn: async ({ reportId, cascade = false }: { reportId: string; cascade?: boolean }) => {
+      const encodedId = encodeURIComponent(reportId);
       const url = cascade
-        ? `/platform-api/reporting/definitions/${reportId}?cascade=true`
-        : `/platform-api/reporting/definitions/${reportId}`;
+        ? `/platform-api/reporting/definitions/${encodedId}?cascade=true`
+        : `/platform-api/reporting/definitions/${encodedId}`;
       await axios.delete(url);
     },
     onSuccess: () => {
@@ -306,7 +316,7 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
   // Cancel report mutation
   const cancelReportMutation = useMutation({
     mutationFn: async (reportId: string) => {
-      await axios.post(`/platform-api/reporting/report/${reportId}/cancel`);
+      await axios.post(`/platform-api/reporting/report/${encodeURIComponent(reportId)}/cancel`);
     },
     onSuccess: (_, reportId) => {
       message.success('Report cancelled');

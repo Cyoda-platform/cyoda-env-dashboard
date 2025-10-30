@@ -73,7 +73,7 @@ export const ReportEditorStream: React.FC = () => {
     queryKey: ['streamReport', id],
     queryFn: async () => {
       console.log('Fetching stream report definition for ID:', id);
-      const url = `${API_BASE}/platform-api/reporting/stream-definitions/${id}`;
+      const url = `${API_BASE}/platform-api/stream-data/config?configId=${encodeURIComponent(id!)}`;
       console.log('Fetch URL:', url);
       const { data } = await axios.get(url);
       console.log('Fetched stream report data:', data);
@@ -93,7 +93,7 @@ export const ReportEditorStream: React.FC = () => {
   const updateMutation = useMutation({
     mutationFn: async (definition: StreamReportDefinition) => {
       const { data } = await axios.put(
-        `${API_BASE}/platform-api/reporting/stream-definitions/${id}`,
+        `${API_BASE}/platform-api/stream-data/config?configId=${encodeURIComponent(id!)}`,
         definition
       );
       return data;
@@ -118,13 +118,19 @@ export const ReportEditorStream: React.FC = () => {
   }, [configDefinition]);
 
   const colsRange = useMemo(() => {
-    return (configDefinition.rangeColDefs || []).map((el) => ({
-      colType: 'colDef',
-      alias: el.fullPath,
-      typeShort: el.colType?.split('.').pop() || '',
-      type: el.colType,
-      '@bean': 'com.cyoda.core.reports.columns.ReportSimpleColumn',
-    }));
+    return (configDefinition.rangeColDefs || []).map((el) => {
+      // Handle colType - it might be a simple string like 'LEAF' or a Java class name
+      const colTypeStr = el.colType || '';
+      const typeShort = colTypeStr.includes('.') ? colTypeStr.split('.').pop() || '' : colTypeStr;
+
+      return {
+        colType: 'colDef',
+        alias: el.fullPath,
+        typeShort,
+        type: colTypeStr,
+        '@bean': 'com.cyoda.core.reports.columns.ReportSimpleColumn',
+      };
+    });
   }, [configDefinition.rangeColDefs]);
 
   const indexSpeed = useMemo(() => {

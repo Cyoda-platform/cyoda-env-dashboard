@@ -45,7 +45,7 @@ const ReportEditor: React.FC = () => {
   const { data: reportData, isLoading } = useQuery({
     queryKey: ['reportDefinition', id],
     queryFn: async () => {
-      const { data } = await axios.get(`/platform-api/reporting/definitions/${id}`);
+      const { data } = await axios.get(`/platform-api/reporting/definitions/${encodeURIComponent(id!)}`);
       return data;
     },
     enabled: !!id,
@@ -56,7 +56,17 @@ const ReportEditor: React.FC = () => {
     if (reportData) {
       // Handle both wrapped (reportData.content) and unwrapped responses
       const definition = reportData.content || reportData;
-      setConfigDefinition(definition);
+
+      // Log the data loaded from server for debugging
+      console.log('=== LOADED REPORT FROM SERVER ===');
+      console.log('Full definition:', definition);
+      console.log('colDefs:', definition.colDefs);
+      console.log('Sample colDef:', definition.colDefs?.[0]);
+
+      // Expand short column names to full bean names (like Vue project does)
+      const expandedDefinition = HelperReportDefinition.expandColumnNames(definition);
+
+      setConfigDefinition(expandedDefinition);
     }
   }, [reportData]);
 
@@ -75,7 +85,7 @@ const ReportEditor: React.FC = () => {
   // Update report mutation
   const updateReportMutation = useMutation({
     mutationFn: async (definition: ReportDefinition) => {
-      const { data } = await axios.put(`/platform-api/reporting/definitions/${id}`, definition);
+      const { data } = await axios.put(`/platform-api/reporting/definitions/${encodeURIComponent(id!)}`, definition);
       return data;
     },
     onSuccess: () => {
@@ -92,10 +102,10 @@ const ReportEditor: React.FC = () => {
   const runReportMutation = useMutation({
     mutationFn: async (definition: ReportDefinition) => {
       // First update the report
-      await axios.put(`/platform-api/reporting/definitions/${id}`, definition);
-      
+      await axios.put(`/platform-api/reporting/definitions/${encodeURIComponent(id!)}`, definition);
+
       // Then run it
-      const { data } = await axios.post(`/platform-api/reporting/report/${id}/run`);
+      const { data } = await axios.post(`/platform-api/reporting/report/${encodeURIComponent(id!)}/run`);
       return data;
     },
     onSuccess: (data) => {
@@ -116,7 +126,7 @@ const ReportEditor: React.FC = () => {
   const cancelReportMutation = useMutation({
     mutationFn: async () => {
       if (!runningReportId) return;
-      const { data } = await axios.post(`/platform-api/reporting/report/${runningReportId}/cancel`);
+      const { data } = await axios.post(`/platform-api/reporting/report/${encodeURIComponent(runningReportId)}/cancel`);
       return data;
     },
     onSuccess: () => {
@@ -147,12 +157,46 @@ const ReportEditor: React.FC = () => {
 
   const handleUpdate = useCallback(() => {
     setShowErrors(false);
-    updateReportMutation.mutate(configDefinition);
+
+    // Create a deep copy to avoid mutating the original
+    const copyConfigDefinition = JSON.parse(JSON.stringify(configDefinition));
+
+    // Log the data being sent for debugging
+    console.log('=== SAVING REPORT ===');
+    console.log('Full config:', copyConfigDefinition);
+    console.log('colDefs:', copyConfigDefinition.colDefs);
+    console.log('Sample colDef:', copyConfigDefinition.colDefs?.[0]);
+
+    // Validate the configuration
+    const validate = HelperReportDefinition.validateConfigDefinition(
+      copyConfigDefinition.condition?.conditions || []
+    );
+
+    if (validate) {
+      updateReportMutation.mutate(copyConfigDefinition);
+    } else {
+      message.error('Report contains errors. Please check the configuration.');
+      setShowErrors(true);
+    }
   }, [configDefinition, updateReportMutation]);
 
   const handleUpdateAndRun = useCallback(() => {
     setShowErrors(false);
-    runReportMutation.mutate(configDefinition);
+
+    // Create a deep copy to avoid mutating the original
+    const copyConfigDefinition = JSON.parse(JSON.stringify(configDefinition));
+
+    // Validate the configuration
+    const validate = HelperReportDefinition.validateConfigDefinition(
+      copyConfigDefinition.condition?.conditions || []
+    );
+
+    if (validate) {
+      runReportMutation.mutate(copyConfigDefinition);
+    } else {
+      message.error('Report contains errors. Please check the configuration.');
+      setShowErrors(true);
+    }
   }, [configDefinition, runReportMutation]);
 
   const handleCancel = useCallback(() => {

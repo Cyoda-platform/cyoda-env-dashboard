@@ -78,7 +78,7 @@ export const ReportConfigsStream: React.FC = () => {
   const { data: definitions = [], isLoading, refetch } = useQuery({
     queryKey: ['streamReportDefinitions'],
     queryFn: async () => {
-      const { data } = await axios.get(`${API_BASE}/platform-api/reporting/stream-definitions`);
+      const { data } = await axios.get(`${API_BASE}/platform-api/stream-data/config/list`);
       // Ensure we always return an array
       return Array.isArray(data) ? data : [];
     },
@@ -96,7 +96,7 @@ export const ReportConfigsStream: React.FC = () => {
   // Delete mutation
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      await axios.delete(`${API_BASE}/platform-api/reporting/stream-definitions/${id}`);
+      await axios.delete(`${API_BASE}/platform-api/stream-data/config?configId=${encodeURIComponent(id)}`);
     },
     onSuccess: () => {
       message.success('Stream report deleted successfully');
@@ -165,14 +165,13 @@ export const ReportConfigsStream: React.FC = () => {
 
   const handleCreateReport = async (values: any) => {
     try {
+      const defaultDef = HelperReportDefinition.reportStreamDefinition();
       const configDefinition = {
         name: values.name,
         description: values.description,
         streamDataDef: {
+          ...defaultDef.streamDataDef,
           requestClass: values.requestClass,
-          columns: [],
-          colDefs: [],
-          aliasDefs: [],
           condition: {
             '@bean': 'com.cyoda.core.conditions.GroupCondition',
             operator: 'OR',
@@ -187,12 +186,11 @@ export const ReportConfigsStream: React.FC = () => {
               value: moment().format('YYYY-MM-DD[T]00:00:00.SSSZ'),
             },
           },
-          rangeOrder: 'ASC',
         },
       };
 
       const { data } = await axios.post(
-        `/api/platform-api/reporting/stream-definitions`,
+        `${API_BASE}/platform-api/stream-data/config`,
         configDefinition
       );
 
@@ -229,7 +227,7 @@ export const ReportConfigsStream: React.FC = () => {
     try {
       console.log('Fetching stream definition:', definitionId);
       const { data: definition } = await axios.get(
-        `${API_BASE}/platform-api/streamdata/definitions/${definitionId}`
+        `${API_BASE}/platform-api/stream-data/config?configId=${encodeURIComponent(definitionId)}`
       );
       console.log('Fetched stream definition:', definition);
       return definition;
@@ -246,7 +244,7 @@ export const ReportConfigsStream: React.FC = () => {
       console.log('Loading stream data with request:', request);
 
       const { data: streamData } = await axios.post(
-        `/api/platform-api/streamdata/fetch`,
+        `${API_BASE}/platform-api/stream-data/get`,
         request
       );
 
@@ -286,15 +284,12 @@ export const ReportConfigsStream: React.FC = () => {
       setExportLoading(true);
       const ids = selectedRows.map((row) => row.id);
 
-      // Fetch all selected definitions
-      const definitions = await Promise.all(
-        ids.map(async (id) => {
-          const { data } = await axios.get(
-            `${API_BASE}/platform-api/reporting/stream-definitions/${id}`
-          );
-          return data;
-        })
+      // Use the export endpoint
+      const { data: exportResponse } = await axios.get(
+        `${API_BASE}/platform-api/stream-data/export-by-ids?includeIds=${ids.join(',')}`
       );
+
+      const definitions = exportResponse;
 
       // Create export data
       const exportData = {
@@ -343,19 +338,16 @@ export const ReportConfigsStream: React.FC = () => {
       let successCount = 0;
       let failCount = 0;
 
-      for (const definition of importData.data.value) {
-        try {
-          // Remove id to create new definitions
-          const { id, ...defWithoutId } = definition;
-          await axios.post(
-            `${API_BASE}/platform-api/reporting/stream-definitions`,
-            defWithoutId
-          );
-          successCount++;
-        } catch (error) {
-          console.error('Failed to import definition:', definition.name, error);
-          failCount++;
-        }
+      // Use the import endpoint
+      try {
+        await axios.post(
+          `${API_BASE}/platform-api/stream-data/import`,
+          importData.data.value
+        );
+        successCount = importData.data.value.length;
+      } catch (error) {
+        console.error('Failed to import definitions:', error);
+        failCount = importData.data.value.length;
       }
 
       if (successCount > 0) {

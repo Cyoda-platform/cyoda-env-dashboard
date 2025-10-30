@@ -37,6 +37,12 @@ export interface ReportDefinition {
 }
 
 export default class HelperReportDefinition {
+  // Column type constants
+  public static SIMPLE_COLUMN = 'com.cyoda.core.reports.columns.ReportSimpleColumn';
+  public static SIMPLE_COLUMN_SHORT = 'ReportSimpleColumn';
+  public static ALIAS_COLUMN = 'com.cyoda.core.reports.columns.ReportAliasColumn';
+  public static ALIAS_COLUMN_SHORT = 'ReportAliasColumn';
+
   /**
    * Get default report definition structure
    */
@@ -60,6 +66,73 @@ export default class HelperReportDefinition {
       valuationPointTime: '2020-01-27T14:09:28.778+03:00',
       singletonReport: false,
     };
+  }
+
+  /**
+   * Get default stream report definition structure
+   */
+  public static reportStreamDefinition(): any {
+    return {
+      '@bean': 'com.cyoda.core.streamdata.StreamDataConfigDef',
+      streamDataDef: {
+        requestClass: '',
+        rangeOrder: 'ASC',
+        rangeCondition: {
+          '@bean': '',
+          fieldName: '',
+          operation: '',
+          value: {
+            '@type': '',
+            value: '',
+          },
+        },
+        condition: {
+          '@bean': 'com.cyoda.core.conditions.GroupCondition',
+          operator: 'OR',
+          conditions: [],
+        },
+        columns: [],
+        colDefs: [],
+        aliasDefs: [],
+      },
+      name: '',
+      id: '',
+    };
+  }
+
+  /**
+   * Expand short column names to full bean names when loading from server
+   * This is needed because the server might return shortened names
+   */
+  public static expandColumnNames(configDefinition: any): any {
+    let copyConfigDefinition = JSON.stringify(configDefinition);
+    const reSimple = new RegExp(`"${this.SIMPLE_COLUMN_SHORT}"`, 'g');
+    const reAlias = new RegExp(`"${this.ALIAS_COLUMN_SHORT}"`, 'g');
+    copyConfigDefinition = copyConfigDefinition.replace(reSimple, `"${this.SIMPLE_COLUMN}"`);
+    copyConfigDefinition = copyConfigDefinition.replace(reAlias, `"${this.ALIAS_COLUMN}"`);
+    return JSON.parse(copyConfigDefinition);
+  }
+
+  /**
+   * Validate report configuration definition
+   * Recursively checks that all conditions have a @bean property
+   */
+  public static validateConfigDefinition(conditions: any[]): boolean {
+    if (!conditions || !Array.isArray(conditions)) {
+      return true;
+    }
+
+    for (const el of conditions) {
+      if (!el['@bean']) {
+        return false;
+      }
+      if (el.conditions) {
+        if (!this.validateConfigDefinition(el.conditions)) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 
   /**
@@ -89,34 +162,38 @@ export default class HelperReportDefinition {
     let cols: any[] = [];
 
     if (configDefinition && configDefinition.colDefs && configDefinition.colDefs.length > 0) {
-      const colDefs = configDefinition.colDefs
-        .filter((el: any) => el && el.fullPath) // Filter out null/undefined items
-        .map((el: any) => {
-          return {
-            colType: 'colDef',
-            alias: el.fullPath,
-            name: el.fullPath,
-            typeShort: el.colType.split('.').pop() || '',
-            type: el.colType,
-            '@bean': SIMPLE_COLUMN,
-          };
-        });
+      const colDefs = configDefinition.colDefs.map((el: any) => {
+        // Handle colType - it might be a simple string like 'LEAF' or a Java class name
+        const colTypeStr = el.colType || '';
+        const typeShort = colTypeStr.includes('.') ? colTypeStr.split('.').pop() || '' : colTypeStr;
+
+        return {
+          colType: 'colDef',
+          alias: el.fullPath,
+          name: el.fullPath,
+          typeShort,
+          type: colTypeStr,
+          '@bean': SIMPLE_COLUMN,
+        };
+      });
       cols = cols.concat(colDefs);
     }
 
     if (configDefinition && configDefinition.aliasDefs && configDefinition.aliasDefs.length > 0) {
-      const aliasDefs = configDefinition.aliasDefs
-        .filter((el: any) => el && el.name) // Filter out null/undefined items
-        .map((el: any) => {
-          return {
-            colType: 'aliasDef',
-            alias: el.name,
-            name: el.name,
-            typeShort: el.aliasType.split('.').pop() || '',
-            type: el.aliasType,
-            '@bean': ALIAS_COLUMN,
-          };
-        });
+      const aliasDefs = configDefinition.aliasDefs.map((el: any) => {
+        // Handle aliasType - it might be undefined or a Java class name
+        const aliasTypeStr = el.aliasType || '';
+        const typeShort = aliasTypeStr.includes('.') ? aliasTypeStr.split('.').pop() || '' : aliasTypeStr;
+
+        return {
+          colType: 'aliasDef',
+          alias: el.name,
+          name: el.name,
+          typeShort,
+          type: aliasTypeStr,
+          '@bean': ALIAS_COLUMN,
+        };
+      });
       cols = cols.concat(aliasDefs);
     }
 

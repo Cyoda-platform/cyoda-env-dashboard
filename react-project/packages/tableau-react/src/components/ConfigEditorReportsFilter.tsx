@@ -80,11 +80,11 @@ const ConfigEditorReportsFilter: React.FC<ConfigEditorReportsFilterProps> = ({
       <h2>Filter</h2>
       <Form layout="vertical">
         <Row gutter={20}>
-          <Col span={12}>
+          <Col span={8}>
             <Form.Item label="Author or Group:">
               <Select
                 mode="multiple"
-                placeholder="Select authors"
+                placeholder="Select"
                 value={value.authors}
                 onChange={(val) => handleFieldChange('authors', val)}
                 options={usersOptions}
@@ -96,14 +96,14 @@ const ConfigEditorReportsFilter: React.FC<ConfigEditorReportsFilterProps> = ({
               />
             </Form.Item>
           </Col>
-          <Col span={12}>
-            <Form.Item label="Filter by state:">
+          <Col span={8}>
+            <Form.Item label="Entity:">
               <Select
                 mode="multiple"
-                placeholder="Select states"
-                value={value.states}
-                onChange={(val) => handleFieldChange('states', val)}
-                options={stateOptions}
+                placeholder="Select"
+                value={value.entities}
+                onChange={(val) => handleFieldChange('entities', val)}
+                options={entityOptions}
                 allowClear
                 showSearch
                 filterOption={(input, option) =>
@@ -112,23 +112,7 @@ const ConfigEditorReportsFilter: React.FC<ConfigEditorReportsFilterProps> = ({
               />
             </Form.Item>
           </Col>
-          <Col span={12}>
-            <Form.Item label="Types:">
-              <Select
-                mode="multiple"
-                placeholder="Select types"
-                value={value.types}
-                onChange={(val) => handleFieldChange('types', val)}
-                options={typeOptions}
-                allowClear
-                showSearch
-                filterOption={(input, option) =>
-                  (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                }
-              />
-            </Form.Item>
-          </Col>
-          <Col span={12}>
+          <Col span={8}>
             <Form.Item label="By date and time:">
               <DatePicker
                 showTime
@@ -142,22 +126,6 @@ const ConfigEditorReportsFilter: React.FC<ConfigEditorReportsFilterProps> = ({
                   value: shortcut.value(),
                 }))}
                 style={{ width: '100%' }}
-              />
-            </Form.Item>
-          </Col>
-          <Col span={24}>
-            <Form.Item label="Entity:">
-              <Select
-                mode="multiple"
-                placeholder="Select entity types"
-                value={value.entities}
-                onChange={(val) => handleFieldChange('entities', val)}
-                options={entityOptions}
-                allowClear
-                showSearch
-                filterOption={(input, option) =>
-                  (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                }
               />
             </Form.Item>
           </Col>
