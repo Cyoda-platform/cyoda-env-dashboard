@@ -7,6 +7,7 @@ export { ModellingGroup } from './ModellingGroup';
 export { ModellingItem } from './ModellingItem';
 export { ModellingGroupClass } from './ModellingGroupClass';
 export { ModellingItemClass } from './ModellingItemClass';
+export { ModellingItemClassForm } from './ModellingItemClassForm';
 export { ModellingPopUp } from './ModellingPopUp';
 export type { ModellingPopUpRef } from './ModellingPopUp';
 export { ModellingPopUpToggles } from './ModellingPopUpToggles';

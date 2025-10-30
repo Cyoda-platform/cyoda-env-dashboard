@@ -8,6 +8,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Spin } from 'antd';
 import { CaretDownOutlined, CaretRightOutlined } from '@ant-design/icons';
 import { ModellingGroup } from './ModellingGroup';
+import { ModellingItemClassForm } from './ModellingItemClassForm';
 import type { RequestParam, ColDef, ReportingInfoRow } from '../../types/modelling';
 import { useModellingStore } from '../../stores/modellingStore';
 import { getReportingInfo } from '../../api/modelling';
@@ -44,6 +45,7 @@ export const ModellingItemClass: React.FC<ModellingItemClassProps> = ({
   const [reportingInfoRows, setReportingInfoRows] = useState<ReportingInfoRow[] | null>(null);
   const [isShowGroup, setIsShowGroup] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [formValues, setFormValues] = useState<string[]>([]);
 
   const { searchResult } = useModellingStore();
 
@@ -102,6 +104,19 @@ export const ModellingItemClass: React.FC<ModellingItemClassProps> = ({
     });
   }, [search, searchResult, classPath]);
 
+  // Fill form from checked values
+  useEffect(() => {
+    if (requestParam.types && requestParam.types.length > 0 && getChecked) {
+      const selectedPathBySegments = getChecked.fullPath.replace(/\[|\]/g, '').split(/@|\./);
+      const fullPathOfRowSegments = requestParam.columnPath.replace(/\[|\]/g, '').split(/@|\./);
+      const result = selectedPathBySegments[fullPathOfRowSegments.length - 1];
+
+      if (result) {
+        setFormValues([result]);
+      }
+    }
+  }, [requestParam, getChecked]);
+
   // Handle "Open all selected" toggle
   useEffect(() => {
     if (isOpenAllSelected && getChecked) {
@@ -112,25 +127,41 @@ export const ModellingItemClass: React.FC<ModellingItemClassProps> = ({
     }
   }, [isOpenAllSelected, getChecked]);
 
+  // Load data with optional form values
+  const loadData = async (columnPath: string) => {
+    setIsLoading(true);
+    try {
+      const { data } = await getReportingInfo(
+        requestParam.requestClass,
+        requestParam.reportClass,
+        columnPath,
+        onlyRange
+      );
+      setReportingInfoRows(HelperModelling.sortData(HelperModelling.filterData(data)));
+    } catch (error) {
+      console.error('Failed to load class data:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Load data when clicked
   const handleClick = async () => {
     if (!reportingInfoRows) {
-      setIsLoading(true);
-      try {
-        const { data } = await getReportingInfo(
-          requestParam.requestClass,
-          requestParam.reportClass,
-          requestParam.columnPath,
-          onlyRange
-        );
-        setReportingInfoRows(HelperModelling.sortData(HelperModelling.filterData(data)));
-      } catch (error) {
-        console.error('Failed to load class data:', error);
-      } finally {
-        setIsLoading(false);
-      }
+      await loadData(requestParam.columnPath);
     }
     setIsShowGroup(!isShowGroup);
+  };
+
+  // Handle form change
+  const handleFormChange = async (values: string[]) => {
+    let columnPath = requestParam.baseColumnPath;
+    if (values && values.length > 0) {
+      values.forEach((val) => {
+        columnPath += `.[${val}]`;
+      });
+    }
+    await loadData(columnPath);
   };
 
   if (!isSearchCondition) {
@@ -156,9 +187,13 @@ export const ModellingItemClass: React.FC<ModellingItemClassProps> = ({
 
         {isShowGroup && reportingInfoRows && (
           <div style={{ marginLeft: 24, marginTop: 8 }}>
-            {/* Form for types - simplified for now */}
+            {/* Form for types (LIST/MAP indices) */}
             {requestParam.types && requestParam.types.length > 0 && !onlyView && (
-              <div className="types-field">{/* Form component can be added here */}</div>
+              <ModellingItemClassForm
+                types={requestParam.types}
+                values={formValues}
+                onChange={handleFormChange}
+              />
             )}
 
             <ModellingGroup

@@ -2,9 +2,7 @@
   margin-bottom: 8px;
 
   .checked-path {
-    background-color: #f0f7ff;
-    padding: 2px 4px;
-    border-radius: 2px;
+    // Remove white background - not needed in dark theme
   }
 
   .name {
@@ -23,7 +21,7 @@
     }
   }
 
-  .types-field {
+  .modelling-item-class-form {
     margin-bottom: 12px;
   }
 }

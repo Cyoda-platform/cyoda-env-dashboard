@@ -179,7 +179,7 @@ const ReportTableRows: React.FC<ReportTableRowsProps> = ({
         columns={antColumns}
         dataSource={tableData}
         loading={!tableLinkRows || tableData.length === 0}
-        rowKey={(record, index) => index?.toString() || '0'}
+        rowKey={(record) => record.id || record.key || JSON.stringify(record)}
         pagination={{
           pageSize: 50,
           showSizeChanger: true,

@@ -1,0 +1,20 @@
+.modelling-item-class-form {
+  margin-bottom: 12px;
+
+  .flex {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .inner-field-type {
+    .ant-input {
+      width: 120px;
+    }
+  }
+
+  .wrap-btn {
+    // Button is now closer due to gap in flex
+  }
+}
+

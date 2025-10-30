@@ -7,6 +7,7 @@ export interface ReportingInfoRow {
   columnName: string;
   columnPath: string;
   type: string;
+  clazzType?: string;
   declaredClass?: DeclaredClass;
   subClasses?: SubClass[];
   elementType?: ElementInfo;
@@ -17,6 +18,7 @@ export interface ReportingInfoRow {
 export interface ElementInfo {
   columnPath: string;
   type: string;
+  clazzType?: string;
   columnName?: string;
   declaredClass?: DeclaredClass;
   subClasses?: SubClass[];

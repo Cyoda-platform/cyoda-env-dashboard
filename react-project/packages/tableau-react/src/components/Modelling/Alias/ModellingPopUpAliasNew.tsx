@@ -13,7 +13,7 @@ import { useQuery } from '@tanstack/react-query';
 import { axios } from '@cyoda/http-api-react';
 import MonacoEditor from '@monaco-editor/react';
 import type { ReportMapper, NamedParameter, MapperParameters, CatalogItem, AliasDef, AliasDefColDef } from '@cyoda/http-api-react';
-import { getMappers } from '@cyoda/http-api-react';
+import { getMappers, getReportingFetchTypes } from '@cyoda/http-api-react';
 import { ModellingPopUpToggles } from '../ModellingPopUpToggles';
 import { ModellingPopUpSearch } from '../ModellingPopUpSearch';
 import { ModellingGroup } from '../ModellingGroup';
@@ -98,9 +98,20 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
     const { data: entityClasses = [] } = useQuery({
       queryKey: ['entityClasses'],
       queryFn: async () => {
-        const { data } = await axios.get<string[]>(`${API_BASE}/platform-api/entity/classes`);
-        // Ensure we always return an array
-        return Array.isArray(data) ? data : [];
+        try {
+          const { data } = await getReportingFetchTypes(false);
+          console.log('Entity classes loaded:', data);
+          // Ensure we always return an array
+          if (!Array.isArray(data)) {
+            console.warn('API returned non-array data, using empty list');
+            return [];
+          }
+          // Extract just the class names from the entity data
+          return data.map((entity: any) => entity.name || entity);
+        } catch (error) {
+          console.error('Failed to load entity classes:', error);
+          return [];
+        }
       },
       enabled: allowSelectEntity,
     });
@@ -158,8 +169,14 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
     const { data: allMappers = [] } = useQuery({
       queryKey: ['mappers'],
       queryFn: async () => {
-        const { data } = await getMappers();
-        return data;
+        try {
+          const { data } = await getMappers();
+          console.log('All mappers loaded:', data);
+          return Array.isArray(data) ? data : [];
+        } catch (error) {
+          console.error('Failed to load mappers:', error);
+          return [];
+        }
       },
     });
 
@@ -207,8 +224,9 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
         };
       });
 
-      // Auto-detect alias type from first column's colType
-      const aliasType = selectedColumns.length > 0 ? selectedColumns[0].colType : 'SIMPLE';
+      // Auto-detect alias type from first column's field type (not Java type)
+      const firstCol = selectedColumns[0] as any;
+      const aliasType = selectedColumns.length > 0 ? (firstCol.fieldType || 'SIMPLE') : 'SIMPLE';
 
       // Auto-generate name from first column if name is empty
       let autoName = aliasForm.name;
@@ -241,19 +259,30 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
     const loadMappersByTypes = async () => {
       try {
         const uniqueTypes = Array.from(new Set(aliasForm.aliasPaths.map((p) => p.colDef.colType)));
-        const results = await Promise.all(
+
+        // Load mappers for each Java type
+        const results = await Promise.allSettled(
           uniqueTypes.map((type) => getMappers({ inClass: type }))
         );
 
         const mappersByTypeObj: { [key: string]: ReportMapper[] } = {};
-        uniqueTypes.forEach((type, index) => {
+
+        // For complex types, use type-specific mappers
+        typesToLoad.forEach((type, index) => {
           const key = type.replace(/\./g, '_');
-          mappersByTypeObj[key] = results[index].data;
+          const result = results[index];
+          if (result.status === 'fulfilled') {
+            mappersByTypeObj[key] = result.value.data || [];
+          } else {
+            console.warn(`Failed to load mappers for type ${type}:`, result.reason);
+            mappersByTypeObj[key] = [];
+          }
         });
 
         setMappersByType(mappersByTypeObj);
       } catch (error) {
         console.error('Failed to load mappers by type:', error);
+        setMappersByType({});
       }
     };
 
@@ -285,8 +314,9 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
       const newPaths = aliasForm.aliasPaths.filter((_, i) => i !== index);
       const newColumns = selectedColumns.filter((_, i) => i !== index);
 
-      // Update alias type based on remaining columns
-      const aliasType = newColumns.length > 0 ? newColumns[0].colType : 'SIMPLE';
+      // Update alias type based on remaining columns (use fieldType, not colType)
+      const firstCol = newColumns[0] as any;
+      const aliasType = newColumns.length > 0 ? (firstCol?.fieldType || 'SIMPLE') : 'SIMPLE';
 
       setAliasForm((prev) => ({
         ...prev,
@@ -453,7 +483,7 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
         // Catalog mode - create/update catalog item via API
         if (aliasEditType === 'catalog' && (onCreate || onUpdate)) {
           const catalogItem: CatalogItem = {
-            '@bean': 'com.cyoda.core.model.catalog.AliasCatalogItem',
+            '@bean': 'com.cyoda.service.api.beans.AliasCatalogItemDto',
             name: aliasForm.name,
             desc: aliasForm.desc || '',
             entityClass: aliasForm.entityClass,
@@ -633,14 +663,29 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
                     return existing;
                   }
 
-                  // For new selections, try to find the colType from the checkbox element
+                  // For new selections, get both field type and Java type from the checkbox element
                   const checkbox = document.querySelector(`input[type="checkbox"][value="${fullPath}"]`);
-                  const colType = checkbox?.getAttribute('data-col-type') || 'LEAF';
+                  const fieldType = checkbox?.getAttribute('data-col-type') || 'LEAF';
+                  const clazzType = checkbox?.getAttribute('data-clazz-type') || 'java.lang.String';
+
+                  // Build the parts structure required by the server
+                  const parts = {
+                    '@meta': 'com.cyoda.core.reports.columndefs.ReportColPartDef[]',
+                    value: [
+                      {
+                        rootClass: aliasForm.entityClass,
+                        path: fullPath,
+                        type: clazzType,
+                      },
+                    ],
+                  };
 
                   return {
                     fullPath,
-                    colType,
-                  } as ColDef;
+                    colType: clazzType,
+                    parts,
+                    fieldType, // Store field type separately for aliasType determination
+                  } as any;
                 });
                 setSelectedColumns(newColumns);
               }}

@@ -1,18 +1,20 @@
 .modelling-popup-toggles {
-  .ant-form-item {
-    margin: 0;
+  .toggle-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
   }
 
-  .ant-form-item-label {
-    width: auto !important;
+  .toggle-label {
+    color: var(--refine-text-primary);
+    font-size: 14px;
   }
 
   .delimiter {
-    margin: 0 20px;
+    margin: 0 12px;
     display: inline-block;
-    font-size: 25px;
-    position: relative;
-    top: 5px;
+    font-size: 20px;
+    color: var(--refine-text-secondary);
   }
 }
 

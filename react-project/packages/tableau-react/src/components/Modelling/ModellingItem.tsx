@@ -9,6 +9,7 @@ import { Checkbox, Tooltip } from 'antd';
 import { EyeOutlined, CaretDownOutlined, CaretRightOutlined, LinkOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { ModellingGroupClass } from './ModellingGroupClass';
 import { ModellingGroup } from './ModellingGroup';
+import { ModellingItemClassForm } from './ModellingItemClassForm';
 import { UniqueValuesModal } from '../UniqueValuesModal/UniqueValuesModal';
 import type { ReportingInfoRow, RelatedPath, ColDef, RequestParam } from '../../types/modelling';
 import HelperModelling from '../../utils/HelperModelling';
@@ -51,7 +52,7 @@ export const ModellingItem: React.FC<ModellingItemProps> = ({
   const [isShowJoin, setIsShowJoin] = useState(false);
   const [reportingInfoRows, setReportingInfoRows] = useState<ReportingInfoRow[]>([]);
   const [relatedPathsInner, setRelatedPathsInner] = useState<RelatedPath[]>([]);
-  const [values, setValues] = useState<any>({});
+  const [formValues, setFormValues] = useState<string[]>([]);
   const [uniqueValuesVisible, setUniqueValuesVisible] = useState(false);
 
   const { searchResult, addSearchPath, removeSearchPath } = useModellingStore();
@@ -238,6 +239,39 @@ export const ModellingItem: React.FC<ModellingItemProps> = ({
     setUniqueValuesVisible(false);
   };
 
+  // Fill form from checked values
+  useEffect(() => {
+    if (getTypes.length > 0 && getChecked) {
+      const selectedPathBySegments = getChecked.fullPath
+        .replace(/\[|\]/g, '')
+        .replace('..', '.$|dot|')
+        .split(/@|\./)
+        .filter((el) => el);
+      const fullPathOfRowSegments = fullPath
+        .replace(/\[|\]/g, '')
+        .split(/@|\./)
+        .filter((el) => el);
+
+      const result = selectedPathBySegments[fullPathOfRowSegments.length - 1];
+      if (result) {
+        setFormValues([result]);
+      }
+    }
+  }, [getTypes, getChecked, fullPath]);
+
+  // Handle form change
+  const handleFormChange = (form: string[]) => {
+    const columnPath = `${reportInfoRow.columnPath}.[${form[0]}]`;
+    let columnPathWithNameSpace = columnPath;
+    if (parentColDef?.fullPath) {
+      columnPathWithNameSpace = `${parentColDef.fullPath}.${columnPath}`;
+    }
+    const value = label.parts.value[label.parts.value.length - 1];
+    if (value) {
+      value.fullPath = columnPathWithNameSpace;
+    }
+  };
+
 
 
   if (!isSearchCondition) {
@@ -273,6 +307,7 @@ export const ModellingItem: React.FC<ModellingItemProps> = ({
             className={!isChildAvailable ? 'no-child' : ''}
             style={{ marginLeft: 8 }}
             data-col-type={reportInfoRow.type}
+            data-clazz-type={reportInfoRow.clazzType || reportInfoRow.type}
           >
             {reportInfoRow.columnName}
             {isMap && (
@@ -319,10 +354,15 @@ export const ModellingItem: React.FC<ModellingItemProps> = ({
           </span>
         )}
 
-        {/* Form for LIST/MAP types - simplified for now */}
+        {/* Form for LIST/MAP types */}
         {isAvailableForm && getTypes.length > 0 && !onlyView && (
-          <div className="wrap-form" style={{ marginLeft: 16 }}>
-            {/* Form component can be added here */}
+          <div className="wrap-form">
+            <ModellingItemClassForm
+              types={getTypes}
+              values={formValues}
+              isAvailableSubmit={false}
+              onChange={handleFormChange}
+            />
           </div>
         )}
       </div>

@@ -5,7 +5,7 @@
  */
 
 import React, { useState } from 'react';
-import { Form, Switch, Space } from 'antd';
+import { Switch, Space } from 'antd';
 import './ModellingPopUpToggles.scss';
 
 interface ModellingPopUpTogglesProps {
@@ -28,13 +28,16 @@ export const ModellingPopUpToggles: React.FC<ModellingPopUpTogglesProps> = ({ on
 
   return (
     <div className="modelling-popup-toggles">
-      <Space size="large" split={<span className="delimiter">|</span>}>
-        <Form.Item label="Condense the paths" style={{ margin: 0 }}>
+      <Space size="middle">
+        <span className="toggle-item">
+          <span className="toggle-label">Condense the paths:</span>
           <Switch checked={isCondenseThePaths} onChange={handleCondenseChange} />
-        </Form.Item>
-        <Form.Item label="Open all selected" style={{ margin: 0 }}>
+        </span>
+        <span className="delimiter">|</span>
+        <span className="toggle-item">
+          <span className="toggle-label">Open all selected:</span>
           <Switch checked={isOpenAllSelected} onChange={handleOpenAllChange} />
-        </Form.Item>
+        </span>
       </Space>
     </div>
   );
