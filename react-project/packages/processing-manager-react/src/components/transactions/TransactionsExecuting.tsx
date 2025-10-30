@@ -105,24 +105,26 @@ export const TransactionsExecuting: React.FC = () => {
               </Form.Item>
             </Col>
             <Col span={6} className="wrap-button">
-              {isRunning ? (
-                <Button
-                  type="default"
-                  danger
-                  onClick={stopInterval}
-                  icon={<StopOutlined />}
-                >
-                  Stop
-                </Button>
-              ) : (
-                <Button
-                  type="primary"
-                  onClick={runInterval}
-                  icon={<PlayCircleOutlined />}
-                >
-                  Start
-                </Button>
-              )}
+              <Form.Item label=" ">
+                {isRunning ? (
+                  <Button
+                    type="default"
+                    danger
+                    onClick={stopInterval}
+                    icon={<StopOutlined />}
+                  >
+                    Stop
+                  </Button>
+                ) : (
+                  <Button
+                    type="primary"
+                    onClick={runInterval}
+                    icon={<PlayCircleOutlined />}
+                  >
+                    Start
+                  </Button>
+                )}
+              </Form.Item>
             </Col>
           </Row>
         </Form>

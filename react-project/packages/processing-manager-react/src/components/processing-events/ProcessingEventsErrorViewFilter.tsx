@@ -130,9 +130,11 @@ export const ProcessingEventsErrorViewFilter: React.FC<ProcessingEventsErrorView
           </Form.Item>
         </Col>
         <Col span={4} className="action-item">
-          <Button type="primary" onClick={handleSubmit} loading={isLoading}>
-            Load
-          </Button>
+          <Form.Item label=" ">
+            <Button type="primary" onClick={handleSubmit} loading={isLoading}>
+              Load
+            </Button>
+          </Form.Item>
         </Col>
       </Row>
       <hr />

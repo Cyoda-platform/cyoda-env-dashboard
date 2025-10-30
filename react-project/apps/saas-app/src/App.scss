@@ -534,12 +534,16 @@ code {
 // Tooltip styling
 .ant-tooltip {
   .ant-tooltip-inner {
-    background: var(--refine-bg-tertiary);
+    background: rgba(30, 42, 58, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 212, 170, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 212, 170, 0.1);
     color: var(--refine-text-primary);
   }
 
   .ant-tooltip-arrow-content {
-    background: var(--refine-bg-tertiary);
+    background: rgba(30, 42, 58, 0.95);
   }
 }
 

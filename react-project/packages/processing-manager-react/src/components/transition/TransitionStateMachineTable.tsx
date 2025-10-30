@@ -67,6 +67,7 @@ export const TransitionStateMachineTable: React.FC<TransitionStateMachineTablePr
           pageSizeOptions: ['5', '10', '15', '20', '50'],
           defaultPageSize: 10,
           showSizeChanger: true,
+          position: ['bottomCenter'],
         }}
       />
     </Card>
