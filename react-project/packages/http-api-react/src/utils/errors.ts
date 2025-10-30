@@ -1,5 +1,5 @@
 import { AxiosError } from 'axios';
-import { message } from 'antd';
+import { message, Modal } from 'antd';
 
 /**
  * Error handler utility
@@ -42,10 +42,18 @@ export class HelperErrors {
 
     // Extract error message
     let errorMessage = 'An error occurred';
+    let errorDetail = '';
 
     if (data) {
       if (typeof data === 'string') {
         errorMessage = data;
+      } else if (data.detail) {
+        // Cyoda backend returns detailed error messages in 'detail' field
+        errorMessage = data.detail;
+        // Extract error code if present
+        if (data.properties && data.properties.errorCode) {
+          errorDetail = `If assistance is needed, you may check available support options and provide the unique error code ${data.properties.errorCode} if contacting support.`;
+        }
       } else if (data.message) {
         errorMessage = data.message;
       } else if (data.error) {
@@ -57,26 +65,36 @@ export class HelperErrors {
       errorMessage = error.message;
     }
 
-    // Show error message based on status
-    switch (status) {
-      case 400:
-        message.error(`Bad Request: ${errorMessage}`);
-        break;
-      case 403:
-        message.error(`Forbidden: ${errorMessage}`);
-        break;
-      case 500:
-        message.error(`Server Error: ${errorMessage}`);
-        break;
-      case 503:
-        message.error(`Service Unavailable: ${errorMessage}`);
-        break;
-      default:
-        if (status && status >= 400) {
-          message.error(`Error ${status}: ${errorMessage}`);
-        } else {
-          message.error(errorMessage);
-        }
+    // For server errors (500), show detailed modal like in Vue project
+    if (status === 500) {
+      const fullMessage = errorDetail
+        ? `The Cyoda server encountered an unexpected error: ${errorMessage}\n\n${errorDetail}`
+        : `The Cyoda server encountered an unexpected error: ${errorMessage}`;
+
+      Modal.error({
+        title: 'Error!',
+        content: fullMessage,
+        width: 600,
+      });
+    } else {
+      // For other errors, show simple message
+      switch (status) {
+        case 400:
+          message.error(`Bad Request: ${errorMessage}`);
+          break;
+        case 403:
+          message.error(`Forbidden: ${errorMessage}`);
+          break;
+        case 503:
+          message.error(`Service Unavailable: ${errorMessage}`);
+          break;
+        default:
+          if (status && status >= 400) {
+            message.error(`Error ${status}: ${errorMessage}`);
+          } else {
+            message.error(errorMessage);
+          }
+      }
     }
 
     // Log error to console in development

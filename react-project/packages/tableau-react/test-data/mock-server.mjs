@@ -395,31 +395,37 @@ app.get('/platform-api/entity-info/model-info', (req, res) => {
       columnName: 'id',
       columnPath: 'id',
       type: 'LEAF',
+      clazzType: 'java.util.UUID',
     },
     {
       columnName: 'name',
       columnPath: 'name',
       type: 'LEAF',
+      clazzType: 'java.lang.String',
     },
     {
       columnName: 'description',
       columnPath: 'description',
       type: 'LEAF',
+      clazzType: 'java.lang.String',
     },
     {
       columnName: 'amount',
       columnPath: 'amount',
       type: 'LEAF',
+      clazzType: 'java.math.BigDecimal',
     },
     {
       columnName: 'status',
       columnPath: 'status',
       type: 'LEAF',
+      clazzType: 'java.lang.String',
     },
     {
       columnName: 'createdDate',
       columnPath: 'createdDate',
       type: 'LEAF',
+      clazzType: 'java.util.Date',
     },
   ];
 

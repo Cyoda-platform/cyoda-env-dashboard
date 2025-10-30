@@ -232,8 +232,8 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
       let autoName = aliasForm.name;
       if (!autoName && selectedColumns.length > 0) {
         const firstPath = selectedColumns[0].fullPath;
-        const shortPath = firstPath.split('.').pop() || firstPath;
-        autoName = shortPath.replaceAll('.', ':');
+        // Use full path with dots replaced by colons (like Vue project)
+        autoName = firstPath.replaceAll('.', ':');
       }
 
       setAliasForm((prev) => ({
@@ -267,8 +267,8 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
 
         const mappersByTypeObj: { [key: string]: ReportMapper[] } = {};
 
-        // For complex types, use type-specific mappers
-        typesToLoad.forEach((type, index) => {
+        // Process results for each type
+        uniqueTypes.forEach((type, index) => {
           const key = type.replace(/\./g, '_');
           const result = results[index];
           if (result.status === 'fulfilled') {
@@ -463,13 +463,18 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
         }
 
         // Convert AliasPathLocal[] to AliasDefColDef[] (serialize mapperParameters if needed)
-        const aliasPaths: AliasDefColDef[] = aliasForm.aliasPaths.map((path) => ({
-          colDef: path.colDef,
-          mapperClass: path.mapperClass,
-          mapperParameters: typeof path.mapperParameters === 'object'
-            ? JSON.stringify(path.mapperParameters)
-            : path.mapperParameters,
-        }));
+        const aliasPaths: AliasDefColDef[] = aliasForm.aliasPaths.map((path) => {
+          // Filter out fieldType from colDef - server doesn't recognize it
+          const { fieldType, ...cleanColDef } = path.colDef as any;
+
+          return {
+            colDef: cleanColDef,
+            mapperClass: path.mapperClass,
+            mapperParameters: typeof path.mapperParameters === 'object'
+              ? JSON.stringify(path.mapperParameters)
+              : path.mapperParameters,
+          };
+        });
 
         const aliasDef: AliasDef = {
           name: aliasForm.name,
