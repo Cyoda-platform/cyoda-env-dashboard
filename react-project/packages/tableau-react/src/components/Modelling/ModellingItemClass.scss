@@ -4,14 +4,12 @@
   font-size: 14px;
   line-height: 20px;
   position: relative;
-  background: rgba(0, 0, 255, 0.1); // DEBUG: Blue background to identify this element
 
   // Force Ant Design Spin to not take up extra space
   .ant-spin-nested-loading {
     display: inline-block;
     min-height: 0;
     height: auto;
-    background: rgba(255, 0, 255, 0.1); // DEBUG: Magenta background to identify Spin nested loading
   }
 
   .ant-spin-container {
@@ -19,7 +17,6 @@
     display: inline-block;
     min-height: 0;
     height: auto;
-    background: rgba(255, 255, 0, 0.1); // DEBUG: Yellow background to identify Spin container
   }
 
   .checked-path {

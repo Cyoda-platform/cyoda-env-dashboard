@@ -2,13 +2,11 @@
   margin: 0;
   padding: 0;
   list-style: none;
-  background: rgba(255, 0, 0, 0.1); // DEBUG: Red background to identify this element
 
   li {
     list-style: none !important;
     margin-top: 0;
     margin-bottom: 0;
-    background: rgba(0, 255, 0, 0.1); // DEBUG: Green background to identify li elements
   }
 }
 
