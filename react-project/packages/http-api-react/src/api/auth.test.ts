@@ -56,14 +56,16 @@ describe('Authentication API', () => {
   });
 
   describe('refreshToken', () => {
-    it('should call POST /platform-api/auth/refresh with refresh token', async () => {
-      const mockResponse = { data: { token: 'new-token', refreshToken: 'new-refresh-token' } };
-      vi.mocked(axiosPublic.post).mockResolvedValue(mockResponse);
+    it('should call GET /auth/token with refresh token in Authorization header', async () => {
+      const mockResponse = { data: { token: 'new-token' } };
+      vi.mocked(axiosPublic.get).mockResolvedValue(mockResponse);
 
       const result = await authApi.refreshToken('old-refresh-token');
 
-      expect(axiosPublic.post).toHaveBeenCalledWith('/auth/refresh', {
-        refreshToken: 'old-refresh-token',
+      expect(axiosPublic.get).toHaveBeenCalledWith('/auth/token', {
+        headers: {
+          'Authorization': 'Bearer old-refresh-token',
+        },
       });
       expect(result).toEqual(mockResponse);
     });

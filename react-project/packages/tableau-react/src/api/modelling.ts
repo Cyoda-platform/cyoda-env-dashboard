@@ -48,8 +48,16 @@ const getMockEntityInfo = (entityClass: string): ReportingInfoRow[] => {
 
 /**
  * Mock related paths data for demo mode
+ * Returns empty array because most entities don't have JOIN relationships
+ * JOIN relationships are defined in the backend and should come from the API
+ *
+ * Note: OBJECT type fields (like owner, metadata) are NOT joins - they are nested objects
+ * that expand to show their properties. Only fields with explicit JOIN relationships
+ * in the backend should appear in relatedPaths.
  */
 const getMockRelatedPaths = (entityClass: string): RelatedPath[] => {
+  // Return empty array - if the API returns empty, it means no JOIN relationships exist
+  // This matches the Vue project behavior where most entities have no joins
   return [];
 };
 
@@ -103,7 +111,8 @@ export async function getReportingInfo(
 
 /**
  * Get related paths for an entity
- * Falls back to mock data if API is unavailable (for demo mode)
+ * Returns JOIN relationships (not nested objects)
+ * Falls back to empty array if API is unavailable
  */
 export async function getReportingRelatedPaths(entityClass: string) {
   try {
@@ -111,26 +120,28 @@ export async function getReportingRelatedPaths(entityClass: string) {
       `/platform-api/entity-info/model-info/related/paths?entityModel=${entityClass}`
     );
 
-    // If response data is valid, return it
+    // Always return the API response (even if empty array)
+    // Empty array means no JOIN relationships exist for this entity
     if (Array.isArray(response.data)) {
       return response;
     }
 
-    // Fall back to mock data
-    console.warn(`API returned invalid data for related paths of ${entityClass}, using mock data`);
+    // If response data is not an array, return empty array
+    console.warn(`Invalid response data for related paths of ${entityClass}, expected array`);
     return {
-      data: getMockRelatedPaths(entityClass),
+      data: [],
       status: 200,
-      statusText: 'OK (Mock Data)',
+      statusText: 'OK',
       headers: {},
       config: {} as any,
     };
   } catch (error) {
-    console.warn(`API unavailable for related paths of ${entityClass}, using mock data:`, error);
+    // Only fall back to empty array if API call fails completely
+    console.warn(`API unavailable for related paths of ${entityClass}, returning empty array:`, error);
     return {
-      data: getMockRelatedPaths(entityClass),
+      data: [],
       status: 200,
-      statusText: 'OK (Mock Data)',
+      statusText: 'OK',
       headers: {},
       config: {} as any,
     };

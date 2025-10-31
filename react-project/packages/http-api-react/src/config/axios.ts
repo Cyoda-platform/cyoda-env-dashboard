@@ -82,6 +82,7 @@ instance.interceptors.response.use(
 
 /**
  * Refresh access token
+ * Migrated from Vue: .old_project/packages/cyoda-ui-lib/src/stores/auth.ts
  */
 async function refreshAccessToken(): Promise<void> {
   try {
@@ -92,15 +93,17 @@ async function refreshAccessToken(): Promise<void> {
       throw new Error('No refresh token available');
     }
 
-    // Use /auth/refresh endpoint (baseURL already includes /api)
-    const response = await axiosPublic.post('/auth/refresh', {
-      refreshToken,
+    // Use /auth/token endpoint with GET request and Bearer token in header
+    // This matches the Vue implementation
+    const response = await axiosPublic.get('/auth/token', {
+      headers: {
+        'Authorization': `Bearer ${refreshToken}`,
+      },
     });
 
     const newAuth = {
       ...auth,
       token: response.data.token,
-      refreshToken: response.data.refreshToken,
     };
 
     helperStorage.set('auth', newAuth);

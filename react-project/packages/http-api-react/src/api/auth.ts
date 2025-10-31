@@ -27,10 +27,13 @@ export function loginAuth0(token: string) {
 
 /**
  * Refresh access token
+ * Migrated from Vue: .old_project/packages/cyoda-ui-lib/src/stores/auth.ts
  */
 export function refreshToken(refreshToken: string) {
-  return axiosPublic.post<AuthResponse>('/auth/refresh', {
-    refreshToken,
+  return axiosPublic.get<AuthResponse>('/auth/token', {
+    headers: {
+      'Authorization': `Bearer ${refreshToken}`,
+    },
   });
 }
 

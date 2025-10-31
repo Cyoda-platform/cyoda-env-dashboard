@@ -186,7 +186,7 @@ export const ModellingItemClass: React.FC<ModellingItemClassProps> = ({
         </span>
 
         {isShowGroup && reportingInfoRows && (
-          <div style={{ marginLeft: 24, marginTop: 8 }}>
+          <div style={{ marginLeft: 0, marginTop: 0 }}>
             {/* Form for types (LIST/MAP indices) */}
             {requestParam.types && requestParam.types.length > 0 && !onlyView && (
               <ModellingItemClassForm
