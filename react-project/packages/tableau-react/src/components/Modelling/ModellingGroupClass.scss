@@ -1,6 +1,7 @@
 .modelling-group-class {
   margin: 0;
   padding: 0;
+  padding-left: 40px !important; // Indent nested class items to show hierarchy (matching Vue's .inner-group)
   list-style: none;
 
   li {

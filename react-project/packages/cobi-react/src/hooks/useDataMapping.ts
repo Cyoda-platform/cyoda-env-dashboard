@@ -1,17 +1,12 @@
 /**
  * Data Mapping Hooks
  * React Query hooks for data mapping operations
+ * Always uses real Cyoda backend data - no mock fallback
  */
 
 import { useQuery, useMutation, useQueryClient, UseQueryOptions } from '@tanstack/react-query';
 import * as dataMappingApi from '../api/dataMappingApi';
 import type { MappingConfigDto } from '../types';
-
-// Mock data for development when backend is not available
-const MOCK_DATA_MAPPINGS: MappingConfigDto[] = [];
-
-// In-memory storage for development mode
-let inMemoryMappings: MappingConfigDto[] = [...MOCK_DATA_MAPPINGS];
 
 /**
  * Hook to get all data types
@@ -90,6 +85,7 @@ export function useFunctionExamples(options?: Omit<UseQueryOptions<any>, 'queryK
 
 /**
  * Hook to get all data mappings
+ * Always uses real backend data - no mock fallback
  */
 export function useDataMappings(
   withSampleContent = true,
@@ -98,22 +94,19 @@ export function useDataMappings(
   return useQuery({
     queryKey: ['dataMapping', 'list', withSampleContent],
     queryFn: async () => {
-      try {
-        const response = await dataMappingApi.getListAllDataMappings(withSampleContent);
-        return response.data;
-      } catch (error) {
-        console.warn('Failed to fetch data mappings from API, using in-memory data:', error);
-        // Return in-memory data for development
-        return inMemoryMappings;
-      }
+      const response = await dataMappingApi.getListAllDataMappings(withSampleContent);
+      // Always return real backend data (even if empty)
+      return Array.isArray(response.data) ? response.data : [];
     },
     staleTime: 2 * 60 * 1000, // 2 minutes
+    initialData: [], // Provide empty array as initial data
     ...options,
   });
 }
 
 /**
  * Hook to get a specific data mapping
+ * Always uses real backend data - no mock fallback
  */
 export function useDataMapping(
   id: string | null,
@@ -123,15 +116,8 @@ export function useDataMapping(
     queryKey: ['dataMapping', 'detail', id],
     queryFn: async () => {
       if (!id) return null;
-      try {
-        const response = await dataMappingApi.getDataMapping(id);
-        return response.data;
-      } catch (error) {
-        console.warn('Failed to fetch data mapping from API, using in-memory data:', error);
-        // Find in in-memory storage for development
-        const mapping = inMemoryMappings.find(m => m.id === id || m.name === id);
-        return mapping || null;
-      }
+      const response = await dataMappingApi.getDataMapping(id);
+      return response.data;
     },
     enabled: !!id,
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -254,48 +240,15 @@ export function useMappingHistory(
 
 /**
  * Hook to save data mapping
+ * Always uses real backend API - no in-memory fallback
  */
 export function useSaveDataMapping() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (data: MappingConfigDto) => {
-      try {
-        const response = await dataMappingApi.postSave(data);
-        return response;
-      } catch (error) {
-        console.warn('Failed to save to API, using in-memory storage:', error);
-        // Save to in-memory storage for development
-        let existingIndex = -1;
-
-        // First, try to find by ID if it exists
-        if (data.id) {
-          existingIndex = inMemoryMappings.findIndex(m => m.id === data.id);
-        }
-
-        // If not found by ID and no ID exists, try to find by name (for updates where name didn't change)
-        if (existingIndex < 0 && !data.id) {
-          existingIndex = inMemoryMappings.findIndex(m => m.name === data.name);
-        }
-
-        if (existingIndex >= 0) {
-          // Update existing - preserve the ID
-          inMemoryMappings[existingIndex] = {
-            ...data,
-            id: inMemoryMappings[existingIndex].id,
-          };
-          console.log('Updated existing mapping:', inMemoryMappings[existingIndex]);
-        } else {
-          // Add new - generate new ID
-          const newMapping = {
-            ...data,
-            id: data.id || `mapping-${Date.now()}`,
-          };
-          inMemoryMappings.push(newMapping);
-          console.log('Created new mapping:', newMapping);
-        }
-        return { data };
-      }
+      const response = await dataMappingApi.postSave(data);
+      return response;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['dataMapping', 'list'] });
@@ -315,21 +268,15 @@ export function useDryRunDataMapping() {
 
 /**
  * Hook to delete data mapping
+ * Always uses real backend API - no in-memory fallback
  */
 export function useDeleteDataMapping() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (id: string) => {
-      try {
-        const response = await dataMappingApi.deleteDataMapping(id);
-        return response;
-      } catch (error) {
-        console.warn('Failed to delete from API, using in-memory storage:', error);
-        // Delete from in-memory storage for development
-        inMemoryMappings = inMemoryMappings.filter(m => m.id !== id && m.name !== id);
-        return { data: { success: true } };
-      }
+      const response = await dataMappingApi.deleteDataMapping(id);
+      return response;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['dataMapping', 'list'] });

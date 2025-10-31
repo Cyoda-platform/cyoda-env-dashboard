@@ -377,6 +377,8 @@ const CatalogueOfAliases: React.FC = () => {
           pageSize: 50,
           showSizeChanger: true,
           showTotal: (total) => `Total ${total} items`,
+          className: 'pagination-bar',
+          selectComponentClass: undefined,
         }}
         scroll={{ x: 1200 }}
       />

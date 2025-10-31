@@ -253,6 +253,9 @@ code {
 
     // Page size selector
     .ant-pagination-options {
+      position: relative;
+      z-index: 10;
+
       .ant-select-selector {
         background: transparent !important;
         border-color: rgba(255, 255, 255, 0.15) !important;
@@ -1091,5 +1094,10 @@ div[style*="background-color:#000"] {
 .graphical-state-machine canvas {
   background-color: #f9fafb !important;
   background: #f9fafb !important;
+}
+
+// Fix for pagination dropdown appearing behind table rows
+.ant-select-dropdown {
+  z-index: 1050 !important;
 }
 

@@ -187,6 +187,13 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative;
+  z-index: 1;
+
+  // Ensure dropdown appears above everything
+  .ant-select-dropdown {
+    z-index: 1050 !important;
+  }
 }
 
 // No wrap cells

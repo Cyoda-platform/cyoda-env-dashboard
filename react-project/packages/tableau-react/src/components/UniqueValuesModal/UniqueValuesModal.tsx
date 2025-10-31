@@ -41,20 +41,24 @@ export const UniqueValuesModal: React.FC<UniqueValuesModalProps> = ({
 
   const loadData = async () => {
     if (!onLoadData) {
-      // Mock data for demo
-      const mockData = Array.from({ length: 10 }, (_, i) => ({
-        key: i,
-        [fieldName]: `Value ${i + 1}`,
-      }));
-      setData(mockData);
-      setTotal(10);
+      console.error('No onLoadData function provided to UniqueValuesModal');
+      setData([]);
+      setTotal(0);
       return;
     }
 
     setLoading(true);
     try {
       const result = await onLoadData(entityClass, fieldPath, currentPage - 1, pageSize);
-      setData(result.map((item, index) => ({ key: index, ...item })));
+
+      // Transform the result into table data
+      // The API returns an array of values, we need to convert to objects with the field name as key
+      const tableData = result.map((value, index) => ({
+        key: index,
+        [fieldName]: value,
+      }));
+
+      setData(tableData);
       setTotal(result.length);
     } catch (error) {
       console.error('Failed to load unique values:', error);

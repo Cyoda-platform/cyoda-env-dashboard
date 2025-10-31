@@ -17,6 +17,7 @@ import { HelperEntities } from '@cyoda/http-api-react/utils';
 import { useModellingStore } from '../../stores/modellingStore';
 import { useEntityViewerStore } from '@cyoda/http-api-react/stores';
 import { getReportingInfo, getReportingRelatedPaths } from '../../api/modelling';
+import { getEntityColumnValues } from '@cyoda/http-api-react/api';
 import './ModellingItem.scss';
 
 interface ModellingItemProps {
@@ -239,6 +240,26 @@ export const ModellingItem: React.FC<ModellingItemProps> = ({
     setUniqueValuesVisible(false);
   };
 
+  const handleLoadUniqueValues = async (
+    entityClass: string,
+    fieldPath: string,
+    page: number,
+    pageSize: number
+  ) => {
+    try {
+      const params = {
+        offset: page * pageSize,
+        length: pageSize,
+      };
+
+      const response = await getEntityColumnValues(entityClass, fieldPath, params);
+      return response.data || [];
+    } catch (error) {
+      console.error('Failed to load unique values:', error);
+      return [];
+    }
+  };
+
   // Fill form from checked values
   useEffect(() => {
     if (getTypes.length > 0 && getChecked) {
@@ -412,6 +433,7 @@ export const ModellingItem: React.FC<ModellingItemProps> = ({
         fieldPath={fullPath}
         entityClass={requestClass}
         onClose={handleCloseUniqueValues}
+        onLoadData={handleLoadUniqueValues}
       />
     </div>
   );

@@ -522,6 +522,8 @@ export const ReportConfigsStream: React.FC = () => {
           defaultPageSize: 10,
           pageSizeOptions: ['5', '10', '20', '50'],
           showSizeChanger: true,
+          className: 'pagination-bar',
+          selectComponentClass: undefined,
         }}
       />
 
