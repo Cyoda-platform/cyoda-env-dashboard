@@ -45,6 +45,7 @@ const CatalogueOfAliases: React.FC = () => {
   const queryClient = useQueryClient();
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [filterForm, setFilterForm] = useState<FilterForm>({});
+  const [pageSize, setPageSize] = useState<number>(50);
   const aliasDialogRef = useRef<ModellingPopUpAliasNewRef>(null);
   const changeStateDialogRef = useRef<CatalogueAliasChangeStateDialogRef>(null);
 
@@ -374,11 +375,12 @@ const CatalogueOfAliases: React.FC = () => {
           onChange: setSelectedRowKeys,
         }}
         pagination={{
-          pageSize: 50,
+          pageSize: pageSize,
           showSizeChanger: true,
           showTotal: (total) => `Total ${total} items`,
           className: 'pagination-bar',
           selectComponentClass: undefined,
+          onShowSizeChange: (current, size) => setPageSize(size),
         }}
         scroll={{ x: 1200 }}
       />

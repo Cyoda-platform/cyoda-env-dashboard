@@ -71,6 +71,7 @@ export const ReportConfigsStream: React.FC = () => {
   const [selectedReportId, setSelectedReportId] = useState<string | undefined>();
   const [exportLoading, setExportLoading] = useState(false);
   const [importLoading, setImportLoading] = useState(false);
+  const [pageSize, setPageSize] = useState<number>(10);
 
   const streamGridRef = useRef<ConfigEditorStreamGridRef>(null);
 
@@ -519,11 +520,13 @@ export const ReportConfigsStream: React.FC = () => {
         size="small"
         bordered
         pagination={{
-          defaultPageSize: 10,
+          pageSize: pageSize,
           pageSizeOptions: ['5', '10', '20', '50'],
           showSizeChanger: true,
+          showTotal: (total) => `Total ${total} items`,
           className: 'pagination-bar',
           selectComponentClass: undefined,
+          onShowSizeChange: (current, size) => setPageSize(size),
         }}
       />
 

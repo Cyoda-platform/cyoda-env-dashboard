@@ -81,6 +81,7 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
   const [runningReports, setRunningReports] = useState<RunningReport[]>([]);
   const [exportLoading, setExportLoading] = useState(false);
   const [importLoading, setImportLoading] = useState(false);
+  const [pageSize, setPageSize] = useState<number>(50);
 
   // Column widths state - load from localStorage
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>(() => {
@@ -695,11 +696,12 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
           onClick: () => setSelectedRowId(record.id),
         })}
         pagination={{
-          pageSize: 50,
+          pageSize: pageSize,
           showSizeChanger: true,
           showTotal: (total) => `Total ${total} items`,
           className: 'pagination-bar',
           selectComponentClass: undefined,
+          onShowSizeChange: (current, size) => setPageSize(size),
         }}
         scroll={{ x: 1100 }}
         components={{

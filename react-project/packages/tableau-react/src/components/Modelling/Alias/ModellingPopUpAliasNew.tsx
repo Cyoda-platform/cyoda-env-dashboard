@@ -500,6 +500,14 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
           } else {
             onCreate?.(catalogItem);
           }
+
+          // Also call report callbacks if provided (for adding to report after saving to catalog)
+          if (editItem) {
+            onUpdated?.(aliasDef);
+          } else {
+            onCreated?.(aliasDef);
+          }
+
           setVisible(false);
         }
         // Report mode - just call callbacks (no API save)

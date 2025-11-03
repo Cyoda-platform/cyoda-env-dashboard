@@ -7,7 +7,7 @@ import React, { useState, useMemo } from 'react';
 import { Table, notification } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { useQuery } from '@tanstack/react-query';
-import { axios } from '@cyoda/http-api-react';
+import { axios, useGlobalUiSettingsStore } from '@cyoda/http-api-react';
 import moment from 'moment';
 import type { ReportHistoryData, TableDataRow, HistorySettings, ConfigDefinition } from '@/types';
 import type { HistoryFilterForm } from '../utils/HelperReportDefinition';
@@ -22,13 +22,19 @@ interface HistoryTableProps {
 const HistoryTable: React.FC<HistoryTableProps> = ({ filter, onChange }) => {
   const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
 
+  // Get global entity type
+  const { entityType } = useGlobalUiSettingsStore();
+
   // Fetch report history
   const { data: reportHistoryData = [], isLoading } = useQuery({
-    queryKey: ['reportHistory', filter],
+    queryKey: ['reportHistory', filter, entityType],
     queryFn: async () => {
       try {
         const { data } = await axios.get('/platform-api/reporting/history', {
-          params: filter,
+          params: {
+            ...filter,
+            entityType, // Use global entity type instead of filter's entityType
+          },
         });
         return Array.isArray(data) ? data as ReportHistoryData[] : [];
       } catch (error) {

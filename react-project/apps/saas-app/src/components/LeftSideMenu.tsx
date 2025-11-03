@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Layout, Menu, Modal, Button } from 'antd';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
@@ -36,6 +36,7 @@ export const LeftSideMenu: React.FC<LeftSideMenuProps> = ({ collapsed, onCollaps
   const navigate = useNavigate();
   const location = useLocation();
   const [versionModalVisible, setVersionModalVisible] = useState(false);
+  const [openKeys, setOpenKeys] = useState<string[]>([]);
 
   const handleLogout = () => {
     Modal.confirm({
@@ -170,19 +171,35 @@ export const LeftSideMenu: React.FC<LeftSideMenuProps> = ({ collapsed, onCollaps
     return [];
   };
 
-  // Determine which submenu should be open
-  const getOpenKeys = (): string[] => {
-    const path = location.pathname;
-    const openKeys: string[] = [];
-    
-    if (path.startsWith('/tableau')) {
-      openKeys.push('reporting');
+  // Initialize openKeys on mount and when collapsed state changes
+  useEffect(() => {
+    if (collapsed) {
+      // When collapsed, close all submenus
+      setOpenKeys([]);
+    } else {
+      // When expanded (or on initial mount if not collapsed), open appropriate submenu
+      const path = location.pathname;
+      const keys: string[] = [];
+
+      if (path.startsWith('/tableau')) {
+        keys.push('reporting');
+      }
+      if (path.startsWith('/workflows') || path.startsWith('/instances') || path.startsWith('/workflow/') || path.startsWith('/instance/')) {
+        keys.push('lifecycle');
+      }
+
+      setOpenKeys(keys);
     }
-    if (path.startsWith('/workflows') || path.startsWith('/instances') || path.startsWith('/workflow/') || path.startsWith('/instance/')) {
-      openKeys.push('lifecycle');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [collapsed]); // Only react to collapsed state changes, not route changes
+
+  // Handle submenu open/close
+  const handleOpenChange = (keys: string[]) => {
+    // Only update openKeys when sidebar is expanded
+    // When collapsed, let Ant Design handle the popup menu automatically
+    if (!collapsed) {
+      setOpenKeys(keys);
     }
-    
-    return openKeys;
   };
 
   return (
@@ -210,7 +227,8 @@ export const LeftSideMenu: React.FC<LeftSideMenuProps> = ({ collapsed, onCollaps
             theme="dark"
             mode="inline"
             selectedKeys={getSelectedKey()}
-            defaultOpenKeys={getOpenKeys()}
+            openKeys={collapsed ? undefined : openKeys}
+            onOpenChange={handleOpenChange}
             items={menuItems}
             style={{
               borderRight: 0,

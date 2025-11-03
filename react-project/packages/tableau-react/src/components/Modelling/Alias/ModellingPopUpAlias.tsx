@@ -10,8 +10,8 @@ import { Modal, Button, Table, Space, message } from 'antd';
 import { PlusOutlined, SelectOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import type { TableColumnsType } from 'antd';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { axios } from '@cyoda/http-api-react';
-import type { AliasDef } from '@cyoda/http-api-react';
+import { axios, createCatalogItem, updateCatalogItem } from '@cyoda/http-api-react';
+import type { AliasDef, CatalogItem as CatalogItemType } from '@cyoda/http-api-react';
 import ModellingPopUpAliasNew, { ModellingPopUpAliasNewRef } from './ModellingPopUpAliasNew';
 import type { ReportDefinition } from '../../../types';
 import './ModellingPopUpAlias.scss';
@@ -70,6 +70,38 @@ export const ModellingPopUpAlias = forwardRef<ModellingPopUpAliasRef, ModellingP
         return data as CatalogItem[];
       },
       enabled: visible && !!requestClass,
+    });
+
+    // Create catalog item mutation
+    const createMutation = useMutation({
+      mutationFn: async (item: CatalogItemType) => {
+        await createCatalogItem(item);
+      },
+      onSuccess: () => {
+        message.success('Alias saved to catalog successfully');
+        refetch();
+        // Invalidate the main catalog items query so the Catalogue of Aliases page updates
+        queryClient.invalidateQueries({ queryKey: ['catalogItems'] });
+      },
+      onError: () => {
+        message.error('Failed to save alias to catalog');
+      },
+    });
+
+    // Update catalog item mutation
+    const updateMutation = useMutation({
+      mutationFn: async ({ id, item }: { id: string; item: CatalogItemType }) => {
+        await updateCatalogItem(id, item);
+      },
+      onSuccess: () => {
+        message.success('Alias updated in catalog successfully');
+        refetch();
+        // Invalidate the main catalog items query so the Catalogue of Aliases page updates
+        queryClient.invalidateQueries({ queryKey: ['catalogItems'] });
+      },
+      onError: () => {
+        message.error('Failed to update alias in catalog');
+      },
     });
 
     // Delete mutation
@@ -184,11 +216,22 @@ export const ModellingPopUpAlias = forwardRef<ModellingPopUpAliasRef, ModellingP
       setVisible(false);
     };
 
-    const handleAliasCreated = (aliasDef: AliasDef) => {
+    // Handle alias created - save to catalog AND add to report
+    const handleAliasCreatedFromNew = (aliasDef: AliasDef) => {
+      // Add to report
       if (onChange) {
         onChange(aliasDef);
       }
-      refetch();
+    };
+
+    // Handle catalog item created - save to catalog
+    const handleCatalogItemCreated = (item: CatalogItemType) => {
+      createMutation.mutate(item);
+    };
+
+    // Handle catalog item updated - update in catalog
+    const handleCatalogItemUpdated = (id: string, item: CatalogItemType) => {
+      updateMutation.mutate({ id, item });
     };
 
     const columns: TableColumnsType<TableRow> = [
@@ -291,9 +334,11 @@ export const ModellingPopUpAlias = forwardRef<ModellingPopUpAliasRef, ModellingP
           configDefinition={configDefinition}
           allowSelectEntity={false}
           allowConfigFile={false}
-          aliasEditType="report"
-          onCreated={handleAliasCreated}
-          onUpdated={handleAliasCreated}
+          aliasEditType="catalog"
+          onCreate={handleCatalogItemCreated}
+          onUpdate={handleCatalogItemUpdated}
+          onCreated={handleAliasCreatedFromNew}
+          onUpdated={handleAliasCreatedFromNew}
         />
       </>
     );

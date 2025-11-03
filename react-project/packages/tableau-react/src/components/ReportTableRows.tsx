@@ -25,7 +25,7 @@ const ReportTableRows: React.FC<ReportTableRowsProps> = ({
 }) => {
   const [tableData, setTableData] = useState<any[]>([]);
   const [tableColumns, setTableColumns] = useState<TableColumn[]>([]);
-  const [pageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(50);
   const [selectedRow, setSelectedRow] = useState<any>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
@@ -181,9 +181,10 @@ const ReportTableRows: React.FC<ReportTableRowsProps> = ({
         loading={!tableLinkRows || tableData.length === 0}
         rowKey={(record) => record.id || record.key || JSON.stringify(record)}
         pagination={{
-          pageSize: 50,
+          pageSize: pageSize,
           showSizeChanger: true,
           showTotal: (total) => `Total ${total} rows`,
+          onShowSizeChange: (current, size) => setPageSize(size),
         }}
         scroll={{ x: 'max-content', y: 400 }}
         bordered

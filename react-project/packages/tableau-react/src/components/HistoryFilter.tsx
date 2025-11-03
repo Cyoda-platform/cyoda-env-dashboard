@@ -6,7 +6,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Form, Select, DatePicker, Row, Col, Input } from 'antd';
 import { useQuery } from '@tanstack/react-query';
-import { axios } from '@cyoda/http-api-react';
+import { axios, useGlobalUiSettingsStore } from '@cyoda/http-api-react';
 import dayjs, { Dayjs } from 'dayjs';
 import type { HistoryFilterForm } from '../utils/HelperReportDefinition';
 import HelperReportDefinition from '../utils/HelperReportDefinition';
@@ -43,6 +43,9 @@ const HistoryFilter: React.FC<HistoryFilterProps> = ({
   const storage = useMemo(() => new HelperStorage(), []);
   const [form] = Form.useForm();
 
+  // Get global entity type
+  const { entityType } = useGlobalUiSettingsStore();
+
   // Initialize form with saved or default values
   const initialFilter = useMemo(() => {
     return storage.get<HistoryFilterForm>(
@@ -55,11 +58,14 @@ const HistoryFilter: React.FC<HistoryFilterProps> = ({
 
   // Load report definitions to get users and types
   const { data: definitions = [] } = useQuery({
-    queryKey: ['reportDefinitions'],
+    queryKey: ['reportDefinitions', entityType],
     queryFn: async () => {
       try {
         const { data } = await axios.get<{ _embedded: { gridConfigFieldsViews: GridConfigFieldsView[] } }>(
-          '/platform-api/reporting/definitions'
+          '/platform-api/reporting/definitions',
+          {
+            params: { entityType },
+          }
         );
         return data._embedded?.gridConfigFieldsViews || [];
       } catch (error) {
@@ -71,11 +77,14 @@ const HistoryFilter: React.FC<HistoryFilterProps> = ({
 
   // Load report types
   const { data: reportTypes = [] } = useQuery({
-    queryKey: ['reportTypes'],
+    queryKey: ['reportTypes', entityType],
     queryFn: async () => {
       try {
         const { data } = await axios.get<{ _embedded: { strings: string[] } }>(
-          '/platform-api/reporting/types'
+          '/platform-api/reporting/types',
+          {
+            params: { entityType },
+          }
         );
         const types = data._embedded?.strings || [];
         return types.map((type) => ({
