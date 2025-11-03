@@ -66,7 +66,7 @@ export const LeftSideMenu: React.FC<LeftSideMenuProps> = ({ collapsed, onCollaps
     setVersionModalVisible(true);
   };
 
-  // Handle menu item clicks with support for middle-click to open in new tab
+  // Handle menu item clicks (left-click only)
   const handleMenuClick = (info: { key: string; domEvent: React.MouseEvent }) => {
     const { key, domEvent } = info;
 
@@ -85,11 +85,10 @@ export const LeftSideMenu: React.FC<LeftSideMenuProps> = ({ collapsed, onCollaps
       return;
     }
 
-    // Check if middle-click (button 1) or ctrl/cmd + click
-    const isMiddleClick = domEvent.button === 1;
+    // Check if ctrl/cmd + click
     const isCtrlClick = domEvent.ctrlKey || domEvent.metaKey;
 
-    if (isMiddleClick || isCtrlClick) {
+    if (isCtrlClick) {
       // Open in new tab
       window.open(key, '_blank');
     } else {
@@ -98,11 +97,45 @@ export const LeftSideMenu: React.FC<LeftSideMenuProps> = ({ collapsed, onCollaps
     }
   };
 
+  // Handle mouse up to capture middle-click
+  const handleMouseUp = (e: React.MouseEvent) => {
+    // Only handle middle-click (button 1)
+    if (e.button !== 1) return;
+
+    // Find the menu item element first
+    let target = e.target as HTMLElement;
+    let menuItem: HTMLElement | null = null;
+
+    // Traverse up to find the ant-menu-item element
+    while (target && target !== e.currentTarget) {
+      if (target.classList && target.classList.contains('ant-menu-item')) {
+        menuItem = target;
+        break;
+      }
+      target = target.parentElement as HTMLElement;
+    }
+
+    if (!menuItem) return;
+
+    // Now find the element with data-path within the menu item
+    const spanWithPath = menuItem.querySelector('[data-path]') as HTMLElement;
+
+    if (!spanWithPath) return;
+
+    const path = spanWithPath.getAttribute('data-path');
+
+    if (!path) return;
+
+    // Open in new tab
+    window.open(path, '_blank');
+    e.preventDefault();
+  };
+
   const menuItems: MenuItem[] = [
     {
       key: '/trino',
       icon: <DatabaseOutlined />,
-      label: 'Trino SQL schemas',
+      label: <span data-path="/trino">Trino SQL schemas</span>,
     },
     {
       key: 'reporting',
@@ -112,17 +145,17 @@ export const LeftSideMenu: React.FC<LeftSideMenuProps> = ({ collapsed, onCollaps
         {
           key: '/tableau/reports',
           icon: <BarChartOutlined />,
-          label: 'Report config editor',
+          label: <span data-path="/tableau/reports">Report config editor</span>,
         },
         {
           key: '/tableau/reports/stream',
           icon: <LineChartOutlined />,
-          label: 'Stream Reports',
+          label: <span data-path="/tableau/reports/stream">Stream Reports</span>,
         },
         {
           key: '/tableau/catalogue-of-aliases',
           icon: <TagsOutlined />,
-          label: 'Catalog of aliases',
+          label: <span data-path="/tableau/catalogue-of-aliases">Catalog of aliases</span>,
         },
       ],
     },
@@ -134,29 +167,29 @@ export const LeftSideMenu: React.FC<LeftSideMenuProps> = ({ collapsed, onCollaps
         {
           key: '/workflows',
           icon: <ProjectOutlined />,
-          label: 'Workflow',
+          label: <span data-path="/workflows">Workflow</span>,
         },
         {
           key: '/instances',
           icon: <AppstoreOutlined />,
-          label: 'Instances',
+          label: <span data-path="/instances">Instances</span>,
         },
       ],
     },
     {
       key: '/tasks',
       icon: <CheckSquareOutlined />,
-      label: 'Tasks',
+      label: <span data-path="/tasks">Tasks</span>,
     },
     {
       key: '/entity-viewer',
       icon: <EyeOutlined />,
-      label: 'Entity viewer',
+      label: <span data-path="/entity-viewer">Entity viewer</span>,
     },
     {
       key: '/processing-ui',
       icon: <ClusterOutlined />,
-      label: 'Processing',
+      label: <span data-path="/processing-ui">Processing</span>,
     },
     {
       type: 'divider',
@@ -243,7 +276,7 @@ export const LeftSideMenu: React.FC<LeftSideMenuProps> = ({ collapsed, onCollaps
           bottom: 0,
         }}
       >
-        <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }} onMouseUp={handleMouseUp}>
           <Menu
             theme="dark"
             mode="inline"
