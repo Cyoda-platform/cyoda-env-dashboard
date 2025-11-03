@@ -188,7 +188,7 @@ const ReportTableRows: React.FC<ReportTableRowsProps> = ({
           <span
             className="clickable-cell"
             onClick={() => handleCellClick(record, col.prop)}
-            style={{ cursor: 'pointer', color: '#1890ff', textDecoration: 'underline' }}
+            style={{ cursor: 'pointer', color: '#00D4AA', textDecoration: 'underline' }}
           >
             {Array.isArray(value) ? `[Array: ${value.length} items]` : '[Object]'}
           </span>

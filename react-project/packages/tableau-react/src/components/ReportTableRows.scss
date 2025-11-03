@@ -60,5 +60,22 @@
     padding: 40px;
     color: #999;
   }
+
+  // Clickable cell styling for object/array values - Dark theme
+  .clickable-cell {
+    cursor: pointer;
+    color: #00D4AA;
+    text-decoration: underline;
+    transition: all 0.2s ease;
+
+    &:hover {
+      color: #00E5BF;
+      text-decoration: none;
+    }
+
+    &:active {
+      color: #00B894;
+    }
+  }
 }
 

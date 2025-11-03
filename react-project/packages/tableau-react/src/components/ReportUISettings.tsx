@@ -36,10 +36,11 @@ const ReportUISettings: React.FC<ReportUISettingsProps> = ({
   }, [configDefinition]);
 
   // Check if we need to show the settings button
-  // Only show if there's no "id" column in the list
+  // Only show if there's no "id" column in the list and idFieldList is not empty
   const isNeedToShow = useMemo(() => {
     return (
       reportDefinitionId &&
+      idFieldList.length > 0 &&
       !idFieldList.find((el) => el.value === 'id')
     );
   }, [reportDefinitionId, idFieldList]);

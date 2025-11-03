@@ -1,23 +1,57 @@
+/**
+ * ColumnCollectionsDialog Component Styles - Dark Theme
+ * Migrated from: .old_project/packages/tableau/src/components/AdaptableBlotterColumnCollections.vue
+ */
+
 .column-collections-dialog {
+  .ant-modal-content {
+    background-color: var(--refine-bg-secondary, #1E2A3A);
+  }
+
+  .ant-modal-header {
+    background-color: var(--refine-bg-secondary, #1E2A3A);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+    .ant-modal-title {
+      color: var(--refine-text-primary, #F9FAFB);
+      font-weight: 600;
+    }
+  }
+
+  .ant-modal-body {
+    background-color: var(--refine-bg-secondary, #1E2A3A);
+  }
+
+  .ant-modal-footer {
+    background-color: var(--refine-bg-secondary, #1E2A3A);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
   .column-collections-content {
     .sub-row {
       display: flex;
       margin-bottom: 10px;
       padding: 0;
-      border: 1px solid #dfe6ec;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      overflow: hidden;
 
       .sub-row-title {
-        background: #eef1f6;
-        padding: 5px 10px;
+        background: rgba(0, 212, 170, 0.1);
+        padding: 8px 12px;
         width: 200px;
-        margin-right: 10px;
-        font-weight: 500;
+        margin-right: 0;
+        font-weight: 600;
+        color: #00D4AA;
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
       }
 
       .sub-row-value {
-        padding: 5px 10px;
+        padding: 8px 12px;
         flex: 1;
         word-break: break-word;
+        color: var(--refine-text-primary, #F9FAFB);
+        background: rgba(255, 255, 255, 0.02);
       }
     }
   }

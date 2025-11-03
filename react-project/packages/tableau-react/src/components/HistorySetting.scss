@@ -1,12 +1,64 @@
+/**
+ * HistorySetting Component Styles - Dark Theme
+ * Migrated from: .old_project/packages/http-api/src/views/History/HistorySetting.vue
+ */
+
 .history-setting {
+  padding: 20px;
+  background: transparent;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 20px;
+
   h2 {
     font-size: 18px;
+    font-weight: 600;
     margin-bottom: 16px;
+    color: var(--refine-text-primary, #F9FAFB);
   }
 
   .ant-form {
     .ant-form-item {
       margin-bottom: 0;
+
+      .ant-form-item-label > label {
+        color: var(--refine-text-secondary, #D1D5DB);
+        font-weight: 500;
+      }
+    }
+  }
+
+  // Switch styling for dark theme
+  .ant-switch {
+    background-color: rgba(255, 255, 255, 0.1);
+
+    &.ant-switch-checked {
+      background-color: #00D4AA;
+    }
+  }
+
+  // Radio button styling for dark theme
+  .ant-radio-group {
+    .ant-radio-button-wrapper {
+      background: transparent;
+      border-color: rgba(0, 212, 170, 0.3);
+      color: var(--refine-text-secondary, #D1D5DB);
+
+      &:hover {
+        color: #00E5BF;
+        border-color: #00D4AA;
+      }
+
+      &.ant-radio-button-wrapper-checked {
+        background: #00D4AA;
+        border-color: #00D4AA;
+        color: #FFFFFF;
+
+        &:hover {
+          background: #00E5BF;
+          border-color: #00E5BF;
+        }
+      }
     }
   }
 }
