@@ -121,7 +121,7 @@ const QuickRunReport: React.FC<QuickRunReportProps> = ({
           onRunReport(selectedConfig.id, showResult);
         } else {
           // Default implementation - use the correct endpoint
-          const { data } = await axios.post(`/platform-api/pre?gridConfig=${encodeURIComponent(selectedConfig.id)}`);
+          const { data } = await axios.post(`/platform-api/reporting/pre?gridConfig=${encodeURIComponent(selectedConfig.id)}`);
           message.success('Report execution started');
 
           console.log('Report started:', data);

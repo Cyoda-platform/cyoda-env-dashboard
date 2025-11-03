@@ -31,25 +31,27 @@ export const ResizableTitle = (props: any) => {
     }
   }
 
-  console.log('ResizableTitle render:', {
-    width,
-    columnWidth,
-    hasOnResize: !!onResize,
-    styleWidth: restProps.style?.width,
-    children: restProps.children,
-  });
+  // Debug logging - disabled in production
+  // Uncomment for debugging:
+  // console.log('ResizableTitle render:', {
+  //   width,
+  //   columnWidth,
+  //   hasOnResize: !!onResize,
+  //   styleWidth: restProps.style?.width,
+  //   children: restProps.children,
+  // });
 
   if (!columnWidth) {
-    console.log('ResizableTitle: returning plain th (no width found)');
+    // console.log('ResizableTitle: returning plain th (no width found)');
     return <th {...restProps} />;
   }
 
   if (!onResize) {
-    console.log('ResizableTitle: returning plain th (no onResize)');
+    // console.log('ResizableTitle: returning plain th (no onResize)');
     return <th {...restProps} style={{ ...restProps.style, width: columnWidth }} />;
   }
 
-  console.log('ResizableTitle: rendering Resizable with width:', columnWidth);
+  // console.log('ResizableTitle: rendering Resizable with width:', columnWidth);
 
   return (
     <Resizable

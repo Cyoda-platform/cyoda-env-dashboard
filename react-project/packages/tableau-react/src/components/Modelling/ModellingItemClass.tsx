@@ -2,9 +2,10 @@
  * ModellingItemClass Component
  * Individual class item with expandable children
  * Migrated from: CyodaModellingItemClass.vue
+ * Fixed: Removed Spin wrapper to prevent click event interference
  */
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Spin } from 'antd';
 import { CaretDownOutlined, CaretRightOutlined } from '@ant-design/icons';
 import { ModellingGroup } from './ModellingGroup';
@@ -118,14 +119,25 @@ export const ModellingItemClass: React.FC<ModellingItemClassProps> = ({
   }, [requestParam, getChecked]);
 
   // Handle "Open all selected" toggle
+  // Use a ref to track the previous value of isOpenAllSelected
+  const prevIsOpenAllSelectedRef = useRef(isOpenAllSelected);
+
   useEffect(() => {
-    if (isOpenAllSelected && getChecked) {
-      handleClick();
+    // Only run if isOpenAllSelected actually changed
+    if (prevIsOpenAllSelectedRef.current !== isOpenAllSelected) {
+      prevIsOpenAllSelectedRef.current = isOpenAllSelected;
+
+      if (isOpenAllSelected && getChecked) {
+        // Open the item if it's checked
+        if (!isShowGroup) {
+          handleClick();
+        }
+      } else if (!isOpenAllSelected && getChecked && isShowGroup) {
+        // Only collapse if it's currently open
+        setIsShowGroup(false);
+      }
     }
-    if (!isOpenAllSelected && getChecked) {
-      setIsShowGroup(false);
-    }
-  }, [isOpenAllSelected, getChecked]);
+  }, [isOpenAllSelected, getChecked, isShowGroup]);
 
   // Load data with optional form values
   const loadData = async (columnPath: string) => {
@@ -169,33 +181,33 @@ export const ModellingItemClass: React.FC<ModellingItemClassProps> = ({
   }
 
   return (
-    <div className="modelling-item-class">
-      <Spin spinning={isLoading}>
-        {(!reportingInfoRows || reportingInfoRows.length > 0) && (
-          <span onClick={handleClick} className={getChecked ? 'checked-path' : ''} style={{ cursor: 'pointer' }}>
-            {isShowGroup ? <CaretDownOutlined /> : <CaretRightOutlined />}
-          </span>
-        )}
-
-        <span className={`name ${getChecked ? 'checked-path' : ''}`} style={{ marginLeft: 8 }}>
-          {!reportingInfoRows || reportingInfoRows.length > 0 ? (
-            <a onClick={handleClick}>{reportClassComputed}</a>
-          ) : (
-            <span className="empty-link">{reportClassComputed}</span>
-          )}
+    <div className="modelling-item-class" style={{ position: 'relative' }}>
+      {(!reportingInfoRows || reportingInfoRows.length > 0) && (
+        <span onClick={handleClick} className={getChecked ? 'checked-path' : ''} style={{ cursor: 'pointer' }}>
+          {isShowGroup ? <CaretDownOutlined /> : <CaretRightOutlined />}
         </span>
+      )}
 
-        {isShowGroup && reportingInfoRows && (
-          <div style={{ marginLeft: 0, marginTop: 0 }}>
-            {/* Form for types (LIST/MAP indices) */}
-            {requestParam.types && requestParam.types.length > 0 && !onlyView && (
-              <ModellingItemClassForm
-                types={requestParam.types}
-                values={formValues}
-                onChange={handleFormChange}
-              />
-            )}
+      <span className={`name ${getChecked ? 'checked-path' : ''}`} style={{ marginLeft: 8 }}>
+        {!reportingInfoRows || reportingInfoRows.length > 0 ? (
+          <a onClick={handleClick}>{reportClassComputed}</a>
+        ) : (
+          <span className="empty-link">{reportClassComputed}</span>
+        )}
+      </span>
 
+      {isShowGroup && (
+        <div>
+          {/* Form for types (LIST/MAP indices) */}
+          {requestParam.types && requestParam.types.length > 0 && !onlyView && (
+            <ModellingItemClassForm
+              types={requestParam.types}
+              values={formValues}
+              onChange={handleFormChange}
+            />
+          )}
+
+          {reportingInfoRows && (
             <ModellingGroup
               reportInfoRows={reportingInfoRows}
               requestClass={requestParam.requestClass}
@@ -209,9 +221,13 @@ export const ModellingItemClass: React.FC<ModellingItemClassProps> = ({
               disablePreview={disablePreview}
               parentColDef={parentColDef}
             />
-          </div>
-        )}
-      </Spin>
+          )}
+        </div>
+      )}
+
+      {isLoading && (
+        <Spin style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} />
+      )}
     </div>
   );
 };

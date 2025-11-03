@@ -48,7 +48,7 @@ export const reportUrls = {
   REPORT_STATISTICS: (reportId: string) => `platform-api/report/${reportId}/stats?full=false`,
   REPORT_GROUPS: (reportId: string) => `platform-api/report/${reportId}/groups`,
   REPORT_GROUP: (reportId: string, groupId: string) => `platform-api/report/${reportId}/groups/${groupId}`,
-  RUN_REPORT_FROM_PREDEFINED_CONFIG: (gridConfig: string) => `/platform-api/pre?gridConfig=${gridConfig}`,
+  RUN_REPORT_FROM_PREDEFINED_CONFIG: (gridConfig: string) => `/platform-api/reporting/pre?gridConfig=${gridConfig}`,
   GET_REPORT_CONFIGS: () => `/platform-api/definitions?fields=description`,
 };
 

@@ -2,19 +2,38 @@
   margin-bottom: 12px;
 
   .flex {
-    display: flex;
-    align-items: center;
-    gap: 4px;
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 0 !important;
+    flex-wrap: nowrap !important;
+    width: auto !important;
+    max-width: fit-content !important;
   }
 
   .inner-field-type {
+    margin-right: 5px !important;
+    margin-left: 0 !important;
+    flex-shrink: 0 !important;
+    flex-grow: 0 !important;
+    width: auto !important;
+    max-width: 125px !important;
+
     .ant-input {
-      width: 120px;
+      width: 120px !important;
+      max-width: 120px !important;
     }
   }
 
   .wrap-btn {
-    // Button is now closer due to gap in flex
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    flex-shrink: 0 !important;
+    flex-grow: 0 !important;
+    width: auto !important;
+
+    .ant-btn {
+      margin-left: 0 !important;
+    }
   }
 }
 

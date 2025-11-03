@@ -4,7 +4,7 @@
 
 - Node.js installed
 - npm installed
-- Access to Cyoda backend at `https://cyoda-develop.kube.cyoda.org`
+- Access to Cyoda backend at `https://cyoda-develop.kube3.cyoda.org`
 - Valid Cyoda credentials or Auth0 account
 
 ## Quick Start (3 Steps)

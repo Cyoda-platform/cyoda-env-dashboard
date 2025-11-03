@@ -3,7 +3,7 @@
 ## Summary
 
 The Cyoda SaaS app has been successfully configured to connect to the Cyoda backend at:
-**`https://cyoda-develop.kube.cyoda.org`**
+**`https://cyoda-develop.kube3.cyoda.org`**
 
 ## Completed Tasks ✅
 
@@ -77,9 +77,9 @@ BACKEND_CONNECTION_CHECKLIST.md                             ✅ Created
 
 ### Environment Variables
 ```bash
-VITE_APP_API_BASE=https://cyoda-develop.kube.cyoda.org/api
-VITE_APP_API_BASE_PROCESSING=https://cyoda-develop.kube.cyoda.org/api/processing
-VITE_APP_BASE_URL=https://cyoda-develop.kube.cyoda.org/
+VITE_APP_API_BASE=/api
+VITE_APP_API_BASE_PROCESSING=
+VITE_APP_BASE_URL=https://cyoda-develop.kube3.cyoda.org/
 VITE_APP_GRAFANA_API_URL=https://grafana.cyoda.com/api
 VITE_APP_AUTH0_DOMAIN=dev-ex6r-yqc.us.auth0.com
 VITE_APP_AUTH0_CLIENT_ID=2kuC9TpwD2lxTYbzFO3GLpx4EHO6362A
@@ -91,17 +91,17 @@ VITE_APP_DEBUG=true
 ```typescript
 proxy: {
   '/platform-api': {
-    target: 'https://cyoda-develop.kube.cyoda.org',
+    target: 'https://cyoda-develop.kube3.cyoda.org',
     changeOrigin: true,
     secure: false,
   },
   '/platform-processing': {
-    target: 'https://cyoda-develop.kube.cyoda.org',
+    target: 'https://cyoda-develop.kube3.cyoda.org/api',
     changeOrigin: true,
     secure: false,
   },
   '/api': {
-    target: 'https://cyoda-develop.kube.cyoda.org',
+    target: 'https://cyoda-develop.kube3.cyoda.org',
     changeOrigin: true,
     secure: false,
   },
@@ -112,7 +112,7 @@ proxy: {
 
 ### Backend Connectivity Test
 ```
-✓ Backend is reachable at https://cyoda-develop.kube.cyoda.org
+✓ Backend is reachable at https://cyoda-develop.kube3.cyoda.org
 ✓ API endpoint responded with HTTP 302
 ✓ Platform API endpoint responded with HTTP 200
 ✓ Processing API endpoint responded with HTTP 401 (expected - requires auth)
@@ -261,7 +261,7 @@ npm run build
 cat .env
 
 # Test backend directly
-curl https://cyoda-develop.kube.cyoda.org/platform-api
+curl https://cyoda-develop.kube3.cyoda.org/platform-api
 ```
 
 ## Success Criteria ✅

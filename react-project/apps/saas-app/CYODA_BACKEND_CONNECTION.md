@@ -2,7 +2,7 @@
 
 ## Overview
 
-This guide explains how the SaaS app is configured to connect to the Cyoda backend at `https://cyoda-develop.kube.cyoda.org`.
+This guide explains how the SaaS app is configured to connect to the Cyoda backend at `https://cyoda-develop.kube3.cyoda.org`.
 
 ## Configuration Changes
 
@@ -16,13 +16,13 @@ The `.env` file has been updated with the following Cyoda backend configuration:
 # ============================================================================
 
 # Main API Base URL - Points to Cyoda backend
-VITE_APP_API_BASE=https://cyoda-develop.kube.cyoda.org/api
+VITE_APP_API_BASE=/api
 
 # Processing API Base URL
-VITE_APP_API_BASE_PROCESSING=https://cyoda-develop.kube.cyoda.org/api/processing
+VITE_APP_API_BASE_PROCESSING=
 
 # Base URL for the application
-VITE_APP_BASE_URL=https://cyoda-develop.kube.cyoda.org/
+VITE_APP_BASE_URL=https://cyoda-develop.kube3.cyoda.org/
 
 # ============================================================================
 # Grafana Configuration
@@ -58,17 +58,17 @@ server: {
   proxy: {
     // Proxy to Cyoda backend
     '/platform-api': {
-      target: 'https://cyoda-develop.kube.cyoda.org',
+      target: 'https://cyoda-develop.kube3.cyoda.org',
       changeOrigin: true,
       secure: false,
     },
     '/platform-processing': {
-      target: 'https://cyoda-develop.kube.cyoda.org',
+      target: 'https://cyoda-develop.kube3.cyoda.org/api',
       changeOrigin: true,
       secure: false,
     },
     '/api': {
-      target: 'https://cyoda-develop.kube.cyoda.org',
+      target: 'https://cyoda-develop.kube3.cyoda.org',
       changeOrigin: true,
       secure: false,
     },
@@ -133,8 +133,8 @@ API Request
 
 The app uses the following API base URLs:
 
-- **Main API:** `https://cyoda-develop.kube.cyoda.org/api`
-- **Processing API:** `https://cyoda-develop.kube.cyoda.org/api/processing`
+- **Main API:** `https://cyoda-develop.kube3.cyoda.org/api`
+- **Processing API:** `https://cyoda-develop.kube3.cyoda.org/api/processing`
 
 ### Key Endpoints
 
@@ -202,7 +202,7 @@ Open browser DevTools → Network tab:
 - Check credentials are valid for Cyoda backend
 - Verify Auth0 configuration matches backend
 - Check browser console for detailed error messages
-- Verify backend is accessible at `https://cyoda-develop.kube.cyoda.org`
+- Verify backend is accessible at `https://cyoda-develop.kube3.cyoda.org`
 
 ### Proxy Issues
 - Check Vite dev server console for proxy errors
@@ -229,9 +229,9 @@ VITE_APP_BASE_URL=http://localhost:8081/
 
 ### Cyoda Development
 ```bash
-VITE_APP_API_BASE=https://cyoda-develop.kube.cyoda.org/api
-VITE_APP_API_BASE_PROCESSING=https://cyoda-develop.kube.cyoda.org/api/processing
-VITE_APP_BASE_URL=https://cyoda-develop.kube.cyoda.org/
+VITE_APP_API_BASE=/api
+VITE_APP_API_BASE_PROCESSING=
+VITE_APP_BASE_URL=https://cyoda-develop.kube3.cyoda.org/
 ```
 
 ### Production

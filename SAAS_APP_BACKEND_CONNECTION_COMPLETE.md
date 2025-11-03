@@ -2,7 +2,7 @@
 
 ## Summary
 
-The Cyoda SaaS app has been successfully configured to connect to the Cyoda backend at `https://cyoda-develop.kube.cyoda.org`.
+The Cyoda SaaS app has been successfully configured to connect to the Cyoda backend at `https://cyoda-develop.kube3.cyoda.org`.
 
 ## Changes Made
 
@@ -11,9 +11,9 @@ The Cyoda SaaS app has been successfully configured to connect to the Cyoda back
 **File:** `react-project/apps/saas-app/.env`
 
 Updated with Cyoda backend URLs:
-- `VITE_APP_API_BASE=https://cyoda-develop.kube.cyoda.org/api`
-- `VITE_APP_API_BASE_PROCESSING=https://cyoda-develop.kube.cyoda.org/api/processing`
-- `VITE_APP_BASE_URL=https://cyoda-develop.kube.cyoda.org/`
+- `VITE_APP_API_BASE=/api`
+- `VITE_APP_API_BASE_PROCESSING=`
+- `VITE_APP_BASE_URL=https://cyoda-develop.kube3.cyoda.org/`
 - Added Grafana configuration
 - Added Auth0 configuration
 - Enabled debug mode
@@ -97,7 +97,7 @@ Created comprehensive documentation:
        ▼
 ┌─────────────────────────────────┐
 │   Cyoda Backend                 │
-│ cyoda-develop.kube.cyoda.org    │
+│ cyoda-develop.kube3.cyoda.org   │
 └──────┬──────────────────────────┘
        │
        │ 3. Return token

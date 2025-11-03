@@ -8,7 +8,7 @@ echo "Testing Cyoda Backend Connection"
 echo "=========================================="
 echo ""
 
-BACKEND_URL="https://cyoda-develop.kube.cyoda.org"
+BACKEND_URL="https://cyoda-develop.kube3.cyoda.org"
 
 # Test 1: Check if backend is reachable
 echo "Test 1: Checking backend reachability..."
@@ -54,19 +54,19 @@ echo ""
 echo "Test 5: Checking environment variables..."
 if [ -f ".env" ]; then
     echo "✓ .env file exists"
-    
-    if grep -q "VITE_APP_API_BASE=https://cyoda-develop.kube.cyoda.org/api" .env; then
+
+    if grep -q "VITE_APP_API_BASE=/api" .env; then
         echo "✓ VITE_APP_API_BASE is configured correctly"
     else
         echo "✗ VITE_APP_API_BASE is not configured correctly"
     fi
-    
-    if grep -q "VITE_APP_API_BASE_PROCESSING=https://cyoda-develop.kube.cyoda.org/api/processing" .env; then
-        echo "✓ VITE_APP_API_BASE_PROCESSING is configured correctly"
+
+    if grep -q "VITE_APP_BASE_URL=https://cyoda-develop.kube3.cyoda.org" .env; then
+        echo "✓ VITE_APP_BASE_URL is configured correctly"
     else
-        echo "✗ VITE_APP_API_BASE_PROCESSING is not configured correctly"
+        echo "✗ VITE_APP_BASE_URL is not configured correctly"
     fi
-    
+
     if grep -q "VITE_APP_AUTH0_DOMAIN" .env; then
         echo "✓ Auth0 configuration found"
     else

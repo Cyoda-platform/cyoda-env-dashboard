@@ -296,7 +296,7 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
   // Run report mutation
   const runReportMutation = useMutation({
     mutationFn: async (configId: string) => {
-      const { data } = await axios.post(`/platform-api/pre?gridConfig=${encodeURIComponent(configId)}`);
+      const { data } = await axios.post(`/platform-api/reporting/pre?gridConfig=${encodeURIComponent(configId)}`);
       return data;
     },
     onSuccess: (data, configId) => {
