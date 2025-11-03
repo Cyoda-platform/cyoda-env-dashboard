@@ -34,7 +34,7 @@ export default defineConfig({
       // Proxy all /platform-processing requests to real Cyoda backend server
       // This must come BEFORE /api to match more specific paths first
       '/platform-processing': {
-        target: 'https://cyoda-develop.kube.cyoda.org/api',
+        target: 'https://cyoda-develop.kube3.cyoda.org/api',
         changeOrigin: true,
         secure: false,
         configure: (proxy, options) => {
@@ -50,9 +50,9 @@ export default defineConfig({
         },
       },
       // Proxy all /api requests to real Cyoda backend server
-      // CONNECTED TO REAL CYODA INSTANCE: cyoda-develop.kube.cyoda.org
+      // CONNECTED TO REAL CYODA INSTANCE: cyoda-develop.kube3.cyoda.org
       '/api': {
-        target: 'https://cyoda-develop.kube.cyoda.org',
+        target: 'https://cyoda-develop.kube3.cyoda.org',
         changeOrigin: true,
         secure: false,
         configure: (proxy, options) => {
@@ -69,7 +69,7 @@ export default defineConfig({
       },
       // Proxy all /platform-api requests to real Cyoda backend server
       '/platform-api': {
-        target: 'https://cyoda-develop.kube.cyoda.org',
+        target: 'https://cyoda-develop.kube3.cyoda.org',
         changeOrigin: true,
         secure: false,
         configure: (proxy, options) => {
