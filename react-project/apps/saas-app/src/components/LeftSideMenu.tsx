@@ -66,12 +66,43 @@ export const LeftSideMenu: React.FC<LeftSideMenuProps> = ({ collapsed, onCollaps
     setVersionModalVisible(true);
   };
 
+  // Handle menu item clicks with support for middle-click to open in new tab
+  const handleMenuClick = (info: { key: string; domEvent: React.MouseEvent }) => {
+    const { key, domEvent } = info;
+
+    // Special handlers for non-navigation items
+    if (key === 'logout') {
+      handleLogout();
+      return;
+    }
+    if (key === 'version') {
+      handleVersionClick();
+      return;
+    }
+
+    // Skip parent menu items (they don't navigate)
+    if (key === 'reporting' || key === 'lifecycle') {
+      return;
+    }
+
+    // Check if middle-click (button 1) or ctrl/cmd + click
+    const isMiddleClick = domEvent.button === 1;
+    const isCtrlClick = domEvent.ctrlKey || domEvent.metaKey;
+
+    if (isMiddleClick || isCtrlClick) {
+      // Open in new tab
+      window.open(key, '_blank');
+    } else {
+      // Normal navigation
+      navigate(key);
+    }
+  };
+
   const menuItems: MenuItem[] = [
     {
       key: '/trino',
       icon: <DatabaseOutlined />,
       label: 'Trino SQL schemas',
-      onClick: () => navigate('/trino'),
     },
     {
       key: 'reporting',
@@ -82,19 +113,16 @@ export const LeftSideMenu: React.FC<LeftSideMenuProps> = ({ collapsed, onCollaps
           key: '/tableau/reports',
           icon: <BarChartOutlined />,
           label: 'Report config editor',
-          onClick: () => navigate('/tableau/reports'),
         },
         {
           key: '/tableau/reports/stream',
           icon: <LineChartOutlined />,
           label: 'Stream Reports',
-          onClick: () => navigate('/tableau/reports/stream'),
         },
         {
           key: '/tableau/catalogue-of-aliases',
           icon: <TagsOutlined />,
           label: 'Catalog of aliases',
-          onClick: () => navigate('/tableau/catalogue-of-aliases'),
         },
       ],
     },
@@ -107,13 +135,11 @@ export const LeftSideMenu: React.FC<LeftSideMenuProps> = ({ collapsed, onCollaps
           key: '/workflows',
           icon: <ProjectOutlined />,
           label: 'Workflow',
-          onClick: () => navigate('/workflows'),
         },
         {
           key: '/instances',
           icon: <AppstoreOutlined />,
           label: 'Instances',
-          onClick: () => navigate('/instances'),
         },
       ],
     },
@@ -121,19 +147,16 @@ export const LeftSideMenu: React.FC<LeftSideMenuProps> = ({ collapsed, onCollaps
       key: '/tasks',
       icon: <CheckSquareOutlined />,
       label: 'Tasks',
-      onClick: () => navigate('/tasks'),
     },
     {
       key: '/entity-viewer',
       icon: <EyeOutlined />,
       label: 'Entity viewer',
-      onClick: () => navigate('/entity-viewer'),
     },
     {
       key: '/processing-ui',
       icon: <ClusterOutlined />,
       label: 'Processing',
-      onClick: () => navigate('/processing-ui'),
     },
     {
       type: 'divider',
@@ -142,14 +165,12 @@ export const LeftSideMenu: React.FC<LeftSideMenuProps> = ({ collapsed, onCollaps
       key: 'logout',
       icon: <LogoutOutlined />,
       label: 'Logout',
-      onClick: handleLogout,
       danger: true,
     },
     {
       key: 'version',
       icon: <InfoCircleOutlined />,
       label: 'Version App',
-      onClick: handleVersionClick,
     },
   ];
 
@@ -229,6 +250,7 @@ export const LeftSideMenu: React.FC<LeftSideMenuProps> = ({ collapsed, onCollaps
             selectedKeys={getSelectedKey()}
             openKeys={collapsed ? undefined : openKeys}
             onOpenChange={handleOpenChange}
+            onClick={handleMenuClick}
             items={menuItems}
             style={{
               borderRight: 0,
