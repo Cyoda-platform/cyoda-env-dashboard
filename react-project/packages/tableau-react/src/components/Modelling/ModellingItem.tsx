@@ -321,7 +321,13 @@ export const ModellingItem: React.FC<ModellingItemProps> = ({
         )}
 
         {canBeSelected && !onlyView ? (
-          <span onClick={(e) => e.stopPropagation()} style={{ position: 'relative', zIndex: 10 }}>
+          <span
+            onClick={(e) => {
+              e.stopPropagation();
+              e.nativeEvent.stopImmediatePropagation();
+            }}
+            style={{ position: 'relative', zIndex: 10 }}
+          >
             <Checkbox
               disabled={isDisabled}
               checked={!!getChecked}

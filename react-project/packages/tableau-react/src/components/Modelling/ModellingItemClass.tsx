@@ -169,25 +169,17 @@ export const ModellingItemClass: React.FC<ModellingItemClassProps> = ({
 
   // Load data when clicked
   const handleClick = async (e?: React.MouseEvent) => {
-    // Ignore clicks that originated from checkboxes or their children
+    // Check if the click came from the content area (nested children)
     if (e) {
       const target = e.target as HTMLElement;
-      // Check if the click came from a checkbox or any element inside a checkbox
-      if (
-        target.closest('.ant-checkbox-wrapper') ||
-        target.closest('input[type="checkbox"]') ||
-        target.classList.contains('ant-checkbox-wrapper') ||
-        target.classList.contains('ant-checkbox')
-      ) {
-        console.log('Ignoring click from checkbox');
+      // If the click came from within the content area, ignore it
+      if (target.closest('.modelling-item-class-content')) {
+        console.log('Ignoring click from content area');
         return;
       }
     }
 
-    console.log('handleClick called for', reportClassComputed, 'current isShowGroup:', isShowGroup);
-    console.log('Click event target:', e?.target);
-    console.log('Click event currentTarget:', e?.currentTarget);
-    console.trace('handleClick stack trace');
+    console.log('handleClick proceeding for', reportClassComputed);
     if (!reportingInfoRows) {
       await loadData(requestParam.columnPath);
     }
@@ -211,22 +203,24 @@ export const ModellingItemClass: React.FC<ModellingItemClassProps> = ({
 
   return (
     <div className="modelling-item-class" style={{ position: 'relative' }}>
-      {(!reportingInfoRows || reportingInfoRows.length > 0) && (
-        <span onClick={handleClick} className={getChecked ? 'checked-path' : ''} style={{ cursor: 'pointer', display: 'inline-block' }}>
-          {isShowGroup ? <CaretDownOutlined /> : <CaretRightOutlined />}
-        </span>
-      )}
-
-      <span className={`name ${getChecked ? 'checked-path' : ''}`} style={{ marginLeft: 8, display: 'inline-block' }}>
-        {!reportingInfoRows || reportingInfoRows.length > 0 ? (
-          <a onClick={handleClick} style={{ display: 'inline' }}>{reportClassComputed}</a>
-        ) : (
-          <span className="empty-link">{reportClassComputed}</span>
+      <div onClick={handleClick} className="modelling-item-class-header" style={{ display: 'inline-block' }}>
+        {(!reportingInfoRows || reportingInfoRows.length > 0) && (
+          <span className={getChecked ? 'checked-path' : ''} style={{ cursor: 'pointer', display: 'inline-block' }}>
+            {isShowGroup ? <CaretDownOutlined /> : <CaretRightOutlined />}
+          </span>
         )}
-      </span>
+
+        <span className={`name ${getChecked ? 'checked-path' : ''}`} style={{ marginLeft: 8, display: 'inline-block' }}>
+          {!reportingInfoRows || reportingInfoRows.length > 0 ? (
+            <a style={{ display: 'inline' }}>{reportClassComputed}</a>
+          ) : (
+            <span className="empty-link">{reportClassComputed}</span>
+          )}
+        </span>
+      </div>
 
       {isShowGroup && (
-        <div>
+        <div className="modelling-item-class-content">
           {/* Form for types (LIST/MAP indices) */}
           {requestParam.types && requestParam.types.length > 0 && !onlyView && (
             <ModellingItemClassForm
