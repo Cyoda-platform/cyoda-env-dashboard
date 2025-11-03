@@ -15,6 +15,22 @@
       "import": "./src/api/index.ts",
       "types": "./src/api/index.ts"
     },
+    "./api/entities": {
+      "import": "./src/api/entities.ts",
+      "types": "./src/api/entities.ts"
+    },
+    "./api/auth": {
+      "import": "./src/api/auth.ts",
+      "types": "./src/api/auth.ts"
+    },
+    "./api/config": {
+      "import": "./src/api/config.ts",
+      "types": "./src/api/config.ts"
+    },
+    "./api/reports": {
+      "import": "./src/api/reports.ts",
+      "types": "./src/api/reports.ts"
+    },
     "./hooks": {
       "import": "./src/hooks/index.ts",
       "types": "./src/hooks/index.ts"
@@ -22,6 +38,10 @@
     "./utils": {
       "import": "./src/utils/index.ts",
       "types": "./src/utils/index.ts"
+    },
+    "./utils/HelperEntities": {
+      "import": "./src/utils/HelperEntities.ts",
+      "types": "./src/utils/HelperEntities.ts"
     },
     "./components": {
       "import": "./src/components/index.ts",
@@ -34,6 +54,10 @@
     "./stores": {
       "import": "./src/stores/index.ts",
       "types": "./src/stores/index.ts"
+    },
+    "./stores/globalUiSettingsStore": {
+      "import": "./src/stores/globalUiSettingsStore.ts",
+      "types": "./src/stores/globalUiSettingsStore.ts"
     }
   },
   "files": [

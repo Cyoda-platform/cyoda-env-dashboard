@@ -8,6 +8,9 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: './src/test/setup.ts',
+    alias: {
+      'monaco-editor': path.resolve(__dirname, './src/test/mocks/monaco-editor.ts'),
+    },
   },
   resolve: {
     alias: {
