@@ -4,14 +4,17 @@
  * This is the main Reports page with two tabs: Report Config and Reports
  */
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Tabs, Button, Divider, Tooltip } from 'antd';
 import { ReloadOutlined } from '@ant-design/icons';
 import HistoryTable from '../components/HistoryTable';
 import HistoryFilter from '../components/HistoryFilter';
+import HistorySetting from '../components/HistorySetting';
 import ReportTableGroup from '../components/ReportTableGroup';
 import ReportTableRows from '../components/ReportTableRows';
 import QuickRunReport from '../components/QuickRunReport';
+import ReportUISettings from '../components/ReportUISettings';
+import ColumnCollectionsDialog, { type ColumnCollectionsDialogRef } from '../components/ColumnCollectionsDialog';
 import ReportConfigs from './ReportConfigs';
 import { HelperStorage } from '@cyoda/ui-lib-react';
 import type { ReportHistoryData, ConfigDefinition, HistorySettings } from '../types';
@@ -23,6 +26,9 @@ const HistoryReportsTab: React.FC<{ onResetState: () => void }> = ({ onResetStat
   // Mock user for now - will be replaced when http-api-react is available
   const user = { username: 'User' };
 
+  // Ref for ColumnCollectionsDialog
+  const columnCollectionsDialogRef = useRef<ColumnCollectionsDialogRef>(null);
+
   const [filter, setFilter] = useState<HistoryFilterForm>({
     authors: [],
     states: [],
@@ -31,7 +37,7 @@ const HistoryReportsTab: React.FC<{ onResetState: () => void }> = ({ onResetStat
     entityType: 'BUSINESS',
   });
 
-  const [settings] = useState<HistorySettings>({
+  const [settings, setSettings] = useState<HistorySettings>({
     lazyLoading: false,
     displayGroupType: 'out',
   });
@@ -78,6 +84,11 @@ const HistoryReportsTab: React.FC<{ onResetState: () => void }> = ({ onResetStat
     setFilter(newFilter);
   }, []);
 
+  // Handle settings change
+  const handleSettingsChange = useCallback((newSettings: HistorySettings) => {
+    setSettings(newSettings);
+  }, []);
+
   useEffect(() => {
     // Reset tables when settings change
     setIsVisibleTables(false);
@@ -111,6 +122,21 @@ const HistoryReportsTab: React.FC<{ onResetState: () => void }> = ({ onResetStat
 
       <Divider />
 
+      {/* History Settings */}
+      <HistorySetting settings={settings} onChange={handleSettingsChange} />
+
+      <Divider />
+
+      {/* Report UI Settings */}
+      {reportDefinition && (
+        <div className="chart-builder flex">
+          <ReportUISettings
+            reportDefinitionId={reportDefinition.id}
+            configDefinition={configDefinition}
+          />
+        </div>
+      )}
+
       {/* Report Table */}
       <div className="report-table">
         <div
@@ -133,6 +159,7 @@ const HistoryReportsTab: React.FC<{ onResetState: () => void }> = ({ onResetStat
               lazyLoading={settings.lazyLoading}
               configDefinition={configDefinition}
               onRowClick={handleHistoryGroupsChange}
+              onShowColumnDetail={(data) => columnCollectionsDialogRef.current?.showDetail(data)}
             />
           </div>
         )}
@@ -145,9 +172,13 @@ const HistoryReportsTab: React.FC<{ onResetState: () => void }> = ({ onResetStat
             lazyLoading={settings.lazyLoading}
             configDefinition={configDefinition}
             tableLinkRows={tableLinkRows}
+            onShowColumnDetail={(data) => columnCollectionsDialogRef.current?.showDetail(data)}
           />
         </div>
       )}
+
+      {/* Column Collections Dialog */}
+      <ColumnCollectionsDialog ref={columnCollectionsDialogRef} />
     </div>
   );
 };

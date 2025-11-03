@@ -9,6 +9,7 @@ import type { ColumnsType } from 'antd/es/table';
 import { useQuery } from '@tanstack/react-query';
 import { axios } from '@cyoda/http-api-react';
 import ReportTableRows from './ReportTableRows';
+import type { ColumnData } from './ColumnCollectionsDialog';
 import HelperReportTable, { type ReportGroup, type WrappedEntityModel } from '../utils/HelperReportTable';
 import type { ConfigDefinition } from '../types';
 import { HelperStorage } from '@cyoda/ui-lib-react';
@@ -22,6 +23,7 @@ interface ReportTableGroupProps {
   lazyLoading: boolean;
   smallPagination?: boolean;
   onRowClick?: (row: any) => void;
+  onShowColumnDetail?: (data: ColumnData) => void;
 }
 
 interface TableDataRow {
@@ -43,6 +45,7 @@ const ReportTableGroup: React.FC<ReportTableGroupProps> = ({
   lazyLoading,
   smallPagination = false,
   onRowClick,
+  onShowColumnDetail,
 }) => {
   const storage = useMemo(() => new HelperStorage(), []);
   const [currentPage, setCurrentPage] = useState(1);
@@ -142,6 +145,7 @@ const ReportTableGroup: React.FC<ReportTableGroupProps> = ({
             tableLinkRows={record._link_rows}
             lazyLoading={lazyLoading}
             configDefinition={configDefinition}
+            onShowColumnDetail={onShowColumnDetail}
           />
         );
       }

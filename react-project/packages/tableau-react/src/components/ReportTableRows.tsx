@@ -9,6 +9,7 @@ import React, { useState, useEffect } from 'react';
 import { Table } from 'antd';
 import { axios } from '@cyoda/http-api-react';
 import type { ConfigDefinition, ReportingReportRows, TableColumn, TableauConnectionData } from '@/types';
+import type { ColumnData } from './ColumnCollectionsDialog';
 import EntityDetailModal from './EntityDetailModal';
 import './ReportTableRows.scss';
 
@@ -16,12 +17,14 @@ interface ReportTableRowsProps {
   tableLinkRows: string;
   lazyLoading: boolean;
   configDefinition: ConfigDefinition;
+  onShowColumnDetail?: (data: ColumnData) => void;
 }
 
 const ReportTableRows: React.FC<ReportTableRowsProps> = ({
   tableLinkRows,
   lazyLoading,
   configDefinition,
+  onShowColumnDetail,
 }) => {
   const [tableData, setTableData] = useState<any[]>([]);
   const [tableColumns, setTableColumns] = useState<TableColumn[]>([]);
@@ -161,12 +164,38 @@ const ReportTableRows: React.FC<ReportTableRowsProps> = ({
     setSelectedRow(null);
   };
 
+  // Handle column cell click for object/array values
+  const handleCellClick = (record: any, columnName: string) => {
+    const value = record[columnName];
+    if (value && typeof value === 'object' && onShowColumnDetail) {
+      onShowColumnDetail({
+        headerName: columnName,
+        data: value,
+      });
+    }
+  };
+
   // Create Ant Design columns from table columns
   const antColumns = tableColumns.map((col) => ({
     title: col.label,
     dataIndex: col.prop,
     key: col.prop,
     ellipsis: true,
+    render: (value: any, record: any) => {
+      // Check if value is an object or array
+      if (value && typeof value === 'object') {
+        return (
+          <span
+            className="clickable-cell"
+            onClick={() => handleCellClick(record, col.prop)}
+            style={{ cursor: 'pointer', color: '#1890ff', textDecoration: 'underline' }}
+          >
+            {Array.isArray(value) ? `[Array: ${value.length} items]` : '[Object]'}
+          </span>
+        );
+      }
+      return value;
+    },
   }));
 
   // Render the table with data
