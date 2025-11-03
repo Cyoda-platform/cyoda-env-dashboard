@@ -321,27 +321,29 @@ export const ModellingItem: React.FC<ModellingItemProps> = ({
         )}
 
         {canBeSelected && !onlyView ? (
-          <Checkbox
-            disabled={isDisabled}
-            checked={!!getChecked}
-            value={fullPath}
-            className={!isChildAvailable ? 'no-child' : ''}
-            style={{ marginLeft: 8 }}
-            data-col-type={reportInfoRow.type}
-            data-clazz-type={reportInfoRow.clazzType || reportInfoRow.type}
-          >
-            {reportInfoRow.columnName}
-            {isMap && (
-              <Tooltip title="To select multiple keys for map fields, please use Aliases">
-                <InfoCircleOutlined style={{ marginLeft: 4 }} />
-              </Tooltip>
-            )}
-            {isJoinAvailable && (
-              <span className="entity-class-name">
-                {' '}({HelperEntities.getShortNameOfEntity(joinItem!.targetEntityClass)})
-              </span>
-            )}
-          </Checkbox>
+          <span onClick={(e) => e.stopPropagation()} style={{ position: 'relative', zIndex: 10 }}>
+            <Checkbox
+              disabled={isDisabled}
+              checked={!!getChecked}
+              value={fullPath}
+              className={!isChildAvailable ? 'no-child' : ''}
+              style={{ marginLeft: 8 }}
+              data-col-type={reportInfoRow.type}
+              data-clazz-type={reportInfoRow.clazzType || reportInfoRow.type}
+            >
+              {reportInfoRow.columnName}
+              {isMap && (
+                <Tooltip title="To select multiple keys for map fields, please use Aliases">
+                  <InfoCircleOutlined style={{ marginLeft: 4 }} />
+                </Tooltip>
+              )}
+              {isJoinAvailable && (
+                <span className="entity-class-name">
+                  {' '}({HelperEntities.getShortNameOfEntity(joinItem!.targetEntityClass)})
+                </span>
+              )}
+            </Checkbox>
+          </span>
         ) : (
           <span className="name" style={{ marginLeft: 8 }}>
             {isChildAvailable ? (

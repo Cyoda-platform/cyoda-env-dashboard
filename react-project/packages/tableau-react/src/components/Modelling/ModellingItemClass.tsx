@@ -123,8 +123,18 @@ export const ModellingItemClass: React.FC<ModellingItemClassProps> = ({
   const prevIsOpenAllSelectedRef = useRef(isOpenAllSelected);
 
   useEffect(() => {
+    console.log('ModellingItemClass useEffect', {
+      reportClassComputed,
+      prevIsOpenAllSelected: prevIsOpenAllSelectedRef.current,
+      isOpenAllSelected,
+      getChecked: !!getChecked,
+      isShowGroup,
+      changed: prevIsOpenAllSelectedRef.current !== isOpenAllSelected
+    });
+
     // Only run if isOpenAllSelected actually changed
     if (prevIsOpenAllSelectedRef.current !== isOpenAllSelected) {
+      console.log('isOpenAllSelected CHANGED - running collapse/expand logic');
       prevIsOpenAllSelectedRef.current = isOpenAllSelected;
 
       if (isOpenAllSelected && getChecked) {
@@ -158,7 +168,26 @@ export const ModellingItemClass: React.FC<ModellingItemClassProps> = ({
   };
 
   // Load data when clicked
-  const handleClick = async () => {
+  const handleClick = async (e?: React.MouseEvent) => {
+    // Ignore clicks that originated from checkboxes or their children
+    if (e) {
+      const target = e.target as HTMLElement;
+      // Check if the click came from a checkbox or any element inside a checkbox
+      if (
+        target.closest('.ant-checkbox-wrapper') ||
+        target.closest('input[type="checkbox"]') ||
+        target.classList.contains('ant-checkbox-wrapper') ||
+        target.classList.contains('ant-checkbox')
+      ) {
+        console.log('Ignoring click from checkbox');
+        return;
+      }
+    }
+
+    console.log('handleClick called for', reportClassComputed, 'current isShowGroup:', isShowGroup);
+    console.log('Click event target:', e?.target);
+    console.log('Click event currentTarget:', e?.currentTarget);
+    console.trace('handleClick stack trace');
     if (!reportingInfoRows) {
       await loadData(requestParam.columnPath);
     }
@@ -183,14 +212,14 @@ export const ModellingItemClass: React.FC<ModellingItemClassProps> = ({
   return (
     <div className="modelling-item-class" style={{ position: 'relative' }}>
       {(!reportingInfoRows || reportingInfoRows.length > 0) && (
-        <span onClick={handleClick} className={getChecked ? 'checked-path' : ''} style={{ cursor: 'pointer' }}>
+        <span onClick={handleClick} className={getChecked ? 'checked-path' : ''} style={{ cursor: 'pointer', display: 'inline-block' }}>
           {isShowGroup ? <CaretDownOutlined /> : <CaretRightOutlined />}
         </span>
       )}
 
-      <span className={`name ${getChecked ? 'checked-path' : ''}`} style={{ marginLeft: 8 }}>
+      <span className={`name ${getChecked ? 'checked-path' : ''}`} style={{ marginLeft: 8, display: 'inline-block' }}>
         {!reportingInfoRows || reportingInfoRows.length > 0 ? (
-          <a onClick={handleClick}>{reportClassComputed}</a>
+          <a onClick={handleClick} style={{ display: 'inline' }}>{reportClassComputed}</a>
         ) : (
           <span className="empty-link">{reportClassComputed}</span>
         )}
