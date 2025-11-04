@@ -211,7 +211,7 @@ export const Criteria: React.FC = () => {
         </Button>
       </div>
 
-      <Card>
+      <Card bordered={false}>
         <Form
           form={form}
           layout="vertical"

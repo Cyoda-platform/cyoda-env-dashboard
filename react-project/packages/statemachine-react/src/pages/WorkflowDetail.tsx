@@ -59,7 +59,7 @@ export const WorkflowDetail: React.FC = () => {
         </Button>
       </div>
 
-      <Card>
+      <Card bordered={false}>
         <Space direction="vertical" size="large" style={{ width: '100%' }}>
           {/* Workflow Form */}
           <WorkflowForm

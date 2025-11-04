@@ -299,7 +299,7 @@ export const Instances: React.FC = () => {
         <h1 style={{ margin: 0 }}>Instances</h1>
       </div>
 
-      <Card>
+      <Card bordered={false}>
         <Space direction="vertical" size="middle" style={{ width: '100%' }}>
           {/* Filters */}
           <Row gutter={[16, 16]}>

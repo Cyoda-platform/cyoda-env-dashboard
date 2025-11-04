@@ -333,7 +333,7 @@ export const Workflows: React.FC = () => {
         <h1 style={{ margin: 0 }}>Workflows</h1>
       </div>
 
-      <Card>
+      <Card bordered={false}>
         <Space direction="vertical" size="middle" style={{ width: '100%' }}>
           {/* Header with filter and create button */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

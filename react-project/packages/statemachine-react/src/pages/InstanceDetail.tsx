@@ -129,7 +129,7 @@ export const InstanceDetail: React.FC = () => {
         </Button>
       </div>
 
-      <Card>
+      <Card bordered={false}>
         <Space direction="vertical" size="large" style={{ width: '100%' }}>
           {/* Header */}
           <div>
