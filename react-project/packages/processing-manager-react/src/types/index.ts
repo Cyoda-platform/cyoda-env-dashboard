@@ -25,6 +25,7 @@ export interface PmClusterStats {
   runningNodes: number;
   stoppedNodes: number;
   errorNodes: number;
+  consistencyTimeLagMs?: number;
 }
 
 // ============================================================================

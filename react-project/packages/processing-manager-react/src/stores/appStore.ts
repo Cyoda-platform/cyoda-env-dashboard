@@ -43,6 +43,9 @@ interface AppStore extends AppState {
   /** Whether the sidebar is minimized */
   sideBarIsMinimize: boolean;
 
+  /** Whether live update is enabled */
+  liveUpdate: boolean;
+
   /** Set the currently selected node */
   setNode: (node: string) => void;
 
@@ -51,6 +54,9 @@ interface AppStore extends AppState {
 
   /** Enable/disable proxy for API requests */
   setProxyRequest: (proxyRequest: boolean) => void;
+
+  /** Enable/disable live update */
+  setLiveUpdate: (liveUpdate: boolean) => void;
 
   /** Set global loading state */
   setLoading: (loading: boolean) => void;
@@ -81,6 +87,7 @@ const initialState: AppState = {
 const initialSidebarState = {
   sideBarIsShow: true,
   sideBarIsMinimize: false,
+  liveUpdate: false,
 };
 
 /**
@@ -123,6 +130,8 @@ export const useAppStore = create<AppStore>()(
 
       setProxyRequest: (proxyRequest) => set({ proxyRequest }),
 
+      setLiveUpdate: (liveUpdate) => set({ liveUpdate }),
+
       setLoading: (loading) => set({ loading }),
 
       setError: (error) => set({ error }),
@@ -141,6 +150,7 @@ export const useAppStore = create<AppStore>()(
         proxyRequest: state.proxyRequest,
         sideBarIsShow: state.sideBarIsShow,
         sideBarIsMinimize: state.sideBarIsMinimize,
+        liveUpdate: state.liveUpdate,
       }),
     }
   )
