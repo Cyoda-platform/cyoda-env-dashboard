@@ -135,7 +135,6 @@ const HistoryReportsTab: React.FC<{ onResetState: () => void }> = ({ onResetStat
         <div
           className={`wrap-table ${settings.displayGroupType === 'out' ? 'full' : ''}`}
         >
-          <span className="label">Report</span>
           <HistoryTable
             filter={filter}
             settings={settings}

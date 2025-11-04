@@ -15,12 +15,30 @@
   }
 
   .reports-tabs {
+    border: none !important;
+    border-bottom: none !important;
+
+    &.ant-tabs-top {
+      border: none !important;
+      border-bottom: none !important;
+    }
+
+    &.ant-tabs-card {
+      border: none !important;
+      border-bottom: none !important;
+    }
+
     .ant-tabs-nav {
       margin-bottom: 24px;
+    }
 
-      &::before {
-        border-bottom: none;
-      }
+    .ant-tabs-content {
+      border: none !important;
+    }
+
+    .ant-tabs-tabpane {
+      border: none !important;
+      padding: 0 !important;
     }
   }
 }
