@@ -180,7 +180,7 @@ export const PageEntityViewer: React.FC = () => {
   return (
     <div className="page-entity-viewer">
       <Spin spinning={isLoading}>
-        <CardComponent>
+        <CardComponent bordered={false}>
           <div className="card-body">
             <h2>
               Selected Root Entity{' '}
