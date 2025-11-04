@@ -182,6 +182,20 @@ export interface EntityStateMachine {
   previousState?: string;
   transitions: StateTransition[];
   history: StateHistory[];
+  // Additional fields from API response
+  entityVersions?: Array<{
+    state: string;
+    date: string;
+  }>;
+  possibleTransitions?: string[];
+  stateMachineEvents?: Array<{
+    event: {
+      type: string;
+      transactionId: string;
+      state: string;
+    };
+    message: string;
+  }>;
 }
 
 export interface StateTransition {

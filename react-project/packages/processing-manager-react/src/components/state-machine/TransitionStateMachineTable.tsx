@@ -38,7 +38,7 @@ export const TransitionStateMachineTable: React.FC<TransitionStateMachineTablePr
       key: 'transactionId',
       width: 320,
       render: (transactionId: string) => (
-        <Link to={`/nodes/${name}/transaction/${transactionId}`}>{transactionId}</Link>
+        <Link to={`/processing-ui/nodes/${name}/transaction/${transactionId}`}>{transactionId}</Link>
       ),
     },
     {

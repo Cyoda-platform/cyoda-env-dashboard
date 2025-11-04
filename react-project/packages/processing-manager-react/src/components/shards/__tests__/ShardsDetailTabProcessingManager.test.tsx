@@ -83,9 +83,9 @@ describe('ShardsDetailTabProcessingManager', () => {
       error: null,
     });
 
-    const { container } = render(<ShardsDetailTabProcessingManager />);
+    render(<ShardsDetailTabProcessingManager />);
 
-    expect(container.querySelector('.ant-spin')).toBeInTheDocument();
+    expect(screen.getByText('Loading...')).toBeInTheDocument();
   });
 
   it('should render error state', () => {
@@ -110,7 +110,7 @@ describe('ShardsDetailTabProcessingManager', () => {
 
     render(<ShardsDetailTabProcessingManager />);
 
-    expect(screen.getByText('No data available')).toBeInTheDocument();
+    expect(screen.getByText('No backend connection')).toBeInTheDocument();
   });
 
   it('should render all child components with data', () => {
