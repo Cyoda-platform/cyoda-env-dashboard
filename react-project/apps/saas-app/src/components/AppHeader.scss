@@ -72,6 +72,46 @@
       display: flex;
       align-items: center;
       height: 100%;
+      gap: 24px;
+
+      .processing-features {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 14px;
+        color: var(--refine-text-secondary);
+
+        .consistency-time {
+          white-space: nowrap;
+          color: var(--refine-text-secondary);
+          font-size: 14px;
+        }
+
+        .delimiter {
+          color: rgba(255, 255, 255, 0.3);
+        }
+
+        .live-update-toggle,
+        .proxy-mode-toggle {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+
+          span {
+            white-space: nowrap;
+          }
+        }
+
+        .info-icon {
+          cursor: pointer;
+          color: var(--refine-text-tertiary);
+          transition: color var(--refine-transition-base);
+
+          &:hover {
+            color: var(--refine-primary);
+          }
+        }
+      }
 
       .entity-type-section {
         display: flex;

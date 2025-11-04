@@ -68,15 +68,57 @@ describe('HelperEntities', () => {
       });
     });
 
-    it('should filter by type', () => {
+    it('should filter by BUSINESS type', () => {
       const data = [
         { name: 'com.cyoda.core.Entity', type: 'BUSINESS' as const },
         { name: 'com.cyoda.core.User', type: 'PERSISTENCE' as const },
       ];
       const options = HelperEntities.getOptionsFromData(data, 'BUSINESS');
-      
+
       expect(options).toHaveLength(1);
       expect(options[0].value).toBe('com.cyoda.core.Entity');
+      expect(options[0].label).toBe('com.cyoda.core.Entity (Business)');
+    });
+
+    it('should filter by PERSISTENCE type', () => {
+      const data = [
+        { name: 'com.cyoda.business.Customer', type: 'BUSINESS' as const },
+        { name: 'com.cyoda.core.constraints.UniqueConstraintOwner', type: 'PERSISTENCE' as const },
+        { name: 'com.cyoda.business.Order', type: 'BUSINESS' as const },
+        { name: 'com.cyoda.tdb.model.search.SearchUsageEntity', type: 'PERSISTENCE' as const },
+      ];
+      const options = HelperEntities.getOptionsFromData(data, 'PERSISTENCE');
+
+      expect(options).toHaveLength(2);
+      expect(options[0].value).toBe('com.cyoda.core.constraints.UniqueConstraintOwner');
+      expect(options[0].label).toBe('com.cyoda.core.constraints.UniqueConstraintOwner (Technical)');
+      expect(options[1].value).toBe('com.cyoda.tdb.model.search.SearchUsageEntity');
+      expect(options[1].label).toBe('com.cyoda.tdb.model.search.SearchUsageEntity (Technical)');
+    });
+
+    it('should return all entities when type filter is null', () => {
+      const data = [
+        { name: 'com.cyoda.business.Customer', type: 'BUSINESS' as const },
+        { name: 'com.cyoda.core.User', type: 'PERSISTENCE' as const },
+        { name: 'com.cyoda.business.Order', type: 'BUSINESS' as const },
+      ];
+      const options = HelperEntities.getOptionsFromData(data, null);
+
+      expect(options).toHaveLength(3);
+    });
+
+    it('should handle mixed data with strings and objects', () => {
+      const data: any[] = [
+        'com.cyoda.simple.Entity',
+        { name: 'com.cyoda.business.Customer', type: 'BUSINESS' as const },
+        { name: 'com.cyoda.core.User', type: 'PERSISTENCE' as const },
+      ];
+      const options = HelperEntities.getOptionsFromData(data, 'BUSINESS');
+
+      // String entities don't have type info, so they're always included
+      expect(options).toHaveLength(2);
+      expect(options[0].value).toBe('com.cyoda.simple.Entity');
+      expect(options[1].value).toBe('com.cyoda.business.Customer');
     });
 
     it('should handle empty array', () => {

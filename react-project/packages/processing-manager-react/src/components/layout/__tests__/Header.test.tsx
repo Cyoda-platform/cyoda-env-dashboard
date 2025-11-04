@@ -2,7 +2,7 @@
  * Header Component Tests
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
@@ -27,6 +27,7 @@ vi.mock('@cyoda/ui-lib-react', () => ({
 }));
 
 const mockNavigate = vi.fn();
+const mockRefetch = vi.fn();
 
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
@@ -36,6 +37,16 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
+// Mock the useClusterStats hook
+vi.mock('../../../hooks/useProcessing', () => ({
+  useClusterStats: () => ({
+    data: { consistencyTimeLagMs: 42 },
+    refetch: mockRefetch,
+    isLoading: false,
+    error: null,
+  }),
+}));
+
 const renderWithRouter = (component: React.ReactElement) => {
   return render(<BrowserRouter>{component}</BrowserRouter>);
 };
@@ -43,9 +54,18 @@ const renderWithRouter = (component: React.ReactElement) => {
 describe('Header', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.useFakeTimers();
     useAppStore.setState({
       sideBarIsShow: false,
+      liveUpdate: false,
+      proxyRequest: true,
     });
+    mockRefetch.mockResolvedValue({ data: { consistencyTimeLagMs: 42 } });
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+    vi.useRealTimers();
   });
 
   it('should render header', () => {
@@ -132,5 +152,119 @@ describe('Header', () => {
     expect(header).toHaveClass('c-header-fixed');
     expect(header).toHaveClass('c-header-with-subheader');
   });
-});
 
+  // New feature tests
+  describe('Consistency Time Lag', () => {
+    it('should render consistency time lag display', () => {
+      renderWithRouter(<Header />);
+
+      expect(screen.getByText(/Consistency time lag\(millis\):/)).toBeInTheDocument();
+    });
+
+    it('should display initial consistency time lag value', () => {
+      renderWithRouter(<Header />);
+
+      expect(screen.getByText(/Consistency time lag\(millis\): 0/)).toBeInTheDocument();
+    });
+
+    it('should poll cluster stats when live update is enabled', async () => {
+      useAppStore.setState({ liveUpdate: true });
+
+      renderWithRouter(<Header />);
+
+      // Fast-forward time by 1 second
+      vi.advanceTimersByTime(1000);
+
+      await waitFor(() => {
+        expect(mockRefetch).toHaveBeenCalled();
+      });
+    });
+
+    it('should not poll cluster stats when live update is disabled', async () => {
+      useAppStore.setState({ liveUpdate: false });
+
+      renderWithRouter(<Header />);
+
+      // Fast-forward time by 1 second
+      vi.advanceTimersByTime(1000);
+
+      // refetch should not be called when liveUpdate is false
+      expect(mockRefetch).not.toHaveBeenCalled();
+    });
+
+    it('should update consistency time lag when data is fetched', async () => {
+      useAppStore.setState({ liveUpdate: true });
+      mockRefetch.mockResolvedValue({ data: { consistencyTimeLagMs: 123 } });
+
+      renderWithRouter(<Header />);
+
+      // Fast-forward time by 1 second
+      vi.advanceTimersByTime(1000);
+
+      await waitFor(() => {
+        expect(screen.getByText(/Consistency time lag\(millis\): 123/)).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('Live Update Toggle', () => {
+    it('should render live update toggle', () => {
+      renderWithRouter(<Header />);
+
+      expect(screen.getByText('Live update:')).toBeInTheDocument();
+    });
+
+    it('should render live update toggle with switch', () => {
+      const { container } = renderWithRouter(<Header />);
+
+      const liveUpdateSection = screen.getByText('Live update:').closest('.live-update-toggle');
+      expect(liveUpdateSection).toBeInTheDocument();
+
+      const switchElement = liveUpdateSection?.querySelector('.ant-switch');
+      expect(switchElement).toBeInTheDocument();
+    });
+  });
+
+  describe('Proxy Mode Toggle', () => {
+    it('should render proxy mode toggle', () => {
+      renderWithRouter(<Header />);
+
+      expect(screen.getByText('Proxy mode')).toBeInTheDocument();
+    });
+
+    it('should render proxy mode toggle with switch and info icon', () => {
+      const { container } = renderWithRouter(<Header />);
+
+      const proxyModeSection = screen.getByText('Proxy mode').closest('.proxy-mode-toggle');
+      expect(proxyModeSection).toBeInTheDocument();
+
+      const switchElement = proxyModeSection?.querySelector('.ant-switch');
+      expect(switchElement).toBeInTheDocument();
+
+      const infoIcon = proxyModeSection?.querySelector('.anticon-info-circle');
+      expect(infoIcon).toBeInTheDocument();
+    });
+  });
+
+  describe('Subheader Layout', () => {
+    it('should render all subheader elements in correct order', () => {
+      const { container } = renderWithRouter(<Header />);
+
+      const subheader = container.querySelector('.c-subheader');
+      expect(subheader).toBeInTheDocument();
+
+      // Check for consistency time lag
+      expect(screen.getByText(/Consistency time lag/)).toBeInTheDocument();
+
+      // Check for delimiters
+      const delimiters = container.querySelectorAll('.delimiter');
+      expect(delimiters.length).toBeGreaterThanOrEqual(2);
+
+      // Check for live update toggle
+      expect(screen.getByText('Live update:')).toBeInTheDocument();
+
+      // Check for proxy mode toggle
+      expect(screen.getByText('Proxy mode')).toBeInTheDocument();
+    });
+  });
+});

@@ -21,7 +21,7 @@ export { Node } from './node';
 export { ShardsDetailTabSummary, ShardsDetailTabCassandra, ShardsDetailTabPmComponents } from './shards';
 
 // Layout Components
-export { Layout, Sidebar, Header, Footer } from './layout';
+export { Layout, Sidebar, Header, Footer, LiveUpdateToggle, ProxyModeToggle } from './layout';
 
 // Common/Utility Components
 export { ViewWrapper } from './common';

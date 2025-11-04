@@ -5,6 +5,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import * as entitiesApi from './entities';
 import axios from '../config/axios';
+import HelperFeatureFlags from '../utils/HelperFeatureFlags';
 
 // Mock axios
 vi.mock('../config/axios', () => ({
@@ -13,6 +14,13 @@ vi.mock('../config/axios', () => ({
     post: vi.fn(),
     put: vi.fn(),
     delete: vi.fn(),
+  },
+}));
+
+// Mock HelperFeatureFlags
+vi.mock('../utils/HelperFeatureFlags', () => ({
+  default: {
+    isUseModelsInfo: vi.fn(),
   },
 }));
 
@@ -249,23 +257,81 @@ describe('Entities API', () => {
   });
 
   describe('getReportingFetchTypes', () => {
-    it('should call GET /platform-api/entity-info/fetch/types', async () => {
-      const mockResponse = { data: ['Type1', 'Type2'] };
-      vi.mocked(axios.get).mockResolvedValue(mockResponse);
+    describe('when VITE_FEATURE_FLAG_USE_MODELS_INFO is disabled', () => {
+      beforeEach(() => {
+        vi.mocked(HelperFeatureFlags.isUseModelsInfo).mockReturnValue(false);
+      });
 
-      const result = await entitiesApi.getReportingFetchTypes();
+      it('should call GET /platform-api/entity-info/fetch/types', async () => {
+        const mockResponse = { data: ['Type1', 'Type2'] };
+        vi.mocked(axios.get).mockResolvedValue(mockResponse);
 
-      expect(axios.get).toHaveBeenCalledWith('/platform-api/entity-info/fetch/types?onlyDynamic=false');
-      expect(result).toEqual(mockResponse);
+        const result = await entitiesApi.getReportingFetchTypes();
+
+        expect(axios.get).toHaveBeenCalledWith('/platform-api/entity-info/fetch/types?onlyDynamic=false');
+        expect(result).toEqual(mockResponse);
+      });
+
+      it('should support onlyDynamic parameter', async () => {
+        const mockResponse = { data: ['DynamicType1'] };
+        vi.mocked(axios.get).mockResolvedValue(mockResponse);
+
+        await entitiesApi.getReportingFetchTypes(true);
+
+        expect(axios.get).toHaveBeenCalledWith('/platform-api/entity-info/fetch/types?onlyDynamic=true');
+      });
     });
 
-    it('should support onlyDynamic parameter', async () => {
-      const mockResponse = { data: ['DynamicType1'] };
-      vi.mocked(axios.get).mockResolvedValue(mockResponse);
+    describe('when VITE_FEATURE_FLAG_USE_MODELS_INFO is enabled', () => {
+      beforeEach(() => {
+        vi.mocked(HelperFeatureFlags.isUseModelsInfo).mockReturnValue(true);
+      });
 
-      await entitiesApi.getReportingFetchTypes(true);
+      it('should call GET /platform-api/entity-info/fetch/models-info', async () => {
+        const mockResponse = {
+          data: [
+            { name: 'com.cyoda.core.Entity', type: 'BUSINESS' },
+            { name: 'com.cyoda.core.User', type: 'PERSISTENCE' },
+          ],
+        };
+        vi.mocked(axios.get).mockResolvedValue(mockResponse);
 
-      expect(axios.get).toHaveBeenCalledWith('/platform-api/entity-info/fetch/types?onlyDynamic=true');
+        const result = await entitiesApi.getReportingFetchTypes();
+
+        expect(axios.get).toHaveBeenCalledWith('/platform-api/entity-info/fetch/models-info?onlyDynamic=false');
+        expect(result).toEqual(mockResponse);
+      });
+
+      it('should support onlyDynamic parameter with models-info endpoint', async () => {
+        const mockResponse = {
+          data: [
+            { name: 'com.cyoda.dynamic.Entity', type: 'BUSINESS' },
+          ],
+        };
+        vi.mocked(axios.get).mockResolvedValue(mockResponse);
+
+        await entitiesApi.getReportingFetchTypes(true);
+
+        expect(axios.get).toHaveBeenCalledWith('/platform-api/entity-info/fetch/models-info?onlyDynamic=true');
+      });
+
+      it('should return entities with type information for filtering', async () => {
+        const mockResponse = {
+          data: [
+            { name: 'com.cyoda.business.Customer', type: 'BUSINESS' },
+            { name: 'com.cyoda.core.constraints.UniqueConstraintOwner', type: 'PERSISTENCE' },
+            { name: 'com.cyoda.business.Order', type: 'BUSINESS' },
+          ],
+        };
+        vi.mocked(axios.get).mockResolvedValue(mockResponse);
+
+        const result = await entitiesApi.getReportingFetchTypes();
+
+        expect(result.data).toHaveLength(3);
+        expect(result.data[0]).toHaveProperty('type', 'BUSINESS');
+        expect(result.data[1]).toHaveProperty('type', 'PERSISTENCE');
+        expect(result.data[2]).toHaveProperty('type', 'BUSINESS');
+      });
     });
   });
 

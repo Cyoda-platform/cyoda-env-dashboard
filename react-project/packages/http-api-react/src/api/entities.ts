@@ -4,6 +4,7 @@
 
 import axios from '../config/axios';
 import qs from 'qs';
+import HelperFeatureFlags from '../utils/HelperFeatureFlags';
 import type { Entity, EntityRequest, Transaction, TransactionDiff, RelatedPath } from '../types';
 
 const stringifyOpts = {
@@ -194,8 +195,22 @@ export function getEntityCount(entityClass: string, params?: any) {
 /**
  * Get reporting fetch types (entity classes)
  * Always uses real backend data - no mock fallback
+ * When VITE_FEATURE_FLAG_USE_MODELS_INFO is enabled, uses models-info endpoint
+ * which returns entity type information (BUSINESS/PERSISTENCE)
  */
 export async function getReportingFetchTypes(onlyDynamic = false) {
+  // Check feature flag to determine which endpoint to use
+  const useModelsInfo = HelperFeatureFlags.isUseModelsInfo();
+
+  if (useModelsInfo) {
+    // When feature flag is enabled, use models-info endpoint which returns entity type info
+    const response = await axios.get(
+      `/platform-api/entity-info/fetch/models-info?onlyDynamic=${onlyDynamic}`
+    );
+    return response;
+  }
+
+  // Default endpoint returns just entity class names as strings
   const response = await axios.get<string[]>(
     `/platform-api/entity-info/fetch/types?onlyDynamic=${onlyDynamic}`
   );

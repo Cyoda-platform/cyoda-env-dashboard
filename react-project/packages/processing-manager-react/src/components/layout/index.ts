@@ -8,4 +8,6 @@ export { default as Sidebar } from './Sidebar';
 export { default as Header } from './Header';
 export { default as Footer } from './Footer';
 export { default as HeaderProxyRequest } from './HeaderProxyRequest';
+export { default as ProxyModeToggle } from './ProxyModeToggle';
+export { default as LiveUpdateToggle } from './LiveUpdateToggle';
 
