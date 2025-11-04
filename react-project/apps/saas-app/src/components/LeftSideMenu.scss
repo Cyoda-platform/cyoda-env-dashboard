@@ -7,6 +7,21 @@
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
 
+  // Logo container at the top of sidebar - center it vertically
+  .sidebar-logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 16px;
+    min-height: 64px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+    svg {
+      display: block;
+      margin: 0 auto;
+    }
+  }
+
   // Custom scrollbar for sidebar
   &::-webkit-scrollbar {
     width: 3px;

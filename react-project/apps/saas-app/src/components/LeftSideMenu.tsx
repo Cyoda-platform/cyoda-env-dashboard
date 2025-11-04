@@ -20,6 +20,7 @@ import {
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { HelperStorage } from '@cyoda/http-api-react/utils/storage';
+import { AppLogo } from '@cyoda/ui-lib-react';
 import './LeftSideMenu.scss';
 
 const { Sider } = Layout;

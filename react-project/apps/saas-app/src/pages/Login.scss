@@ -66,10 +66,10 @@
     .login-card {
       background: rgba(30, 42, 58, 0.8);
       backdrop-filter: blur(20px);
-      border: 1px solid rgba(0, 212, 170, 0.2);
+      border: 1px solid rgba(100, 116, 139, 0.3);
       box-shadow:
         0 8px 32px rgba(0, 0, 0, 0.4),
-        0 0 0 1px rgba(0, 212, 170, 0.1);
+        0 0 0 1px rgba(100, 116, 139, 0.1);
       border-radius: 16px;
       overflow: hidden;
 
@@ -80,45 +80,65 @@
       // Style the form inputs
       .ant-input,
       .ant-input-password {
-        background: rgba(26, 35, 50, 0.6);
-        border: 1px solid rgba(0, 212, 170, 0.2);
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid rgba(100, 116, 139, 0.3);
         color: #F9FAFB;
         font-size: 15px;
         padding: 12px 16px;
         transition: all 0.3s ease;
 
         &:hover {
-          border-color: rgba(0, 212, 170, 0.4);
-          background: rgba(26, 35, 50, 0.8);
+          border-color: rgba(148, 163, 184, 0.5);
+          background: rgba(15, 23, 42, 0.8);
         }
 
         &:focus,
         &.ant-input-focused {
-          border-color: #00D4AA;
-          background: rgba(26, 35, 50, 0.9);
-          box-shadow: 0 0 0 2px rgba(0, 212, 170, 0.1);
+          border-color: rgba(59, 130, 246, 0.6);
+          background: rgba(15, 23, 42, 0.9);
+          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
         }
 
         &::placeholder {
-          color: rgba(209, 213, 219, 0.4);
+          color: rgba(148, 163, 184, 0.5);
+        }
+
+        // Override browser autofill styles
+        &:-webkit-autofill,
+        &:-webkit-autofill:hover,
+        &:-webkit-autofill:focus,
+        &:-webkit-autofill:active {
+          -webkit-box-shadow: 0 0 0 30px rgba(15, 23, 42, 0.9) inset !important;
+          -webkit-text-fill-color: #F9FAFB !important;
+          border-color: rgba(100, 116, 139, 0.3) !important;
+          transition: background-color 5000s ease-in-out 0s;
+          caret-color: #F9FAFB !important;
+        }
+
+        &:-webkit-autofill:focus {
+          border-color: rgba(59, 130, 246, 0.6) !important;
+          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+          -webkit-box-shadow:
+            0 0 0 30px rgba(15, 23, 42, 0.9) inset,
+            0 0 0 3px rgba(59, 130, 246, 0.15) !important;
         }
       }
 
       .ant-input-affix-wrapper {
-        background: rgba(26, 35, 50, 0.6);
-        border: 1px solid rgba(0, 212, 170, 0.2);
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid rgba(100, 116, 139, 0.3);
         padding: 4px 11px;
 
         &:hover {
-          border-color: rgba(0, 212, 170, 0.4);
-          background: rgba(26, 35, 50, 0.8);
+          border-color: rgba(148, 163, 184, 0.5);
+          background: rgba(15, 23, 42, 0.8);
         }
 
         &:focus,
         &.ant-input-affix-wrapper-focused {
-          border-color: #00D4AA;
-          background: rgba(26, 35, 50, 0.9);
-          box-shadow: 0 0 0 2px rgba(0, 212, 170, 0.1);
+          border-color: rgba(59, 130, 246, 0.6);
+          background: rgba(15, 23, 42, 0.9);
+          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
         }
 
         .ant-input {
@@ -129,6 +149,21 @@
           &:focus {
             box-shadow: none;
           }
+
+          // Override browser autofill styles for password input
+          &:-webkit-autofill,
+          &:-webkit-autofill:hover,
+          &:-webkit-autofill:focus,
+          &:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0 30px transparent inset !important;
+            -webkit-text-fill-color: #F9FAFB !important;
+            transition: background-color 5000s ease-in-out 0s;
+          }
+        }
+
+        // Style the prefix icons
+        .anticon {
+          color: rgba(148, 163, 184, 0.6);
         }
       }
 
