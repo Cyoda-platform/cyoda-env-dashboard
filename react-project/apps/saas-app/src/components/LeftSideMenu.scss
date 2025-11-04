@@ -1,4 +1,43 @@
 // Refine.dev Enterprise Theme - Left Side Menu
+
+// Popup submenu styling (for collapsed sidebar)
+.ant-menu-submenu-popup {
+  .ant-menu {
+    background: var(--refine-bg-secondary) !important;
+    border-radius: 8px;
+    padding: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+
+  .ant-menu-item {
+    border-radius: 8px;
+    margin: 4px 0 !important;
+    transition: all var(--refine-transition-base);
+
+    &.ant-menu-item-selected {
+      background: linear-gradient(135deg, #00d4aa 0%, #4d9fff 100%) !important;
+      color: white !important;
+      font-weight: 600;
+      box-shadow: var(--refine-shadow-md);
+
+      .anticon {
+        color: white !important;
+      }
+    }
+
+    &:hover:not(.ant-menu-item-selected) {
+      background: var(--refine-glass-bg) !important;
+      color: var(--refine-text-primary) !important;
+
+      .anticon {
+        color: var(--refine-primary-light) !important;
+      }
+    }
+  }
+}
+
 .saas-left-side-menu {
   background: var(--refine-bg-secondary) !important;
   border-right: none !important;
@@ -58,7 +97,7 @@
     line-height: 40px !important;
 
     &.ant-menu-item-selected {
-      background: var(--refine-gradient-primary) !important;
+      background: linear-gradient(135deg, #00d4aa 0%, #4d9fff 100%) !important;
       color: white !important;
       font-weight: 600;
       box-shadow: var(--refine-shadow-md);
@@ -153,7 +192,7 @@
       }
 
       &.ant-menu-item-selected {
-        background: var(--refine-gradient-primary) !important;
+        background: linear-gradient(135deg, #00d4aa 0%, #4d9fff 100%) !important;
         color: white !important;
         font-weight: 600;
         box-shadow: var(--refine-shadow-md);

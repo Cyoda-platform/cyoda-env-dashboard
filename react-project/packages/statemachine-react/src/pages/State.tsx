@@ -107,7 +107,7 @@ export const State: React.FC = () => {
         </Button>
       </div>
 
-      <Card bordered={false}>
+      <Card variant="borderless">
         <Form
           form={form}
           layout="vertical"

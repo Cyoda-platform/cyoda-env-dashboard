@@ -98,7 +98,7 @@ const Login: React.FC = () => {
           </div>
         </div>
         
-        <Card className="login-card" bordered={false}>
+        <Card className="login-card" variant="borderless">
           <Form
             name="login"
             onFinish={onFinish}

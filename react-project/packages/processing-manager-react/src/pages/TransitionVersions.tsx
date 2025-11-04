@@ -121,7 +121,7 @@ export default function TransitionVersions() {
           style={{ marginBottom: 16 }}
         />
 
-        <Card bordered={false}>
+        <Card variant="borderless">
           <Title level={2}>Entity Versions</Title>
           <p style={{ color: '#666', marginBottom: 24 }}>
             Node: <strong>{name}</strong>
