@@ -148,8 +148,38 @@ axiosPlatform.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 
 axiosPlatform.interceptors.response.use(
   (response: AxiosResponse) => response,
-  (error: AxiosError) => {
-    HelperErrors.handler(error);
+  async (error: AxiosError) => {
+    // Don't show errors if muteErrors is set
+    if (!(error.config && (error.config as any).muteErrors)) {
+      HelperErrors.handler(error);
+    }
+
+    // Handle 401 Unauthorized - attempt token refresh
+    if (error.response?.status === 401 && error.config && !(error.config as any).__isRetryRequest) {
+      if (!refreshAccessTokenPromise) {
+        refreshAccessTokenPromise = refreshAccessToken();
+      }
+
+      try {
+        await refreshAccessTokenPromise;
+        refreshAccessTokenPromise = null;
+
+        // Retry the original request
+        (error.config as any).__isRetryRequest = true;
+        const auth = helperStorage.get('auth');
+        const token = auth?.token;
+
+        if (error.config.headers && token) {
+          error.config.headers.Authorization = `Bearer ${token}`;
+        }
+
+        return axios.request(error.config);
+      } catch (refreshError) {
+        refreshAccessTokenPromise = null;
+        return Promise.reject(refreshError);
+      }
+    }
+
     return Promise.reject(error);
   }
 );
@@ -177,8 +207,38 @@ axiosProcessing.interceptors.request.use((config: InternalAxiosRequestConfig) =>
 
 axiosProcessing.interceptors.response.use(
   (response: AxiosResponse) => response,
-  (error: AxiosError) => {
-    HelperErrors.handler(error);
+  async (error: AxiosError) => {
+    // Don't show errors if muteErrors is set
+    if (!(error.config && (error.config as any).muteErrors)) {
+      HelperErrors.handler(error);
+    }
+
+    // Handle 401 Unauthorized - attempt token refresh
+    if (error.response?.status === 401 && error.config && !(error.config as any).__isRetryRequest) {
+      if (!refreshAccessTokenPromise) {
+        refreshAccessTokenPromise = refreshAccessToken();
+      }
+
+      try {
+        await refreshAccessTokenPromise;
+        refreshAccessTokenPromise = null;
+
+        // Retry the original request
+        (error.config as any).__isRetryRequest = true;
+        const auth = helperStorage.get('auth');
+        const token = auth?.token;
+
+        if (error.config.headers && token) {
+          error.config.headers.Authorization = `Bearer ${token}`;
+        }
+
+        return axios.request(error.config);
+      } catch (refreshError) {
+        refreshAccessTokenPromise = null;
+        return Promise.reject(refreshError);
+      }
+    }
+
     return Promise.reject(error);
   }
 );
@@ -199,8 +259,38 @@ export const axiosGrafana: AxiosInstance = axios.create({
 
 axiosGrafana.interceptors.response.use(
   (response: AxiosResponse) => response,
-  (error: AxiosError) => {
-    HelperErrors.handler(error);
+  async (error: AxiosError) => {
+    // Don't show errors if muteErrors is set
+    if (!(error.config && (error.config as any).muteErrors)) {
+      HelperErrors.handler(error);
+    }
+
+    // Handle 401 Unauthorized - attempt token refresh
+    if (error.response?.status === 401 && error.config && !(error.config as any).__isRetryRequest) {
+      if (!refreshAccessTokenPromise) {
+        refreshAccessTokenPromise = refreshAccessToken();
+      }
+
+      try {
+        await refreshAccessTokenPromise;
+        refreshAccessTokenPromise = null;
+
+        // Retry the original request
+        (error.config as any).__isRetryRequest = true;
+        const auth = helperStorage.get('auth');
+        const token = auth?.token;
+
+        if (error.config.headers && token) {
+          error.config.headers.Authorization = `Bearer ${token}`;
+        }
+
+        return axios.request(error.config);
+      } catch (refreshError) {
+        refreshAccessTokenPromise = null;
+        return Promise.reject(refreshError);
+      }
+    }
+
     return Promise.reject(error);
   }
 );
@@ -228,8 +318,38 @@ axiosAI.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 
 axiosAI.interceptors.response.use(
   (response: AxiosResponse) => response,
-  (error: AxiosError) => {
-    HelperErrors.handler(error);
+  async (error: AxiosError) => {
+    // Don't show errors if muteErrors is set
+    if (!(error.config && (error.config as any).muteErrors)) {
+      HelperErrors.handler(error);
+    }
+
+    // Handle 401 Unauthorized - attempt token refresh
+    if (error.response?.status === 401 && error.config && !(error.config as any).__isRetryRequest) {
+      if (!refreshAccessTokenPromise) {
+        refreshAccessTokenPromise = refreshAccessToken();
+      }
+
+      try {
+        await refreshAccessTokenPromise;
+        refreshAccessTokenPromise = null;
+
+        // Retry the original request
+        (error.config as any).__isRetryRequest = true;
+        const auth = helperStorage.get('auth');
+        const token = auth?.token;
+
+        if (error.config.headers && token) {
+          error.config.headers.Authorization = `Bearer ${token}`;
+        }
+
+        return axios.request(error.config);
+      } catch (refreshError) {
+        refreshAccessTokenPromise = null;
+        return Promise.reject(refreshError);
+      }
+    }
+
     return Promise.reject(error);
   }
 );
