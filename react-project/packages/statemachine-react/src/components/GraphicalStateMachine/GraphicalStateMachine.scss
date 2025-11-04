@@ -45,6 +45,7 @@
     display: flex;
     flex: 1 1 auto;
     position: relative;
+    pointer-events: none; // Allow events to pass through to canvas
 
     .gf-transitions-list {
       position: absolute;
@@ -52,13 +53,28 @@
       left: 8px;
       z-index: 10;
       max-width: 450px;
+      max-height: 400px; // Maximum height before scrolling
+      overflow: auto; // Enable scrolling when content exceeds max-height
       background: #374151;
       border-radius: 4px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      pointer-events: auto; // Only the table itself should capture events
+
+      // Remove default spacing and height from Ant Design table wrapper
+      .ant-table-wrapper {
+        margin: 0 !important;
+        padding: 0 !important;
+        min-height: auto !important;
+        height: auto !important;
+
+        // Ensure the wrapper fits its content
+        display: block;
+      }
 
       .ant-table {
         background: #374151;
         color: #e5e7eb;
+        margin: 0 !important;
 
         .ant-table-thead > tr > th {
           background: #4b5563;
@@ -84,6 +100,31 @@
             color: #5eead4;
           }
         }
+
+        // Remove fixed height from table body to allow dynamic sizing
+        .ant-table-body {
+          min-height: auto !important;
+          max-height: none !important;
+          height: auto !important;
+        }
+
+        // Ensure table container fits content
+        .ant-table-container {
+          min-height: auto !important;
+          height: auto !important;
+        }
+
+        // Remove any height constraints from table content
+        .ant-table-content {
+          min-height: auto !important;
+          height: auto !important;
+        }
+
+        // Ensure the actual table element fits content
+        table {
+          min-height: auto !important;
+          height: auto !important;
+        }
       }
     }
 
@@ -91,6 +132,7 @@
       flex: 1 1 auto;
       position: relative;
       margin: 0; // Reset default figure margin
+      pointer-events: none; // Allow events to pass through to canvas
     }
   }
 
@@ -101,6 +143,7 @@
     right: 0;
     bottom: 0;
     z-index: 1; // Base layer for the diagram
+    pointer-events: auto; // Ensure mouse events work
   }
 
   .map-controls {

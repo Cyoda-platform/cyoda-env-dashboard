@@ -16,8 +16,8 @@ export const style: CytoscapeStylesheet[] = [
       'text-background-padding': '4px',
       'text-max-width': 180,
       'text-wrap': 'wrap',
-      'width': 60,
-      'height': 60,
+      'width': 45,
+      'height': 45,
       'background-color': '#14b8a6', // Neon teal fallback
       'border-width': 2,
       'border-color': '#5eead4', // Lighter teal border

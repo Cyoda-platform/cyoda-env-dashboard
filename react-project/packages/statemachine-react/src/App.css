@@ -28,3 +28,13 @@
   text-decoration: underline;
 }
 
+/* Centered pagination */
+.pagination-bar {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+

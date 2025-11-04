@@ -204,6 +204,7 @@ export const ProcessesList: React.FC<ProcessesListProps> = ({
           pageSizeOptions: ['5', '10', '20', '50'],
           showSizeChanger: true,
           showTotal: (total) => `Total ${total} processes`,
+          position: ['bottomCenter'],
         }}
         onChange={handleTableChange}
       />

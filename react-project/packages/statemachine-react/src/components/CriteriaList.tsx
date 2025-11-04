@@ -194,6 +194,7 @@ export const CriteriaList: React.FC<CriteriaListProps> = ({
           pageSizeOptions: ['5', '10', '20', '50'],
           showSizeChanger: true,
           showTotal: (total) => `Total ${total} criteria`,
+          position: ['bottomCenter'],
         }}
         onChange={handleTableChange}
       />

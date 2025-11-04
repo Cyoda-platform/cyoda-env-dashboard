@@ -4,7 +4,7 @@
  * Migrated from: .old_project/packages/cyoda-ui-lib/src/components-library/patterns/GraphicalStatemachineMap/GraphicalStatemachineMap.vue
  */
 
-import React, { useRef, useEffect, useState, useCallback } from 'react';
+import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import cytoscape, { Core } from 'cytoscape';
 import { Button, Space, Card, Table } from 'antd';
 import { EyeOutlined, EyeInvisibleOutlined, PlusOutlined } from '@ant-design/icons';
@@ -72,8 +72,8 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
   const [showListOfTransitions, setShowListOfTransitions] = useState(true);
   const [hiddenTransitions, setHiddenTransitions] = useState<Set<string>>(new Set());
 
-  // Filter active transitions
-  const activeTransitions = transitions.filter((t) => t.active);
+  // Filter active transitions - memoize to prevent re-initialization loop
+  const activeTransitions = useMemo(() => transitions.filter((t) => t.active), [transitions]);
 
   // Initialize Cytoscape
   const init = useCallback(() => {
@@ -134,9 +134,11 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
         avoidOverlapPadding: 50, // Minimum distance between nodes
       },
       zoom: 1,
-      pan: { x: 250, y: 0 }, // Offset diagram to the right to avoid transitions table
+      pan: { x: 0, y: 0 }, // Start at origin like Vue version
       minZoom: 0.1,
       maxZoom: 4,
+      // Don't set autoungrabify - let it default to false
+      // Don't set autounselectify - let it default to false
     });
 
     // Force resize immediately after initialization
@@ -144,13 +146,10 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
 
     cyRef.current = cy;
 
-    // Listen for layout stop event to fit the graph
+    // Listen for layout stop event to fit the graph (matching Vue implementation)
     cy.one('layoutstop', () => {
       setTimeout(() => {
         cy.fit(50);
-        // Apply offset to avoid transitions table
-        const currentPan = cy.pan();
-        cy.pan({ x: currentPan.x + 250, y: currentPan.y });
       }, 50);
     });
 
@@ -172,15 +171,21 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
     cy.on('dragfree', 'node', onDragFree);
     cy.on('tap', onTapBackground);
 
-    // Enable/disable dragging based on readonly mode
+    // Enable/disable dragging based on readonly mode (matching Vue implementation)
+    console.log('[GraphicalStateMachine] isReadonly:', isReadonly);
     if (isReadonly) {
+      console.log('[GraphicalStateMachine] Locking nodes');
       cy.nodes('.compound-processes').lock();
       cy.nodes('.node-state').lock();
     } else {
+      console.log('[GraphicalStateMachine] Unlocking nodes');
       cy.nodes('.compound-processes').unlock();
       cy.nodes('.node-state').unlock();
+      console.log('[GraphicalStateMachine] State nodes unlocked:', cy.nodes('.node-state').length);
+      console.log('[GraphicalStateMachine] Process nodes unlocked:', cy.nodes('.compound-processes').length);
     }
 
+    cy.fit();
     cy.userZoomingEnabled(false);
 
     // Set initialized flag (will be set after layout completes if no positionsMap)
@@ -196,9 +201,6 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
       // If we have saved positions, fit immediately since layout is preset
       setTimeout(() => {
         cy.fit(50);
-        // Apply offset to avoid transitions table
-        const currentPan = cy.pan();
-        cy.pan({ x: currentPan.x + 250, y: currentPan.y });
       }, 100);
     }
   }, [activeTransitions, positionsMap, currentState, isInitialized, processes, criteria, showTitles, showEdgesTitles, showProcesses, showCriteria, isReadonly]);
@@ -392,6 +394,7 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
 
   // Handle drag end
   const onDragFree = useCallback((event: any) => {
+    console.log('[GraphicalStateMachine] onDragFree triggered!', event.target.id());
     if (!cyRef.current) return;
 
     const cy = cyRef.current;
@@ -595,10 +598,12 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
       console.log('[GraphicalStateMachine] useEffect - calling init');
       init();
     }
-  }, [transitions, isInitialized, init]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [transitions.length, isInitialized]); // Only re-init when transitions count or initialized state changes
 
-  // Reinitialize when workflow changes
+  // Cleanup when workflow changes or component unmounts
   useEffect(() => {
+    // Cleanup function runs when workflowId changes or component unmounts
     return () => {
       if (cyRef.current) {
         console.log('[GraphicalStateMachine] Cleanup - destroying cytoscape');
@@ -737,10 +742,6 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
                   ]}
                   pagination={false}
                   bordered
-                  style={{
-                    maxHeight: '300px',
-                    overflow: 'auto',
-                  }}
                 />
               </div>
             )}
