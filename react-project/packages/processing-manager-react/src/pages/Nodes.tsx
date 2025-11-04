@@ -66,7 +66,7 @@ export default function Nodes() {
         Processing Nodes
       </Title>
 
-      <Card>
+      <Card bordered={false}>
         {isLoading && (
           <div style={{ textAlign: 'center', padding: '50px' }}>
             <Spin size="large" />

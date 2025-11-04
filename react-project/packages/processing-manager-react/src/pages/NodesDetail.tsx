@@ -69,7 +69,7 @@ export default function NodesDetail() {
 
   return (
     <div style={{ padding: '24px' }}>
-      <Card>
+      <Card bordered={false}>
         <Title level={2}>Node Detail: {name}</Title>
         <Tabs activeKey={activeKey} onChange={handleTabChange}>
           <TabPane tab="Processing Manager" key="1">

@@ -29,7 +29,7 @@ export const Tasks: React.FC = () => {
     <main id="main-content" role="main">
       <div className="row">
         <div className="col-md-12">
-          <Card>
+          <Card bordered={false}>
             <div className="actions" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
               <div>
                 <h2>Filters</h2>

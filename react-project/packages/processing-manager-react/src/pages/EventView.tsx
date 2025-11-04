@@ -69,7 +69,7 @@ export default function EventView() {
     <div style={{ padding: '24px' }}>
       <Breadcrumb items={breadcrumbItems} style={{ marginBottom: 16 }} />
 
-      <Card loading={isLoading}>
+      <Card bordered={false} loading={isLoading}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
           <Title level={3} style={{ margin: 0 }}>
             Event View

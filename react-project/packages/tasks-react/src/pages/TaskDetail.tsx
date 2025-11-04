@@ -103,7 +103,7 @@ export const TaskDetail: React.FC = () => {
 
   if (fetchError) {
     return (
-      <Card>
+      <Card bordered={false}>
         <Alert
           message="Error Loading Task"
           description="Failed to load task details. Please try again."
@@ -124,7 +124,7 @@ export const TaskDetail: React.FC = () => {
 
   if (!data?.alertTask) {
     return (
-      <Card>
+      <Card bordered={false}>
         <Alert
           message="Task Not Found"
           description="The requested task could not be found. It may have been deleted or you may not have permission to view it."
@@ -149,6 +149,7 @@ export const TaskDetail: React.FC = () => {
   return (
     <div role="main" aria-labelledby="task-detail-heading">
       <Card
+        bordered={false}
         title={
           <Space>
             <Button

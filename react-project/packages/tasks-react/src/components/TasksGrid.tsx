@@ -268,7 +268,7 @@ export const TasksGrid: React.FC<TasksGridProps> = memo(({ filter, isApplyRealDa
           </div>
         )}
 
-        <nav aria-label="Tasks pagination" style={{ marginTop: 16, textAlign: 'center' }}>
+        <nav aria-label="Tasks pagination" style={{ marginTop: 16, display: 'flex', justifyContent: 'center' }}>
           <Pagination
             current={currentPage}
             pageSize={pageSize}

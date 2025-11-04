@@ -51,7 +51,7 @@ export default function Home() {
 
       <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
         <Col xs={24} sm={8}>
-          <Card>
+          <Card bordered={false}>
             <Statistic
               title="Total Nodes"
               value={totalNodes}
@@ -61,7 +61,7 @@ export default function Home() {
           </Card>
         </Col>
         <Col xs={24} sm={8}>
-          <Card>
+          <Card bordered={false}>
             <Statistic
               title="Online Nodes"
               value={onlineNodes}
@@ -72,7 +72,7 @@ export default function Home() {
           </Card>
         </Col>
         <Col xs={24} sm={8}>
-          <Card>
+          <Card bordered={false}>
             <Statistic
               title="Offline Nodes"
               value={offlineNodes}
