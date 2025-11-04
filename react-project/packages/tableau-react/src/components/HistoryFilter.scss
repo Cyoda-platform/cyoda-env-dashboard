@@ -4,21 +4,17 @@
  */
 
 .history-filter {
-  padding: 20px;
-  background: #fff;
-  border-radius: 4px;
-  margin-bottom: 20px;
-
   h2 {
     margin-bottom: 20px;
     font-size: 18px;
     font-weight: 600;
-    color: #333;
+    color: var(--refine-text-primary, #F9FAFB);
   }
 
   .ant-form-item-label > label {
     font-size: 14px;
     font-weight: 500;
+    color: var(--refine-text-secondary, #D1D5DB);
   }
 
   .ant-select,

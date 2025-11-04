@@ -104,7 +104,6 @@ const HistoryReportsTab: React.FC<{ onResetState: () => void }> = ({ onResetStat
           <QuickRunReport />
         </div>
         <div className="button-box">
-          <Divider type="vertical" />
           <Tooltip title="Reset state: filters, table settings, etc." placement="top">
             <Button type="primary" icon={<ReloadOutlined />} onClick={onResetState}>
               Reset state
@@ -113,19 +112,13 @@ const HistoryReportsTab: React.FC<{ onResetState: () => void }> = ({ onResetStat
         </div>
       </div>
 
-      <Divider />
-
       {/* History Filter */}
       <div className="wrap-history-filter">
         <HistoryFilter value={filter} onChange={handleFilterChange} />
       </div>
 
-      <Divider />
-
       {/* History Settings */}
       <HistorySetting settings={settings} onChange={handleSettingsChange} />
-
-      <Divider />
 
       {/* Report UI Settings */}
       {reportDefinition && (
@@ -215,6 +208,7 @@ const Reports: React.FC = () => {
 
   return (
     <div className="config-editor">
+      <h1 className="page-title">Reports</h1>
       <Tabs
         activeKey={activeTab}
         onChange={handleTabChange}
@@ -222,7 +216,6 @@ const Reports: React.FC = () => {
         className="reports-tabs"
         items={tabItems}
       />
-      <Divider />
     </div>
   );
 };

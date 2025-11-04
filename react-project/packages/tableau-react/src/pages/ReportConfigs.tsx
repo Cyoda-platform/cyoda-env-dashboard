@@ -621,8 +621,6 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
 
   return (
     <div className="report-configs">
-      <h1 className="label">Report Configurations</h1>
-
       <div className="flex-buttons">
         <Space>
           <Button
@@ -670,8 +668,6 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
           </Button>
         </Space>
       </div>
-
-      <Divider />
 
       <ConfigEditorReportsFilter
         value={filterForm}
