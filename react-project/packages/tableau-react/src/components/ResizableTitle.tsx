@@ -22,6 +22,11 @@ export const ResizableTitle = (props: any) => {
   // Try to get width from various sources
   let columnWidth = width;
 
+  // Check data-column-width attribute
+  if (!columnWidth && restProps['data-column-width']) {
+    columnWidth = restProps['data-column-width'];
+  }
+
   // Check if width is in style
   if (!columnWidth && restProps.style?.width) {
     const styleWidth = restProps.style.width;
@@ -43,6 +48,7 @@ export const ResizableTitle = (props: any) => {
     width,
     columnWidth,
     hasOnResize: !!onResize,
+    dataColumnWidth: restProps['data-column-width'],
     styleWidth: restProps.style?.width,
   });
 

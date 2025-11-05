@@ -316,6 +316,7 @@ const HistoryTable: React.FC<HistoryTableProps> = ({ filter, onChange }) => {
       onHeaderCell: (column: any) => ({
         width: columnWidths.action,
         onResize: handleResize('action'),
+        'data-column-width': columnWidths.action,
       } as any),
       render: (_, record) => (
         <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
