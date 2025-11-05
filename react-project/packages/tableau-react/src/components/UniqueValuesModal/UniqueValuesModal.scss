@@ -145,3 +145,22 @@
   }
 }
 
+// Dropdown styles for Select components
+:global(.unique-values-modal-dropdown) {
+  .ant-select-item {
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    word-break: break-word !important;
+    height: auto !important;
+    min-height: 32px !important;
+    padding: 5px 12px !important;
+    line-height: 1.5 !important;
+  }
+
+  .ant-select-item-option-content {
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    word-break: break-word !important;
+  }
+}
+

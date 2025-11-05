@@ -100,6 +100,8 @@ export const CatalogueAliasChangeStateDialog = forwardRef<
               value: t,
               label: t,
             }))}
+            popupClassName="catalogue-alias-state-dropdown"
+            dropdownStyle={{ minWidth: '300px' }}
           />
         </Form.Item>
       </Form>

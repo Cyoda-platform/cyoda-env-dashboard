@@ -547,6 +547,8 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
               filterOption={(input, option) =>
                 (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
               }
+              popupClassName="modelling-alias-new-dropdown"
+              dropdownStyle={{ minWidth: '400px' }}
             >
               {availableMappers.map((m) => (
                 <Select.Option key={m.mapperClass} value={m.mapperClass}>
@@ -645,6 +647,8 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
                   (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                 }
                 onChange={(value) => setAliasForm((prev) => ({ ...prev, entityClass: value }))}
+                popupClassName="modelling-alias-new-dropdown"
+                dropdownStyle={{ minWidth: '400px' }}
               />
             </Form.Item>
           </Form>
