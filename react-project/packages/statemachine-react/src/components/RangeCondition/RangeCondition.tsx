@@ -11,6 +11,7 @@ import { ModellingPopUp, ModellingPopUpRef } from '@cyoda/tableau-react';
 import { FilterBuilderCondition } from '@cyoda/cobi-react';
 import type { FilterCondition, ColumnInfo } from '@cyoda/cobi-react';
 import './RangeCondition.css';
+import './RangeCondition.scss';
 
 export interface RangeConditionForm {
   entityClassName: string;
@@ -181,6 +182,8 @@ export const RangeCondition: React.FC<RangeConditionProps> = ({
                 onChange={handleRangeOrderChange}
                 style={{ width: 100 }}
                 disabled={disabled}
+                popupClassName="range-condition-dropdown"
+                dropdownStyle={{ minWidth: '150px' }}
               >
                 <Select.Option value="ASC">ASC</Select.Option>
                 <Select.Option value="DESC">DESC</Select.Option>

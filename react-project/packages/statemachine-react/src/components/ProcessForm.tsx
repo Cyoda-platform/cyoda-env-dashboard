@@ -13,6 +13,7 @@ import {
   useUpdateProcess,
 } from '../hooks/useStatemachine';
 import type { PersistedType, ProcessForm as ProcessFormType } from '../types';
+import './ProcessForm.scss';
 
 const { TextArea } = Input;
 
@@ -350,6 +351,8 @@ export const ProcessForm: React.FC<ProcessFormProps> = ({
             filterOption={(input, option) =>
               (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
             }
+            popupClassName="process-form-dropdown"
+            dropdownStyle={{ minWidth: '400px' }}
           />
         </Form.Item>
       )}
@@ -379,6 +382,8 @@ export const ProcessForm: React.FC<ProcessFormProps> = ({
                       label: val,
                       value: val,
                     }))}
+                    popupClassName="process-form-dropdown"
+                    dropdownStyle={{ minWidth: '300px' }}
                   />
                 </Form.Item>
               );

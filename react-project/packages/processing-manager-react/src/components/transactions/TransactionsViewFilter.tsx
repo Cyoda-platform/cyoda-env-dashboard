@@ -78,6 +78,8 @@ export const TransactionsViewFilter: React.FC<TransactionsViewFilterProps> = ({
               onChange={(value) => handleFieldChange('status', value || '')}
               options={transactionStatusOptions}
               placeholder="Select status"
+              popupClassName="transactions-view-filter-dropdown"
+              dropdownStyle={{ minWidth: '400px' }}
             />
           </Form.Item>
         </Col>
@@ -118,6 +120,8 @@ export const TransactionsViewFilter: React.FC<TransactionsViewFilterProps> = ({
                 { value: 'ASC', label: 'Asc' },
                 { value: 'DESC', label: 'Desc' },
               ]}
+              popupClassName="transactions-view-filter-dropdown"
+              dropdownStyle={{ minWidth: '300px' }}
             />
           </Form.Item>
         </Col>

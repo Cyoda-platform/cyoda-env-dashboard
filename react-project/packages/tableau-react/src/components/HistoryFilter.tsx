@@ -215,6 +215,8 @@ const HistoryFilter: React.FC<HistoryFilterProps> = ({
                   (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                 }
                 options={usersOptions}
+                popupClassName="history-filter-dropdown"
+                dropdownStyle={{ minWidth: '400px' }}
               />
             </Form.Item>
           </Col>
@@ -229,6 +231,8 @@ const HistoryFilter: React.FC<HistoryFilterProps> = ({
                   (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                 }
                 options={entityOptions}
+                popupClassName="history-filter-dropdown"
+                dropdownStyle={{ minWidth: '400px' }}
               />
             </Form.Item>
           </Col>

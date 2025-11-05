@@ -10,6 +10,7 @@ import { useMutation } from '@tanstack/react-query';
 import { axios } from '@cyoda/http-api-react';
 import type { ReportDefinition } from '../types';
 import moment from 'moment';
+import './ReportScheduling.scss';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
 
@@ -84,7 +85,10 @@ export const ReportScheduling: React.FC<ReportSchedulingProps> = ({ visible, rep
             name="frequency"
             rules={[{ required: true, message: 'Please select frequency' }]}
           >
-            <Select>
+            <Select
+              popupClassName="report-scheduling-dropdown"
+              dropdownStyle={{ minWidth: '200px' }}
+            >
               <Select.Option value="DAILY">Daily</Select.Option>
               <Select.Option value="WEEKLY">Weekly</Select.Option>
               <Select.Option value="MONTHLY">Monthly</Select.Option>
@@ -107,7 +111,10 @@ export const ReportScheduling: React.FC<ReportSchedulingProps> = ({ visible, rep
               if (frequency === 'WEEKLY') {
                 return (
                   <Form.Item label="Day of Week" name="dayOfWeek">
-                    <Select>
+                    <Select
+                      popupClassName="report-scheduling-dropdown"
+                      dropdownStyle={{ minWidth: '200px' }}
+                    >
                       <Select.Option value={1}>Monday</Select.Option>
                       <Select.Option value={2}>Tuesday</Select.Option>
                       <Select.Option value={3}>Wednesday</Select.Option>
@@ -123,7 +130,10 @@ export const ReportScheduling: React.FC<ReportSchedulingProps> = ({ visible, rep
               if (frequency === 'MONTHLY') {
                 return (
                   <Form.Item label="Day of Month" name="dayOfMonth">
-                    <Select>
+                    <Select
+                      popupClassName="report-scheduling-dropdown"
+                      dropdownStyle={{ minWidth: '200px' }}
+                    >
                       {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
                         <Select.Option key={day} value={day}>
                           {day}

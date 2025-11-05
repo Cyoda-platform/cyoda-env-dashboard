@@ -1,30 +1,15 @@
 /**
- * HistoryFilter Styles
- * Migrated from: .old_project/packages/http-api/src/views/History/HistoryFilter.vue
+ * ReportScheduling Component Styles
  */
 
-.history-filter {
-  h2 {
-    margin-bottom: 20px;
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--refine-text-primary, #F9FAFB);
-  }
-
-  .ant-form-item-label > label {
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--refine-text-secondary, #D1D5DB);
-  }
-
-  .ant-select,
-  .ant-picker {
-    width: 100%;
+.report-scheduling {
+  .ant-form-item {
+    margin-bottom: 16px;
   }
 }
 
 // Dropdown styles for Select components
-:global(.history-filter-dropdown) {
+:global(.report-scheduling-dropdown) {
   .ant-select-item {
     white-space: normal !important;
     word-wrap: break-word !important;

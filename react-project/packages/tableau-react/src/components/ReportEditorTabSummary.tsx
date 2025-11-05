@@ -149,6 +149,8 @@ const ReportEditorTabSummary: React.FC<ReportEditorTabSummaryProps> = ({
             value={summaryItem.aggregation}
             onChange={(value) => handleAggregationChange(item.key, value)}
             options={options.map((opt) => ({ label: opt, value: opt }))}
+            popupClassName="report-summary-dropdown"
+            dropdownStyle={{ minWidth: '200px' }}
           />
         </div>
       );

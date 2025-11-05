@@ -17,6 +17,7 @@ import {
 } from '../hooks/useStatemachine';
 import { useQueryInvalidation } from '../hooks/useQueryInvalidation';
 import type { PersistedType, WorkflowForm as WorkflowFormType } from '../types';
+import './WorkflowForm.scss';
 
 const { TextArea } = Input;
 
@@ -202,6 +203,8 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
                 filterOption={(input, option) =>
                   String(option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                 }
+                popupClassName="workflow-form-dropdown"
+                dropdownStyle={{ minWidth: '400px' }}
               />
             </Form.Item>
             
@@ -241,6 +244,8 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
                 filterOption={(input, option) =>
                   String(option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                 }
+                popupClassName="workflow-form-dropdown"
+                dropdownStyle={{ minWidth: '400px' }}
               />
             </Form.Item>
 

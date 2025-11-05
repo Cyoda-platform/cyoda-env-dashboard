@@ -1,28 +1,7 @@
-@use '../../../../ui-lib-react/src/styles/table-mixins' as table;
-
-.members-filter {
-  .ant-form-item-label {
-    margin-bottom: 0 !important;
-    padding-bottom: 0 !important;
-  }
-
-  .wrap-row {
-    position: relative;
-
-    .action-item {
-      position: relative;
-      left: 0;
-      top: 22px;
-
-      button {
-        width: 100%;
-      }
-    }
-  }
-}
+@use '../../../ui-lib-react/src/styles/table-mixins' as table;
 
 // Dropdown styles for Select components
-:global(.members-filter-dropdown) {
+:global(.bulk-update-form-dropdown) {
   .ant-select-item {
     white-space: normal !important;
     word-wrap: break-word !important;

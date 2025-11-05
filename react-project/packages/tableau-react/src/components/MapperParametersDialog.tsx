@@ -111,7 +111,11 @@ export const MapperParametersDialog = forwardRef<MapperParametersDialogRef, Mapp
             name="parameterType"
             rules={[{ required: true, message: 'Please select parameter type' }]}
           >
-            <Select placeholder="Select parameter type">
+            <Select
+              placeholder="Select parameter type"
+              popupClassName="mapper-parameters-dropdown"
+              dropdownStyle={{ minWidth: '400px' }}
+            >
               {PARAMETER_TYPES.map((type) => (
                 <Select.Option key={type} value={type}>
                   {type.split('.').pop()}

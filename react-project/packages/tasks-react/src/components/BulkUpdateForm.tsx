@@ -10,6 +10,7 @@ import { HelperDictionary } from '@cyoda/ui-lib-react';
 import { useUpdateTask } from '../hooks/useTasks';
 import { useErrorHandler } from '../hooks/useErrorHandler';
 import type { TableRow } from '../types';
+import './BulkUpdateForm.scss';
 
 const { Option } = Select;
 
@@ -144,6 +145,8 @@ export const BulkUpdateForm: React.FC<BulkUpdateFormProps> = memo(({
             style={{ width: 220 }}
             aria-label="Select priority for bulk update"
             aria-describedby="bulk-priority-description"
+            popupClassName="bulk-update-form-dropdown"
+            dropdownStyle={{ minWidth: '300px' }}
           >
             {optionsPriority.map((item: any) => (
               <Option key={item.key} value={item.key}>
@@ -164,6 +167,8 @@ export const BulkUpdateForm: React.FC<BulkUpdateFormProps> = memo(({
             style={{ width: 220 }}
             aria-label="Select assignee for bulk update"
             aria-describedby="bulk-assignee-description"
+            popupClassName="bulk-update-form-dropdown"
+            dropdownStyle={{ minWidth: '300px' }}
           >
             {optionsAssignee.map((item: any) => (
               <Option key={item.name} value={item.name}>

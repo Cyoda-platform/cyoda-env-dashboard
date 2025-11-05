@@ -15,6 +15,7 @@ import {
   useUpdateCriteria,
 } from '../hooks/useStatemachine';
 import type { PersistedType, CriteriaForm as CriteriaFormType } from '../types';
+import './Criteria.scss';
 
 const { TextArea } = Input;
 
@@ -256,6 +257,8 @@ export const Criteria: React.FC = () => {
               filterOption={(input, option) =>
                 (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
               }
+              popupClassName="criteria-page-dropdown"
+              dropdownStyle={{ minWidth: '400px' }}
             />
           </Form.Item>
 
@@ -284,6 +287,8 @@ export const Criteria: React.FC = () => {
                           label: val,
                           value: val,
                         }))}
+                        popupClassName="criteria-page-dropdown"
+                        dropdownStyle={{ minWidth: '300px' }}
                       />
                     </Form.Item>
                   );

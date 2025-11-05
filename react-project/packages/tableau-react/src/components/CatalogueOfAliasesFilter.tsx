@@ -73,6 +73,8 @@ const CatalogueOfAliasesFilter: React.FC<CatalogueOfAliasesFilterProps> = ({
                 value={value.states}
                 onChange={(val) => handleFieldChange('states', val)}
                 options={stateOptions}
+                popupClassName="catalogue-aliases-filter-dropdown"
+                dropdownStyle={{ minWidth: '300px' }}
               />
             </Form.Item>
           </Col>
@@ -85,6 +87,8 @@ const CatalogueOfAliasesFilter: React.FC<CatalogueOfAliasesFilterProps> = ({
                 value={value.entities}
                 onChange={(val) => handleFieldChange('entities', val)}
                 options={entityOptions}
+                popupClassName="catalogue-aliases-filter-dropdown"
+                dropdownStyle={{ minWidth: '400px' }}
               />
             </Form.Item>
           </Col>
@@ -97,6 +101,8 @@ const CatalogueOfAliasesFilter: React.FC<CatalogueOfAliasesFilterProps> = ({
                 value={value.authors}
                 onChange={(val) => handleFieldChange('authors', val)}
                 options={usersOptions}
+                popupClassName="catalogue-aliases-filter-dropdown"
+                dropdownStyle={{ minWidth: '300px' }}
               />
             </Form.Item>
           </Col>

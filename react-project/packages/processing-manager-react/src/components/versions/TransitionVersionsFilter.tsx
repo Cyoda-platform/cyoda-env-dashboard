@@ -92,6 +92,8 @@ export const TransitionVersionsFilter: React.FC<TransitionVersionsFilterProps> =
                 onChange={(value) => handleFieldChange('actionTypeStr', value)}
                 placeholder="Action Type"
                 options={actionTypeOptions.map((type) => ({ value: type, label: type }))}
+                popupClassName="transition-versions-filter-dropdown"
+                dropdownStyle={{ minWidth: '300px' }}
               />
             </Form.Item>
           </Col>
@@ -105,6 +107,8 @@ export const TransitionVersionsFilter: React.FC<TransitionVersionsFilterProps> =
                   { value: 'ASC', label: 'Asc' },
                   { value: 'DESC', label: 'Desc' },
                 ]}
+                popupClassName="transition-versions-filter-dropdown"
+                dropdownStyle={{ minWidth: '300px' }}
               />
             </Form.Item>
           </Col>

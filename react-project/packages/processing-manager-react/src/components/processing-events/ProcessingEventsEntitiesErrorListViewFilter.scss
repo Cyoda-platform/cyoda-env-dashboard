@@ -17,7 +17,21 @@
 }
 
 // Dropdown styles for Select components
-.processing-events-entities-error-list-view-filter-dropdown {
-  @include table.select-dropdown-full-width;
+:global(.processing-events-entities-error-list-view-filter-dropdown) {
+  .ant-select-item {
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    word-break: break-word !important;
+    height: auto !important;
+    min-height: 32px !important;
+    padding: 5px 12px !important;
+    line-height: 1.5 !important;
+  }
+
+  .ant-select-item-option-content {
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    word-break: break-word !important;
+  }
 }
 

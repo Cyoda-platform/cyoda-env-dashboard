@@ -75,6 +75,8 @@ const ReportUISettingsDialog: React.FC<ReportUISettingsDialogProps> = ({
             allowClear
             onChange={handleChange}
             options={idFieldList}
+            popupClassName="report-ui-settings-dropdown"
+            dropdownStyle={{ minWidth: '300px' }}
           />
         </Form.Item>
       </Form>
