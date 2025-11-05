@@ -3,15 +3,18 @@
  * Migrated from: .old_project/packages/tableau/src/components/HistoryTable.vue
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { Table, notification, Button, Tooltip } from 'antd';
 import { InfoCircleOutlined, EditOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
+import type { ResizeCallbackData } from 'react-resizable';
 import { useQuery } from '@tanstack/react-query';
 import { axiosPlatform, useGlobalUiSettingsStore } from '@cyoda/http-api-react';
+import { HelperStorage } from '@cyoda/ui-lib-react';
 import moment from 'moment';
 import type { ReportHistoryData, TableDataRow, HistorySettings, ConfigDefinition } from '@/types';
 import type { HistoryFilterForm } from '../utils/HelperReportDefinition';
+import { ResizableTitle } from './ResizableTitle';
 import './HistoryTable.scss';
 
 interface HistoryTableProps {
@@ -22,9 +25,43 @@ interface HistoryTableProps {
 
 const HistoryTable: React.FC<HistoryTableProps> = ({ filter, onChange }) => {
   const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
+  const storage = useMemo(() => new HelperStorage(), []);
 
   // Get global entity type
   const { entityType } = useGlobalUiSettingsStore();
+
+  // Column widths state - load from localStorage
+  const [columnWidths, setColumnWidths] = useState<Record<string, number>>(() => {
+    const saved = storage.get('historyTable:columnWidths', {});
+    const widths = saved || {
+      createDateTime: 150,
+      config: 200,
+      type: 200,
+      user: 200,
+      status: 150,
+      execution: 150,
+      rows: 150,
+      action: 120,
+    };
+    console.log('HistoryTable columnWidths loaded:', widths);
+    return widths;
+  });
+
+  // Save column widths to localStorage whenever they change
+  useEffect(() => {
+    storage.set('historyTable:columnWidths', columnWidths);
+  }, [columnWidths, storage]);
+
+  // Handle column resize
+  const handleResize = useCallback((key: string) => {
+    return (_: React.SyntheticEvent, { size }: ResizeCallbackData) => {
+      console.log('Resizing column:', key, 'to width:', size.width);
+      setColumnWidths((prev) => ({
+        ...prev,
+        [key]: size.width,
+      }));
+    };
+  }, []);
 
   // Fetch report history
   const { data: reportHistoryData = [], isLoading } = useQuery({
@@ -166,56 +203,120 @@ const HistoryTable: React.FC<HistoryTableProps> = ({ filter, onChange }) => {
     });
   }, [reportHistoryData]);
 
-  // Table columns
-  const columns: ColumnsType<TableDataRow> = [
+  // Handle info button click - shows report details modal
+  const handleInfoClick = useCallback(async (record: TableDataRow) => {
+    // TODO: Implement info modal showing:
+    // - Group by columns
+    // - Filters
+    // - Sorting
+    // - Other report configuration details
+    notification.info({
+      message: 'Report Details',
+      description: `Report ID: ${record.id}\nConfig: ${record.config}\nRows: ${record.totalRowsCount}`,
+      duration: 5,
+    });
+  }, []);
+
+  // Handle edit button click - opens hierarchy edit modal
+  const handleEditClick = useCallback(async (record: TableDataRow) => {
+    // TODO: Implement hierarchy edit modal
+    notification.info({
+      message: 'Edit Hierarchy',
+      description: `Edit hierarchy grouping for report: ${record.config}`,
+      duration: 3,
+    });
+  }, []);
+
+  // Table columns with resizable widths
+  const columns: ColumnsType<TableDataRow> = useMemo(() => [
     {
       title: 'DateTime',
       dataIndex: 'createDateTime',
       key: 'createDateTime',
-      width: 150,
+      width: columnWidths.createDateTime,
       sorter: (a, b) => Number(a.createDateTimeMkTime) - Number(b.createDateTimeMkTime),
       defaultSortOrder: 'descend',
+      onHeaderCell: (column: any) => ({
+        width: columnWidths.createDateTime,
+        onResize: handleResize('createDateTime'),
+        'data-column-width': columnWidths.createDateTime,
+      } as any),
     },
     {
       title: 'Config',
       dataIndex: 'config',
       key: 'config',
+      width: columnWidths.config,
+      onHeaderCell: (column: any) => ({
+        width: columnWidths.config,
+        onResize: handleResize('config'),
+        'data-column-width': columnWidths.config,
+      } as any),
     },
     {
       title: 'Type',
       dataIndex: 'type',
       key: 'type',
-      width: 200,
+      width: columnWidths.type,
+      onHeaderCell: (column: any) => ({
+        width: columnWidths.type,
+        onResize: handleResize('type'),
+        'data-column-width': columnWidths.type,
+      } as any),
     },
     {
       title: 'User',
       dataIndex: 'user',
       key: 'user',
-      width: 200,
+      width: columnWidths.user,
+      onHeaderCell: (column: any) => ({
+        width: columnWidths.user,
+        onResize: handleResize('user'),
+        'data-column-width': columnWidths.user,
+      } as any),
     },
     {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      width: 150,
+      width: columnWidths.status,
+      onHeaderCell: (column: any) => ({
+        width: columnWidths.status,
+        onResize: handleResize('status'),
+        'data-column-width': columnWidths.status,
+      } as any),
     },
     {
       title: 'Execution',
       dataIndex: 'execution',
       key: 'execution',
-      width: 150,
+      width: columnWidths.execution,
+      onHeaderCell: (column: any) => ({
+        width: columnWidths.execution,
+        onResize: handleResize('execution'),
+        'data-column-width': columnWidths.execution,
+      } as any),
     },
     {
       title: 'Rows',
       dataIndex: 'rows',
       key: 'rows',
-      width: 150,
+      width: columnWidths.rows,
+      onHeaderCell: (column: any) => ({
+        width: columnWidths.rows,
+        onResize: handleResize('rows'),
+        'data-column-width': columnWidths.rows,
+      } as any),
     },
     {
       title: 'Action',
       key: 'action',
-      width: 120,
+      width: columnWidths.action,
       fixed: 'right',
+      onHeaderCell: (column: any) => ({
+        width: columnWidths.action,
+        onResize: handleResize('action'),
+      } as any),
       render: (_, record) => (
         <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
           <Tooltip title="View report details">
@@ -245,31 +346,7 @@ const HistoryTable: React.FC<HistoryTableProps> = ({ filter, onChange }) => {
         </div>
       ),
     },
-  ];
-
-  // Handle info button click - shows report details modal
-  const handleInfoClick = async (record: TableDataRow) => {
-    // TODO: Implement info modal showing:
-    // - Group by columns
-    // - Filters
-    // - Sorting
-    // - Other report configuration details
-    notification.info({
-      message: 'Report Details',
-      description: `Report ID: ${record.id}\nConfig: ${record.config}\nRows: ${record.totalRowsCount}`,
-      duration: 5,
-    });
-  };
-
-  // Handle edit button click - opens hierarchy edit modal
-  const handleEditClick = async (record: TableDataRow) => {
-    // TODO: Implement hierarchy edit modal
-    notification.info({
-      message: 'Edit Hierarchy',
-      description: `Edit hierarchy grouping for report: ${record.config}`,
-      duration: 3,
-    });
-  };
+  ], [columnWidths, handleResize, handleInfoClick, handleEditClick]);
 
   // Handle row click
   const handleRowClick = async (record: TableDataRow) => {
@@ -313,6 +390,11 @@ const HistoryTable: React.FC<HistoryTableProps> = ({ filter, onChange }) => {
           onClick: () => handleRowClick(record),
           className: record.id === selectedRowId ? 'selected-row' : '',
         })}
+        components={{
+          header: {
+            cell: ResizableTitle,
+          },
+        }}
       />
     </div>
   );

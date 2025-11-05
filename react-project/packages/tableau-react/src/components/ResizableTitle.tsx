@@ -6,6 +6,7 @@
 
 import React from 'react';
 import { Resizable, ResizeCallbackData } from 'react-resizable';
+import 'react-resizable/css/styles.css';
 
 interface ResizableTitleProps extends React.HTMLAttributes<any> {
   onResize?: (e: React.SyntheticEvent, data: ResizeCallbackData) => void;
@@ -15,12 +16,19 @@ interface ResizableTitleProps extends React.HTMLAttributes<any> {
 export const ResizableTitle = (props: any) => {
   const { onResize, width, ...restProps } = props;
 
+  // Debug logging - enabled for debugging
+  console.log('ResizableTitle render - ALL PROPS:', props);
+
   // Try to get width from various sources
   let columnWidth = width;
 
   // Check if width is in style
   if (!columnWidth && restProps.style?.width) {
-    columnWidth = restProps.style.width;
+    const styleWidth = restProps.style.width;
+    // Parse width if it's a string like "150px"
+    columnWidth = typeof styleWidth === 'string'
+      ? parseInt(styleWidth)
+      : styleWidth;
   }
 
   // Check children array for column data
@@ -31,27 +39,24 @@ export const ResizableTitle = (props: any) => {
     }
   }
 
-  // Debug logging - disabled in production
-  // Uncomment for debugging:
-  // console.log('ResizableTitle render:', {
-  //   width,
-  //   columnWidth,
-  //   hasOnResize: !!onResize,
-  //   styleWidth: restProps.style?.width,
-  //   children: restProps.children,
-  // });
+  console.log('ResizableTitle computed:', {
+    width,
+    columnWidth,
+    hasOnResize: !!onResize,
+    styleWidth: restProps.style?.width,
+  });
 
   if (!columnWidth) {
-    // console.log('ResizableTitle: returning plain th (no width found)');
+    console.log('ResizableTitle: returning plain th (no width found)');
     return <th {...restProps} />;
   }
 
   if (!onResize) {
-    // console.log('ResizableTitle: returning plain th (no onResize)');
+    console.log('ResizableTitle: returning plain th (no onResize)');
     return <th {...restProps} style={{ ...restProps.style, width: columnWidth }} />;
   }
 
-  // console.log('ResizableTitle: rendering Resizable with width:', columnWidth);
+  console.log('ResizableTitle: rendering Resizable with width:', columnWidth);
 
   return (
     <Resizable

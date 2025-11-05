@@ -3,6 +3,8 @@
  * Migrated from: .old_project/packages/tableau/src/components/HistoryTable.vue
  */
 
+@import 'react-resizable/css/styles.css';
+
 .history-table {
   width: 100%;
 
@@ -85,6 +87,51 @@
   // No wrap for cells
   .no-wrap .cell {
     white-space: nowrap !important;
+  }
+
+  // Resizable column styles
+  :global {
+    .ant-table-thead > tr > th {
+      position: relative !important;
+    }
+
+    .react-resizable {
+      position: relative;
+      background-clip: padding-box;
+    }
+
+    .react-resizable-handle {
+      position: absolute !important;
+      right: -5px !important;
+      bottom: 0 !important;
+      z-index: 10 !important;
+      width: 10px !important;
+      height: 100% !important;
+      cursor: col-resize !important;
+      background: transparent !important;
+
+      &::before {
+        content: '' !important;
+        display: block !important;
+        position: absolute !important;
+        right: 4px !important;
+        top: 0 !important;
+        width: 2px !important;
+        height: 100% !important;
+        background-color: rgba(255, 255, 255, 0.2) !important;
+        transition: background-color 0.2s !important;
+      }
+
+      &:hover::before {
+        background-color: rgba(0, 212, 170, 0.8) !important;
+      }
+    }
+
+    .react-resizable-handle-se {
+      right: -5px !important;
+      bottom: 0 !important;
+      cursor: col-resize !important;
+    }
   }
 }
 
