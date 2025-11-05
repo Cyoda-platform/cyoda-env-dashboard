@@ -5,7 +5,7 @@
  * Migrated from: .old_project/packages/http-api/src/views/ConfigEditor/ConfigEditorReportsStream.vue
  */
 
-import React, { useState, useMemo, useRef, useCallback } from 'react';
+import React, { useState, useMemo, useRef, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Table, Button, Tooltip, Divider, Modal, message, Space, Upload } from 'antd';
 import {
@@ -21,6 +21,7 @@ import {
   UndoOutlined,
 } from '@ant-design/icons';
 import type { TableColumnsType } from 'antd';
+import type { ResizeCallbackData } from 'react-resizable';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { axios } from '@cyoda/http-api-react';
 import moment from 'moment';
@@ -29,6 +30,7 @@ import HistoryFilter from '../components/HistoryFilter';
 import ReportScheduling from '../components/ReportScheduling';
 import { ConfigEditorStreamGrid, ConfigEditorStreamGridRef } from '@cyoda/ui-lib-react';
 import { HelperStorage } from '@cyoda/ui-lib-react';
+import { ResizableTitle } from '../components/ResizableTitle';
 import type { HistoryFilterForm } from '../utils/HelperReportDefinition';
 import type { ReportDefinition } from '../types';
 import HelperReportDefinition from '../utils/HelperReportDefinition';
@@ -74,6 +76,55 @@ export const ReportConfigsStream: React.FC = () => {
   const [pageSize, setPageSize] = useState<number>(10);
 
   const streamGridRef = useRef<ConfigEditorStreamGridRef>(null);
+
+  // Column widths state
+  const [columnWidths, setColumnWidths] = useState<Record<string, number>>(() => {
+    const saved = storage.get('reportConfigsStream:columnWidths', {});
+    const defaultWidths = {
+      name: 200,
+      description: 300,
+      requestClass: 200,
+      createDateTime: 150,
+      user: 120,
+      state: 100,
+      action: 200,
+    };
+    return saved && Object.keys(saved).length > 0 ? saved : defaultWidths;
+  });
+
+  // Save column widths to localStorage
+  useEffect(() => {
+    if (Object.keys(columnWidths).length > 0) {
+      storage.set('reportConfigsStream:columnWidths', columnWidths);
+    }
+  }, [columnWidths]);
+
+  // Handle column resize
+  const handleResize = useCallback((key: string) => {
+    return (_: React.SyntheticEvent, { size }: ResizeCallbackData) => {
+      setColumnWidths((prev) => {
+        const oldWidth = prev[key];
+        const newWidth = size.width;
+        const delta = newWidth - oldWidth;
+
+        const otherKeys = Object.keys(prev).filter(k => k !== key);
+        if (otherKeys.length === 0) {
+          return { ...prev, [key]: newWidth };
+        }
+
+        const totalOtherWidth = otherKeys.reduce((sum, k) => sum + prev[k], 0);
+        const newWidths = { ...prev, [key]: newWidth };
+
+        otherKeys.forEach(k => {
+          const proportion = prev[k] / totalOtherWidth;
+          const adjustment = delta * proportion;
+          newWidths[k] = Math.max(50, prev[k] - adjustment);
+        });
+
+        return newWidths;
+      });
+    };
+  }, []);
 
   // Fetch stream report definitions
   const { data: definitions = [], isLoading, refetch } = useQuery({
@@ -375,39 +426,66 @@ export const ReportConfigsStream: React.FC = () => {
       title: 'Config',
       dataIndex: 'name',
       key: 'name',
+      width: columnWidths.name,
       sorter: (a, b) => a.name.localeCompare(b.name),
+      onHeaderCell: () => ({
+        width: columnWidths.name,
+        onResize: handleResize('name'),
+      }),
     },
     {
       title: 'Description',
       dataIndex: 'description',
       key: 'description',
+      width: columnWidths.description,
       sorter: (a, b) => (a.description || '').localeCompare(b.description || ''),
+      onHeaderCell: () => ({
+        width: columnWidths.description,
+        onResize: handleResize('description'),
+      }),
     },
     {
       title: 'Type',
       dataIndex: 'entityClassNameLabel',
       key: 'entityClassNameLabel',
+      width: columnWidths.requestClass,
       sorter: (a, b) => a.entityClassNameLabel.localeCompare(b.entityClassNameLabel),
+      onHeaderCell: () => ({
+        width: columnWidths.requestClass,
+        onResize: handleResize('requestClass'),
+      }),
     },
     {
       title: 'User',
       dataIndex: 'owner',
       key: 'owner',
-      width: 150,
+      width: columnWidths.user,
       sorter: (a, b) => a.owner.localeCompare(b.owner),
+      onHeaderCell: () => ({
+        width: columnWidths.user,
+        onResize: handleResize('user'),
+      }),
     },
     {
       title: 'Created',
       dataIndex: 'createdHuman',
       key: 'createdHuman',
-      width: 150,
+      width: columnWidths.createDateTime,
       sorter: (a, b) => a.createDate.localeCompare(b.createDate),
+      onHeaderCell: () => ({
+        width: columnWidths.createDateTime,
+        onResize: handleResize('createDateTime'),
+      }),
     },
     {
       title: 'Action',
       key: 'action',
       fixed: 'right',
-      width: 250,
+      width: columnWidths.action,
+      onHeaderCell: () => ({
+        width: columnWidths.action,
+        onResize: handleResize('action'),
+      }),
       render: (_, record) => (
         <Space>
           <Tooltip title="Edit">
@@ -517,6 +595,11 @@ export const ReportConfigsStream: React.FC = () => {
         dataSource={tableData}
         rowKey="id"
         loading={isLoading}
+        components={{
+          header: {
+            cell: ResizableTitle,
+          },
+        }}
         size="small"
         bordered
         pagination={{

@@ -1,0 +1,7 @@
+@use '../../../ui-lib-react/src/styles/table-mixins' as table;
+
+.tasks-grid {
+  @include table.table-container-wrapper;
+  @include table.resizable-columns;
+}
+

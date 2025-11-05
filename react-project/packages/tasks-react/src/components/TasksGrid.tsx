@@ -8,12 +8,15 @@ import React, { useState, useEffect, useMemo, useCallback, memo } from 'react';
 import { Table, Button, Tooltip, Pagination } from 'antd';
 import { EditOutlined, ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { HelperDictionary, HelperFormat } from '@cyoda/ui-lib-react';
+import type { ColumnsType } from 'antd/es/table';
+import type { ResizeCallbackData } from 'react-resizable';
+import { HelperDictionary, HelperFormat, HelperStorage } from '@cyoda/ui-lib-react';
 import { useTasksPerPage, useTasksState } from '../hooks/useTasks';
 import { BulkUpdateForm } from './BulkUpdateForm';
 import { TasksNotifications, taskEventBus, type TaskEvent } from './TasksNotifications';
+import { ResizableTitle } from './ResizableTitle';
 import type { Task, TaskFilterType, TableRow } from '../types';
-import type { ColumnsType } from 'antd/es/table';
+import './TasksGrid.scss';
 
 interface TasksGridProps {
   filter: TaskFilterType;
@@ -60,10 +63,60 @@ OperationsCell.displayName = 'OperationsCell';
 
 export const TasksGrid: React.FC<TasksGridProps> = memo(({ filter, isApplyRealData }) => {
   const navigate = useNavigate();
+  const storage = useMemo(() => new HelperStorage(), []);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [localTasks, setLocalTasks] = useState<Task[]>([]);
+
+  // Column widths state
+  const [columnWidths, setColumnWidths] = useState<Record<string, number>>(() => {
+    const saved = storage.get('tasksGrid:columnWidths', {});
+    const defaultWidths = {
+      title: 180,
+      state: 120,
+      priority: 100,
+      assignee: 150,
+      created: 150,
+      updated: 150,
+      operations: 100,
+    };
+    return saved && Object.keys(saved).length > 0 ? saved : defaultWidths;
+  });
+
+  // Save column widths to localStorage
+  useEffect(() => {
+    if (Object.keys(columnWidths).length > 0) {
+      storage.set('tasksGrid:columnWidths', columnWidths);
+    }
+  }, [columnWidths, storage]);
+
+  // Handle column resize
+  const handleResize = useCallback((key: string) => {
+    return (_: React.SyntheticEvent, { size }: ResizeCallbackData) => {
+      setColumnWidths((prev) => {
+        const oldWidth = prev[key];
+        const newWidth = size.width;
+        const delta = newWidth - oldWidth;
+
+        const otherKeys = Object.keys(prev).filter(k => k !== key);
+        if (otherKeys.length === 0) {
+          return { ...prev, [key]: newWidth };
+        }
+
+        const totalOtherWidth = otherKeys.reduce((sum, k) => sum + prev[k], 0);
+        const newWidths = { ...prev, [key]: newWidth };
+
+        otherKeys.forEach(k => {
+          const proportion = prev[k] / totalOtherWidth;
+          const adjustment = delta * proportion;
+          newWidths[k] = Math.max(50, prev[k] - adjustment);
+        });
+
+        return newWidths;
+      });
+    };
+  }, []);
 
   // Build query params
   const params = useMemo(() => {
@@ -172,52 +225,79 @@ export const TasksGrid: React.FC<TasksGridProps> = memo(({ filter, isApplyRealDa
     setPageSize(size);
   }, []);
 
-  // Table columns - memoized to prevent re-creating on every render
+  // Table columns with resizable support - memoized to prevent re-creating on every render
   const columns: ColumnsType<TableRow> = useMemo(() => [
     {
       title: 'Title',
       dataIndex: 'title',
       key: 'title',
-      width: 180,
+      width: columnWidths.title,
       sorter: (a, b) => a.title.localeCompare(b.title),
+      onHeaderCell: () => ({
+        width: columnWidths.title,
+        onResize: handleResize('title'),
+      }),
     },
     {
       title: 'Status',
       dataIndex: 'state',
       key: 'state',
-      width: 180,
+      width: columnWidths.state,
       sorter: (a, b) => a.state.localeCompare(b.state),
+      onHeaderCell: () => ({
+        width: columnWidths.state,
+        onResize: handleResize('state'),
+      }),
     },
     {
       title: 'Priority',
       dataIndex: 'priority_name',
       key: 'priority_name',
-      width: 180,
+      width: columnWidths.priority,
       sorter: (a, b) => a.priority - b.priority,
       render: (text, record) => (
         <PriorityCell text={text} priority={record.priority} />
       ),
+      onHeaderCell: () => ({
+        width: columnWidths.priority,
+        onResize: handleResize('priority'),
+      }),
     },
     {
       title: 'Assigned To',
       dataIndex: 'assigned_to_name',
       key: 'assigned_to_name',
+      width: columnWidths.assignee,
       sorter: (a, b) => a.assigned_to_name.localeCompare(b.assigned_to_name),
+      onHeaderCell: () => ({
+        width: columnWidths.assignee,
+        onResize: handleResize('assignee'),
+      }),
     },
     {
       title: 'Created',
       dataIndex: 'timestamp_name',
       key: 'timestamp_name',
+      width: columnWidths.created,
       sorter: (a, b) => a.timestamp - b.timestamp,
+      onHeaderCell: () => ({
+        width: columnWidths.created,
+        onResize: handleResize('created'),
+      }),
     },
     {
       title: 'Operations',
       key: 'operations',
+      width: columnWidths.operations,
       render: (_, record) => (
         <OperationsCell onView={() => handleView(record)} />
       ),
+      onHeaderCell: () => ({
+        width: columnWidths.operations,
+        onResize: handleResize('operations'),
+      }),
     },
-  ], [handleView]);
+  ], [handleView, columnWidths, handleResize]);
 
   // Row selection config - memoized
   const rowSelection = useMemo(() => ({
@@ -250,6 +330,11 @@ export const TasksGrid: React.FC<TasksGridProps> = memo(({ filter, isApplyRealDa
           dataSource={tableData}
           loading={isLoading}
           rowKey="id"
+          components={{
+            header: {
+              cell: ResizableTitle,
+            },
+          }}
           pagination={false}
           aria-labelledby="tasks-heading"
           aria-busy={isLoading}

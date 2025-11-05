@@ -6,10 +6,11 @@
  * export/import, and state transitions
  */
 
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { Table, Button, Space, App, Modal, Divider } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, ExportOutlined, ImportOutlined } from '@ant-design/icons';
 import type { TableColumnsType } from 'antd';
+import type { ResizeCallbackData } from 'react-resizable';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import moment from 'moment';
 import { getAllCatalogItems, createCatalogItem, updateCatalogItem, deleteCatalogItem, exportCatalogItems, importCatalogItems } from '@cyoda/http-api-react';
@@ -17,6 +18,8 @@ import type { CatalogItem } from '@cyoda/http-api-react';
 import CatalogueOfAliasesFilter from '../components/CatalogueOfAliasesFilter';
 import ModellingPopUpAliasNew, { ModellingPopUpAliasNewRef } from '../components/Modelling/Alias/ModellingPopUpAliasNew';
 import CatalogueAliasChangeStateDialog, { CatalogueAliasChangeStateDialogRef } from '../components/CatalogueAliasChangeStateDialog';
+import { ResizableTitle } from '../components/ResizableTitle';
+import { HelperStorage } from '@cyoda/ui-lib-react';
 import './CatalogueOfAliases.scss';
 
 interface TableDataRow {
@@ -43,11 +46,61 @@ interface FilterForm {
 const CatalogueOfAliases: React.FC = () => {
   const { message } = App.useApp();
   const queryClient = useQueryClient();
+  const storage = useMemo(() => new HelperStorage(), []);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [filterForm, setFilterForm] = useState<FilterForm>({});
   const [pageSize, setPageSize] = useState<number>(50);
   const aliasDialogRef = useRef<ModellingPopUpAliasNewRef>(null);
   const changeStateDialogRef = useRef<CatalogueAliasChangeStateDialogRef>(null);
+
+  // Column widths state
+  const [columnWidths, setColumnWidths] = useState<Record<string, number>>(() => {
+    const saved = storage.get('catalogueOfAliases:columnWidths', {});
+    const defaultWidths = {
+      name: 200,
+      description: 250,
+      entity: 150,
+      author: 120,
+      created: 150,
+      state: 100,
+      action: 200,
+    };
+    return saved && Object.keys(saved).length > 0 ? saved : defaultWidths;
+  });
+
+  // Save column widths to localStorage
+  useEffect(() => {
+    if (Object.keys(columnWidths).length > 0) {
+      storage.set('catalogueOfAliases:columnWidths', columnWidths);
+    }
+  }, [columnWidths, storage]);
+
+  // Handle column resize
+  const handleResize = useCallback((key: string) => {
+    return (_: React.SyntheticEvent, { size }: ResizeCallbackData) => {
+      setColumnWidths((prev) => {
+        const oldWidth = prev[key];
+        const newWidth = size.width;
+        const delta = newWidth - oldWidth;
+
+        const otherKeys = Object.keys(prev).filter(k => k !== key);
+        if (otherKeys.length === 0) {
+          return { ...prev, [key]: newWidth };
+        }
+
+        const totalOtherWidth = otherKeys.reduce((sum, k) => sum + prev[k], 0);
+        const newWidths = { ...prev, [key]: newWidth };
+
+        otherKeys.forEach(k => {
+          const proportion = prev[k] / totalOtherWidth;
+          const adjustment = delta * proportion;
+          newWidths[k] = Math.max(50, prev[k] - adjustment);
+        });
+
+        return newWidths;
+      });
+    };
+  }, []);
 
   // Fetch catalog items
   const { data: catalogItems = [], isLoading, refetch } = useQuery({
@@ -270,54 +323,83 @@ const CatalogueOfAliases: React.FC = () => {
     refetch();
   };
 
-  // Table columns
+  // Table columns with resizable support
   const columns: TableColumnsType<TableDataRow> = [
     {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
       sorter: (a, b) => a.name.localeCompare(b.name),
-      width: 200,
+      width: columnWidths.name,
+      onHeaderCell: () => ({
+        width: columnWidths.name,
+        onResize: handleResize('name'),
+      }),
     },
     {
       title: 'Description',
       dataIndex: 'description',
       key: 'description',
       sorter: (a, b) => a.description.localeCompare(b.description),
+      width: columnWidths.description,
+      onHeaderCell: () => ({
+        width: columnWidths.description,
+        onResize: handleResize('description'),
+      }),
     },
     {
       title: 'Entity',
       dataIndex: 'entity',
       key: 'entity',
       sorter: (a, b) => a.entity.localeCompare(b.entity),
-      width: 150,
+      width: columnWidths.entity,
+      onHeaderCell: () => ({
+        width: columnWidths.entity,
+        onResize: handleResize('entity'),
+      }),
     },
     {
       title: 'User',
       dataIndex: 'user',
       key: 'user',
       sorter: (a, b) => a.user.localeCompare(b.user),
-      width: 120,
+      width: columnWidths.author,
+      onHeaderCell: () => ({
+        width: columnWidths.author,
+        onResize: handleResize('author'),
+      }),
     },
     {
       title: 'State',
       dataIndex: 'state',
       key: 'state',
       sorter: (a, b) => a.state.localeCompare(b.state),
-      width: 100,
+      width: columnWidths.state,
+      onHeaderCell: () => ({
+        width: columnWidths.state,
+        onResize: handleResize('state'),
+      }),
     },
     {
       title: 'Created',
       dataIndex: 'createdHuman',
       key: 'created',
       sorter: (a, b) => a.createdTimestamp - b.createdTimestamp,
-      width: 150,
+      width: columnWidths.created,
+      onHeaderCell: () => ({
+        width: columnWidths.created,
+        onResize: handleResize('created'),
+      }),
     },
     {
       title: 'Action',
       key: 'action',
       fixed: 'right',
-      width: 120,
+      width: columnWidths.action,
+      onHeaderCell: () => ({
+        width: columnWidths.action,
+        onResize: handleResize('action'),
+      }),
       render: (_, record) => (
         <Space size="small">
           <Button
@@ -370,6 +452,11 @@ const CatalogueOfAliases: React.FC = () => {
         columns={columns}
         dataSource={tableData}
         loading={isLoading}
+        components={{
+          header: {
+            cell: ResizableTitle,
+          },
+        }}
         rowSelection={{
           selectedRowKeys,
           onChange: setSelectedRowKeys,

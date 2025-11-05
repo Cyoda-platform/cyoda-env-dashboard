@@ -1,4 +1,8 @@
+@use '../../../ui-lib-react/src/styles/table-mixins' as table;
+
 .report-configs-stream {
+  @include table.table-container-wrapper;
+  @include table.resizable-columns;
   padding: 24px;
 
   &__actions {

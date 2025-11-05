@@ -4,7 +4,7 @@
  * Migrated from: .old_project/packages/statemachine/src/views/Workflows.vue
  */
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Table, Button, Input, Space, Tooltip, App, Card } from 'antd';
 import {
@@ -16,6 +16,7 @@ import {
   ArrowLeftOutlined,
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
+import type { ResizeCallbackData } from 'react-resizable';
 import {
   useWorkflowsList,
   useWorkflowEnabledTypes,
@@ -26,6 +27,9 @@ import { useTableState } from '../hooks/useTableState';
 import { useQueryInvalidation } from '../hooks/useQueryInvalidation';
 import { ExportImport } from '../components/ExportImport';
 import { StateIndicator } from '../components/StateIndicator';
+import { ResizableTitle } from '../components/ResizableTitle';
+import { HelperStorage } from '@cyoda/ui-lib-react';
+import './Workflows.scss';
 import { useGlobalUiSettingsStore } from '@cyoda/http-api-react';
 import { getPersistedType } from '../utils/helpers';
 import type { Workflow, WorkflowTableRow } from '../types';

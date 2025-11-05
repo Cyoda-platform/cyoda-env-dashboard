@@ -3,7 +3,11 @@
  * Migrated from: .old_project/packages/http-api/src/views/CatalogOfAliases.vue
  */
 
+@use '../../../ui-lib-react/src/styles/table-mixins' as table;
+
 .catalogue-of-aliases {
+  @include table.table-container-wrapper;
+  @include table.resizable-columns;
   padding: 20px;
 
   h1 {
