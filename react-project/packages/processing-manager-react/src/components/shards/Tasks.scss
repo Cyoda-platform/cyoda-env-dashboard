@@ -1,6 +1,11 @@
+@use '../../../../ui-lib-react/src/styles/table-mixins' as table;
+
 .pm-tasks {
   margin-bottom: 16px;
-  
+
+  @include table.table-container-wrapper;
+  @include table.resizable-columns;
+
   .ant-form-item {
     width: 100%;
   }

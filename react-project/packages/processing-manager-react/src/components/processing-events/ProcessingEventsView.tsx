@@ -3,13 +3,16 @@
  * Migrated from @cyoda/processing-manager/src/components/PmShardsDetailTab/ProcessingEvents/PmProcessingEventsView.vue
  */
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Form, Select, DatePicker, Button, Table, Row, Col, Spin, Card } from 'antd';
 import { SyncOutlined } from '@ant-design/icons';
 import { Link, useParams } from 'react-router-dom';
 import { useProcessingQueueEvents, useSummary, useProcessingQueues } from '../../hooks';
 import dayjs from 'dayjs';
 import type { ColumnsType } from 'antd/es/table';
+import type { ResizeCallbackData } from 'react-resizable';
+import { HelperStorage } from '@cyoda/http-api-react';
+import { ResizableTitle } from '../ResizableTitle';
 import './ProcessingEventsView.scss';
 
 interface ProcessingEvent {
@@ -43,6 +46,7 @@ const createUniqMap = (key: string, data: any[]) => {
 
 export const ProcessingEventsView: React.FC = () => {
   const { name } = useParams<{ name: string }>();
+  const storage = useMemo(() => new HelperStorage(), []);
   const [filters, setFilters] = useState<Filters>({
     from: dayjs().startOf('day').format('YYYY-MM-DD HH:mm:ss'),
     to: dayjs().endOf('day').format('YYYY-MM-DD HH:mm:ss'),
@@ -51,6 +55,61 @@ export const ProcessingEventsView: React.FC = () => {
   const { data: eventsData, isLoading } = useProcessingQueueEvents(filters);
   const { data: summaryData } = useSummary({});
   const { data: queuesData } = useProcessingQueues({});
+
+  // Column widths state
+  const [columnWidths, setColumnWidths] = useState<Record<string, number>>(() => {
+    const saved = storage.get('processingEventsView:columnWidths', {});
+    const defaultWidths = {
+      createTime: 300,
+      doneTime: 300,
+      errorTime: 130,
+      queue: 300,
+      shard: 200,
+      status: 400,
+      timeUUID: 400,
+      entityClassName: 400,
+      entityId: 400,
+      hasErrors: 400,
+      errorEventTimeUUID: 400,
+      coreDataClassName: 400,
+      clientDataClassName: 400,
+    };
+    return saved && Object.keys(saved).length > 0 ? saved : defaultWidths;
+  });
+
+  // Save column widths to localStorage
+  useEffect(() => {
+    if (Object.keys(columnWidths).length > 0) {
+      storage.set('processingEventsView:columnWidths', columnWidths);
+    }
+  }, [columnWidths, storage]);
+
+  // Handle column resize
+  const handleResize = useCallback((key: string) => {
+    return (_: React.SyntheticEvent, { size }: ResizeCallbackData) => {
+      setColumnWidths((prev) => {
+        const oldWidth = prev[key];
+        const newWidth = size.width;
+        const delta = newWidth - oldWidth;
+
+        const otherKeys = Object.keys(prev).filter(k => k !== key);
+        if (otherKeys.length === 0) {
+          return { ...prev, [key]: newWidth };
+        }
+
+        const totalOtherWidth = otherKeys.reduce((sum, k) => sum + prev[k], 0);
+        const newWidths = { ...prev, [key]: newWidth };
+
+        otherKeys.forEach(k => {
+          const proportion = prev[k] / totalOtherWidth;
+          const adjustment = delta * proportion;
+          newWidths[k] = Math.max(50, prev[k] - adjustment);
+        });
+
+        return newWidths;
+      });
+    };
+  }, []);
 
   // Debug: Log what queuesData actually is
   React.useEffect(() => {
@@ -124,56 +183,84 @@ export const ProcessingEventsView: React.FC = () => {
     });
   };
 
-  const columns: ColumnsType<ProcessingEvent> = [
+  const columns: ColumnsType<ProcessingEvent> = useMemo(() => [
     {
       title: 'Create Time',
       dataIndex: 'createTime',
       key: 'createTime',
-      width: 300,
+      width: columnWidths.createTime,
       fixed: 'left',
       sorter: (a, b) => a.createTime.localeCompare(b.createTime),
+      onHeaderCell: () => ({
+        width: columnWidths.createTime,
+        onResize: handleResize('createTime'),
+      }),
     },
     {
       title: 'Done Time',
       dataIndex: 'doneTime',
       key: 'doneTime',
-      width: 300,
+      width: columnWidths.doneTime,
       sorter: (a, b) => a.doneTime.localeCompare(b.doneTime),
+      onHeaderCell: () => ({
+        width: columnWidths.doneTime,
+        onResize: handleResize('doneTime'),
+      }),
     },
     {
       title: 'Error Time',
       dataIndex: 'errorTime',
       key: 'errorTime',
-      width: 130,
+      width: columnWidths.errorTime,
       sorter: (a, b) => a.errorTime.localeCompare(b.errorTime),
+      onHeaderCell: () => ({
+        width: columnWidths.errorTime,
+        onResize: handleResize('errorTime'),
+      }),
     },
     {
       title: 'Queue',
       dataIndex: 'queue',
       key: 'queue',
-      width: 300,
+      width: columnWidths.queue,
       sorter: (a, b) => a.queue.localeCompare(b.queue),
+      onHeaderCell: () => ({
+        width: columnWidths.queue,
+        onResize: handleResize('queue'),
+      }),
     },
     {
       title: 'Shard',
       dataIndex: 'shard',
       key: 'shard',
-      width: 200,
+      width: columnWidths.shard,
       sorter: (a, b) => a.shard - b.shard,
+      onHeaderCell: () => ({
+        width: columnWidths.shard,
+        onResize: handleResize('shard'),
+      }),
     },
     {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      width: 400,
+      width: columnWidths.status,
       sorter: (a, b) => a.status.localeCompare(b.status),
+      onHeaderCell: () => ({
+        width: columnWidths.status,
+        onResize: handleResize('status'),
+      }),
     },
     {
       title: 'Time UUID',
       dataIndex: 'timeUUID',
       key: 'timeUUID',
-      width: 400,
+      width: columnWidths.timeUUID,
       sorter: (a, b) => a.timeUUID.localeCompare(b.timeUUID),
+      onHeaderCell: () => ({
+        width: columnWidths.timeUUID,
+        onResize: handleResize('timeUUID'),
+      }),
       render: (timeUUID: string, record: ProcessingEvent) => (
         <Link to={`/nodes/${name}/event-view?queue=${record.entityClassName}&shard=${record.shard}&timeUUID=${timeUUID}`}>
           {timeUUID}
@@ -184,45 +271,69 @@ export const ProcessingEventsView: React.FC = () => {
       title: 'Entity Class',
       dataIndex: 'entityClassName',
       key: 'entityClassName',
-      width: 400,
+      width: columnWidths.entityClassName,
       sorter: (a, b) => a.entityClassName.localeCompare(b.entityClassName),
+      onHeaderCell: () => ({
+        width: columnWidths.entityClassName,
+        onResize: handleResize('entityClassName'),
+      }),
     },
     {
       title: 'Entity ID',
       dataIndex: 'entityId',
       key: 'entityId',
-      width: 400,
+      width: columnWidths.entityId,
       sorter: (a, b) => a.entityId.localeCompare(b.entityId),
+      onHeaderCell: () => ({
+        width: columnWidths.entityId,
+        onResize: handleResize('entityId'),
+      }),
     },
     {
       title: 'Has Errors',
       dataIndex: 'hasErrors',
       key: 'hasErrors',
-      width: 400,
+      width: columnWidths.hasErrors,
       sorter: (a, b) => a.hasErrors.localeCompare(b.hasErrors),
+      onHeaderCell: () => ({
+        width: columnWidths.hasErrors,
+        onResize: handleResize('hasErrors'),
+      }),
     },
     {
       title: 'Error Event Time UUID',
       dataIndex: 'errorEventTimeUUID',
       key: 'errorEventTimeUUID',
-      width: 400,
+      width: columnWidths.errorEventTimeUUID,
       sorter: (a, b) => a.errorEventTimeUUID.localeCompare(b.errorEventTimeUUID),
+      onHeaderCell: () => ({
+        width: columnWidths.errorEventTimeUUID,
+        onResize: handleResize('errorEventTimeUUID'),
+      }),
     },
     {
       title: 'Core Event Data Class',
       dataIndex: 'coreDataClassName',
       key: 'coreDataClassName',
-      width: 400,
+      width: columnWidths.coreDataClassName,
       sorter: (a, b) => a.coreDataClassName.localeCompare(b.coreDataClassName),
+      onHeaderCell: () => ({
+        width: columnWidths.coreDataClassName,
+        onResize: handleResize('coreDataClassName'),
+      }),
     },
     {
       title: 'Client Event Data Class',
       dataIndex: 'clientDataClassName',
       key: 'clientDataClassName',
-      width: 400,
+      width: columnWidths.clientDataClassName,
       sorter: (a, b) => a.clientDataClassName.localeCompare(b.clientDataClassName),
+      onHeaderCell: () => ({
+        width: columnWidths.clientDataClassName,
+        onResize: handleResize('clientDataClassName'),
+      }),
     },
-  ];
+  ], [columnWidths, handleResize, name]);
 
   return (
     <div className="pm-processing-events-view">
@@ -324,6 +435,11 @@ export const ProcessingEventsView: React.FC = () => {
           showSizeChanger: true,
           defaultPageSize: 10,
           position: ['bottomCenter'],
+        }}
+        components={{
+          header: {
+            cell: ResizableTitle,
+          },
         }}
       />
     </div>

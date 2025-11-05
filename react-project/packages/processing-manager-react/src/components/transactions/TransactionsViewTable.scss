@@ -1,4 +1,9 @@
+@use '../../../../ui-lib-react/src/styles/table-mixins' as table;
+
 .pm-shards-detail-tab-transactions-view-table {
+  @include table.table-container-wrapper;
+  @include table.resizable-columns;
+
   .ant-table {
     .row-palegoldenrod {
       background: #fefcf2;

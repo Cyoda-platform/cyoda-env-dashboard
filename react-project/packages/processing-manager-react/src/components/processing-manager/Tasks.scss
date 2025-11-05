@@ -1,4 +1,9 @@
+@use '../../../../ui-lib-react/src/styles/table-mixins' as table;
+
 .pm-tasks {
+  @include table.table-container-wrapper;
+  @include table.resizable-columns;
+
   .filter-form {
     margin-bottom: 20px;
 

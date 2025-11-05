@@ -4,11 +4,15 @@
  * Migrated from @cyoda/processing-manager/src/components/PmShardsDetailTab/ProcessingEvents/PmPollingInfo.vue
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { Table, Form, Select, Row, Col } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
+import type { ResizeCallbackData } from 'react-resizable';
+import { HelperStorage } from '@cyoda/http-api-react';
+import { ResizableTitle } from '../ResizableTitle';
 import { usePollingInfo } from '../../hooks/useProcessing';
 import _ from 'lodash';
+import './PollingInfo.scss';
 
 interface PollingInfoItem {
   shardId: string;
@@ -26,10 +30,51 @@ const createUniqMap = (prop: string, data: any[]): { label: string; value: any }
 };
 
 export const PollingInfo: React.FC = () => {
+  const storage = useMemo(() => new HelperStorage(), []);
   const { data, isLoading } = usePollingInfo();
   const [shardFilter, setShardFilter] = useState<string | undefined>(undefined);
   const [queueTypeFilter, setQueueTypeFilter] = useState<string | undefined>(undefined);
   const [processingFilter, setProcessingFilter] = useState<string | undefined>(undefined);
+
+  const [columnWidths, setColumnWidths] = useState<Record<string, number>>(() => {
+    const saved = storage.get('pollingInfo:columnWidths', {});
+    const defaultWidths = {
+      shardId: 300,
+      queueType: 300,
+      processing: 130,
+      lastEmptyPollings: 300,
+      maxTimeout: 400,
+      lastDelayTime: 400,
+      lastPollingTime: 400,
+    };
+    return saved && Object.keys(saved).length > 0 ? saved : defaultWidths;
+  });
+
+  useEffect(() => {
+    if (Object.keys(columnWidths).length > 0) {
+      storage.set('pollingInfo:columnWidths', columnWidths);
+    }
+  }, [columnWidths, storage]);
+
+  const handleResize = useCallback((key: string) => {
+    return (_: React.SyntheticEvent, { size }: ResizeCallbackData) => {
+      setColumnWidths((prev) => {
+        const oldWidth = prev[key];
+        const newWidth = size.width;
+        const delta = newWidth - oldWidth;
+        const otherKeys = Object.keys(prev).filter(k => k !== key);
+        if (otherKeys.length === 0) return { ...prev, [key]: newWidth };
+        const totalOtherWidth = otherKeys.reduce((sum, k) => sum + prev[k], 0);
+        const newWidths = { ...prev, [key]: newWidth };
+        otherKeys.forEach(k => {
+          const proportion = prev[k] / totalOtherWidth;
+          const adjustment = delta * proportion;
+          newWidths[k] = Math.max(50, prev[k] - adjustment);
+        });
+        return newWidths;
+      });
+    };
+  }, []);
 
   const pollingInfoTable = useMemo(() => {
     if (!data || typeof data !== 'object') return [];
@@ -78,61 +123,68 @@ export const PollingInfo: React.FC = () => {
     });
   }, [pollingInfoTable, shardFilter, queueTypeFilter, processingFilter]);
 
-  const columns: ColumnsType<PollingInfoItem> = [
+  const columns: ColumnsType<PollingInfoItem> = useMemo(() => [
     {
       title: 'Shard',
       dataIndex: 'shardId',
       key: 'shardId',
-      width: 300,
+      width: columnWidths.shardId,
       fixed: 'left',
       sorter: (a, b) => a.shardId.localeCompare(b.shardId),
+      onHeaderCell: () => ({ width: columnWidths.shardId, onResize: handleResize('shardId') }),
     },
     {
       title: 'Entity Type',
       dataIndex: 'queueType',
       key: 'queueType',
-      width: 300,
+      width: columnWidths.queueType,
       sorter: (a, b) => a.queueType.localeCompare(b.queueType),
+      onHeaderCell: () => ({ width: columnWidths.queueType, onResize: handleResize('queueType') }),
     },
     {
       title: 'Processing',
       dataIndex: 'processing',
       key: 'processing',
-      width: 130,
+      width: columnWidths.processing,
       sorter: (a, b) => a.processing.localeCompare(b.processing),
+      onHeaderCell: () => ({ width: columnWidths.processing, onResize: handleResize('processing') }),
     },
     {
       title: 'Last Empty Pollings count',
       dataIndex: 'lastEmptyPollings',
       key: 'lastEmptyPollings',
-      width: 300,
+      width: columnWidths.lastEmptyPollings,
       sorter: (a, b) => a.lastEmptyPollings - b.lastEmptyPollings,
+      onHeaderCell: () => ({ width: columnWidths.lastEmptyPollings, onResize: handleResize('lastEmptyPollings') }),
     },
     {
       title: 'Max Timeout',
       dataIndex: 'maxTimeout',
       key: 'maxTimeout',
-      width: 400,
+      width: columnWidths.maxTimeout,
       sorter: (a, b) => a.maxTimeout - b.maxTimeout,
+      onHeaderCell: () => ({ width: columnWidths.maxTimeout, onResize: handleResize('maxTimeout') }),
     },
     {
       title: 'Last Delay Time',
       dataIndex: 'lastDelayTime',
       key: 'lastDelayTime',
-      width: 400,
+      width: columnWidths.lastDelayTime,
       sorter: (a, b) => a.lastDelayTime.localeCompare(b.lastDelayTime),
+      onHeaderCell: () => ({ width: columnWidths.lastDelayTime, onResize: handleResize('lastDelayTime') }),
     },
     {
       title: 'Last Polling Time',
       dataIndex: 'lastPollingTime',
       key: 'lastPollingTime',
-      width: 400,
+      width: columnWidths.lastPollingTime,
       sorter: (a, b) => a.lastPollingTime.localeCompare(b.lastPollingTime),
+      onHeaderCell: () => ({ width: columnWidths.lastPollingTime, onResize: handleResize('lastPollingTime') }),
     },
-  ];
+  ], [columnWidths, handleResize]);
 
   return (
-    <div>
+    <div className="polling-info">
       <Form layout="vertical">
         <h3>Filter</h3>
         <Row gutter={20}>
@@ -186,6 +238,11 @@ export const PollingInfo: React.FC = () => {
           defaultPageSize: 10,
           showSizeChanger: true,
           position: ['bottomCenter'],
+        }}
+        components={{
+          header: {
+            cell: ResizableTitle,
+          },
         }}
       />
     </div>

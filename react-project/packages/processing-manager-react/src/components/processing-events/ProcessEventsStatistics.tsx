@@ -4,10 +4,14 @@
  * Migrated from @cyoda/processing-manager/src/components/PmShardsDetailTab/ProcessingEvents/PmProcessEventsStatistics.vue
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { Table, Form, Select, Row, Col } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
+import type { ResizeCallbackData } from 'react-resizable';
+import { HelperStorage } from '@cyoda/http-api-react';
+import { ResizableTitle } from '../ResizableTitle';
 import { useProcessEventsStats, useSummary, useProcessingQueues } from '../../hooks/useProcessing';
+import './ProcessEventsStatistics.scss';
 
 interface ProcessEventStat {
   queue: string;
@@ -23,6 +27,7 @@ const createUniqMap = (prop: string, data: any[]): { label: string; value: any }
 };
 
 export const ProcessEventsStatistics: React.FC = () => {
+  const storage = useMemo(() => new HelperStorage(), []);
   const { data: statsData, isLoading: statsLoading } = useProcessEventsStats({});
   const { data: summaryData } = useSummary({});
   const { data: queuesData } = useProcessingQueues({});
@@ -31,6 +36,38 @@ export const ProcessEventsStatistics: React.FC = () => {
   const [shardFilter, setShardFilter] = useState<number | undefined>(undefined);
   const [classFilter, setClassFilter] = useState<string | undefined>(undefined);
   const [processorFilter, setProcessorFilter] = useState<string | undefined>(undefined);
+
+  const [columnWidths, setColumnWidths] = useState<Record<string, number>>(() => {
+    const saved = storage.get('processEventsStats:columnWidths', {});
+    const defaultWidths = { queue: 300, shard: 300, class: 300, processor: 300, count: 100 };
+    return saved && Object.keys(saved).length > 0 ? saved : defaultWidths;
+  });
+
+  useEffect(() => {
+    if (Object.keys(columnWidths).length > 0) {
+      storage.set('processEventsStats:columnWidths', columnWidths);
+    }
+  }, [columnWidths, storage]);
+
+  const handleResize = useCallback((key: string) => {
+    return (_: React.SyntheticEvent, { size }: ResizeCallbackData) => {
+      setColumnWidths((prev) => {
+        const oldWidth = prev[key];
+        const newWidth = size.width;
+        const delta = newWidth - oldWidth;
+        const otherKeys = Object.keys(prev).filter(k => k !== key);
+        if (otherKeys.length === 0) return { ...prev, [key]: newWidth };
+        const totalOtherWidth = otherKeys.reduce((sum, k) => sum + prev[k], 0);
+        const newWidths = { ...prev, [key]: newWidth };
+        otherKeys.forEach(k => {
+          const proportion = prev[k] / totalOtherWidth;
+          const adjustment = delta * proportion;
+          newWidths[k] = Math.max(50, prev[k] - adjustment);
+        });
+        return newWidths;
+      });
+    };
+  }, []);
 
   const tableData = useMemo(() => {
     if (!statsData || !Array.isArray(statsData)) return [];
@@ -78,46 +115,52 @@ export const ProcessEventsStatistics: React.FC = () => {
     });
   }, [tableData, queueFilter, shardFilter, classFilter, processorFilter]);
 
-  const columns: ColumnsType<ProcessEventStat> = [
+  const columns: ColumnsType<ProcessEventStat> = useMemo(() => [
     {
       title: 'Queue',
       dataIndex: 'queue',
       key: 'queue',
-      width: 300,
+      width: columnWidths.queue,
       fixed: 'left',
       sorter: (a, b) => a.queue.localeCompare(b.queue),
+      onHeaderCell: () => ({ width: columnWidths.queue, onResize: handleResize('queue') }),
     },
     {
       title: 'Shard',
       dataIndex: 'shard',
       key: 'shard',
-      width: 300,
+      width: columnWidths.shard,
       sorter: (a, b) => a.shard - b.shard,
+      onHeaderCell: () => ({ width: columnWidths.shard, onResize: handleResize('shard') }),
     },
     {
       title: 'Class',
       dataIndex: 'class',
       key: 'class',
+      width: columnWidths.class,
       sorter: (a, b) => a.class.localeCompare(b.class),
+      onHeaderCell: () => ({ width: columnWidths.class, onResize: handleResize('class') }),
     },
     {
       title: 'Processor',
       dataIndex: 'processor',
       key: 'processor',
-      width: 300,
+      width: columnWidths.processor,
       sorter: (a, b) => a.processor.localeCompare(b.processor),
+      onHeaderCell: () => ({ width: columnWidths.processor, onResize: handleResize('processor') }),
     },
     {
       title: 'Count',
       dataIndex: 'count',
       key: 'count',
-      width: 100,
+      width: columnWidths.count,
       sorter: (a, b) => a.count - b.count,
+      onHeaderCell: () => ({ width: columnWidths.count, onResize: handleResize('count') }),
     },
-  ];
+  ], [columnWidths, handleResize]);
 
   return (
-    <div>
+    <div className="process-events-statistics">
       <Form layout="vertical">
         <h3>Filter</h3>
         <Row gutter={20}>
@@ -188,6 +231,11 @@ export const ProcessEventsStatistics: React.FC = () => {
           defaultPageSize: 10,
           showSizeChanger: true,
           position: ['bottomCenter'],
+        }}
+        components={{
+          header: {
+            cell: ResizableTitle,
+          },
         }}
       />
     </div>

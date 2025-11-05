@@ -1,4 +1,9 @@
+@use '../../../../ui-lib-react/src/styles/table-mixins' as table;
+
 .pm-components-service-processes-view-ready {
+  @include table.table-container-wrapper;
+  @include table.resizable-columns;
+
   h4 {
     margin-bottom: 16px;
   }

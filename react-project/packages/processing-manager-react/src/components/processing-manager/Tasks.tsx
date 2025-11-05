@@ -3,9 +3,12 @@
  * Migrated from @cyoda/processing-manager/src/components/PmShardsDetailTab/ProcessingManagers/PmTasks.vue
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { Card, Table, Form, Input, Select, Row, Col } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
+import type { ResizeCallbackData } from 'react-resizable';
+import { HelperStorage } from '@cyoda/http-api-react';
+import { ResizableTitle } from '../ResizableTitle';
 import _ from 'lodash';
 import './Tasks.scss';
 
@@ -40,9 +43,48 @@ export const Tasks: React.FC<TasksProps> = ({
   lastTaskFinishTime = '',
   tasksByEntity = [],
 }) => {
+  const storage = useMemo(() => new HelperStorage(), []);
   const [searchValue, setSearchValue] = useState('');
   const [selectedShard, setSelectedShard] = useState<string>('');
   const [selectedQueue, setSelectedQueue] = useState<string>('');
+
+  const [columnWidths, setColumnWidths] = useState<Record<string, number>>(() => {
+    const saved = storage.get('pmTasks:columnWidths', {});
+    const defaultWidths = {
+      lastEntity: 300,
+      lastEventId: 300,
+      lastShard: 130,
+      lastQueue: 300,
+      lastProcesses: 400,
+    };
+    return saved && Object.keys(saved).length > 0 ? saved : defaultWidths;
+  });
+
+  useEffect(() => {
+    if (Object.keys(columnWidths).length > 0) {
+      storage.set('pmTasks:columnWidths', columnWidths);
+    }
+  }, [columnWidths, storage]);
+
+  const handleResize = useCallback((key: string) => {
+    return (_: React.SyntheticEvent, { size }: ResizeCallbackData) => {
+      setColumnWidths((prev) => {
+        const oldWidth = prev[key];
+        const newWidth = size.width;
+        const delta = newWidth - oldWidth;
+        const otherKeys = Object.keys(prev).filter(k => k !== key);
+        if (otherKeys.length === 0) return { ...prev, [key]: newWidth };
+        const totalOtherWidth = otherKeys.reduce((sum, k) => sum + prev[k], 0);
+        const newWidths = { ...prev, [key]: newWidth };
+        otherKeys.forEach(k => {
+          const proportion = prev[k] / totalOtherWidth;
+          const adjustment = delta * proportion;
+          newWidths[k] = Math.max(50, prev[k] - adjustment);
+        });
+        return newWidths;
+      });
+    };
+  }, []);
 
   const runningTasksTable = useMemo(() => {
     return tasksByEntity.map((el) => {
@@ -89,44 +131,49 @@ export const Tasks: React.FC<TasksProps> = ({
     });
   }, [runningTasksTable, searchValue, selectedShard, selectedQueue]);
 
-  const columns: ColumnsType<TaskRow> = [
+  const columns: ColumnsType<TaskRow> = useMemo(() => [
     {
       title: 'Last Entity',
       dataIndex: 'lastEntity',
       key: 'lastEntity',
-      width: 300,
+      width: columnWidths.lastEntity,
       fixed: 'left',
       sorter: (a, b) => a.lastEntity.localeCompare(b.lastEntity),
+      onHeaderCell: () => ({ width: columnWidths.lastEntity, onResize: handleResize('lastEntity') }),
     },
     {
       title: 'Last EventId',
       dataIndex: 'lastEventId',
       key: 'lastEventId',
-      width: 300,
+      width: columnWidths.lastEventId,
       sorter: (a, b) => a.lastEventId.localeCompare(b.lastEventId),
+      onHeaderCell: () => ({ width: columnWidths.lastEventId, onResize: handleResize('lastEventId') }),
     },
     {
       title: 'Last Shard',
       dataIndex: 'lastShard',
       key: 'lastShard',
-      width: 130,
+      width: columnWidths.lastShard,
       sorter: (a, b) => a.lastShard.localeCompare(b.lastShard),
+      onHeaderCell: () => ({ width: columnWidths.lastShard, onResize: handleResize('lastShard') }),
     },
     {
       title: 'Last Queue',
       dataIndex: 'lastQueue',
       key: 'lastQueue',
-      width: 300,
+      width: columnWidths.lastQueue,
       sorter: (a, b) => a.lastQueue.localeCompare(b.lastQueue),
+      onHeaderCell: () => ({ width: columnWidths.lastQueue, onResize: handleResize('lastQueue') }),
     },
     {
       title: 'Last Processes',
       dataIndex: 'lastProcesses',
       key: 'lastProcesses',
-      width: 400,
+      width: columnWidths.lastProcesses,
       sorter: (a, b) => a.lastProcesses.localeCompare(b.lastProcesses),
+      onHeaderCell: () => ({ width: columnWidths.lastProcesses, onResize: handleResize('lastProcesses') }),
     },
-  ];
+  ], [columnWidths, handleResize]);
 
   return (
     <Card
@@ -186,6 +233,11 @@ export const Tasks: React.FC<TasksProps> = ({
           showSizeChanger: true,
         }}
         scroll={{ x: 'max-content' }}
+        components={{
+          header: {
+            cell: ResizableTitle,
+          },
+        }}
       />
     </Card>
   );

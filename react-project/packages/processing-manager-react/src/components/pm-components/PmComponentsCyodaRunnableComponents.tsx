@@ -3,10 +3,13 @@
  * Migrated from @cyoda/processing-manager/src/components/PmShardsDetailTab/PmShardsDetailTabPmComponents/PmShardsDetailTabPmComponentsCyodaRunnableComponents.vue
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Table, Button } from 'antd';
 import { PlayCircleOutlined, StopOutlined, SyncOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
+import type { ResizeCallbackData } from 'react-resizable';
+import { HelperStorage } from '@cyoda/http-api-react';
+import { ResizableTitle } from '../ResizableTitle';
 import {
   useLoadRunnableComponents,
   useStartRunnableComponent,
@@ -21,6 +24,7 @@ interface RunnableComponent {
 }
 
 export const PmComponentsCyodaRunnableComponents: React.FC = () => {
+  const storage = useMemo(() => new HelperStorage(), []);
   const [tableData, setTableData] = useState<RunnableComponent[]>([]);
   const [loadingStart, setLoadingStart] = useState<string | null>(null);
   const [loadingStop, setLoadingStop] = useState<string | null>(null);
@@ -29,6 +33,50 @@ export const PmComponentsCyodaRunnableComponents: React.FC = () => {
   const { data, refetch } = useLoadRunnableComponents();
   const { mutateAsync: startComponent } = useStartRunnableComponent();
   const { mutateAsync: stopComponent } = useStopRunnableComponent();
+
+  // Column widths state
+  const [columnWidths, setColumnWidths] = useState<Record<string, number>>(() => {
+    const saved = storage.get('pmComponentsRunnableComponents:columnWidths', {});
+    const defaultWidths = {
+      name: 400,
+      operations: 200,
+    };
+    return saved && Object.keys(saved).length > 0 ? saved : defaultWidths;
+  });
+
+  // Save column widths to localStorage
+  useEffect(() => {
+    if (Object.keys(columnWidths).length > 0) {
+      storage.set('pmComponentsRunnableComponents:columnWidths', columnWidths);
+    }
+  }, [columnWidths, storage]);
+
+  // Handle column resize
+  const handleResize = useCallback((key: string) => {
+    return (_: React.SyntheticEvent, { size }: ResizeCallbackData) => {
+      setColumnWidths((prev) => {
+        const oldWidth = prev[key];
+        const newWidth = size.width;
+        const delta = newWidth - oldWidth;
+
+        const otherKeys = Object.keys(prev).filter(k => k !== key);
+        if (otherKeys.length === 0) {
+          return { ...prev, [key]: newWidth };
+        }
+
+        const totalOtherWidth = otherKeys.reduce((sum, k) => sum + prev[k], 0);
+        const newWidths = { ...prev, [key]: newWidth };
+
+        otherKeys.forEach(k => {
+          const proportion = prev[k] / totalOtherWidth;
+          const adjustment = delta * proportion;
+          newWidths[k] = Math.max(50, prev[k] - adjustment);
+        });
+
+        return newWidths;
+      });
+    };
+  }, []);
 
   useEffect(() => {
     if (data?.data) {
@@ -67,12 +115,17 @@ export const PmComponentsCyodaRunnableComponents: React.FC = () => {
     }
   };
 
-  const columns: ColumnsType<RunnableComponent> = [
+  const columns: ColumnsType<RunnableComponent> = useMemo(() => [
     {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
+      width: columnWidths.name,
       sorter: (a, b) => a.name.localeCompare(b.name),
+      onHeaderCell: () => ({
+        width: columnWidths.name,
+        onResize: handleResize('name'),
+      }),
       render: (text, record) => (
         <span>
           {record.running ? (
@@ -87,7 +140,11 @@ export const PmComponentsCyodaRunnableComponents: React.FC = () => {
     {
       title: 'Operations',
       key: 'operations',
-      width: 200,
+      width: columnWidths.operations,
+      onHeaderCell: () => ({
+        width: columnWidths.operations,
+        onResize: handleResize('operations'),
+      }),
       render: (_, record) => (
         <div className="operations-buttons">
           <Button
@@ -119,7 +176,7 @@ export const PmComponentsCyodaRunnableComponents: React.FC = () => {
         </div>
       ),
     },
-  ];
+  ], [columnWidths, handleResize, loadingStart, loadingStop, loadingReload]);
 
   return (
     <div className="pm-components-cyoda-runnable-components">
@@ -133,6 +190,11 @@ export const PmComponentsCyodaRunnableComponents: React.FC = () => {
           defaultPageSize: 10,
           showSizeChanger: true,
           position: ['bottomCenter'],
+        }}
+        components={{
+          header: {
+            cell: ResizableTitle,
+          },
         }}
       />
     </div>
