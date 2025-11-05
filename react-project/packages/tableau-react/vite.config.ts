@@ -22,7 +22,7 @@ export default defineConfig({
     },
   },
   server: {
-    port: 3007,
+    port: 3000,
     proxy: {
       '/platform-api': {
         target: 'http://localhost:8080',

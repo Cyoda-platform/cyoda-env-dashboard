@@ -5,6 +5,10 @@
 
 .config-editor {
   padding: 16px;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
 
   .page-title {
     font-size: 24px;
@@ -44,6 +48,11 @@
 }
 
 .history-view-reports {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+
   .history-report-quick-run-flex {
     display: flex;
     align-items: flex-end;
@@ -52,6 +61,7 @@
 
     .history-report-quick-run {
       flex: 1;
+      min-width: 0;
     }
 
     .button-box {
@@ -72,9 +82,15 @@
     gap: 20px;
     margin-top: 24px;
     margin-bottom: 20px;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
 
     .wrap-table {
       flex: 1;
+      min-width: 0; // Allow flex item to shrink below content size
+      max-width: 100%;
+      overflow: hidden;
 
       &.full {
         flex: 2;

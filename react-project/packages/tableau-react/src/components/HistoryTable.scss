@@ -7,6 +7,38 @@
 
 .history-table {
   width: 100%;
+  max-width: 100%;
+  overflow: hidden; // Prevent table from overflowing container
+
+  // Force table to take 100% width of container
+  :global {
+    .ant-table-wrapper {
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+
+    .ant-table {
+      width: 100% !important;
+      max-width: 100% !important;
+      table-layout: fixed !important; // Fixed layout for proportional columns
+    }
+
+    .ant-table-container {
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+
+    .ant-table-content {
+      width: 100% !important;
+      max-width: 100% !important;
+      overflow-x: auto !important; // Allow horizontal scroll if needed
+    }
+
+    .ant-table-body {
+      overflow-x: auto !important;
+      overflow-y: auto !important;
+    }
+  }
 
   // Table styling - Dark Theme
   .ant-table {

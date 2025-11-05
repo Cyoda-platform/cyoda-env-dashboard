@@ -16,57 +16,23 @@ interface ResizableTitleProps extends React.HTMLAttributes<any> {
 export const ResizableTitle = (props: any) => {
   const { onResize, width, ...restProps } = props;
 
-  // Debug logging - enabled for debugging
-  console.log('ResizableTitle render - ALL PROPS:', props);
-
-  // Try to get width from various sources
-  let columnWidth = width;
-
-  // Check data-column-width attribute
-  if (!columnWidth && restProps['data-column-width']) {
-    columnWidth = restProps['data-column-width'];
-  }
-
-  // Check if width is in style
-  if (!columnWidth && restProps.style?.width) {
-    const styleWidth = restProps.style.width;
-    // Parse width if it's a string like "150px"
-    columnWidth = typeof styleWidth === 'string'
-      ? parseInt(styleWidth)
-      : styleWidth;
-  }
-
-  // Check children array for column data
-  if (!columnWidth && Array.isArray(restProps.children)) {
-    const columnData = restProps.children.find((child: any) => child?.props?.column);
-    if (columnData?.props?.column?.width) {
-      columnWidth = columnData.props.column.width;
-    }
-  }
-
-  console.log('ResizableTitle computed:', {
+  console.log('ResizableTitle props:', {
     width,
-    columnWidth,
     hasOnResize: !!onResize,
-    dataColumnWidth: restProps['data-column-width'],
-    styleWidth: restProps.style?.width,
+    allProps: Object.keys(props)
   });
 
-  if (!columnWidth) {
-    console.log('ResizableTitle: returning plain th (no width found)');
+  // If no width or onResize, return plain th
+  if (!width || !onResize) {
+    console.log('ResizableTitle: returning plain th - width:', width, 'onResize:', !!onResize);
     return <th {...restProps} />;
   }
 
-  if (!onResize) {
-    console.log('ResizableTitle: returning plain th (no onResize)');
-    return <th {...restProps} style={{ ...restProps.style, width: columnWidth }} />;
-  }
-
-  console.log('ResizableTitle: rendering Resizable with width:', columnWidth);
+  console.log('ResizableTitle: rendering Resizable');
 
   return (
     <Resizable
-      width={typeof columnWidth === 'number' ? columnWidth : parseInt(String(columnWidth))}
+      width={typeof width === 'number' ? width : parseInt(String(width))}
       height={0}
       handle={
         <span
@@ -79,7 +45,7 @@ export const ResizableTitle = (props: any) => {
       onResize={onResize}
       draggableOpts={{ enableUserSelectHack: false }}
     >
-      <th {...restProps} style={{ ...restProps.style, width: columnWidth }} />
+      <th {...restProps} />
     </Resizable>
   );
 };

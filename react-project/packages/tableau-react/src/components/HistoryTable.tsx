@@ -3,7 +3,7 @@
  * Migrated from: .old_project/packages/tableau/src/components/HistoryTable.vue
  */
 
-import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { Table, notification, Button, Tooltip } from 'antd';
 import { InfoCircleOutlined, EditOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
@@ -30,21 +30,24 @@ const HistoryTable: React.FC<HistoryTableProps> = ({ filter, onChange }) => {
   // Get global entity type
   const { entityType } = useGlobalUiSettingsStore();
 
-  // Column widths state - load from localStorage
+  // Column widths state - using percentages for adaptive behavior within fixed container
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>(() => {
     const saved = storage.get('historyTable:columnWidths', {});
-    const widths = saved || {
+
+    // Default widths in pixels - will be converted to percentages
+    const defaultWidths = {
       createDateTime: 150,
       config: 200,
-      type: 200,
-      user: 200,
-      status: 150,
-      execution: 150,
-      rows: 150,
+      type: 150,
+      user: 150,
+      status: 120,
+      execution: 120,
+      rows: 100,
       action: 120,
     };
-    console.log('HistoryTable columnWidths loaded:', widths);
-    return widths;
+
+    // Use saved widths if they exist and are not empty, otherwise use defaults
+    return (saved && Object.keys(saved).length > 0) ? saved : defaultWidths;
   });
 
   // Save column widths to localStorage whenever they change
@@ -52,14 +55,35 @@ const HistoryTable: React.FC<HistoryTableProps> = ({ filter, onChange }) => {
     storage.set('historyTable:columnWidths', columnWidths);
   }, [columnWidths, storage]);
 
-  // Handle column resize
+  // Handle column resize - redistribute widths proportionally
   const handleResize = useCallback((key: string) => {
     return (_: React.SyntheticEvent, { size }: ResizeCallbackData) => {
-      console.log('Resizing column:', key, 'to width:', size.width);
-      setColumnWidths((prev) => ({
-        ...prev,
-        [key]: size.width,
-      }));
+      setColumnWidths((prev) => {
+        const oldWidth = prev[key];
+        const newWidth = size.width;
+        const delta = newWidth - oldWidth;
+
+        // Get all adaptive columns (excluding the one being resized)
+        const adaptiveKeys = Object.keys(prev).filter(k => k !== key);
+
+        if (adaptiveKeys.length === 0) {
+          return { ...prev, [key]: newWidth };
+        }
+
+        // Calculate total width of adaptive columns
+        const totalAdaptiveWidth = adaptiveKeys.reduce((sum, k) => sum + prev[k], 0);
+
+        // Distribute the delta proportionally among other columns
+        const newWidths = { ...prev, [key]: newWidth };
+
+        adaptiveKeys.forEach(k => {
+          const proportion = prev[k] / totalAdaptiveWidth;
+          const adjustment = delta * proportion;
+          newWidths[k] = Math.max(50, prev[k] - adjustment); // Minimum 50px
+        });
+
+        return newWidths;
+      });
     };
   }, []);
 
@@ -227,7 +251,7 @@ const HistoryTable: React.FC<HistoryTableProps> = ({ filter, onChange }) => {
     });
   }, []);
 
-  // Table columns with resizable widths
+  // Table columns - resizable with adaptive defaults
   const columns: ColumnsType<TableDataRow> = useMemo(() => [
     {
       title: 'DateTime',
@@ -236,88 +260,48 @@ const HistoryTable: React.FC<HistoryTableProps> = ({ filter, onChange }) => {
       width: columnWidths.createDateTime,
       sorter: (a, b) => Number(a.createDateTimeMkTime) - Number(b.createDateTimeMkTime),
       defaultSortOrder: 'descend',
-      onHeaderCell: (column: any) => ({
-        width: columnWidths.createDateTime,
-        onResize: handleResize('createDateTime'),
-        'data-column-width': columnWidths.createDateTime,
-      } as any),
     },
     {
       title: 'Config',
       dataIndex: 'config',
       key: 'config',
       width: columnWidths.config,
-      onHeaderCell: (column: any) => ({
-        width: columnWidths.config,
-        onResize: handleResize('config'),
-        'data-column-width': columnWidths.config,
-      } as any),
     },
     {
       title: 'Type',
       dataIndex: 'type',
       key: 'type',
       width: columnWidths.type,
-      onHeaderCell: (column: any) => ({
-        width: columnWidths.type,
-        onResize: handleResize('type'),
-        'data-column-width': columnWidths.type,
-      } as any),
     },
     {
       title: 'User',
       dataIndex: 'user',
       key: 'user',
       width: columnWidths.user,
-      onHeaderCell: (column: any) => ({
-        width: columnWidths.user,
-        onResize: handleResize('user'),
-        'data-column-width': columnWidths.user,
-      } as any),
     },
     {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
       width: columnWidths.status,
-      onHeaderCell: (column: any) => ({
-        width: columnWidths.status,
-        onResize: handleResize('status'),
-        'data-column-width': columnWidths.status,
-      } as any),
     },
     {
       title: 'Execution',
       dataIndex: 'execution',
       key: 'execution',
       width: columnWidths.execution,
-      onHeaderCell: (column: any) => ({
-        width: columnWidths.execution,
-        onResize: handleResize('execution'),
-        'data-column-width': columnWidths.execution,
-      } as any),
     },
     {
       title: 'Rows',
       dataIndex: 'rows',
       key: 'rows',
       width: columnWidths.rows,
-      onHeaderCell: (column: any) => ({
-        width: columnWidths.rows,
-        onResize: handleResize('rows'),
-        'data-column-width': columnWidths.rows,
-      } as any),
     },
     {
       title: 'Action',
       key: 'action',
       width: columnWidths.action,
       fixed: 'right',
-      onHeaderCell: (column: any) => ({
-        width: columnWidths.action,
-        onResize: handleResize('action'),
-        'data-column-width': columnWidths.action,
-      } as any),
       render: (_, record) => (
         <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
           <Tooltip title="View report details">
@@ -347,7 +331,7 @@ const HistoryTable: React.FC<HistoryTableProps> = ({ filter, onChange }) => {
         </div>
       ),
     },
-  ], [columnWidths, handleResize, handleInfoClick, handleEditClick]);
+  ], [columnWidths, handleInfoClick, handleEditClick]);
 
   // Handle row click
   const handleRowClick = async (record: TableDataRow) => {
@@ -376,16 +360,27 @@ const HistoryTable: React.FC<HistoryTableProps> = ({ filter, onChange }) => {
     }
   };
 
+  // Merge columns with resize handlers
+  const resizableColumns = useMemo(() => {
+    return columns.map((col) => ({
+      ...col,
+      onHeaderCell: () => ({
+        width: col.width,
+        onResize: handleResize(col.key as string),
+      }),
+    }));
+  }, [columns, handleResize]);
+
   return (
     <div className="history-table">
       <Table
-        columns={columns}
+        columns={resizableColumns}
         dataSource={tableData}
         loading={isLoading}
         rowKey="id"
         bordered
         size="small"
-        scroll={{ y: 250 }}
+        scroll={{ x: true, y: 250 }}
         pagination={false}
         onRow={(record) => ({
           onClick: () => handleRowClick(record),

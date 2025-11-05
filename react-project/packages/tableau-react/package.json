@@ -10,7 +10,7 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "dev": "vite --port 3007",
+    "dev": "vite --port 3000",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "cd ../.. && vitest run --environment jsdom packages/tableau-react",
