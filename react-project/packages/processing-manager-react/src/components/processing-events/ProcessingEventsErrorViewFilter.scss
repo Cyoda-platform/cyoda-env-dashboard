@@ -1,3 +1,5 @@
+@use '../../../../ui-lib-react/src/styles/table-mixins' as table;
+
 .pm-processing-events-error-view-filter {
   margin-bottom: 20px;
 
@@ -20,5 +22,10 @@
     border: none;
     border-top: 1px solid #d9d9d9;
   }
+}
+
+// Dropdown styles for Select components
+.processing-events-error-view-filter-dropdown {
+  @include table.select-dropdown-full-width;
 }
 

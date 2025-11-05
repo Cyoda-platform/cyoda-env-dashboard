@@ -83,6 +83,8 @@ export const EventsFilter = forwardRef<EventsFilterRef, EventsFilterProps>(
                   value={form.queue}
                   onChange={(value) => handleFieldChange('queue', value || '')}
                   options={queueOptions.map((q) => ({ value: q, label: q }))}
+                  popupClassName="events-filter-dropdown"
+                  dropdownStyle={{ minWidth: '400px' }}
                 />
               </Form.Item>
             </Col>
@@ -94,6 +96,8 @@ export const EventsFilter = forwardRef<EventsFilterRef, EventsFilterProps>(
                   value={form.entityClass}
                   onChange={(value) => handleFieldChange('entityClass', value || '')}
                   options={entityClassOptions}
+                  popupClassName="events-filter-dropdown"
+                  dropdownStyle={{ minWidth: '400px' }}
                 />
               </Form.Item>
             </Col>
@@ -105,6 +109,8 @@ export const EventsFilter = forwardRef<EventsFilterRef, EventsFilterProps>(
                   value={form.status}
                   onChange={(value) => handleFieldChange('status', value || '')}
                   options={transactionStatusOptions}
+                  popupClassName="events-filter-dropdown"
+                  dropdownStyle={{ minWidth: '400px' }}
                 />
               </Form.Item>
             </Col>

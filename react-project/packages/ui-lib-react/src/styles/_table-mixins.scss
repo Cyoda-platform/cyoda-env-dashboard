@@ -120,3 +120,17 @@
   }
 }
 
+// Mixin for Select dropdown with full-width items (no text truncation)
+@mixin select-dropdown-full-width {
+  :global {
+    .ant-select-item {
+      white-space: normal !important;
+      word-wrap: break-word !important;
+      height: auto !important;
+      min-height: 32px !important;
+      padding: 5px 12px !important;
+      line-height: 1.5 !important;
+    }
+  }
+}
+

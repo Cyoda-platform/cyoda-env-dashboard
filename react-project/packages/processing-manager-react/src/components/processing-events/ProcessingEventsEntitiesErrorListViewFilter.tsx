@@ -47,6 +47,7 @@ export const ProcessingEventsEntitiesErrorListViewFilter: React.FC<
               value={form.type}
               onChange={(value) => setForm({ ...form, type: value })}
               options={entityClassOptions.map((item) => ({ label: item, value: item }))}
+              popupClassName="processing-events-entities-error-list-view-filter-dropdown"
             />
           </Form.Item>
         </Col>

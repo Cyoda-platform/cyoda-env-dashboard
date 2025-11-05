@@ -172,9 +172,11 @@ export const ProcessEventsStatistics: React.FC = () => {
                 placeholder="Select queue"
                 allowClear
                 showSearch
+                popupClassName="process-events-statistics-dropdown"
+                dropdownStyle={{ minWidth: '400px' }}
               >
                 {queueOptions.map((item: string) => (
-                  <Select.Option key={item} value={item}>
+                  <Select.Option key={item} value={item} style={{ whiteSpace: 'normal', height: 'auto' }}>
                     {item}
                   </Select.Option>
                 ))}
@@ -190,6 +192,8 @@ export const ProcessEventsStatistics: React.FC = () => {
                 allowClear
                 showSearch
                 options={shardOptions}
+                popupClassName="process-events-statistics-dropdown"
+                dropdownStyle={{ minWidth: '400px' }}
               />
             </Form.Item>
           </Col>
@@ -198,10 +202,12 @@ export const ProcessEventsStatistics: React.FC = () => {
               <Select
                 value={classFilter}
                 onChange={setClassFilter}
+                popupClassName="process-events-statistics-dropdown"
                 placeholder="Select class"
                 allowClear
                 showSearch
                 options={classOptions}
+                dropdownStyle={{ minWidth: '400px' }}
               />
             </Form.Item>
           </Col>
@@ -214,6 +220,8 @@ export const ProcessEventsStatistics: React.FC = () => {
                 allowClear
                 showSearch
                 options={processorOptions}
+                popupClassName="process-events-statistics-dropdown"
+                dropdownStyle={{ minWidth: '400px' }}
               />
             </Form.Item>
           </Col>
