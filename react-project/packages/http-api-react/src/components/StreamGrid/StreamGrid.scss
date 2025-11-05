@@ -2,7 +2,10 @@
  * StreamGrid Styles
  */
 
+@use '../../../../ui-lib-react/src/styles/table-mixins' as table;
+
 .stream-grid-modal {
+  @include table.table-container-wrapper;
   .page-size {
     font-size: 14px;
     color: #666;

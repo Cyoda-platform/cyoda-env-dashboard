@@ -306,7 +306,7 @@ export const ConfigEditorStreamGrid = forwardRef<ConfigEditorStreamGridRef, Conf
           dataSource={tableData}
           loading={isLoading}
           pagination={false}
-          scroll={{ y: 400 }}
+          scroll={{ x: true, y: 400 }}
           onRow={(record) => ({
             onDoubleClick: () => handleRowDoubleClick(record)
           })}

@@ -6,6 +6,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Table } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
+import type { ResizeCallbackData } from 'react-resizable';
 import { useQuery } from '@tanstack/react-query';
 import { axios } from '@cyoda/http-api-react';
 import ReportTableRows from './ReportTableRows';
@@ -13,6 +14,7 @@ import type { ColumnData } from './ColumnCollectionsDialog';
 import HelperReportTable, { type ReportGroup, type WrappedEntityModel } from '../utils/HelperReportTable';
 import type { ConfigDefinition } from '../types';
 import { HelperStorage } from '@cyoda/ui-lib-react';
+import { ResizableTitle } from './ResizableTitle';
 import './ReportTableGroup.scss';
 
 interface ReportTableGroupProps {
@@ -53,6 +55,47 @@ const ReportTableGroup: React.FC<ReportTableGroupProps> = ({
   const [selectedRowKey, setSelectedRowKey] = useState<string | null>(null);
   const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([]);
 
+  // Column widths state
+  const [columnWidths, setColumnWidths] = useState<Record<string, number>>(() => {
+    const saved = storage.get('reportTableGroup:columnWidths', {});
+    const defaultWidths = { group: 350 };
+    return saved && Object.keys(saved).length > 0 ? saved : defaultWidths;
+  });
+
+  // Save column widths to localStorage whenever they change
+  useEffect(() => {
+    if (Object.keys(columnWidths).length > 0) {
+      storage.set('reportTableGroup:columnWidths', columnWidths);
+    }
+  }, [columnWidths, storage]);
+
+  // Handle column resize - redistribute widths proportionally
+  const handleResize = useCallback((key: string) => {
+    return (_: React.SyntheticEvent, { size }: ResizeCallbackData) => {
+      setColumnWidths((prev) => {
+        const oldWidth = prev[key] || 150;
+        const newWidth = size.width;
+        const delta = newWidth - oldWidth;
+
+        const otherKeys = Object.keys(prev).filter(k => k !== key);
+        if (otherKeys.length === 0) {
+          return { ...prev, [key]: newWidth };
+        }
+
+        const totalOtherWidth = otherKeys.reduce((sum, k) => sum + prev[k], 0);
+        const newWidths = { ...prev, [key]: newWidth };
+
+        otherKeys.forEach(k => {
+          const proportion = prev[k] / totalOtherWidth;
+          const adjustment = delta * proportion;
+          newWidths[k] = Math.max(50, prev[k] - adjustment);
+        });
+
+        return newWidths;
+      });
+    };
+  }, []);
+
   // Load groups data
   const { data: groups, isLoading } = useQuery({
     queryKey: ['reportGroups', tableLinkGroup],
@@ -64,7 +107,7 @@ const ReportTableGroup: React.FC<ReportTableGroupProps> = ({
     enabled: !!tableLinkGroup,
   });
 
-  // Calculate table columns
+  // Calculate table columns with resizable support
   const tableColumns = useMemo(() => {
     if (!groups || Object.keys(groups).length === 0) return [];
 
@@ -73,7 +116,11 @@ const ReportTableGroup: React.FC<ReportTableGroupProps> = ({
         title: 'Group',
         dataIndex: 'group',
         key: 'group',
-        width: 350,
+        width: columnWidths['group'] || 350,
+        onHeaderCell: (column: any) => ({
+          width: column.width,
+          onResize: handleResize('group'),
+        }),
       },
     ];
 
@@ -83,12 +130,16 @@ const ReportTableGroup: React.FC<ReportTableGroupProps> = ({
         title: col.label,
         dataIndex: col.prop,
         key: col.prop,
-        width: 350,
+        width: columnWidths[col.prop] || 350,
+        onHeaderCell: (column: any) => ({
+          width: column.width,
+          onResize: handleResize(col.prop),
+        }),
       });
     });
 
     return columns;
-  }, [groups]);
+  }, [groups, columnWidths, handleResize]);
 
   // Calculate table data
   const tableData = useMemo((): TableDataRow[] => {
@@ -211,10 +262,15 @@ const ReportTableGroup: React.FC<ReportTableGroupProps> = ({
         columns={tableColumns}
         dataSource={tableData}
         loading={isLoading}
+        components={{
+          header: {
+            cell: ResizableTitle,
+          },
+        }}
         bordered
         size="small"
         showHeader={showHeader}
-        scroll={{ y: maxHeight }}
+        scroll={{ x: true, y: maxHeight }}
         pagination={paginationConfig}
         expandable={{
           expandedRowRender: isRowExpandable(tableData[0]) ? expandedRowRender : undefined,

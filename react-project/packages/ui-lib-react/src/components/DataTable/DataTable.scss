@@ -1,4 +1,8 @@
+@use '../../styles/table-mixins' as table;
+
 .cyoda-data-tables {
+  @include table.table-container-wrapper;
+
   .pagination-wrap {
     display: flex;
     justify-content: center;

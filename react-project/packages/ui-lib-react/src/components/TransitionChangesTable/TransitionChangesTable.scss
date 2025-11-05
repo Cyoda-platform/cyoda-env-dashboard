@@ -1,8 +1,10 @@
 // TransitionChangesTable Component Styles
 // Migrated from Vue component
 
+@use '../../styles/table-mixins' as table;
+
 .transition-changes-table {
-  width: 100%;
+  @include table.table-container-wrapper;
   
   .ant-table {
     font-size: 14px;

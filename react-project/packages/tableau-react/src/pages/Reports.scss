@@ -3,12 +3,11 @@
  * Migrated from: .old_project/packages/http-api/src/views/ConfigEditor.vue
  */
 
+@use '../../../ui-lib-react/src/styles/table-mixins' as table;
+
 .config-editor {
+  @include table.page-container;
   padding: 16px;
-  width: 100%;
-  max-width: 100%;
-  overflow: hidden;
-  box-sizing: border-box;
 
   .page-title {
     font-size: 24px;
@@ -48,10 +47,7 @@
 }
 
 .history-view-reports {
-  width: 100%;
-  max-width: 100%;
-  overflow: hidden;
-  box-sizing: border-box;
+  @include table.page-container;
 
   .history-report-quick-run-flex {
     display: flex;
@@ -78,23 +74,12 @@
 
   // Report table section - Dark Theme
   .report-table {
-    display: flex;
-    gap: 20px;
+    @include table.report-table-section;
     margin-top: 24px;
     margin-bottom: 20px;
-    width: 100%;
-    max-width: 100%;
-    overflow: hidden;
 
     .wrap-table {
-      flex: 1;
-      min-width: 0; // Allow flex item to shrink below content size
-      max-width: 100%;
-      overflow: hidden;
-
-      &.full {
-        flex: 2;
-      }
+      @include table.flex-table-wrapper;
 
       .label {
         display: block;

@@ -219,7 +219,8 @@ export const DataTable = forwardRef<DataTableRef, DataTableProps>(({
           dataSource={localTableData}
           loading={loading}
           bordered={tableProps.border}
-          scroll={{ 
+          scroll={{
+            x: true,
             y: tableProps.height || tableProps.maxHeight,
           }}
           pagination={false}

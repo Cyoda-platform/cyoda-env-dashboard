@@ -187,6 +187,152 @@ For questions or issues, contact the CYODA development team.
 
 ---
 
-**Last Updated**: 2025-10-27  
+## Table Mixins
+
+The `_table-mixins.scss` file provides mixins for creating responsive tables that don't overflow their containers when the left menu is expanded/collapsed.
+
+### Problem
+
+Tables were overflowing their containers when the left side menu was expanded, causing horizontal scrolling at the page level instead of within the table.
+
+### Solution
+
+We've created reusable SCSS mixins that:
+- ✅ Ensure tables stay within container bounds
+- ✅ Enable resizable columns with proportional redistribution
+- ✅ Provide horizontal scroll within the table (not the page)
+- ✅ Work with flex layouts
+- ✅ Support both fixed and adaptive column widths
+
+### Available Mixins
+
+#### 1. `table-container-wrapper`
+
+Use on the direct wrapper of an Ant Design Table component.
+
+**For components in `@cyoda/ui-lib-react`:**
+```scss
+@use '../../styles/table-mixins' as table;
+
+.my-table-wrapper {
+  @include table.table-container-wrapper;
+}
+```
+
+**For components in other packages:**
+```scss
+// From packages/tableau-react/src/components/
+@use '../../../ui-lib-react/src/styles/table-mixins' as table;
+
+// From packages/http-api-react/src/components/StreamGrid/
+@use '../../../../ui-lib-react/src/styles/table-mixins' as table;
+
+.my-table-wrapper {
+  @include table.table-container-wrapper;
+}
+```
+
+**Features:**
+- Sets width to 100% with max-width constraint
+- Uses `table-layout: fixed` for proportional columns
+- Enables horizontal scroll if needed
+- Prevents overflow
+
+#### 2. `resizable-columns`
+
+Use when you want resizable columns functionality.
+
+```scss
+.my-table-wrapper {
+  @include table.table-container-wrapper;
+  @include table.resizable-columns;
+}
+```
+
+**Features:**
+- Imports react-resizable CSS
+- Adds resize handle styles
+- Visual feedback on hover
+
+#### 3. `page-container`
+
+Use on page-level containers.
+
+```scss
+.my-page {
+  @include table.page-container;
+  padding: 16px;
+}
+```
+
+#### 4. `flex-table-wrapper`
+
+Use when table is in a flex container.
+
+```scss
+.table-wrapper {
+  @include table.flex-table-wrapper;
+}
+```
+
+**Critical:** Adds `min-width: 0` to allow flex items to shrink.
+
+#### 5. `report-table-section`
+
+Use for flex containers with multiple elements.
+
+```scss
+.report-section {
+  @include table.report-table-section;
+}
+```
+
+### Complete Example
+
+```scss
+@use '@cyoda/ui-lib-react/src/styles/table-mixins' as table;
+
+.my-page {
+  @include table.page-container;
+  padding: 16px;
+
+  .table-section {
+    @include table.report-table-section;
+
+    .table-wrapper {
+      @include table.flex-table-wrapper;
+    }
+  }
+}
+
+.my-table {
+  @include table.table-container-wrapper;
+  @include table.resizable-columns;
+}
+```
+
+### Components Using Table Mixins
+
+- ✅ `@cyoda/tableau-react/src/components/HistoryTable`
+- ✅ `@cyoda/tableau-react/src/pages/Reports`
+- ✅ `@cyoda/tableau-react/src/components/ReportTableRows`
+- ✅ `@cyoda/tableau-react/src/components/ReportTableGroup`
+- ✅ `@cyoda/http-api-react/src/components/StreamGrid`
+- ✅ `@cyoda/ui-lib-react/src/components/EntityDetailModal/EntityAudit`
+- ✅ `@cyoda/ui-lib-react/src/components/EntityDetailModal/EntityDataLineage`
+- ✅ `@cyoda/ui-lib-react/src/components/TransitionChangesTable`
+- ✅ `@cyoda/ui-lib-react/src/components/ConfigEditorStreamGrid`
+- ✅ `@cyoda/ui-lib-react/src/components/ErrorTable`
+- ✅ `@cyoda/ui-lib-react/src/components/DataTable`
+
+### Components That Don't Need Table Mixins
+
+- `@cyoda/ui-lib-react/src/components/ConsistencyTable` (not using Ant Design Table)
+- `@cyoda/ui-lib-react/src/components/ConsistencyDialogTable` (not using Ant Design Table)
+- `@cyoda/ui-lib-react/src/components/TableComponent` (generic wrapper, mixins applied by consumers)
+
+---
+
+**Last Updated**: 2025-11-05
 **Maintained By**: CYODA Development Team
 

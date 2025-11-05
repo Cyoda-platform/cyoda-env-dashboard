@@ -3,8 +3,11 @@
  * Migrated from: .old_project/packages/tableau/src/components/ReportTable/ReportTableRows.vue
  */
 
+@use '../../../ui-lib-react/src/styles/table-mixins' as table;
+
 .report-table-rows {
-  width: 100%;
+  @include table.table-container-wrapper;
+  @include table.resizable-columns;
   margin-top: 20px;
 
   // Table styling

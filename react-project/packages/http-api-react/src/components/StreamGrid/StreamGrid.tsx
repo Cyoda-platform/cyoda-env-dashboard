@@ -164,7 +164,7 @@ export const StreamGrid = forwardRef<StreamGridRef, StreamGridProps>(
           dataSource={tableData}
           columns={columns}
           pagination={false}
-          scroll={{ y: 400 }}
+          scroll={{ x: true, y: 400 }}
           rowKey="id"
         />
       </Modal>

@@ -3,7 +3,12 @@
  * Migrated from: .old_project/packages/http-api/src/components/ReportTable/ReportTableGroup.vue
  */
 
+@use '../../../ui-lib-react/src/styles/table-mixins' as table;
+
 .report-table-group {
+  @include table.table-container-wrapper;
+  @include table.resizable-columns;
+
   .ant-table {
     font-size: 12px;
     background: transparent !important;

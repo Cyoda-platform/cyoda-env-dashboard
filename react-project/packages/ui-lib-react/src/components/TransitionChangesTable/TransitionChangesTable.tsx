@@ -154,6 +154,7 @@ export const TransitionChangesTable: React.FC<TransitionChangesTableProps> = ({
           columns={columns}
           dataSource={tableData}
           loading={loading}
+          scroll={{ x: true, y: 400 }}
           expandable={{
             expandedRowRender,
             rowExpandable: (record) => record.changedFieldValues && record.changedFieldValues.length > 0
