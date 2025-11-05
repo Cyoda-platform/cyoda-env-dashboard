@@ -5,13 +5,12 @@
  */
 
 import React from 'react';
-import { Card, Table, Spin, Alert, Typography, Tag } from 'antd';
+import { Card, Table, Spin, Alert, Tag } from 'antd';
 import { ClusterOutlined } from '@ant-design/icons';
 import { useClusterStats } from '../hooks';
 import { useNavigate } from 'react-router-dom';
 import type { ColumnsType } from 'antd/es/table';
-
-const { Title } = Typography;
+import './Nodes.scss';
 
 interface NodeData {
   name: string;
@@ -62,9 +61,7 @@ export default function Nodes() {
 
   return (
     <div style={{ padding: '24px' }}>
-      <Title level={2} style={{ marginBottom: '24px' }}>
-        Processing Nodes
-      </Title>
+      <h1 className="page-title">Processing Nodes</h1>
 
       <Card variant="borderless">
         {isLoading && (

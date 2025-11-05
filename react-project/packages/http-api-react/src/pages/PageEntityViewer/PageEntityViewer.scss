@@ -4,7 +4,15 @@
  */
 
 .page-entity-viewer {
-  margin-top: 20px;
+  padding: 24px;
+
+  .page-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #00D4AA;
+    margin-bottom: 24px;
+    margin-top: 0;
+  }
 
   svg.canvas {
     height: 1000px;
@@ -13,14 +21,6 @@
     left: 0;
     pointer-events: none;
     z-index: 1;
-  }
-
-  h2 {
-    margin-top: 20px;
-    margin-bottom: 20px;
-    font-size: 24px;
-    font-weight: 600;
-    color: var(--refine-text-primary) !important;
   }
 
   ul {
@@ -43,7 +43,7 @@
 
     .select {
       .ant-select {
-        width: 400px;
+        width: 600px;
       }
     }
 

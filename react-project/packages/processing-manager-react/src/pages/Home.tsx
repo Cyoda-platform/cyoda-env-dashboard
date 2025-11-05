@@ -44,7 +44,7 @@ export default function Home() {
 
   return (
     <div style={{ padding: '24px' }}>
-      <Title level={2}>Processing</Title>
+      <h1 className="page-title">Processing</h1>
       <Paragraph style={{ fontSize: '16px', color: '#666', marginBottom: '24px' }}>
         Monitor and manage data processing operations, nodes, and transactions.
       </Paragraph>

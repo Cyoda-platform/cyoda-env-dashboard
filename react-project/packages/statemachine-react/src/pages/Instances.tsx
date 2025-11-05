@@ -363,11 +363,9 @@ export const Instances: React.FC = () => {
   const hasPrev = currentPage > 1;
   
   return (
-    <div style={{ padding: '16px' }}>
+    <div style={{ padding: '24px' }}>
       {/* Header */}
-      <div style={{ marginBottom: '16px' }}>
-        <h1 style={{ margin: 0 }}>Instances</h1>
-      </div>
+      <h1 className="page-title">Instances</h1>
 
       <Card variant="borderless">
         <Space direction="vertical" size="middle" style={{ width: '100%' }}>

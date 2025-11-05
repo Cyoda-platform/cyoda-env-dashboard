@@ -1,5 +1,13 @@
 @use '../../../ui-lib-react/src/styles/table-mixins' as table;
 
+.page-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #00D4AA;
+  margin-bottom: 24px;
+  margin-top: 0;
+}
+
 // Dropdown styles for Select components
 :global(.instances-page-dropdown) {
   .ant-select-item {

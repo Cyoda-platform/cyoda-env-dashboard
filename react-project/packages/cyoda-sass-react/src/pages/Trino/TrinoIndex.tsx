@@ -129,6 +129,7 @@ const TrinoIndex: React.FC = () => {
 
   return (
     <div className="trino-index">
+      <h1 className="page-title">Trino SQL schemas</h1>
       <div className="card">
         <div className="card-body">
           <div className="trino-index-header">

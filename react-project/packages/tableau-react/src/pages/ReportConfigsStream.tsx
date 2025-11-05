@@ -536,6 +536,7 @@ export const ReportConfigsStream: React.FC = () => {
 
   return (
     <div className="report-configs-stream">
+      <h1 className="page-title">Stream reports</h1>
       <div className="report-configs-stream__actions">
         <Space>
           <Button type="primary" icon={<PlusOutlined />} onClick={handleCreateNew}>

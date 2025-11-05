@@ -5,6 +5,14 @@
   @include table.resizable-columns;
   padding: 24px;
 
+  .page-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #00D4AA;
+    margin-bottom: 24px;
+    margin-top: 0;
+  }
+
   &__actions {
     display: flex;
     align-items: center;

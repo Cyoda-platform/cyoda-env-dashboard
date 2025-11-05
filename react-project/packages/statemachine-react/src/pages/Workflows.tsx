@@ -401,11 +401,9 @@ export const Workflows: React.FC = () => {
   ], [columnWidths, handleResize, handleViewWorkflow, handleViewInstances, handleCopyWorkflow, handleDeleteWorkflow, copyWorkflowMutation.isPending, deleteWorkflowMutation.isPending]);
   
   return (
-    <div style={{ padding: '16px' }}>
+    <div style={{ padding: '24px' }}>
       {/* Header */}
-      <div style={{ marginBottom: '16px' }}>
-        <h1 style={{ margin: 0 }}>Workflows</h1>
-      </div>
+      <h1 className="page-title">Workflows</h1>
 
       <Card variant="borderless">
         <Space direction="vertical" size="middle" style={{ width: '100%' }}>

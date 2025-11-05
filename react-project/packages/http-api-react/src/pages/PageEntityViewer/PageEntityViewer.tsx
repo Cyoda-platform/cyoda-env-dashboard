@@ -179,28 +179,24 @@ export const PageEntityViewer: React.FC = () => {
 
   return (
     <div className="page-entity-viewer">
+      <h1 className="page-title">Entity Viewer</h1>
       <Spin spinning={isLoading}>
         <CardComponent variant="borderless">
           <div className="card-body">
-            <h2>
-              Selected Root Entity{' '}
-              {requestClass ? HelperEntities.getShortNameOfEntity(requestClass) : '-'}
-            </h2>
-            
             <div className="wrap-entity-select">
               <div className="select">
                 <Select
                   value={requestClass || undefined}
                   onChange={setRequestClass}
-                  placeholder="Entity Class"
+                  placeholder="Select root entity class"
                   showSearch
                   filterOption={(input, option) =>
                     (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                   }
-                  style={{ width: 400 }}
+                  style={{ width: 600 }}
                   options={requestClassOptions}
                   popupClassName="page-entity-viewer-dropdown"
-                  dropdownStyle={{ minWidth: '400px' }}
+                  dropdownStyle={{ minWidth: '600px', maxWidth: '800px' }}
                 />
               </div>
               

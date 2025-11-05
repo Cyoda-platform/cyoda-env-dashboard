@@ -11,6 +11,7 @@ import { TasksFilter } from '../components/TasksFilter';
 import { TasksGrid } from '../components/TasksGrid';
 import { useTasksState } from '../hooks/useTasks';
 import type { TaskFilterType } from '../types';
+import './Tasks.scss';
 
 export const Tasks: React.FC = () => {
   const { isApplyRealData, setIsApplyRealData } = useTasksState();
@@ -26,45 +27,43 @@ export const Tasks: React.FC = () => {
   }, [isApplyRealData, setIsApplyRealData]);
 
   return (
-    <main id="main-content" role="main">
-      <div className="row">
-        <div className="col-md-12">
-          <Card variant="borderless">
-            <div className="actions" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-              <div>
-                <h2>Filters</h2>
-              </div>
-              <div>
-                {isApplyRealData ? (
-                  <Button
-                    type="default"
-                    danger
-                    icon={<CloseOutlined />}
-                    onClick={toggleApplyRealData}
-                    aria-label="Unsubscribe from live data updates"
-                    aria-pressed="true"
-                  >
-                    Unsubscribe to live data
-                  </Button>
-                ) : (
-                  <Button
-                    type="primary"
-                    icon={<ApiOutlined />}
-                    onClick={toggleApplyRealData}
-                    aria-label="Subscribe to live data updates"
-                    aria-pressed="false"
-                  >
-                    Subscribe to live data
-                  </Button>
-                )}
-              </div>
-            </div>
-            <TasksFilter onChangeFilter={handleChangeFilter} />
-            <TasksGrid isApplyRealData={isApplyRealData} filter={filter} />
-          </Card>
+    <div className="tasks-page" style={{ padding: '24px' }}>
+      <h1 className="page-title">Tasks</h1>
+
+      <Card variant="borderless">
+        <div className="actions" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
+          <div>
+            <h2>Filters</h2>
+          </div>
+          <div>
+            {isApplyRealData ? (
+              <Button
+                type="default"
+                danger
+                icon={<CloseOutlined />}
+                onClick={toggleApplyRealData}
+                aria-label="Unsubscribe from live data updates"
+                aria-pressed="true"
+              >
+                Unsubscribe to live data
+              </Button>
+            ) : (
+              <Button
+                type="primary"
+                icon={<ApiOutlined />}
+                onClick={toggleApplyRealData}
+                aria-label="Subscribe to live data updates"
+                aria-pressed="false"
+              >
+                Subscribe to live data
+              </Button>
+            )}
+          </div>
         </div>
-      </div>
-    </main>
+        <TasksFilter onChangeFilter={handleChangeFilter} />
+        <TasksGrid isApplyRealData={isApplyRealData} filter={filter} />
+      </Card>
+    </div>
   );
 };
 
