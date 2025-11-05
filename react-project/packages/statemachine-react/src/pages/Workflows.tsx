@@ -55,7 +55,55 @@ function getTimeFromUuid(uuid: string): number {
 export const Workflows: React.FC = () => {
   const { modal, message } = App.useApp();
   const navigate = useNavigate();
+  const storage = useMemo(() => new HelperStorage(), []);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+
+  // Column widths state
+  const [columnWidths, setColumnWidths] = useState<Record<string, number>>(() => {
+    const saved = storage.get('workflows:columnWidths', {});
+    const defaultWidths = {
+      entityClassNameLabel: 180,
+      name: 180,
+      active: 100,
+      persisted: 130,
+      operations: 150,
+    };
+    return saved && Object.keys(saved).length > 0 ? saved : defaultWidths;
+  });
+
+  // Save column widths to localStorage
+  useEffect(() => {
+    if (Object.keys(columnWidths).length > 0) {
+      storage.set('workflows:columnWidths', columnWidths);
+    }
+  }, [columnWidths, storage]);
+
+  // Handle column resize
+  const handleResize = useCallback((key: string) => {
+    return (_: React.SyntheticEvent, { size }: ResizeCallbackData) => {
+      setColumnWidths((prev) => {
+        const oldWidth = prev[key];
+        const newWidth = size.width;
+        const delta = newWidth - oldWidth;
+
+        const otherKeys = Object.keys(prev).filter(k => k !== key);
+        if (otherKeys.length === 0) {
+          return { ...prev, [key]: newWidth };
+        }
+
+        const totalOtherWidth = otherKeys.reduce((sum, k) => sum + prev[k], 0);
+        const newWidths = { ...prev, [key]: newWidth };
+
+        otherKeys.forEach(k => {
+          const proportion = prev[k] / totalOtherWidth;
+          const adjustment = delta * proportion;
+          newWidths[k] = Math.max(50, prev[k] - adjustment);
+        });
+
+        return newWidths;
+      });
+    };
+  }, []);
 
   // Table state persistence
   const { tableState, handleTableChange, setFilter } = useTableState({
@@ -212,36 +260,53 @@ export const Workflows: React.FC = () => {
     });
   };
   
-  // Table columns
-  const columns: ColumnsType<WorkflowTableRow> = [
+  // Table columns with resizable support
+  const columns: ColumnsType<WorkflowTableRow> = useMemo(() => [
     {
       title: 'Entity',
       dataIndex: 'entityClassNameLabel',
       key: 'entityClassNameLabel',
+      width: columnWidths.entityClassNameLabel,
       sorter: (a, b) => a.entityClassNameLabel.localeCompare(b.entityClassNameLabel),
+      onHeaderCell: () => ({
+        width: columnWidths.entityClassNameLabel,
+        onResize: handleResize('entityClassNameLabel'),
+      }),
     },
     {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
-      width: 180,
+      width: columnWidths.name,
       sorter: (a, b) => a.name.localeCompare(b.name),
+      onHeaderCell: () => ({
+        width: columnWidths.name,
+        onResize: handleResize('name'),
+      }),
     },
     {
       title: 'Active',
       dataIndex: 'active',
       key: 'active',
-      width: 100,
+      width: columnWidths.active,
       render: (active: boolean) => <StateIndicator state={active} />,
       sorter: (a, b) => Number(a.active) - Number(b.active),
+      onHeaderCell: () => ({
+        width: columnWidths.active,
+        onResize: handleResize('active'),
+      }),
     },
     {
       title: 'Persisted',
       dataIndex: 'persisted',
       key: 'persisted',
-      width: 130,
+      width: columnWidths.persisted,
       render: (persisted: boolean) => <StateIndicator state={persisted} />,
       sorter: (a, b) => Number(a.persisted) - Number(b.persisted),
+      onHeaderCell: () => ({
+        width: columnWidths.persisted,
+        onResize: handleResize('persisted'),
+      }),
     },
     {
       title: 'Creation Date',
@@ -327,8 +392,13 @@ export const Workflows: React.FC = () => {
           </Tooltip>
         </Space>
       ),
+      width: columnWidths.operations,
+      onHeaderCell: () => ({
+        width: columnWidths.operations,
+        onResize: handleResize('operations'),
+      }),
     },
-  ];
+  ], [columnWidths, handleResize, handleViewWorkflow, handleViewInstances, handleCopyWorkflow, handleDeleteWorkflow, copyWorkflowMutation.isPending, deleteWorkflowMutation.isPending]);
   
   return (
     <div style={{ padding: '16px' }}>
@@ -369,6 +439,11 @@ export const Workflows: React.FC = () => {
             columns={columns}
             dataSource={tableData}
             loading={isLoading}
+            components={{
+              header: {
+                cell: ResizableTitle,
+              },
+            }}
             rowSelection={{
               selectedRowKeys,
               onChange: setSelectedRowKeys,

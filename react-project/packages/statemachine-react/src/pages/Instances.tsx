@@ -4,26 +4,76 @@
  * Migrated from: .old_project/packages/statemachine/src/views/Instances.vue
  */
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Table, Button, Input, Select, Space, Card, Row, Col, message, Divider, Collapse } from 'antd';
 import { SearchOutlined, LeftOutlined, RightOutlined, ArrowLeftOutlined, WarningOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
+import type { ResizeCallbackData } from 'react-resizable';
 import {
   useWorkflowEnabledTypes,
   useWorkflowsList,
   useInstances,
 } from '../hooks/useStatemachine';
 import { useTableState } from '../hooks/useTableState';
-import { useGlobalUiSettingsStore, HelperFeatureFlags } from '@cyoda/http-api-react';
+import { useGlobalUiSettingsStore, HelperFeatureFlags, HelperStorage } from '@cyoda/http-api-react';
 import { RangeCondition, type RangeConditionForm } from '../components/RangeCondition';
 import type { Instance, InstanceTableRow, InstancesResponse } from '../types';
+import { ResizableTitle } from '../components/ResizableTitle';
+import './Instances.scss';
 
 const PAGE_SIZE = 20;
 
 export const Instances: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const storage = useMemo(() => new HelperStorage(), []);
+
+  // Column widths state
+  const [columnWidths, setColumnWidths] = useState<Record<string, number>>(() => {
+    const saved = storage.get('instances:columnWidths', {});
+    const defaultWidths = {
+      entityId: 150,
+      entityClassNameLabel: 180,
+      currentWorkflowId: 180,
+      state: 150,
+    };
+    return saved && Object.keys(saved).length > 0 ? saved : defaultWidths;
+  });
+
+  // Save column widths to localStorage
+  useEffect(() => {
+    if (Object.keys(columnWidths).length > 0) {
+      storage.set('instances:columnWidths', columnWidths);
+    }
+  }, [columnWidths, storage]);
+
+  // Handle column resize
+  const handleResize = useCallback((key: string) => {
+    return (_: React.SyntheticEvent, { size }: ResizeCallbackData) => {
+      setColumnWidths((prev) => {
+        const oldWidth = prev[key];
+        const newWidth = size.width;
+        const delta = newWidth - oldWidth;
+
+        const otherKeys = Object.keys(prev).filter(k => k !== key);
+        if (otherKeys.length === 0) {
+          return { ...prev, [key]: newWidth };
+        }
+
+        const totalOtherWidth = otherKeys.reduce((sum, k) => sum + prev[k], 0);
+        const newWidths = { ...prev, [key]: newWidth };
+
+        otherKeys.forEach(k => {
+          const proportion = prev[k] / totalOtherWidth;
+          const adjustment = delta * proportion;
+          newWidths[k] = Math.max(50, prev[k] - adjustment);
+        });
+
+        return newWidths;
+      });
+    };
+  }, []);
 
   // Table state persistence
   const { tableState, setFilter, updateTableState } = useTableState({
@@ -217,27 +267,38 @@ export const Instances: React.FC = () => {
     entityClassNameLabel: entityOptions.find((opt) => opt.value === instance.entityClassName)?.label || instance.entityClassName,
   }));
   
-  // Table columns
-  const columns: ColumnsType<InstanceTableRow> = [
+  // Table columns with resizable support
+  const columns: ColumnsType<InstanceTableRow> = useMemo(() => [
     {
       title: 'Entity Id',
       dataIndex: 'entityId',
       key: 'entityId',
+      width: columnWidths.entityId,
       render: (entityId: string, record) => (
         <span style={{ color: record.deleted ? '#ff4d4f' : 'inherit' }}>
           {entityId} {record.deleted && <small>(deleted)</small>}
         </span>
       ),
+      onHeaderCell: () => ({
+        width: columnWidths.entityId,
+        onResize: handleResize('entityId'),
+      }),
     },
     {
       title: 'Entity Name',
       dataIndex: 'entityClassNameLabel',
       key: 'entityClassNameLabel',
+      width: columnWidths.entityClassNameLabel,
+      onHeaderCell: () => ({
+        width: columnWidths.entityClassNameLabel,
+        onResize: handleResize('entityClassNameLabel'),
+      }),
     },
     {
       title: 'Current Workflow',
       dataIndex: 'currentWorkflowId',
       key: 'currentWorkflowId',
+      width: columnWidths.currentWorkflowId,
       render: (_, record) => {
         if (!record.currentWorkflowId) return null;
         return (
@@ -249,11 +310,20 @@ export const Instances: React.FC = () => {
           </a>
         );
       },
+      onHeaderCell: () => ({
+        width: columnWidths.currentWorkflowId,
+        onResize: handleResize('currentWorkflowId'),
+      }),
     },
     {
       title: 'State',
       dataIndex: 'state',
       key: 'state',
+      width: columnWidths.state,
+      onHeaderCell: () => ({
+        width: columnWidths.state,
+        onResize: handleResize('state'),
+      }),
     },
     {
       title: 'Created',
@@ -280,7 +350,7 @@ export const Instances: React.FC = () => {
         />
       ),
     },
-  ];
+  ], [columnWidths, handleResize, getWorkflowLink, getWorkflowName, handleViewDetail, navigate]);
   
   // Load instances on mount if entity is selected
   useEffect(() => {
@@ -382,6 +452,11 @@ export const Instances: React.FC = () => {
             columns={columns}
             dataSource={tableData}
             loading={instancesMutation.isPending}
+            components={{
+              header: {
+                cell: ResizableTitle,
+              },
+            }}
             pagination={false}
             bordered
           />
