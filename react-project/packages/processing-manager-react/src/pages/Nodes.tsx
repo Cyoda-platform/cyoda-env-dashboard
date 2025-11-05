@@ -63,7 +63,7 @@ export default function Nodes() {
     <div style={{ padding: '24px' }}>
       <h1 className="page-title">Processing Nodes</h1>
 
-      <Card variant="borderless">
+      <Card variant="borderless" styles={{ body: { padding: 0 } }}>
         {isLoading && (
           <div style={{ textAlign: 'center', padding: '50px' }}>
             <Spin size="large" />
@@ -71,13 +71,14 @@ export default function Nodes() {
         )}
 
         {error && (
-          <Alert
-            message="Error"
-            description="Failed to load cluster statistics"
-            type="error"
-            showIcon
-            style={{ marginBottom: '16px' }}
-          />
+          <div style={{ padding: '16px' }}>
+            <Alert
+              message="Error"
+              description="Failed to load cluster statistics"
+              type="error"
+              showIcon
+            />
+          </div>
         )}
 
         {data && (

@@ -84,8 +84,10 @@ export default function Home() {
         </Col>
       </Row>
 
-      <div style={{ marginBottom: '24px' }}>
-        <h3 style={{ fontSize: '24px', marginBottom: '16px' }}>Nodes ({totalNodes})</h3>
+      <Card variant="borderless" styles={{ body: { padding: 0 } }}>
+        <div style={{ padding: '16px', borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
+          <h3 style={{ fontSize: '20px', margin: 0 }}>Nodes ({totalNodes})</h3>
+        </div>
 
         {isLoading && (
           <div style={{ textAlign: 'center', padding: '50px' }}>
@@ -94,13 +96,14 @@ export default function Home() {
         )}
 
         {error && (
-          <Alert
-            message="Error"
-            description="Failed to load cluster statistics"
-            type="error"
-            showIcon
-            style={{ marginBottom: '16px' }}
-          />
+          <div style={{ padding: '16px' }}>
+            <Alert
+              message="Error"
+              description="Failed to load cluster statistics"
+              type="error"
+              showIcon
+            />
+          </div>
         )}
 
         {data && nodes.length > 0 && (
@@ -153,7 +156,7 @@ export default function Home() {
             No nodes available
           </div>
         )}
-      </div>
+      </Card>
     </div>
   );
 }

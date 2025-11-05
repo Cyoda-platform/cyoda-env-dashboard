@@ -181,8 +181,8 @@ export const PageEntityViewer: React.FC = () => {
     <div className="page-entity-viewer">
       <h1 className="page-title">Entity Viewer</h1>
       <Spin spinning={isLoading}>
-        <CardComponent variant="borderless">
-          <div className="card-body">
+        <CardComponent variant="borderless" styles={{ body: { padding: 0 } }}>
+          <div className="card-body" style={{ padding: '16px' }}>
             <div className="wrap-entity-select">
               <div className="select">
                 <Select
@@ -199,7 +199,7 @@ export const PageEntityViewer: React.FC = () => {
                   dropdownStyle={{ minWidth: '600px', maxWidth: '800px' }}
                 />
               </div>
-              
+
               <div className="checkbox">
                 <Checkbox
                   checked={onlyDynamic}
@@ -245,7 +245,7 @@ export const PageEntityViewer: React.FC = () => {
                   )}
                 </div>
               </div>
-              
+
               <div
                 className="wrap-entity-view-box-inner"
                 style={{ zoom }}
@@ -270,7 +270,7 @@ export const PageEntityViewer: React.FC = () => {
                     onResetRequestClass={handleResetRequestClass}
                   />
                 ))}
-                
+
                 {entitys.length > 0 && (
                   <svg className="canvas" width="100%" height="100%">
                     {/* SVG lines will be drawn here */}

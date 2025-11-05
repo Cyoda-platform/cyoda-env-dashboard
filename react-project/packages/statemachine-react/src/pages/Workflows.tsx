@@ -405,10 +405,10 @@ export const Workflows: React.FC = () => {
       {/* Header */}
       <h1 className="page-title">Workflows</h1>
 
-      <Card variant="borderless">
-        <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+      <Card variant="borderless" styles={{ body: { padding: 0 } }}>
+        <div style={{ padding: '16px' }}>
           {/* Header with filter and create button */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
             <Input
               placeholder="Filter workflows"
               value={tableState.filter || ''}
@@ -431,33 +431,33 @@ export const Workflows: React.FC = () => {
               </Button>
             </Space>
           </div>
-          
-          {/* Table */}
-          <Table
-            columns={columns}
-            dataSource={tableData}
-            loading={isLoading}
-            components={{
-              header: {
-                cell: ResizableTitle,
-              },
-            }}
-            rowSelection={{
-              selectedRowKeys,
-              onChange: setSelectedRowKeys,
-            }}
-            pagination={{
-              current: tableState.currentPage,
-              pageSize: tableState.pageSize,
-              pageSizeOptions: ['5', '10', '20', '50'],
-              showSizeChanger: true,
-              showTotal: (total) => `Total ${total} workflows`,
-              className: 'pagination-bar',
-            }}
-            onChange={handleTableChange}
-            bordered
-          />
-        </Space>
+        </div>
+
+        {/* Table */}
+        <Table
+          columns={columns}
+          dataSource={tableData}
+          loading={isLoading}
+          components={{
+            header: {
+              cell: ResizableTitle,
+            },
+          }}
+          rowSelection={{
+            selectedRowKeys,
+            onChange: setSelectedRowKeys,
+          }}
+          pagination={{
+            current: tableState.currentPage,
+            pageSize: tableState.pageSize,
+            pageSizeOptions: ['5', '10', '20', '50'],
+            showSizeChanger: true,
+            showTotal: (total) => `Total ${total} workflows`,
+            className: 'pagination-bar',
+          }}
+          onChange={handleTableChange}
+          bordered
+        />
       </Card>
     </div>
   );

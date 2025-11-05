@@ -30,37 +30,39 @@ export const Tasks: React.FC = () => {
     <div className="tasks-page" style={{ padding: '24px' }}>
       <h1 className="page-title">Tasks</h1>
 
-      <Card variant="borderless">
-        <div className="actions" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-          <div>
-            <h2>Filters</h2>
+      <Card variant="borderless" styles={{ body: { padding: 0 } }}>
+        <div style={{ padding: '16px' }}>
+          <div className="actions" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
+            <div>
+              <h2>Filters</h2>
+            </div>
+            <div>
+              {isApplyRealData ? (
+                <Button
+                  type="default"
+                  danger
+                  icon={<CloseOutlined />}
+                  onClick={toggleApplyRealData}
+                  aria-label="Unsubscribe from live data updates"
+                  aria-pressed="true"
+                >
+                  Unsubscribe to live data
+                </Button>
+              ) : (
+                <Button
+                  type="primary"
+                  icon={<ApiOutlined />}
+                  onClick={toggleApplyRealData}
+                  aria-label="Subscribe to live data updates"
+                  aria-pressed="false"
+                >
+                  Subscribe to live data
+                </Button>
+              )}
+            </div>
           </div>
-          <div>
-            {isApplyRealData ? (
-              <Button
-                type="default"
-                danger
-                icon={<CloseOutlined />}
-                onClick={toggleApplyRealData}
-                aria-label="Unsubscribe from live data updates"
-                aria-pressed="true"
-              >
-                Unsubscribe to live data
-              </Button>
-            ) : (
-              <Button
-                type="primary"
-                icon={<ApiOutlined />}
-                onClick={toggleApplyRealData}
-                aria-label="Subscribe to live data updates"
-                aria-pressed="false"
-              >
-                Subscribe to live data
-              </Button>
-            )}
-          </div>
+          <TasksFilter onChangeFilter={handleChangeFilter} />
         </div>
-        <TasksFilter onChangeFilter={handleChangeFilter} />
         <TasksGrid isApplyRealData={isApplyRealData} filter={filter} />
       </Card>
     </div>

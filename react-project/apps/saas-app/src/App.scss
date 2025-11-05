@@ -103,6 +103,18 @@ code {
   }
 }
 
+// Remove Card body padding for consistent alignment across all pages
+.ant-card-borderless .ant-card-body,
+.ant-card-borderless > .ant-card-body,
+div.ant-card.ant-card-borderless .ant-card-body,
+div.ant-card.ant-card-borderless > .ant-card-body {
+  padding: 0 !important;
+  padding-top: 0 !important;
+  padding-right: 0 !important;
+  padding-bottom: 0 !important;
+  padding-left: 0 !important;
+}
+
 // Global Table Styling - CYODA Theme
 .ant-table {
   background: transparent;

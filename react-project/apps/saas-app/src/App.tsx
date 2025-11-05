@@ -52,6 +52,7 @@ const theme = {
     Card: {
       colorBgContainer: '#1E2A3A',
       colorBorderSecondary: 'rgba(255, 255, 255, 0.1)',
+      bodyPadding: 0, // Remove default padding for consistent alignment
     },
     Modal: {
       contentBg: '#1E2A3A',

@@ -367,8 +367,8 @@ export const Instances: React.FC = () => {
       {/* Header */}
       <h1 className="page-title">Instances</h1>
 
-      <Card variant="borderless">
-        <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+      <Card variant="borderless" styles={{ body: { padding: 0 } }}>
+        <div style={{ padding: '16px' }}>
           {/* Filters */}
           <Row gutter={[16, 16]}>
             <Col span={6}>
@@ -446,46 +446,46 @@ export const Instances: React.FC = () => {
               },
             ]}
           />
+        </div>
 
-          {/* Table */}
-          <Table
-            columns={columns}
-            dataSource={tableData}
-            loading={instancesMutation.isPending}
-            components={{
-              header: {
-                cell: ResizableTitle,
-              },
-            }}
-            pagination={false}
-            bordered
-          />
-          
-          {/* Pagination */}
-          {instancesData && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-              <Button
-                type="primary"
-                icon={<LeftOutlined />}
-                onClick={handlePrevPage}
-                disabled={!hasPrev || instancesMutation.isPending}
-              >
-                Prev
-              </Button>
-              <Button
-                type="primary"
-                onClick={handleNextPage}
-                disabled={!hasMore || instancesMutation.isPending}
-              >
-                Next
-                <RightOutlined />
-              </Button>
-              {(hasMore || currentPage > 1) && (
-                <span>Page {currentPage}</span>
-              )}
-            </div>
-          )}
-        </Space>
+        {/* Table */}
+        <Table
+          columns={columns}
+          dataSource={tableData}
+          loading={instancesMutation.isPending}
+          components={{
+            header: {
+              cell: ResizableTitle,
+            },
+          }}
+          pagination={false}
+          bordered
+        />
+
+        {/* Pagination */}
+        {instancesData && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px' }}>
+            <Button
+              type="primary"
+              icon={<LeftOutlined />}
+              onClick={handlePrevPage}
+              disabled={!hasPrev || instancesMutation.isPending}
+            >
+              Prev
+            </Button>
+            <Button
+              type="primary"
+              onClick={handleNextPage}
+              disabled={!hasMore || instancesMutation.isPending}
+            >
+              Next
+              <RightOutlined />
+            </Button>
+            {(hasMore || currentPage > 1) && (
+              <span>Page {currentPage}</span>
+            )}
+          </div>
+        )}
       </Card>
     </div>
   );
