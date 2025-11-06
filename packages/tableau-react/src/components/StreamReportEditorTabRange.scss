@@ -1,0 +1,44 @@
+/**
+ * StreamReportEditorTabRange Styles
+ */
+
+.stream-report-editor-tab-range {
+  max-width: 800px;
+
+  .range-info {
+    margin-top: 24px;
+    padding: 16px;
+    background: #f5f5f5;
+    border-radius: 4px;
+
+    p {
+      margin: 8px 0;
+      font-size: 14px;
+      color: #666;
+
+      strong {
+        color: #333;
+      }
+    }
+  }
+}
+
+// Dropdown styles for Select components
+:global(.stream-report-range-dropdown) {
+  .ant-select-item {
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    word-break: break-word !important;
+    height: auto !important;
+    min-height: 32px !important;
+    padding: 5px 12px !important;
+    line-height: 1.5 !important;
+  }
+
+  .ant-select-item-option-content {
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    word-break: break-word !important;
+  }
+}
+

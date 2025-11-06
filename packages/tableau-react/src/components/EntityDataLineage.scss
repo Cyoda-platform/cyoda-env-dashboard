@@ -1,0 +1,66 @@
+.entity-data-lineage {
+  padding: 16px 0;
+
+  .filter-section {
+    h4 {
+      font-weight: bold;
+      font-size: 16px;
+      margin-bottom: 16px;
+    }
+  }
+
+  .transactions-section {
+    .header {
+      strong {
+        text-decoration: underline;
+        font-size: 14px;
+      }
+    }
+
+    .body {
+      position: relative;
+      margin-top: 20px;
+      padding-left: 15px;
+      border-left: 2px solid #606266;
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: -5px;
+        left: -8px;
+        width: 0;
+        height: 0;
+        border-left: 7px solid transparent;
+        border-right: 7px solid transparent;
+        border-bottom: 7px solid #606266;
+      }
+    }
+
+    .transaction-item {
+      position: relative;
+      padding-left: 170px;
+      min-height: 40px;
+
+      .date {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 155px;
+        font-size: 13px;
+      }
+
+      .info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 250px;
+        position: relative;
+
+        span {
+          font-size: 13px;
+        }
+      }
+    }
+  }
+}
+

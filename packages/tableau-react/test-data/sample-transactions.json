@@ -1,0 +1,173 @@
+[
+  {
+    "entityClass": "com.cyoda.tms.model.entities.Transaction",
+    "entityId": "TXN-001",
+    "values": [
+      { "columnPath": "id", "value": "TXN-001" },
+      { "columnPath": "transactionId", "value": "TXN-001" },
+      { "columnPath": "amount", "value": 1500.50 },
+      { "columnPath": "currency", "value": "USD" },
+      { "columnPath": "status", "value": "COMPLETED" },
+      { "columnPath": "description", "value": "Payment for invoice #12345" },
+      { "columnPath": "customerId", "value": "CUST-001" },
+      { "columnPath": "transactionDate", "value": "2024-01-15T10:30:00Z" },
+      { "columnPath": "createdDate", "value": "2024-01-15T10:30:00Z" },
+      { "columnPath": "transactionType", "value": "PAYMENT" },
+      { "columnPath": "paymentMethod", "value": "CREDIT_CARD" }
+    ]
+  },
+  {
+    "entityClass": "com.cyoda.tms.model.entities.Transaction",
+    "entityId": "TXN-002",
+    "values": [
+      { "columnPath": "id", "value": "TXN-002" },
+      { "columnPath": "transactionId", "value": "TXN-002" },
+      { "columnPath": "amount", "value": 2750.00 },
+      { "columnPath": "currency", "value": "EUR" },
+      { "columnPath": "status", "value": "PENDING" },
+      { "columnPath": "description", "value": "Wire transfer to supplier" },
+      { "columnPath": "customerId", "value": "CUST-002" },
+      { "columnPath": "transactionDate", "value": "2024-01-16T14:20:00Z" },
+      { "columnPath": "createdDate", "value": "2024-01-16T14:20:00Z" },
+      { "columnPath": "transactionType", "value": "TRANSFER" },
+      { "columnPath": "paymentMethod", "value": "WIRE_TRANSFER" }
+    ]
+  },
+  {
+    "entityClass": "com.cyoda.tms.model.entities.Transaction",
+    "entityId": "TXN-003",
+    "values": [
+      { "columnPath": "id", "value": "TXN-003" },
+      { "columnPath": "transactionId", "value": "TXN-003" },
+      { "columnPath": "amount", "value": 500.00 },
+      { "columnPath": "currency", "value": "GBP" },
+      { "columnPath": "status", "value": "FAILED" },
+      { "columnPath": "description", "value": "Refund for order #98765" },
+      { "columnPath": "customerId", "value": "CUST-003" },
+      { "columnPath": "transactionDate", "value": "2024-01-17T09:15:00Z" },
+      { "columnPath": "createdDate", "value": "2024-01-17T09:15:00Z" },
+      { "columnPath": "transactionType", "value": "REFUND" },
+      { "columnPath": "paymentMethod", "value": "DEBIT_CARD" }
+    ]
+  },
+  {
+    "entityClass": "com.cyoda.tms.model.entities.Transaction",
+    "entityId": "TXN-004",
+    "values": [
+      { "columnPath": "id", "value": "TXN-004" },
+      { "columnPath": "transactionId", "value": "TXN-004" },
+      { "columnPath": "amount", "value": 10250.75 },
+      { "columnPath": "currency", "value": "USD" },
+      { "columnPath": "status", "value": "COMPLETED" },
+      { "columnPath": "description", "value": "Large corporate payment" },
+      { "columnPath": "customerId", "value": "CUST-004" },
+      { "columnPath": "transactionDate", "value": "2024-01-18T16:45:00Z" },
+      { "columnPath": "createdDate", "value": "2024-01-18T16:45:00Z" },
+      { "columnPath": "transactionType", "value": "PAYMENT" },
+      { "columnPath": "paymentMethod", "value": "WIRE_TRANSFER" }
+    ]
+  },
+  {
+    "entityClass": "com.cyoda.tms.model.entities.Transaction",
+    "entityId": "TXN-005",
+    "values": [
+      { "columnPath": "id", "value": "TXN-005" },
+      { "columnPath": "transactionId", "value": "TXN-005" },
+      { "columnPath": "amount", "value": 325.99 },
+      { "columnPath": "currency", "value": "USD" },
+      { "columnPath": "status", "value": "COMPLETED" },
+      { "columnPath": "description", "value": "Monthly subscription payment" },
+      { "columnPath": "customerId", "value": "CUST-001" },
+      { "columnPath": "transactionDate", "value": "2024-01-19T08:00:00Z" },
+      { "columnPath": "createdDate", "value": "2024-01-19T08:00:00Z" },
+      { "columnPath": "transactionType", "value": "PAYMENT" },
+      { "columnPath": "paymentMethod", "value": "CREDIT_CARD" }
+    ]
+  },
+  {
+    "entityClass": "com.cyoda.tms.model.entities.Transaction",
+    "entityId": "TXN-006",
+    "values": [
+      { "columnPath": "id", "value": "TXN-006" },
+      { "columnPath": "transactionId", "value": "TXN-006" },
+      { "columnPath": "amount", "value": 5500.00 },
+      { "columnPath": "currency", "value": "USD" },
+      { "columnPath": "status", "value": "COMPLETED" },
+      { "columnPath": "description", "value": "Product purchase" },
+      { "columnPath": "customerId", "value": "CUST-005" },
+      { "columnPath": "transactionDate", "value": "2024-01-20T11:30:00Z" },
+      { "columnPath": "createdDate", "value": "2024-01-20T11:30:00Z" },
+      { "columnPath": "transactionType", "value": "PAYMENT" },
+      { "columnPath": "paymentMethod", "value": "CREDIT_CARD" }
+    ]
+  },
+  {
+    "entityClass": "com.cyoda.tms.model.entities.Transaction",
+    "entityId": "TXN-007",
+    "values": [
+      { "columnPath": "id", "value": "TXN-007" },
+      { "columnPath": "transactionId", "value": "TXN-007" },
+      { "columnPath": "amount", "value": 15000.00 },
+      { "columnPath": "currency", "value": "JPY" },
+      { "columnPath": "status", "value": "COMPLETED" },
+      { "columnPath": "description", "value": "International wire transfer" },
+      { "columnPath": "customerId", "value": "CUST-006" },
+      { "columnPath": "transactionDate", "value": "2024-01-21T09:00:00Z" },
+      { "columnPath": "createdDate", "value": "2024-01-21T09:00:00Z" },
+      { "columnPath": "transactionType", "value": "TRANSFER" },
+      { "columnPath": "paymentMethod", "value": "WIRE_TRANSFER" }
+    ]
+  },
+  {
+    "entityClass": "com.cyoda.tms.model.entities.Transaction",
+    "entityId": "TXN-008",
+    "values": [
+      { "columnPath": "id", "value": "TXN-008" },
+      { "columnPath": "transactionId", "value": "TXN-008" },
+      { "columnPath": "amount", "value": 750.00 },
+      { "columnPath": "currency", "value": "EUR" },
+      { "columnPath": "status", "value": "PENDING" },
+      { "columnPath": "description", "value": "Service fee payment" },
+      { "columnPath": "customerId", "value": "CUST-007" },
+      { "columnPath": "transactionDate", "value": "2024-01-22T14:15:00Z" },
+      { "columnPath": "createdDate", "value": "2024-01-22T14:15:00Z" },
+      { "columnPath": "transactionType", "value": "PAYMENT" },
+      { "columnPath": "paymentMethod", "value": "DEBIT_CARD" }
+    ]
+  },
+  {
+    "entityClass": "com.cyoda.tms.model.entities.Transaction",
+    "entityId": "TXN-009",
+    "values": [
+      { "columnPath": "id", "value": "TXN-009" },
+      { "columnPath": "transactionId", "value": "TXN-009" },
+      { "columnPath": "amount", "value": 25000.00 },
+      { "columnPath": "currency", "value": "AED" },
+      { "columnPath": "status", "value": "COMPLETED" },
+      { "columnPath": "description", "value": "Premium service payment" },
+      { "columnPath": "customerId", "value": "CUST-008" },
+      { "columnPath": "transactionDate", "value": "2024-01-23T10:45:00Z" },
+      { "columnPath": "createdDate", "value": "2024-01-23T10:45:00Z" },
+      { "columnPath": "transactionType", "value": "PAYMENT" },
+      { "columnPath": "paymentMethod", "value": "WIRE_TRANSFER" }
+    ]
+  },
+  {
+    "entityClass": "com.cyoda.tms.model.entities.Transaction",
+    "entityId": "TXN-010",
+    "values": [
+      { "columnPath": "id", "value": "TXN-010" },
+      { "columnPath": "transactionId", "value": "TXN-010" },
+      { "columnPath": "amount", "value": 1200.00 },
+      { "columnPath": "currency", "value": "USD" },
+      { "columnPath": "status", "value": "COMPLETED" },
+      { "columnPath": "description", "value": "Recurring monthly charge" },
+      { "columnPath": "customerId", "value": "CUST-002" },
+      { "columnPath": "transactionDate", "value": "2024-01-24T08:00:00Z" },
+      { "columnPath": "createdDate", "value": "2024-01-24T08:00:00Z" },
+      { "columnPath": "transactionType", "value": "PAYMENT" },
+      { "columnPath": "paymentMethod", "value": "CREDIT_CARD" }
+    ]
+  }
+]
+

@@ -1,0 +1,53 @@
+.modelling-popup-alias-new {
+  .ant-steps {
+    margin-bottom: 24px;
+  }
+
+  .ant-table {
+    margin-top: 16px;
+  }
+
+  .icon-trash-remove {
+    cursor: pointer;
+    color: #ff4d4f;
+    margin-left: 8px;
+
+    &:hover {
+      color: #ff7875;
+    }
+  }
+
+  .parameter-link {
+    color: #1890ff;
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .not-possible {
+    color: #999;
+    font-style: italic;
+  }
+}
+
+// Dropdown styles for Select components
+:global(.modelling-alias-new-dropdown) {
+  .ant-select-item {
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    word-break: break-word !important;
+    height: auto !important;
+    min-height: 32px !important;
+    padding: 5px 12px !important;
+    line-height: 1.5 !important;
+  }
+
+  .ant-select-item-option-content {
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    word-break: break-word !important;
+  }
+}
+

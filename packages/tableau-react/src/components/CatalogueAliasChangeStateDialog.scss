@@ -1,0 +1,30 @@
+/**
+ * Catalogue Alias Change State Dialog Component Styles
+ * Migrated from: .old_project/packages/http-api/src/components/CatalogOfAliasesChangeState/CatalogOfAliasesChangeState.vue
+ */
+
+.catalogue-alias-change-state-dialog {
+  .ant-select {
+    width: 100%;
+  }
+}
+
+// Dropdown styles for Select components
+:global(.catalogue-alias-state-dropdown) {
+  .ant-select-item {
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    word-break: break-word !important;
+    height: auto !important;
+    min-height: 32px !important;
+    padding: 5px 12px !important;
+    line-height: 1.5 !important;
+  }
+
+  .ant-select-item-option-content {
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    word-break: break-word !important;
+  }
+}
+

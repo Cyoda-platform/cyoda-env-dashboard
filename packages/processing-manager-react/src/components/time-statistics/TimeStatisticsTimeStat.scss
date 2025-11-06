@@ -1,0 +1,7 @@
+@use '../../../../ui-lib-react/src/styles/table-mixins' as table;
+
+.time-statistics-time-stat {
+  @include table.table-container-wrapper;
+  @include table.resizable-columns;
+}
+

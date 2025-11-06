@@ -1,0 +1,46 @@
+// Layout styles
+.c-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin-left: 256px;
+  transition: margin-left 0.25s;
+}
+
+.c-body {
+  flex: 1 1 auto;
+  margin-top: 7rem; // Account for fixed header + subheader
+}
+
+.c-main {
+  padding: 1rem; // Consistent padding
+}
+
+.container-fluid {
+  width: 100%;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.fade-in {
+  animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 992px) {
+  .c-wrapper {
+    margin-left: 0;
+  }
+}
+

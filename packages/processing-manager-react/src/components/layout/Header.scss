@@ -1,0 +1,129 @@
+// Header styles migrated from CoreUI
+.c-header {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 256px;
+  z-index: 1029;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 0 1rem;
+  background-color: #fff;
+  border-bottom: 1px solid #d8dbe0;
+  transition: left 0.25s;
+
+  &.c-header-light {
+    background-color: #fff;
+    border-bottom: 1px solid #d8dbe0;
+  }
+
+  &.c-header-fixed {
+    position: fixed;
+  }
+
+  &.c-header-with-subheader {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.c-header-toggler {
+  padding: 0.5rem;
+  border: 0;
+  background-color: transparent;
+  cursor: pointer;
+  font-size: 1.25rem;
+  color: #768192;
+
+  &:hover {
+    color: #2f353a;
+  }
+}
+
+.c-header-nav {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-left: 0;
+  margin-bottom: 0;
+  list-style: none;
+
+  &.ml-auto {
+    margin-left: auto;
+  }
+
+  &.mr-4 {
+    margin-right: 1.5rem;
+  }
+
+  &.d-md-down-none {
+    @media (max-width: 768px) {
+      display: none;
+    }
+  }
+}
+
+.c-header-nav-item {
+  &.px-3 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+.c-header-nav-link {
+  padding: 0.5rem 1rem;
+  color: #768192;
+  text-decoration: none;
+
+  &:hover {
+    color: #2f353a;
+  }
+}
+
+.c-subheader {
+  display: flex;
+  align-items: center;
+  min-height: 3rem;
+  padding: 0.5rem 1rem;
+  background-color: #f0f3f5;
+  border-bottom: 1px solid #d8dbe0;
+
+  &.px-3 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+#breadcrumbs-portal {
+  width: 100%;
+}
+
+.d-lg-none {
+  @media (min-width: 992px) {
+    display: none;
+  }
+}
+
+.mr-auto {
+  margin-right: auto;
+}
+
+.ml-3 {
+  margin-left: 1rem;
+}
+
+// Consistency time lag and controls
+.consistency-time {
+  margin-left: auto;
+  font-size: 14px;
+  color: #2f353a;
+}
+
+.delimiter {
+  margin: 0 10px;
+  position: relative;
+  top: -1px;
+  color: #768192;
+}
+

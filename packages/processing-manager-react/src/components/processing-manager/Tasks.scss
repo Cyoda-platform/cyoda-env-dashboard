@@ -1,0 +1,36 @@
+@use '../../../../ui-lib-react/src/styles/table-mixins' as table;
+
+.pm-tasks {
+  @include table.table-container-wrapper;
+  @include table.resizable-columns;
+
+  .filter-form {
+    margin-bottom: 20px;
+
+    h3 {
+      margin-bottom: 16px;
+    }
+
+    .ant-form-item {
+      width: 100% !important;
+    }
+  }
+
+  .row {
+    display: flex;
+    align-items: center;
+  }
+
+  .justify-content-between {
+    justify-content: space-between;
+  }
+
+  .col-sm {
+    flex: 1;
+  }
+
+  .col-auto {
+    flex: 0 0 auto;
+  }
+}
+

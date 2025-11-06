@@ -1,0 +1,43 @@
+@use '../../../../ui-lib-react/src/styles/table-mixins' as table;
+
+.pm-shards-detail-tab-transactions-view-filter {
+  h3 {
+    margin-bottom: 16px;
+  }
+
+  .wrap-row {
+    align-items: flex-end;
+  }
+
+  .action-item {
+    button {
+      width: 100%;
+    }
+  }
+
+  hr {
+    margin-top: 20px;
+    border: none;
+    border-top: 1px solid #d9d9d9;
+  }
+}
+
+// Dropdown styles for Select components
+:global(.transactions-view-filter-dropdown) {
+  .ant-select-item {
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    word-break: break-word !important;
+    height: auto !important;
+    min-height: 32px !important;
+    padding: 5px 12px !important;
+    line-height: 1.5 !important;
+  }
+
+  .ant-select-item-option-content {
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    word-break: break-word !important;
+  }
+}
+

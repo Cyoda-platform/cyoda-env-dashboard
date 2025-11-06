@@ -1,0 +1,38 @@
+.query-plan-button {
+  margin-left: 10px;
+}
+
+.view-type-selector {
+  margin: 16px 0;
+  text-align: center;
+}
+
+.query-plan-detail {
+  h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #262626;
+    margin-bottom: 8px;
+  }
+
+  .description {
+    color: #595959;
+    font-size: 14px;
+    margin-bottom: 16px;
+  }
+
+  .query-plan-json {
+    background: #f5f5f5;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    padding: 16px;
+    overflow-x: auto;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+    font-size: 12px;
+    line-height: 1.6;
+    color: #262626;
+    max-height: 500px;
+    overflow-y: auto;
+  }
+}
+

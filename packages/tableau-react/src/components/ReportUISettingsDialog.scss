@@ -1,0 +1,84 @@
+/**
+ * ReportUISettingsDialog Component Styles - Dark Theme
+ * Migrated from: .old_project/packages/http-api/src/components/ReportUISettings/ReportUISettingsPopUp.vue
+ */
+
+.report-ui-settings-dialog {
+  .ant-modal-content {
+    background-color: var(--refine-bg-secondary, #1E2A3A);
+  }
+
+  .ant-modal-header {
+    background-color: var(--refine-bg-secondary, #1E2A3A);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+    .ant-modal-title {
+      color: var(--refine-text-primary, #F9FAFB);
+      font-weight: 600;
+    }
+  }
+
+  .ant-modal-body {
+    padding-top: 24px;
+    background-color: var(--refine-bg-secondary, #1E2A3A);
+
+    .ant-select {
+      width: 100%;
+    }
+
+    .ant-form-item-label {
+      padding-bottom: 0;
+
+      > label {
+        color: var(--refine-text-secondary, #D1D5DB);
+        font-weight: 500;
+      }
+    }
+
+    .ant-form-item-control-input {
+      .ant-select {
+        .ant-select-selector {
+          background-color: rgba(255, 255, 255, 0.05);
+          border-color: rgba(0, 212, 170, 0.3);
+          color: var(--refine-text-primary, #F9FAFB);
+
+          &:hover {
+            border-color: #00D4AA;
+          }
+        }
+
+        &.ant-select-focused {
+          .ant-select-selector {
+            border-color: #00D4AA;
+            box-shadow: 0 0 0 2px rgba(0, 212, 170, 0.1);
+          }
+        }
+      }
+    }
+  }
+
+  .ant-modal-footer {
+    background-color: var(--refine-bg-secondary, #1E2A3A);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+}
+
+// Dropdown styles for Select components
+:global(.report-ui-settings-dropdown) {
+  .ant-select-item {
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    word-break: break-word !important;
+    height: auto !important;
+    min-height: 32px !important;
+    padding: 5px 12px !important;
+    line-height: 1.5 !important;
+  }
+
+  .ant-select-item-option-content {
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    word-break: break-word !important;
+  }
+}
+

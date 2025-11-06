@@ -1,0 +1,183 @@
+[
+  {
+    "entityClass": "com.cyoda.tms.model.entities.Product",
+    "entityId": "PROD-001",
+    "values": [
+      { "columnPath": "id", "value": "PROD-001" },
+      { "columnPath": "productId", "value": "PROD-001" },
+      { "columnPath": "name", "value": "Premium Laptop" },
+      { "columnPath": "category", "value": "Electronics" },
+      { "columnPath": "price", "value": 1299.99 },
+      { "columnPath": "currency", "value": "USD" },
+      { "columnPath": "stock", "value": 45 },
+      { "columnPath": "status", "value": "ACTIVE" },
+      { "columnPath": "createdDate", "value": "2023-01-10T09:00:00Z" },
+      { "columnPath": "manufacturer", "value": "TechCorp" },
+      { "columnPath": "weight", "value": 1.5 },
+      { "columnPath": "sku", "value": "TECH-LAP-001" }
+    ]
+  },
+  {
+    "entityClass": "com.cyoda.tms.model.entities.Product",
+    "entityId": "PROD-002",
+    "values": [
+      { "columnPath": "id", "value": "PROD-002" },
+      { "columnPath": "productId", "value": "PROD-002" },
+      { "columnPath": "name", "value": "Wireless Mouse" },
+      { "columnPath": "category", "value": "Electronics" },
+      { "columnPath": "price", "value": 29.99 },
+      { "columnPath": "currency", "value": "USD" },
+      { "columnPath": "stock", "value": 150 },
+      { "columnPath": "status", "value": "ACTIVE" },
+      { "columnPath": "createdDate", "value": "2023-02-15T10:30:00Z" },
+      { "columnPath": "manufacturer", "value": "PeripheralPro" },
+      { "columnPath": "weight", "value": 0.1 },
+      { "columnPath": "sku", "value": "PERI-MOU-002" }
+    ]
+  },
+  {
+    "entityClass": "com.cyoda.tms.model.entities.Product",
+    "entityId": "PROD-003",
+    "values": [
+      { "columnPath": "id", "value": "PROD-003" },
+      { "columnPath": "productId", "value": "PROD-003" },
+      { "columnPath": "name", "value": "Office Chair" },
+      { "columnPath": "category", "value": "Furniture" },
+      { "columnPath": "price", "value": 249.99 },
+      { "columnPath": "currency", "value": "USD" },
+      { "columnPath": "stock", "value": 30 },
+      { "columnPath": "status", "value": "ACTIVE" },
+      { "columnPath": "createdDate", "value": "2023-03-20T14:00:00Z" },
+      { "columnPath": "manufacturer", "value": "ComfortSeating" },
+      { "columnPath": "weight", "value": 12.5 },
+      { "columnPath": "sku", "value": "FURN-CHA-003" }
+    ]
+  },
+  {
+    "entityClass": "com.cyoda.tms.model.entities.Product",
+    "entityId": "PROD-004",
+    "values": [
+      { "columnPath": "id", "value": "PROD-004" },
+      { "columnPath": "productId", "value": "PROD-004" },
+      { "columnPath": "name", "value": "Standing Desk" },
+      { "columnPath": "category", "value": "Furniture" },
+      { "columnPath": "price", "value": 599.99 },
+      { "columnPath": "currency", "value": "USD" },
+      { "columnPath": "stock", "value": 15 },
+      { "columnPath": "status", "value": "ACTIVE" },
+      { "columnPath": "createdDate", "value": "2023-04-05T11:15:00Z" },
+      { "columnPath": "manufacturer", "value": "ErgoWorks" },
+      { "columnPath": "weight", "value": 35.0 },
+      { "columnPath": "sku", "value": "FURN-DSK-004" }
+    ]
+  },
+  {
+    "entityClass": "com.cyoda.tms.model.entities.Product",
+    "entityId": "PROD-005",
+    "values": [
+      { "columnPath": "id", "value": "PROD-005" },
+      { "columnPath": "productId", "value": "PROD-005" },
+      { "columnPath": "name", "value": "4K Monitor" },
+      { "columnPath": "category", "value": "Electronics" },
+      { "columnPath": "price", "value": 449.99 },
+      { "columnPath": "currency", "value": "USD" },
+      { "columnPath": "stock", "value": 60 },
+      { "columnPath": "status", "value": "ACTIVE" },
+      { "columnPath": "createdDate", "value": "2023-05-12T09:30:00Z" },
+      { "columnPath": "manufacturer", "value": "DisplayTech" },
+      { "columnPath": "weight", "value": 5.2 },
+      { "columnPath": "sku", "value": "TECH-MON-005" }
+    ]
+  },
+  {
+    "entityClass": "com.cyoda.tms.model.entities.Product",
+    "entityId": "PROD-006",
+    "values": [
+      { "columnPath": "id", "value": "PROD-006" },
+      { "columnPath": "productId", "value": "PROD-006" },
+      { "columnPath": "name", "value": "Mechanical Keyboard" },
+      { "columnPath": "category", "value": "Electronics" },
+      { "columnPath": "price", "value": 129.99 },
+      { "columnPath": "currency", "value": "USD" },
+      { "columnPath": "stock", "value": 0 },
+      { "columnPath": "status", "value": "OUT_OF_STOCK" },
+      { "columnPath": "createdDate", "value": "2023-06-18T13:45:00Z" },
+      { "columnPath": "manufacturer", "value": "KeyMaster" },
+      { "columnPath": "weight", "value": 0.8 },
+      { "columnPath": "sku", "value": "TECH-KEY-006" }
+    ]
+  },
+  {
+    "entityClass": "com.cyoda.tms.model.entities.Product",
+    "entityId": "PROD-007",
+    "values": [
+      { "columnPath": "id", "value": "PROD-007" },
+      { "columnPath": "productId", "value": "PROD-007" },
+      { "columnPath": "name", "value": "Desk Lamp" },
+      { "columnPath": "category", "value": "Lighting" },
+      { "columnPath": "price", "value": 39.99 },
+      { "columnPath": "currency", "value": "USD" },
+      { "columnPath": "stock", "value": 85 },
+      { "columnPath": "status", "value": "ACTIVE" },
+      { "columnPath": "createdDate", "value": "2023-07-22T10:00:00Z" },
+      { "columnPath": "manufacturer", "value": "BrightLight" },
+      { "columnPath": "weight", "value": 1.2 },
+      { "columnPath": "sku", "value": "LGHT-LMP-007" }
+    ]
+  },
+  {
+    "entityClass": "com.cyoda.tms.model.entities.Product",
+    "entityId": "PROD-008",
+    "values": [
+      { "columnPath": "id", "value": "PROD-008" },
+      { "columnPath": "productId", "value": "PROD-008" },
+      { "columnPath": "name", "value": "Webcam HD" },
+      { "columnPath": "category", "value": "Electronics" },
+      { "columnPath": "price", "value": 89.99 },
+      { "columnPath": "currency", "value": "USD" },
+      { "columnPath": "stock", "value": 40 },
+      { "columnPath": "status", "value": "ACTIVE" },
+      { "columnPath": "createdDate", "value": "2023-08-10T15:20:00Z" },
+      { "columnPath": "manufacturer", "value": "VisionCam" },
+      { "columnPath": "weight", "value": 0.3 },
+      { "columnPath": "sku", "value": "TECH-CAM-008" }
+    ]
+  },
+  {
+    "entityClass": "com.cyoda.tms.model.entities.Product",
+    "entityId": "PROD-009",
+    "values": [
+      { "columnPath": "id", "value": "PROD-009" },
+      { "columnPath": "productId", "value": "PROD-009" },
+      { "columnPath": "name", "value": "Noise Cancelling Headphones" },
+      { "columnPath": "category", "value": "Electronics" },
+      { "columnPath": "price", "value": 199.99 },
+      { "columnPath": "currency", "value": "USD" },
+      { "columnPath": "stock", "value": 25 },
+      { "columnPath": "status", "value": "ACTIVE" },
+      { "columnPath": "createdDate", "value": "2023-09-05T12:00:00Z" },
+      { "columnPath": "manufacturer", "value": "AudioPro" },
+      { "columnPath": "weight", "value": 0.4 },
+      { "columnPath": "sku", "value": "TECH-HDP-009" }
+    ]
+  },
+  {
+    "entityClass": "com.cyoda.tms.model.entities.Product",
+    "entityId": "PROD-010",
+    "values": [
+      { "columnPath": "id", "value": "PROD-010" },
+      { "columnPath": "productId", "value": "PROD-010" },
+      { "columnPath": "name", "value": "USB-C Hub" },
+      { "columnPath": "category", "value": "Electronics" },
+      { "columnPath": "price", "value": 49.99 },
+      { "columnPath": "currency", "value": "USD" },
+      { "columnPath": "stock", "value": 100 },
+      { "columnPath": "status", "value": "ACTIVE" },
+      { "columnPath": "createdDate", "value": "2023-10-15T08:30:00Z" },
+      { "columnPath": "manufacturer", "value": "ConnectTech" },
+      { "columnPath": "weight", "value": 0.2 },
+      { "columnPath": "sku", "value": "TECH-HUB-010" }
+    ]
+  }
+]
+

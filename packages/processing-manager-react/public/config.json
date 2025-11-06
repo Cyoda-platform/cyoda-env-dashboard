@@ -1,0 +1,7 @@
+{
+  "apiBaseUrl": "http://localhost:8081",
+  "grafanaUrl": "http://localhost:3000",
+  "enableSSH": true,
+  "pollingInterval": 30000
+}
+

@@ -1,0 +1,63 @@
+.modelling-col-defs {
+  h2 {
+    margin-top: 32px;
+    margin-bottom: 16px;
+    color: var(--refine-text-primary);
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    li {
+      margin-bottom: 5px;
+    }
+  }
+
+  .form-multiple-selection {
+    margin-top: 15px;
+  }
+
+  // Table styling for dark theme - ensure text is visible
+  .ant-table-wrapper {
+    .ant-table {
+      background-color: transparent;
+
+      .ant-table-thead > tr > th {
+        background-color: var(--refine-bg-tertiary, #374151) !important;
+        color: var(--refine-text-secondary, #e5e7eb) !important;
+        font-weight: 600;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+      }
+
+      .ant-table-tbody > tr {
+        background-color: transparent;
+
+        > td {
+          color: var(--refine-text-primary, #e5e7eb) !important; // Force text color to be visible
+          border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+          font-size: 13px;
+        }
+
+        &:hover > td {
+          background-color: rgba(0, 212, 170, 0.05) !important;
+        }
+      }
+
+      // Checkbox styling
+      .ant-checkbox-wrapper {
+        .ant-checkbox-inner {
+          background-color: #374151;
+          border-color: #4b5563;
+        }
+
+        .ant-checkbox-checked .ant-checkbox-inner {
+          background-color: var(--refine-primary, #00D4AA);
+          border-color: var(--refine-primary, #00D4AA);
+        }
+      }
+    }
+  }
+}
+
