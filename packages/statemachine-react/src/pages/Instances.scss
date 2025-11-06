@@ -30,5 +30,17 @@
 .instances-page {
   @include table.table-container-wrapper;
   @include table.resizable-columns;
+  padding: 0; // No padding - AppLayout handles spacing
+}
+
+.instances-filters {
+  margin-bottom: 16px;
+}
+
+.instances-pagination {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 0;
 }
 

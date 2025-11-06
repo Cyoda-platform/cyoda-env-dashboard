@@ -6,7 +6,7 @@
 
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Table, Button, Input, Space, Tooltip, App, Card } from 'antd';
+import { Table, Button, Input, Space, Tooltip, App } from 'antd';
 import {
   PlusOutlined,
   SearchOutlined,
@@ -401,40 +401,37 @@ export const Workflows: React.FC = () => {
   ], [columnWidths, handleResize, handleViewWorkflow, handleViewInstances, handleCopyWorkflow, handleDeleteWorkflow, copyWorkflowMutation.isPending, deleteWorkflowMutation.isPending]);
   
   return (
-    <div style={{ padding: '24px' }}>
+    <div className="workflows-page">
       {/* Header */}
       <h1 className="page-title">Workflows</h1>
 
-      <Card variant="borderless" styles={{ body: { padding: 0 } }}>
-        <div style={{ padding: '16px' }}>
-          {/* Header with filter and create button */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-            <Input
-              placeholder="Filter workflows"
-              value={tableState.filter || ''}
-              onChange={(e) => setFilter(e.target.value)}
-              allowClear
-              style={{ maxWidth: 400 }}
-              prefix={<SearchOutlined />}
-            />
-            <Space>
-              <ExportImport
-                selectedWorkflows={selectedWorkflows}
-                onImportSuccess={() => refetch()}
-              />
-              <Button
-                type="primary"
-                icon={<PlusOutlined />}
-                onClick={handleCreateNew}
-              >
-                Create new workflow
-              </Button>
-            </Space>
-          </div>
-        </div>
+      {/* Header with filter and create button */}
+      <div className="workflows-header">
+        <Input
+          placeholder="Filter workflows"
+          value={tableState.filter || ''}
+          onChange={(e) => setFilter(e.target.value)}
+          allowClear
+          style={{ maxWidth: 400 }}
+          prefix={<SearchOutlined />}
+        />
+        <Space>
+          <ExportImport
+            selectedWorkflows={selectedWorkflows}
+            onImportSuccess={() => refetch()}
+          />
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={handleCreateNew}
+          >
+            Create new workflow
+          </Button>
+        </Space>
+      </div>
 
-        {/* Table */}
-        <Table
+      {/* Table */}
+      <Table
           columns={columns}
           dataSource={tableData}
           loading={isLoading}
@@ -458,7 +455,6 @@ export const Workflows: React.FC = () => {
           onChange={handleTableChange}
           bordered
         />
-      </Card>
     </div>
   );
 };

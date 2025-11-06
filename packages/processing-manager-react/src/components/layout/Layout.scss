@@ -1,4 +1,5 @@
 // Layout styles
+// Standard padding: 24px for all pages
 .c-wrapper {
   display: flex;
   flex-direction: column;
@@ -13,13 +14,13 @@
 }
 
 .c-main {
-  padding: 1rem; // Consistent padding
+  padding: 24px; // Standard padding: 24px (changed from 1rem/16px)
 }
 
 .container-fluid {
   width: 100%;
-  padding-right: 15px;
-  padding-left: 15px;
+  padding-right: 24px; // Standard padding: 24px (changed from 15px)
+  padding-left: 24px; // Standard padding: 24px (changed from 15px)
   margin-right: auto;
   margin-left: auto;
 }

@@ -6,6 +6,7 @@
 
 import React from 'react';
 import { Card, Statistic } from 'antd';
+import './PendingTasksCount.scss';
 
 interface PendingTasksCountProps {
   pendingTaskCount: number;
@@ -13,7 +14,7 @@ interface PendingTasksCountProps {
 
 export const PendingTasksCount: React.FC<PendingTasksCountProps> = ({ pendingTaskCount }) => {
   return (
-    <Card title="Pending Tasks count" style={{ marginBottom: 16 }}>
+    <Card title="Pending Tasks count" className="pending-tasks-card" style={{ marginBottom: 24 }}>
       <Statistic value={pendingTaskCount} />
     </Card>
   );

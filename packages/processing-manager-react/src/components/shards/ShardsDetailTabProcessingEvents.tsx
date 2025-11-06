@@ -5,7 +5,7 @@
  */
 
 import React, { useState } from 'react';
-import { Card, Tabs } from 'antd';
+import { Tabs } from 'antd';
 import {
   PollingInfo,
   ProcessEventsStatistics,
@@ -14,6 +14,7 @@ import {
   ProcessingEventsEntitiesErrorListView,
   SiftLoggerConfView
 } from '../processing-events';
+import './ShardsDetailTabProcessingEvents.scss';
 
 const { TabPane } = Tabs;
 
@@ -21,8 +22,7 @@ export const ShardsDetailTabProcessingEvents: React.FC = () => {
   const [activeKey, setActiveKey] = useState('1');
 
   return (
-    <Card>
-      <h3>Processing Events</h3>
+    <div className="processing-events-tab">
       <Tabs activeKey={activeKey} onChange={setActiveKey}>
         <TabPane tab="Process Events Statistics" key="1">
           <ProcessEventsStatistics />
@@ -43,7 +43,7 @@ export const ShardsDetailTabProcessingEvents: React.FC = () => {
           <SiftLoggerConfView />
         </TabPane>
       </Tabs>
-    </Card>
+    </div>
   );
 };
 

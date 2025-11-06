@@ -1,0 +1,42 @@
+.nodes-detail {
+  padding: 0; // No padding - AppLayout handles spacing
+
+  h2 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #00D4AA;
+    margin-bottom: 24px;
+    margin-top: 0;
+  }
+
+  // Main tabs (top level) styling
+  > .ant-tabs {
+    .ant-tabs-nav {
+      margin-bottom: 24px;
+
+      .ant-tabs-tab {
+        padding: 14px 24px;
+        font-size: 15px;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.65);
+
+        &:hover {
+          color: rgba(255, 255, 255, 0.85);
+        }
+
+        &.ant-tabs-tab-active {
+          .ant-tabs-tab-btn {
+            color: #00D4AA;
+            font-weight: 600;
+          }
+        }
+      }
+
+      .ant-tabs-ink-bar {
+        background: #00D4AA;
+        height: 3px;
+      }
+    }
+  }
+}
+

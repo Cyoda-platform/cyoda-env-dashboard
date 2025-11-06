@@ -11,5 +11,13 @@
 .workflows-page {
   @include table.table-container-wrapper;
   @include table.resizable-columns;
+  padding: 0; // No padding - AppLayout handles spacing
+}
+
+.workflows-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
 }
 

@@ -1,0 +1,52 @@
+// Processing Events Tab Styles
+.processing-events-tab {
+  padding: 0;
+
+  // Tabs styling (secondary level) - override parent styles
+  > .ant-tabs {
+    // Tab bar styling
+    .ant-tabs-nav {
+      margin-bottom: 20px;
+
+      &::before {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .ant-tabs-nav-wrap {
+        .ant-tabs-nav-list {
+          .ant-tabs-tab {
+            padding: 10px 16px !important;
+            font-size: 13px !important;
+            font-weight: 400 !important;
+            color: rgba(255, 255, 255, 0.55) !important;
+            transition: all 0.3s;
+
+            &:hover {
+              color: rgba(255, 255, 255, 0.75) !important;
+            }
+
+            &.ant-tabs-tab-active {
+              .ant-tabs-tab-btn {
+                color: #1DD1FF !important;
+                font-weight: 500 !important;
+              }
+            }
+          }
+
+          .ant-tabs-ink-bar {
+            background: #1DD1FF !important;
+            height: 2px !important;
+          }
+        }
+      }
+    }
+
+    // Tab content styling
+    .ant-tabs-content {
+      .ant-tabs-tabpane {
+        padding: 0;
+      }
+    }
+  }
+}
+

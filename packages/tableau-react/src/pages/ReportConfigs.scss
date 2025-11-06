@@ -6,7 +6,7 @@
 @import 'react-resizable/css/styles.css';
 
 .report-configs {
-  padding: 24px;
+  padding: 0; // No padding - AppLayout handles spacing
   border: none !important;
 
   .success-row {

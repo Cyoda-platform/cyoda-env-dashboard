@@ -5,9 +5,10 @@
  */
 
 import React, { useState } from 'react';
-import { Card, Tabs, Button, Space } from 'antd';
+import { Tabs, Button, Space } from 'antd';
 import { SyncOutlined } from '@ant-design/icons';
 import { TimeStatisticsTimeStat, TimeStatisticsCountStat } from '../time-statistics';
+import './ShardsDetailTabTimeStatistics.scss';
 
 const { TabPane } = Tabs;
 
@@ -25,9 +26,8 @@ export const ShardsDetailTabTimeStatistics: React.FC = () => {
   };
 
   return (
-    <Card>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 15 }}>
-        <h3 style={{ display: 'inline', margin: 0 }}>Time statistics</h3>
+    <div className="time-statistics-tab">
+      <div className="time-statistics-header">
         <Space>
           <Button onClick={handleClear}>Clear</Button>
           <Button icon={<SyncOutlined />} onClick={handleReload}>Reload</Button>
@@ -41,7 +41,7 @@ export const ShardsDetailTabTimeStatistics: React.FC = () => {
           <TimeStatisticsCountStat />
         </TabPane>
       </Tabs>
-    </Card>
+    </div>
   );
 };
 

@@ -11,6 +11,7 @@ import { ActualShards } from './ActualShards';
 import { Tasks } from './Tasks';
 import { PendingTasksCount } from './PendingTasksCount';
 import { Resources } from './Resources';
+import './ShardsDetailTabProcessingManager.scss';
 
 export const ShardsDetailTabProcessingManager: React.FC = () => {
   const { data, isLoading, error } = useSummary({});
@@ -22,7 +23,7 @@ export const ShardsDetailTabProcessingManager: React.FC = () => {
   }));
 
   return (
-    <div>
+    <div className="shards-detail-tab-processing-manager">
       {isLoading && (
         <Alert message="Loading..." type="info" style={{ marginBottom: 16 }} />
       )}
@@ -42,18 +43,26 @@ export const ShardsDetailTabProcessingManager: React.FC = () => {
           style={{ marginBottom: 16 }}
         />
       )}
-      <Row gutter={16}>
+      <Row gutter={24}>
         <Col sm={18}>
-          <ActualShards actualShardsTable={actualShardsTable} />
-          <Tasks
-            tasksByEntity={data?.tasksByEntity || []}
-            runningTaskCount={data?.runningTaskCount || 0}
-            lastTaskFinishTime={data?.lastTaskFinishTime || ''}
-          />
+          <div style={{ marginBottom: 24 }}>
+            <ActualShards actualShardsTable={actualShardsTable} />
+          </div>
+          <div>
+            <Tasks
+              tasksByEntity={data?.tasksByEntity || []}
+              runningTaskCount={data?.runningTaskCount || 0}
+              lastTaskFinishTime={data?.lastTaskFinishTime || ''}
+            />
+          </div>
         </Col>
         <Col sm={6}>
-          <PendingTasksCount pendingTaskCount={data?.pendingTaskCount || 0} />
-          <Resources poolInfo={data?.poolInfo || []} />
+          <div style={{ marginBottom: 24 }}>
+            <PendingTasksCount pendingTaskCount={data?.pendingTaskCount || 0} />
+          </div>
+          <div>
+            <Resources poolInfo={data?.poolInfo || []} />
+          </div>
         </Col>
       </Row>
     </div>

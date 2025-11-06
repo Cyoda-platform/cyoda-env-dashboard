@@ -5,7 +5,7 @@
  */
 
 import React, { useState, useCallback } from 'react';
-import { Button, Card } from 'antd';
+import { Button } from 'antd';
 import { CloseOutlined, ApiOutlined } from '@ant-design/icons';
 import { TasksFilter } from '../components/TasksFilter';
 import { TasksGrid } from '../components/TasksGrid';
@@ -27,44 +27,41 @@ export const Tasks: React.FC = () => {
   }, [isApplyRealData, setIsApplyRealData]);
 
   return (
-    <div className="tasks-page" style={{ padding: '24px' }}>
+    <div className="tasks-page">
       <h1 className="page-title">Tasks</h1>
 
-      <Card variant="borderless" styles={{ body: { padding: 0 } }}>
-        <div style={{ padding: '16px' }}>
-          <div className="actions" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-            <div>
-              <h2>Filters</h2>
-            </div>
-            <div>
-              {isApplyRealData ? (
-                <Button
-                  type="default"
-                  danger
-                  icon={<CloseOutlined />}
-                  onClick={toggleApplyRealData}
-                  aria-label="Unsubscribe from live data updates"
-                  aria-pressed="true"
-                >
-                  Unsubscribe to live data
-                </Button>
-              ) : (
-                <Button
-                  type="primary"
-                  icon={<ApiOutlined />}
-                  onClick={toggleApplyRealData}
-                  aria-label="Subscribe to live data updates"
-                  aria-pressed="false"
-                >
-                  Subscribe to live data
-                </Button>
-              )}
-            </div>
-          </div>
-          <TasksFilter onChangeFilter={handleChangeFilter} />
+      <div className="tasks-actions">
+        <div>
+          <h2>Filters</h2>
         </div>
-        <TasksGrid isApplyRealData={isApplyRealData} filter={filter} />
-      </Card>
+        <div>
+          {isApplyRealData ? (
+            <Button
+              type="default"
+              danger
+              icon={<CloseOutlined />}
+              onClick={toggleApplyRealData}
+              aria-label="Unsubscribe from live data updates"
+              aria-pressed="true"
+            >
+              Unsubscribe to live data
+            </Button>
+          ) : (
+            <Button
+              type="primary"
+              icon={<ApiOutlined />}
+              onClick={toggleApplyRealData}
+              aria-label="Subscribe to live data updates"
+              aria-pressed="false"
+            >
+              Subscribe to live data
+            </Button>
+          )}
+        </div>
+      </div>
+
+      <TasksFilter onChangeFilter={handleChangeFilter} />
+      <TasksGrid isApplyRealData={isApplyRealData} filter={filter} />
     </div>
   );
 };

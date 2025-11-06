@@ -1,0 +1,24 @@
+/**
+ * Shards Detail Tab Processing Manager Styles
+ */
+
+.shards-detail-tab-processing-manager {
+  // Add spacing between components in left column
+  .actual-shards-card {
+    margin-bottom: 24px !important;
+  }
+
+  .tasks-card {
+    margin-bottom: 0;
+  }
+
+  // Add spacing between components in right column
+  .pending-tasks-card {
+    margin-bottom: 24px !important; // Space between Pending Tasks and Resources
+  }
+
+  .resources-card {
+    margin-bottom: 0;
+  }
+}
+

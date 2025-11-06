@@ -5,9 +5,10 @@
  */
 
 import React, { useState } from 'react';
-import { Card, Tabs, Button } from 'antd';
+import { Tabs, Button } from 'antd';
 import { ClearOutlined } from '@ant-design/icons';
 import { TransactionsExecuting, TransactionsView, TransactionsEntities } from '../transactions';
+import './ShardsDetailTabTransactions.scss';
 
 const { TabPane } = Tabs;
 
@@ -20,9 +21,8 @@ export const ShardsDetailTabTransactions: React.FC = () => {
   };
 
   return (
-    <Card>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 15 }}>
-        <h3 style={{ display: 'inline', margin: 0 }}>Transactions</h3>
+    <div className="transactions-tab">
+      <div className="transactions-header">
         <Button onClick={handleClear} icon={<ClearOutlined />}>
           Clear
         </Button>
@@ -38,7 +38,7 @@ export const ShardsDetailTabTransactions: React.FC = () => {
           <TransactionsEntities />
         </TabPane>
       </Tabs>
-    </Card>
+    </div>
   );
 };
 

@@ -1,10 +1,16 @@
-@use '../../../../ui-lib-react/src/styles/table-mixins' as table;
-
+// Tasks table styles
 .pm-tasks {
-  margin-bottom: 16px;
+  .ant-card-body {
+    padding: 24px;
+  }
 
-  @include table.table-container-wrapper;
-  @include table.resizable-columns;
+  .ant-table {
+    // Add padding to table cells
+    .ant-table-thead > tr > th,
+    .ant-table-tbody > tr > td {
+      padding: 12px 16px;
+    }
+  }
 
   .ant-form-item {
     width: 100%;

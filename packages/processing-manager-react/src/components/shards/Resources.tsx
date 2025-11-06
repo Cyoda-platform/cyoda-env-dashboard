@@ -64,7 +64,7 @@ const getStatus = (resource: PoolInfo): 'success' | 'exception' | 'normal' => {
 
 export const Resources: React.FC<ResourcesProps> = ({ poolInfo }) => {
   return (
-    <Card title="Resources" style={{ marginBottom: 16 }}>
+    <Card title="Resources" className="resources-card">
       {poolInfo.map((resource) => (
         <div key={resource.type} className="progress-container">
           <div className="title">{formatResourceName(resource.type)}</div>

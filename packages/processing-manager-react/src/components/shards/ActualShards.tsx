@@ -107,7 +107,7 @@ export const ActualShards: React.FC<ActualShardsProps> = ({ actualShardsTable })
   ], [columnWidths, handleResize]);
 
   return (
-    <Card title="Actual shards" style={{ marginBottom: 16 }}>
+    <Card title="Actual shards" className="actual-shards" style={{ marginBottom: 24 }}>
       <Table
         columns={columns}
         dataSource={actualShardsTable}

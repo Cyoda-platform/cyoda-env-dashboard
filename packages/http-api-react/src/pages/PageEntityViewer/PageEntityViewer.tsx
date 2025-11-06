@@ -8,7 +8,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Select, Checkbox, Alert, Spin, Tooltip } from 'antd';
 import { InfoCircleOutlined, ZoomInOutlined, ZoomOutOutlined, SyncOutlined } from '@ant-design/icons';
-import { CardComponent } from '@cyoda/ui-lib-react';
+
 import { EntityViewer, type EntityViewerRef } from '../../components/EntityViewer';
 import { StreamGrid, type StreamGridRef } from '../../components/StreamGrid';
 import { useEntityViewerStore } from '../../stores/entityViewerStore';
@@ -181,9 +181,8 @@ export const PageEntityViewer: React.FC = () => {
     <div className="page-entity-viewer">
       <h1 className="page-title">Entity Viewer</h1>
       <Spin spinning={isLoading}>
-        <CardComponent variant="borderless" styles={{ body: { padding: 0 } }}>
-          <div className="card-body" style={{ padding: '16px' }}>
-            <div className="wrap-entity-select">
+        <div className="entity-viewer-content">
+          <div className="wrap-entity-select">
               <div className="select">
                 <Select
                   value={requestClass || undefined}
@@ -279,8 +278,7 @@ export const PageEntityViewer: React.FC = () => {
               </div>
             </div>
           </div>
-        </CardComponent>
-      </Spin>
+        </Spin>
 
       {isStreamGridAvailable && (
         <StreamGrid ref={streamGridRef} title={streamGridTitle} />

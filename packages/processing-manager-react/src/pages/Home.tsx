@@ -43,13 +43,13 @@ export default function Home() {
   })) || [];
 
   return (
-    <div style={{ padding: '24px' }}>
+    <div className="processing-home">
       <h1 className="page-title">Processing</h1>
-      <Paragraph style={{ fontSize: '16px', color: '#666', marginBottom: '24px' }}>
+      <Paragraph className="page-description">
         Monitor and manage data processing operations, nodes, and transactions.
       </Paragraph>
 
-      <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
+      <Row gutter={[16, 16]} className="stats-row">
         <Col xs={24} sm={8}>
           <Card variant="borderless">
             <Statistic
@@ -84,19 +84,19 @@ export default function Home() {
         </Col>
       </Row>
 
-      <Card variant="borderless" styles={{ body: { padding: 0 } }}>
-        <div style={{ padding: '16px', borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
-          <h3 style={{ fontSize: '20px', margin: 0 }}>Nodes ({totalNodes})</h3>
+      <div className="nodes-section">
+        <div className="nodes-header">
+          <h3>Nodes ({totalNodes})</h3>
         </div>
 
         {isLoading && (
-          <div style={{ textAlign: 'center', padding: '50px' }}>
+          <div className="loading-container">
             <Spin size="large" />
           </div>
         )}
 
         {error && (
-          <div style={{ padding: '16px' }}>
+          <div className="error-container">
             <Alert
               message="Error"
               description="Failed to load cluster statistics"
@@ -152,11 +152,11 @@ export default function Home() {
         )}
 
         {data && nodes.length === 0 && !isLoading && (
-          <div style={{ textAlign: 'center', padding: '50px', color: '#999' }}>
+          <div className="no-nodes">
             No nodes available
           </div>
         )}
-      </Card>
+      </div>
     </div>
   );
 }

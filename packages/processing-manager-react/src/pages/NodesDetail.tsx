@@ -9,7 +9,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Card, Typography, Tabs } from 'antd';
+import { Typography, Tabs } from 'antd';
 import { useParams } from 'react-router-dom';
 import { useAppStore } from '../stores/appStore';
 import { useProcessingStore } from '../stores/processingStore';
@@ -26,6 +26,7 @@ import {
   ShardsDetailTabNetworkInfo,
   ShardsDetailTabZKInfo,
 } from '../components/shards';
+import './NodesDetail.scss';
 
 const { Title } = Typography;
 const { TabPane } = Tabs;
@@ -68,10 +69,9 @@ export default function NodesDetail() {
   };
 
   return (
-    <div style={{ padding: '24px' }}>
-      <Card variant="borderless">
-        <Title level={2}>Node Detail: {name}</Title>
-        <Tabs activeKey={activeKey} onChange={handleTabChange}>
+    <div className="nodes-detail">
+      <Title level={2}>Node Detail: {name}</Title>
+      <Tabs activeKey={activeKey} onChange={handleTabChange}>
           <TabPane tab="Processing Manager" key="1">
             {activeKey === '1' && <ShardsDetailTabProcessingManager />}
           </TabPane>
@@ -106,7 +106,6 @@ export default function NodesDetail() {
             {activeKey === '11' && <ShardsDetailTabZKInfo />}
           </TabPane>
         </Tabs>
-      </Card>
     </div>
   );
 }

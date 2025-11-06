@@ -1,10 +1,11 @@
 // Refine.dev Enterprise Theme - App Layout
+// Standard padding: 24px for all pages
 .saas-app-layout {
   min-height: 100vh;
   background: var(--refine-bg-primary);
 
   .saas-app-content {
-    padding: 24px;
+    padding: 24px; // Outer spacing - creates gap between sidebar and container
     min-height: calc(100vh - 56px);
     background: var(--refine-bg-primary);
 
@@ -25,7 +26,7 @@
 
     .content-wrapper {
       background: var(--refine-bg-elevated);
-      padding: 24px;
+      padding: 48px; // Padding inside white container (2x standard)
       border-radius: 8px;
       min-height: calc(100vh - 104px);
       border: 1px solid rgba(255, 255, 255, 0.08);

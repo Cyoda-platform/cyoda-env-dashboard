@@ -4,9 +4,9 @@
  */
 
 .catalogue-of-aliases-filter {
-  padding: 20px;
-  background-color: #f9f9f9;
-  border-radius: 4px;
+  padding: 0; // No padding - align with page content
+  background-color: transparent; // No background
+  border-radius: 0;
   margin-bottom: 20px;
 
   h2 {

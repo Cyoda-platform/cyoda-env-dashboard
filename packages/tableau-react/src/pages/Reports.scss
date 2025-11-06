@@ -7,7 +7,7 @@
 
 .config-editor {
   @include table.page-container;
-  padding: 24px;
+  padding: 0; // No padding - AppLayout handles spacing
 
   .page-title {
     font-size: 24px;

@@ -6,7 +6,7 @@
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Table, Button, Input, Select, Space, Card, Row, Col, message, Divider, Collapse } from 'antd';
+import { Table, Button, Input, Select, Space, Row, Col, message, Divider, Collapse } from 'antd';
 import { SearchOutlined, LeftOutlined, RightOutlined, ArrowLeftOutlined, WarningOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import type { ResizeCallbackData } from 'react-resizable';
@@ -363,14 +363,13 @@ export const Instances: React.FC = () => {
   const hasPrev = currentPage > 1;
   
   return (
-    <div style={{ padding: '24px' }}>
+    <div className="instances-page">
       {/* Header */}
       <h1 className="page-title">Instances</h1>
 
-      <Card variant="borderless" styles={{ body: { padding: 0 } }}>
-        <div style={{ padding: '16px' }}>
-          {/* Filters */}
-          <Row gutter={[16, 16]}>
+      {/* Filters */}
+      <div className="instances-filters">
+        <Row gutter={[16, 16]}>
             <Col span={6}>
               <Select
                 placeholder="Select entity"
@@ -446,10 +445,10 @@ export const Instances: React.FC = () => {
               },
             ]}
           />
-        </div>
+      </div>
 
-        {/* Table */}
-        <Table
+      {/* Table */}
+      <Table
           columns={columns}
           dataSource={tableData}
           loading={instancesMutation.isPending}
@@ -462,31 +461,30 @@ export const Instances: React.FC = () => {
           bordered
         />
 
-        {/* Pagination */}
-        {instancesData && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px' }}>
-            <Button
-              type="primary"
-              icon={<LeftOutlined />}
-              onClick={handlePrevPage}
-              disabled={!hasPrev || instancesMutation.isPending}
-            >
-              Prev
-            </Button>
-            <Button
-              type="primary"
-              onClick={handleNextPage}
-              disabled={!hasMore || instancesMutation.isPending}
-            >
-              Next
-              <RightOutlined />
-            </Button>
-            {(hasMore || currentPage > 1) && (
-              <span>Page {currentPage}</span>
-            )}
-          </div>
-        )}
-      </Card>
+      {/* Pagination */}
+      {instancesData && (
+        <div className="instances-pagination">
+          <Button
+            type="primary"
+            icon={<LeftOutlined />}
+            onClick={handlePrevPage}
+            disabled={!hasPrev || instancesMutation.isPending}
+          >
+            Prev
+          </Button>
+          <Button
+            type="primary"
+            onClick={handleNextPage}
+            disabled={!hasMore || instancesMutation.isPending}
+          >
+            Next
+            <RightOutlined />
+          </Button>
+          {(hasMore || currentPage > 1) && (
+            <span>Page {currentPage}</span>
+          )}
+        </div>
+      )}
     </div>
   );
 };

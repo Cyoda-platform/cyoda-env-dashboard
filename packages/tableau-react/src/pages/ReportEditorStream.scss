@@ -1,6 +1,6 @@
 .report-editor-stream {
-  padding: 24px;
-  background: var(--refine-bg-primary);
+  padding: 0; // No padding - AppLayout handles spacing
+  background: transparent; // No background - AppLayout handles it
 
   &__loading {
     display: flex;

@@ -5,8 +5,9 @@
  */
 
 import React, { useState } from 'react';
-import { Card, Tabs } from 'antd';
+import { Tabs } from 'antd';
 import { CurrNodeInfo, LoadedOnlineNodes, LoadedShardsDistribution } from '../zookeeper-info';
+import './ShardsDetailTabZKInfo.scss';
 
 const { TabPane } = Tabs;
 
@@ -14,8 +15,7 @@ export const ShardsDetailTabZKInfo: React.FC = () => {
   const [activeKey, setActiveKey] = useState('1');
 
   return (
-    <Card>
-      <h3>ZooKeeper Info</h3>
+    <div className="zk-info-tab">
       <Tabs activeKey={activeKey} onChange={setActiveKey}>
         <TabPane tab="Current Node Info" key="1">
           <CurrNodeInfo />
@@ -27,7 +27,7 @@ export const ShardsDetailTabZKInfo: React.FC = () => {
           <LoadedShardsDistribution />
         </TabPane>
       </Tabs>
-    </Card>
+    </div>
   );
 };
 

@@ -320,9 +320,6 @@ export const TasksGrid: React.FC<TasksGridProps> = memo(({ filter, isApplyRealDa
   return (
     <div className="tasks-grid" role="region" aria-label="Tasks management">
       <TasksNotifications />
-      <div>
-        <h2 id="tasks-heading">Tasks</h2>
-      </div>
       <div className="wrap-table">
         <Table
           rowSelection={rowSelection}
@@ -336,7 +333,7 @@ export const TasksGrid: React.FC<TasksGridProps> = memo(({ filter, isApplyRealDa
             },
           }}
           pagination={false}
-          aria-labelledby="tasks-heading"
+          aria-label="Tasks table"
           aria-busy={isLoading}
           aria-describedby="tasks-description"
         />

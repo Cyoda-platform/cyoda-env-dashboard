@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { Card, Table, Spin, Alert, Tag } from 'antd';
+import { Table, Spin, Alert, Tag } from 'antd';
 import { ClusterOutlined } from '@ant-design/icons';
 import { useClusterStats } from '../hooks';
 import { useNavigate } from 'react-router-dom';
@@ -60,46 +60,44 @@ export default function Nodes() {
   })) || [];
 
   return (
-    <div style={{ padding: '24px' }}>
+    <div className="processing-nodes">
       <h1 className="page-title">Processing Nodes</h1>
 
-      <Card variant="borderless" styles={{ body: { padding: 0 } }}>
-        {isLoading && (
-          <div style={{ textAlign: 'center', padding: '50px' }}>
-            <Spin size="large" />
-          </div>
-        )}
+      {isLoading && (
+        <div className="loading-container">
+          <Spin size="large" />
+        </div>
+      )}
 
-        {error && (
-          <div style={{ padding: '16px' }}>
-            <Alert
-              message="Error"
-              description="Failed to load cluster statistics"
-              type="error"
-              showIcon
-            />
-          </div>
-        )}
-
-        {data && (
-          <Table
-            columns={columns}
-            dataSource={tableData}
-            rowKey="name"
-            bordered
-            onRow={(record) => ({
-              onClick: () => handleRowClick(record),
-              style: { cursor: 'pointer' },
-            })}
-            pagination={{
-              pageSize: 10,
-              showSizeChanger: true,
-              showTotal: (total) => `Total ${total} nodes`,
-              position: ['bottomCenter'],
-            }}
+      {error && (
+        <div className="error-container">
+          <Alert
+            message="Error"
+            description="Failed to load cluster statistics"
+            type="error"
+            showIcon
           />
-        )}
-      </Card>
+        </div>
+      )}
+
+      {data && (
+        <Table
+          columns={columns}
+          dataSource={tableData}
+          rowKey="name"
+          bordered
+          onRow={(record) => ({
+            onClick: () => handleRowClick(record),
+            style: { cursor: 'pointer' },
+          })}
+          pagination={{
+            pageSize: 10,
+            showSizeChanger: true,
+            showTotal: (total) => `Total ${total} nodes`,
+            position: ['bottomCenter'],
+          }}
+        />
+      )}
     </div>
   );
 }
