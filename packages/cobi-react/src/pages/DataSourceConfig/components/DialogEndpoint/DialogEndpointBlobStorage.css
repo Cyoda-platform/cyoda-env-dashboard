@@ -1,0 +1,14 @@
+.dialog-endpoint-blob-storage .flex-row {
+  display: flex;
+  gap: 15px;
+  align-items: flex-start;
+}
+
+.dialog-endpoint-blob-storage .flex-row .full-width {
+  flex-grow: 1;
+}
+
+.dialog-endpoint-blob-storage .flex-row .ant-btn {
+  margin-top: 30px;
+}
+

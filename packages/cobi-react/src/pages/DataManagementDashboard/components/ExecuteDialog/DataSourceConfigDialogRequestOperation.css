@@ -1,0 +1,67 @@
+.data-source-config-dialog-request-operation .title {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.data-source-config-dialog-request-operation .title span {
+  font-weight: bold;
+}
+
+.data-source-config-dialog-request-operation .table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-source-config-dialog-request-operation .table td,
+.data-source-config-dialog-request-operation .table th {
+  border: 1px solid #dedede;
+}
+
+.data-source-config-dialog-request-operation .table th {
+  padding: 10px 20px;
+  text-align: left;
+  text-transform: uppercase;
+  background-color: #fafafa;
+  font-weight: 600;
+}
+
+.data-source-config-dialog-request-operation .table td .ant-input {
+  box-shadow: none !important;
+  border-radius: 0;
+  border: none;
+}
+
+.data-source-config-dialog-request-operation .table td.action {
+  padding: 5px 10px;
+  width: 60px;
+  text-align: center;
+}
+
+.data-source-config-dialog-request-operation .actions {
+  margin-bottom: 10px;
+  text-align: right;
+}
+
+.data-source-config-dialog-request-operation .td-mapping {
+  background-color: #f5f7fa;
+  padding-left: 15px;
+  font-weight: 500;
+}
+
+.data-source-config-dialog-request-operation .title-client-data {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.data-source-config-dialog-request-operation .title-client-data h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.data-source-config-dialog-request-operation .td-name {
+  width: 40%;
+}
+

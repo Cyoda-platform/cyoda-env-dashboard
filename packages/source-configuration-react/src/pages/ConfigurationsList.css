@@ -1,0 +1,19 @@
+.configurations-list {
+  padding: 24px;
+}
+
+.configurations-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.configurations-list-header h4 {
+  margin: 0;
+}
+
+.configurations-list-filter {
+  margin-bottom: 16px;
+}
+

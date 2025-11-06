@@ -1,0 +1,15 @@
+.upload-progress {
+  padding: 12px;
+  background-color: #f0f2f5;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.filepond--root {
+  margin-bottom: 0;
+}
+
+.filepond--drop-label {
+  min-height: 120px;
+}
+

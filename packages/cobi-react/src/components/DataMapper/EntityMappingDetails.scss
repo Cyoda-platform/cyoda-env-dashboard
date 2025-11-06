@@ -1,0 +1,227 @@
+.entity-mapping-details {
+  .details-collapse {
+    background: #fff;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+
+    .ant-collapse-item {
+      border-bottom: 1px solid #f0f0f0;
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+
+    .ant-collapse-header {
+      padding: 12px 16px !important;
+      background: #fafafa;
+      font-weight: 500;
+
+      &:hover {
+        background: #f5f5f5;
+      }
+    }
+
+    .ant-collapse-content-box {
+      padding: 16px;
+      background: #fff;
+    }
+  }
+
+  .mapping-card {
+    border: 1px solid #e8e8e8;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+
+    &:hover {
+      border-color: #1890ff;
+      box-shadow: 0 2px 8px rgba(24, 144, 255, 0.1);
+    }
+
+    .ant-card-head {
+      background: #fafafa;
+      border-bottom: 1px solid #e8e8e8;
+      min-height: 40px;
+      padding: 0 12px;
+    }
+
+    .ant-card-body {
+      padding: 12px;
+    }
+
+    .mapping-path {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+
+      code {
+        background: #f5f5f5;
+        padding: 4px 8px;
+        border-radius: 2px;
+        font-size: 12px;
+        word-break: break-all;
+      }
+    }
+
+    .mapping-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px 0;
+      font-size: 16px;
+    }
+
+    .transformer-info {
+      padding-top: 4px;
+    }
+  }
+
+  .functional-mapping-card {
+    border: 1px solid #ffd591;
+    border-radius: 4px;
+    background: #fffbf0;
+    transition: all 0.3s ease;
+
+    &:hover {
+      border-color: #fa8c16;
+      box-shadow: 0 2px 8px rgba(250, 140, 22, 0.1);
+    }
+
+    .ant-card-head {
+      background: #fff7e6;
+      border-bottom: 1px solid #ffd591;
+      min-height: 40px;
+      padding: 0 12px;
+    }
+
+    .ant-card-body {
+      padding: 12px;
+      background: #fff;
+    }
+  }
+
+  .ant-descriptions {
+    .ant-descriptions-item-label {
+      font-weight: 500;
+      background: #fafafa;
+    }
+
+    .ant-descriptions-item-content {
+      code {
+        background: #f5f5f5;
+        padding: 2px 6px;
+        border-radius: 2px;
+        font-size: 12px;
+      }
+    }
+  }
+
+  .ant-badge {
+    .ant-badge-count {
+      font-size: 12px;
+      height: 18px;
+      line-height: 18px;
+      min-width: 18px;
+      padding: 0 6px;
+    }
+  }
+
+  .ant-empty {
+    padding: 24px 0;
+  }
+
+  .ant-tag {
+    margin: 2px;
+    border-radius: 2px;
+    font-size: 12px;
+  }
+
+  .ant-divider {
+    margin: 8px 0;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .entity-mapping-details {
+    .ant-descriptions {
+      .ant-descriptions-item {
+        padding-bottom: 8px;
+      }
+    }
+
+    .mapping-card,
+    .functional-mapping-card {
+      .ant-card-head {
+        .ant-card-head-title {
+          font-size: 13px;
+        }
+      }
+    }
+  }
+}
+
+// Dark mode support (optional)
+@media (prefers-color-scheme: dark) {
+  .entity-mapping-details {
+    .details-collapse {
+      background: #1f1f1f;
+      border-color: #434343;
+
+      .ant-collapse-header {
+        background: #262626;
+        color: #fff;
+
+        &:hover {
+          background: #303030;
+        }
+      }
+
+      .ant-collapse-content-box {
+        background: #1f1f1f;
+      }
+    }
+
+    .mapping-card {
+      background: #1f1f1f;
+      border-color: #434343;
+
+      &:hover {
+        border-color: #177ddc;
+      }
+
+      .ant-card-head {
+        background: #262626;
+        border-color: #434343;
+      }
+
+      .ant-card-body {
+        background: #1f1f1f;
+      }
+
+      .mapping-path code {
+        background: #262626;
+        color: #fff;
+      }
+    }
+
+    .functional-mapping-card {
+      background: #2b2111;
+      border-color: #594214;
+
+      &:hover {
+        border-color: #d46b08;
+      }
+
+      .ant-card-head {
+        background: #362817;
+        border-color: #594214;
+      }
+
+      .ant-card-body {
+        background: #1f1f1f;
+      }
+    }
+  }
+}
+

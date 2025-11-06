@@ -1,0 +1,35 @@
+.entity-selection {
+  margin-top: 20px;
+}
+
+.entity-selection .ant-form {
+  max-width: 100%;
+}
+
+.entity-selection .ant-form-item-label {
+  font-weight: 500;
+}
+
+.entity-selection h2 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1890ff;
+  margin-bottom: 10px;
+}
+
+.entity-selection .has-error {
+  color: #ff4d4f;
+}
+
+.entity-selection .ant-tabs-card {
+  margin-top: 20px;
+}
+
+.entity-selection .ant-divider {
+  margin: 16px 0;
+}
+
+.entity-selection .add-new-config-btn {
+  margin-bottom: 16px;
+}
+

@@ -1,0 +1,18 @@
+.data-source-config-dialog-request .wrap-header {
+  display: flex;
+  align-items: center;
+  line-height: 24px;
+  font-size: 18px;
+  color: #303133;
+}
+
+.data-source-config-dialog-request .wrap-header .el-dialog__title {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.data-source-config-dialog-request .ant-tabs-nav-prev,
+.data-source-config-dialog-request .ant-tabs-nav-next {
+  line-height: 39px !important;
+}
+

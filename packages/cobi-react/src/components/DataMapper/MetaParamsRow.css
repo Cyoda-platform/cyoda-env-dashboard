@@ -1,0 +1,88 @@
+.meta-params-row {
+  display: flex;
+  padding: 10px 10px 10px 0;
+  border-top: 1px solid #dedede;
+  align-items: center;
+  transition: all 0.3s;
+  position: relative;
+}
+
+.meta-params-row:hover {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.meta-params-row .key {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.meta-params-row .settings {
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.3s;
+}
+
+.meta-params-row .settings.error {
+  color: #ff4d4f;
+}
+
+.meta-params-row .settings.success {
+  color: #52c41a;
+}
+
+.meta-params-row .settings:hover {
+  transform: scale(1.2);
+}
+
+.meta-params-row .circle {
+  position: absolute;
+  right: -17px;
+  min-width: 17px;
+  white-space: nowrap;
+  height: 18px;
+  border-radius: 0 10px 10px 0;
+  top: 9px;
+  opacity: 0;
+  transition: all 0.3s;
+  background-color: #858484;
+  border: 2px solid #858484;
+  font-size: 13px;
+  text-align: center;
+  line-height: 14px;
+  cursor: pointer;
+  color: #fff;
+  padding: 0 4px;
+}
+
+.meta-params-row .circle.selected {
+  opacity: 1;
+}
+
+.meta-params-row .circle.cobi-core-metadata {
+  background-color: #1890ff;
+  border-color: #1890ff;
+}
+
+.meta-params-row:hover .circle {
+  opacity: 0.6;
+}
+
+.meta-params-row:hover .circle.selected {
+  opacity: 1;
+}
+
+.popover-actions .action {
+  margin-bottom: 8px;
+}
+
+.popover-actions .action:last-child {
+  margin-bottom: 0;
+}
+
+.popover-actions .ant-btn-link {
+  padding: 0;
+  height: auto;
+}
+

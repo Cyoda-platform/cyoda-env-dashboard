@@ -1,0 +1,26 @@
+.connection-executions {
+  margin-top: 24px;
+}
+
+.connection-executions .filter-section {
+  margin-bottom: 16px;
+  padding: 16px;
+  background: #fafafa;
+  border-radius: 4px;
+}
+
+.connection-executions .filter-section h3 {
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
+.connection-executions .filter-section label {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+.connection-executions .ant-table {
+  font-size: 13px;
+}
+

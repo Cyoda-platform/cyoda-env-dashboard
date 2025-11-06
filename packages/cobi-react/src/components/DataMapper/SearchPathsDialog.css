@@ -1,0 +1,58 @@
+.search-paths-dialog .ant-modal-body {
+  padding: 16px;
+}
+
+.search-header {
+  margin-bottom: 16px;
+}
+
+.search-header .ant-input-affix-wrapper {
+  font-size: 14px;
+}
+
+.statements-preview {
+  font-size: 12px;
+}
+
+.statements-preview ul {
+  margin: 0;
+  padding-left: 16px;
+}
+
+.statements-preview li {
+  margin: 2px 0;
+  color: #666;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+.search-paths-dialog .ant-btn-link {
+  padding: 0;
+  height: auto;
+  font-size: 13px;
+}
+
+.search-paths-dialog .ant-table {
+  font-size: 13px;
+}
+
+.search-paths-dialog .statements-expanded {
+  margin: 0 20px;
+  border: 1px solid #f0f0f0;
+  background: #fafafa;
+}
+
+.search-paths-dialog .statements-expanded .ant-table {
+  background: transparent;
+}
+
+.search-paths-dialog .ant-table-expanded-row > td {
+  padding: 12px 0 !important;
+}
+
+.search-paths-dialog .ant-btn-link {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+.search-paths-dialog .ant-table-row-expand-icon {
+  color: #1890ff;
+}

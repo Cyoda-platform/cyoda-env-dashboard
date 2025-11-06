@@ -1,0 +1,14 @@
+.blob-storage-parameters .endpoint-actions {
+  margin-bottom: 10px;
+  text-align: right;
+}
+
+.blob-storage-parameters .handle {
+  cursor: move;
+  color: #999;
+}
+
+.blob-storage-parameters .handle:hover {
+  color: #666;
+}
+

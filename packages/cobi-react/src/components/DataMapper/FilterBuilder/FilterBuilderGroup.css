@@ -1,0 +1,148 @@
+.builder-condition-group {
+  position: relative;
+}
+
+.builder-condition-group:before {
+  content: "";
+  height: 40px;
+  border-color: rgba(255, 255, 255, 0.15);
+  border-style: dotted;
+  border-width: 0 0 2px 2px;
+  left: 10px;
+  position: absolute;
+  width: 10px;
+  top: -18px;
+}
+
+.builder-condition-group:after {
+  height: calc(100% - 17px);
+  top: 17px;
+  content: "";
+  border-color: rgba(255, 255, 255, 0.15);
+  border-style: dotted;
+  border-width: 0 0 0 2px;
+  width: 10px;
+  left: 10px;
+  position: absolute;
+}
+
+.builder-condition-group.first:before {
+  display: none;
+}
+
+.builder-condition-group.first:after {
+  display: none;
+}
+
+.builder-condition-group .button-add {
+  margin-left: 10px;
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--refine-primary, #00D4AA);
+  border-color: var(--refine-primary, #00D4AA);
+  box-shadow: 0 2px 4px rgba(0, 212, 170, 0.3);
+}
+
+.builder-condition-group .button-add:hover {
+  background: var(--refine-primary-dark, #00B894);
+  border-color: var(--refine-primary-dark, #00B894);
+  box-shadow: 0 4px 8px rgba(0, 212, 170, 0.4);
+  transform: translateY(-1px);
+}
+
+.builder-condition-group .button-delete {
+  margin-left: 10px !important;
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.builder-condition-group .wrap-actions,
+.builder-condition-group .inner-fields {
+  padding-left: 20px;
+}
+
+.builder-condition-group .group-actions {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Match All / Match Any Radio Buttons */
+.builder-condition-group .ant-radio-group {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  padding: 4px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.builder-condition-group .ant-radio-button-wrapper {
+  min-width: 120px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: transparent;
+  border: none;
+  color: var(--refine-text-secondary, #D1D5DB);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1;
+  transition: all 150ms;
+  border-radius: 6px;
+  padding: 0 20px;
+}
+
+.builder-condition-group .ant-radio-button-wrapper:not(:first-child)::before {
+  display: none;
+}
+
+.builder-condition-group .ant-radio-button-wrapper:hover {
+  color: var(--refine-text-primary, #F9FAFB);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.builder-condition-group .ant-radio-button-wrapper-checked {
+  background: var(--refine-primary, #00D4AA);
+  color: #FFFFFF;
+  font-weight: 600;
+  border: 1px solid var(--refine-primary, #00D4AA);
+  box-shadow: 0 2px 4px rgba(0, 212, 170, 0.3);
+}
+
+.builder-condition-group .ant-radio-button-wrapper-checked:hover {
+  background: var(--refine-primary-dark, #00B894);
+  border-color: var(--refine-primary-dark, #00B894);
+  color: #FFFFFF;
+}
+
+.builder-condition-group .ant-radio-button-wrapper-checked:hover {
+  background: var(--refine-bg-primary, #1A2332);
+  color: var(--refine-text-primary, #F9FAFB);
+}
+
+.builder-condition-group:last-child.wrap-actions.inner-fields:after {
+  display: none;
+}
+
+.builder-condition-group .ant-picker {
+  width: 100% !important;
+}
+
+.builder-condition-group .ant-select {
+  width: 100% !important;
+}
+
+.builder-condition-group .ant-input-number {
+  width: 100% !important;
+}
+

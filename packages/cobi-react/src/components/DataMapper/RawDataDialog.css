@@ -1,0 +1,14 @@
+.raw-data-dialog pre {
+  margin: 0;
+  padding: 16px;
+  background: #f5f5f5;
+  border-radius: 4px;
+  overflow-x: auto;
+}
+
+.raw-data-dialog code {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
