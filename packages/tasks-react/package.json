@@ -1,0 +1,59 @@
+{
+  "name": "@cyoda/tasks-react",
+  "version": "1.0.0",
+  "description": "Cyoda Tasks Management Application - React Version",
+  "type": "module",
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "import": "./src/index.ts",
+      "types": "./src/index.ts"
+    }
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "cd ../.. && vitest run --environment jsdom",
+    "test:watch": "cd ../.. && vitest --environment jsdom",
+    "test:ui": "cd ../.. && vitest --ui --environment jsdom",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@cyoda/http-api-react": "^1.0.0",
+    "@cyoda/ui-lib-react": "^1.0.0",
+    "@tanstack/react-query": "^5.62.11",
+    "@tanstack/react-query-devtools": "^5.62.11",
+    "antd": "^5.20.0",
+    "axios": "^1.7.9",
+    "dayjs": "^1.11.13",
+    "lodash": "^4.17.21",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^7.9.4",
+    "zustand": "^5.0.2"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.4.8",
+    "@testing-library/react": "^16.0.0",
+    "@testing-library/user-event": "^14.5.2",
+    "@types/lodash": "^4.17.14",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "@vitest/ui": "^3.0.3",
+    "buffer": "^6.0.3",
+    "eslint": "^9.18.0",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-react-refresh": "^0.4.16",
+    "jsdom": "^27.0.0",
+    "typescript": "^5.7.3",
+    "vite": "^6.0.11",
+    "vitest": "^3.0.3"
+  }
+}

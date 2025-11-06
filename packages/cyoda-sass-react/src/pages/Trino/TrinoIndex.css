@@ -1,0 +1,46 @@
+.trino-index {
+  padding: 24px;
+}
+
+.trino-index .page-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #00D4AA;
+  margin-bottom: 24px;
+  margin-top: 0;
+}
+
+.trino-index h4 {
+  font-size: 18px;
+  margin-bottom: 16px;
+}
+
+.trino-index .card {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.trino-index .card-body {
+  background: transparent;
+  padding: 0;
+}
+
+.trino-index-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  gap: 16px;
+}
+
+.trino-index-filter {
+  flex-grow: 1;
+}
+
+.trino-index-actions {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+

@@ -1,0 +1,88 @@
+.trino-edit-table {
+  width: 100%;
+}
+
+.trino-edit-table .table-container {
+  width: 100%;
+}
+
+.trino-edit-table .col1 {
+  width: 70px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.trino-edit-table .col2 {
+  flex: 1;
+}
+
+.trino-edit-table .col3 {
+  word-break: break-all;
+}
+
+.trino-edit-table .col3,
+.trino-edit-table .col4 {
+  width: 25%;
+}
+
+.trino-edit-table .col5 {
+  width: 80px;
+  display: flex;
+  justify-content: center;
+}
+
+.trino-edit-table .header {
+  background-color: #4b5d7a;
+  color: #fff;
+  text-align: left;
+  padding: 5px;
+  border: 0.5px solid #ebeef5;
+}
+
+.trino-edit-table .row-container {
+  display: flex;
+  width: 100%;
+}
+
+.trino-edit-table .row-container .cell {
+  padding: 5px;
+  border: 0.5px solid #ebeef5;
+  display: flex;
+  align-items: center;
+}
+
+.trino-edit-table .row-container .cell-item {
+  padding: 5px;
+}
+
+.trino-edit-table .handle,
+.trino-edit-table .eye {
+  cursor: pointer;
+  transition: all 0.5s;
+}
+
+.trino-edit-table .handle:hover,
+.trino-edit-table .eye:hover {
+  opacity: 0.5;
+}
+
+.trino-edit-table .not-data {
+  background-color: #f3f3f3;
+}
+
+.trino-edit-table .expand-row {
+  border: 0.5px solid #ebeef5;
+  padding: 16px;
+  background-color: #fafafa;
+}
+
+.trino-edit-table .ant-form-item {
+  margin-bottom: 0;
+}
+
+.trino-edit-table .ant-form-item-explain-error {
+  position: relative;
+  font-size: 12px;
+}
+

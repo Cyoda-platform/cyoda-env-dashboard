@@ -1,0 +1,338 @@
+/**
+ * Graphical State Machine Styles
+ * Migrated from Vue component styles
+ * Updated: Canvas and button styling
+ */
+
+// Global React Flow dark theme override
+.react-flow__pane,
+.react-flow__viewport,
+.react-flow__container,
+.react-flow__renderer,
+.react-flow {
+  background-color: #0f172a !important;
+  background: #0f172a !important;
+}
+
+// Remove default React Flow edge label background
+.react-flow__edge-text,
+.react-flow__edge-textbg,
+.react-flow__edgelabel,
+.react-flow__edgelabel-renderer,
+.react-flow__edgelabel-renderer > div,
+foreignObject {
+  background: transparent !important;
+  background-color: transparent !important;
+  fill: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  pointer-events: none !important;
+}
+
+// Ensure edges are visible and on correct layer
+.react-flow__edges {
+  z-index: 1 !important;
+  pointer-events: all !important;
+}
+
+.react-flow__edge {
+  pointer-events: all !important;
+}
+
+.graphical-statemachine-wrapper {
+  position: relative;
+  width: 100%;
+  min-height: 600px;
+  background: #0f172a !important;
+
+  &.fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9999;
+    background: #0f172a !important;
+    height: 100vh;
+  }
+}
+
+.graphical-statemachine {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #0f172a !important;
+
+  .panel {
+    padding: 16px;
+    background: #0f172a;
+    border-bottom: 1px solid #1e293b;
+  }
+
+  .graph-wrapper {
+    position: relative;
+    flex: 1;
+    min-height: 600px;
+    display: flex;
+    flex-direction: column;
+    background: #0f172a !important;
+  }
+
+  .graph-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 600px;
+    background-color: #0f172a !important;
+    background: #0f172a !important;
+
+    // React Flow specific styles
+    .react-flow {
+      background-color: #0f172a !important;
+      width: 100%;
+      height: 100%;
+    }
+
+    .react-flow__viewport {
+      background-color: #0f172a !important;
+    }
+
+    .react-flow__background {
+      background-color: #0f172a !important;
+    }
+
+    .react-flow__pane {
+      background-color: #0f172a !important;
+    }
+
+    .react-flow__renderer {
+      background-color: #0f172a !important;
+    }
+
+    .react-flow__controls {
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      padding: 4px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
+
+      button {
+        background-color: #1e293b;
+        border-color: #334155;
+        color: #f1f5f9;
+        border-radius: 4px;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background-color: #334155;
+          border-color: #60a5fa;
+          color: #ffffff;
+        }
+
+        svg {
+          fill: #f1f5f9;
+        }
+      }
+    }
+
+    .react-flow__minimap {
+      background-color: #0f172a;
+      border: 2px solid #1e293b;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
+    }
+
+    .react-flow__panel {
+      background: transparent;
+
+      &.panel {
+        background: rgba(15, 23, 42, 0.95);
+        border: 1px solid #1e293b;
+        border-radius: 8px;
+        padding: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
+
+        .ant-btn {
+          background-color: #1e293b;
+          border-color: #334155;
+          color: #f1f5f9;
+          transition: all 0.2s ease;
+
+          &:hover {
+            background-color: #334155;
+            border-color: #60a5fa;
+            color: #ffffff;
+          }
+
+          .anticon {
+            color: #f1f5f9;
+          }
+        }
+      }
+    }
+
+    .react-flow__edge-path {
+      stroke-width: 2.5;
+    }
+
+    .react-flow__edge.selected .react-flow__edge-path {
+      stroke-width: 3.5;
+    }
+  }
+
+  .map-controls {
+    position: absolute;
+    right: 16px;
+    top: 16px;
+    z-index: 10;
+    background: #374151;
+    padding: 8px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+
+    .ant-space {
+      gap: 4px !important;
+    }
+
+    .ant-btn.ant-btn-default {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-color: #14b8a6 !important;
+      color: #14b8a6 !important;
+
+      &:hover {
+        border-color: #0d9488 !important;
+        color: #0d9488 !important;
+        background: rgba(20, 184, 166, 0.1) !important;
+      }
+    }
+  }
+
+  .map-legend {
+    position: absolute;
+    left: 16px;
+    bottom: 16px;
+    z-index: 10;
+    max-width: 200px;
+
+    .ant-card {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .legend-circle {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      margin-right: 8px;
+      vertical-align: middle;
+
+      &.state {
+        background-color: #148751;
+      }
+
+      &.current-state {
+        background-color: #F7AD11;
+        border: 2px solid #148751;
+      }
+    }
+
+    .legend-diamond {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      margin-right: 8px;
+      vertical-align: middle;
+      background-color: #9ca3af;
+      transform: rotate(45deg);
+    }
+
+    .legend-heptagon {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      margin-right: 8px;
+      vertical-align: middle;
+      background-color: #213063;
+      clip-path: polygon(50% 0%, 90% 20%, 100% 60%, 75% 100%, 25% 100%, 0% 60%, 10% 20%);
+    }
+
+    .legend-line {
+      display: inline-block;
+      width: 24px;
+      height: 3px;
+      margin-right: 8px;
+      vertical-align: middle;
+      position: relative;
+
+      &.automated {
+        background-color: #F7AD11;
+
+        &::after {
+          content: '';
+          position: absolute;
+          right: -4px;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 0;
+          height: 0;
+          border-left: 6px solid #912624;
+          border-top: 4px solid transparent;
+          border-bottom: 4px solid transparent;
+        }
+      }
+
+      &.manual {
+        background: repeating-linear-gradient(
+          to right,
+          #F7AD11,
+          #F7AD11 4px,
+          transparent 4px,
+          transparent 8px
+        );
+
+        &::after {
+          content: '';
+          position: absolute;
+          right: -4px;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 0;
+          height: 0;
+          border-left: 6px solid #912624;
+          border-top: 4px solid transparent;
+          border-bottom: 4px solid transparent;
+        }
+      }
+    }
+  }
+}
+
+// Force dark background on React Flow canvas
+.graphical-statemachine-wrapper,
+.graphical-statemachine,
+.graph-container {
+  background-color: #0f172a !important;
+}
+
+.react-flow__pane {
+  background-color: #0f172a !important;
+}
+
+// Make sure React Flow node wrappers are transparent
+.react-flow__node {
+  background: transparent !important;
+}
+
+// Test node styling
+.react-flow__node .test-node-custom {
+  background: red !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: block !important;
+}

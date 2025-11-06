@@ -1,0 +1,72 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`StateIndicator > Snapshot Tests > should match snapshot for active automated state 1`] = `
+<div
+  class="state-indicator-automated"
+>
+  <span
+    class="state-indicator-automated-badge active"
+  >
+    A
+  </span>
+</div>
+`;
+
+exports[`StateIndicator > Snapshot Tests > should match snapshot for active default state 1`] = `
+<div
+  class="state-indicator"
+>
+  <span
+    class="ant-badge ant-badge-status ant-badge-not-a-wrapper css-dev-only-do-not-override-ac2jek"
+  >
+    <span
+      class="ant-badge-status-dot ant-badge-status-success"
+    />
+  </span>
+</div>
+`;
+
+exports[`StateIndicator > Snapshot Tests > should match snapshot for inactive automated state 1`] = `
+<div
+  class="state-indicator-automated"
+>
+  <span
+    class="state-indicator-automated-badge inactive"
+  >
+    A
+  </span>
+</div>
+`;
+
+exports[`StateIndicator > Snapshot Tests > should match snapshot for inactive default state 1`] = `
+<div
+  class="state-indicator"
+>
+  <span
+    class="ant-badge ant-badge-status ant-badge-not-a-wrapper css-dev-only-do-not-override-ac2jek"
+  >
+    <span
+      class="ant-badge-status-dot ant-badge-status-default"
+    />
+  </span>
+</div>
+`;
+
+exports[`StateIndicator > Snapshot Tests > should match snapshot with text shown 1`] = `
+<div
+  class="state-indicator"
+>
+  <span
+    class="ant-badge ant-badge-status ant-badge-not-a-wrapper css-dev-only-do-not-override-ac2jek"
+  >
+    <span
+      class="ant-badge-status-dot ant-badge-status-success"
+    />
+    <span
+      class="ant-badge-status-text"
+    >
+      Yes
+    </span>
+  </span>
+</div>
+`;

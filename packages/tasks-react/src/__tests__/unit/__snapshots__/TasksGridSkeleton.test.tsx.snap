@@ -1,0 +1,486 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`TasksGridSkeleton > Snapshot > should match snapshot 1`] = `
+<div
+  aria-label="Loading tasks"
+  aria-live="polite"
+  class="tasks-grid"
+  role="status"
+>
+  <div>
+    <h2>
+      Tasks
+    </h2>
+  </div>
+  <div
+    class="wrap-table"
+  >
+    <div
+      class="ant-table-wrapper css-dev-only-do-not-override-1odpy5d"
+    >
+      <div
+        class="ant-spin-nested-loading css-dev-only-do-not-override-1odpy5d"
+      >
+        <div
+          class="ant-spin-container"
+        >
+          <div
+            class="ant-table css-dev-only-do-not-override-1odpy5d"
+          >
+            <div
+              class="ant-table-container"
+            >
+              <div
+                class="ant-table-content"
+              >
+                <table
+                  style="table-layout: auto;"
+                >
+                  <thead
+                    class="ant-table-thead"
+                  >
+                    <tr>
+                      <th
+                        class="ant-table-cell"
+                        scope="col"
+                      >
+                        Title
+                      </th>
+                      <th
+                        class="ant-table-cell"
+                        scope="col"
+                      >
+                        Status
+                      </th>
+                      <th
+                        class="ant-table-cell"
+                        scope="col"
+                      >
+                        Priority
+                      </th>
+                      <th
+                        class="ant-table-cell"
+                        scope="col"
+                      >
+                        Assigned To
+                      </th>
+                      <th
+                        class="ant-table-cell"
+                        scope="col"
+                      >
+                        Created
+                      </th>
+                      <th
+                        class="ant-table-cell"
+                        scope="col"
+                      >
+                        Operations
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody
+                    class="ant-table-tbody"
+                  >
+                    <tr
+                      class="ant-table-row ant-table-row-level-0"
+                      data-row-key="0"
+                    >
+                      <td
+                        class="ant-table-cell"
+                      >
+                        <div
+                          class="ant-skeleton ant-skeleton-element ant-skeleton-active css-dev-only-do-not-override-1odpy5d"
+                        >
+                          <span
+                            class="ant-skeleton-input ant-skeleton-input-sm"
+                            style="width: 150px;"
+                          />
+                        </div>
+                      </td>
+                      <td
+                        class="ant-table-cell"
+                      >
+                        <div
+                          class="ant-skeleton ant-skeleton-element ant-skeleton-active css-dev-only-do-not-override-1odpy5d"
+                        >
+                          <span
+                            class="ant-skeleton-input ant-skeleton-input-sm"
+                            style="width: 100px;"
+                          />
+                        </div>
+                      </td>
+                      <td
+                        class="ant-table-cell"
+                      >
+                        <div
+                          class="ant-skeleton ant-skeleton-element ant-skeleton-active css-dev-only-do-not-override-1odpy5d"
+                        >
+                          <span
+                            class="ant-skeleton-input ant-skeleton-input-sm"
+                            style="width: 120px;"
+                          />
+                        </div>
+                      </td>
+                      <td
+                        class="ant-table-cell"
+                      >
+                        <div
+                          class="ant-skeleton ant-skeleton-element ant-skeleton-active css-dev-only-do-not-override-1odpy5d"
+                        >
+                          <span
+                            class="ant-skeleton-input ant-skeleton-input-sm"
+                            style="width: 150px;"
+                          />
+                        </div>
+                      </td>
+                      <td
+                        class="ant-table-cell"
+                      >
+                        <div
+                          class="ant-skeleton ant-skeleton-element ant-skeleton-active css-dev-only-do-not-override-1odpy5d"
+                        >
+                          <span
+                            class="ant-skeleton-input ant-skeleton-input-sm"
+                            style="width: 120px;"
+                          />
+                        </div>
+                      </td>
+                      <td
+                        class="ant-table-cell"
+                      >
+                        <div
+                          class="ant-skeleton ant-skeleton-element ant-skeleton-active css-dev-only-do-not-override-1odpy5d"
+                        >
+                          <span
+                            class="ant-skeleton-button ant-skeleton-button-sm"
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                    <tr
+                      class="ant-table-row ant-table-row-level-0"
+                      data-row-key="1"
+                    >
+                      <td
+                        class="ant-table-cell"
+                      >
+                        <div
+                          class="ant-skeleton ant-skeleton-element ant-skeleton-active css-dev-only-do-not-override-1odpy5d"
+                        >
+                          <span
+                            class="ant-skeleton-input ant-skeleton-input-sm"
+                            style="width: 150px;"
+                          />
+                        </div>
+                      </td>
+                      <td
+                        class="ant-table-cell"
+                      >
+                        <div
+                          class="ant-skeleton ant-skeleton-element ant-skeleton-active css-dev-only-do-not-override-1odpy5d"
+                        >
+                          <span
+                            class="ant-skeleton-input ant-skeleton-input-sm"
+                            style="width: 100px;"
+                          />
+                        </div>
+                      </td>
+                      <td
+                        class="ant-table-cell"
+                      >
+                        <div
+                          class="ant-skeleton ant-skeleton-element ant-skeleton-active css-dev-only-do-not-override-1odpy5d"
+                        >
+                          <span
+                            class="ant-skeleton-input ant-skeleton-input-sm"
+                            style="width: 120px;"
+                          />
+                        </div>
+                      </td>
+                      <td
+                        class="ant-table-cell"
+                      >
+                        <div
+                          class="ant-skeleton ant-skeleton-element ant-skeleton-active css-dev-only-do-not-override-1odpy5d"
+                        >
+                          <span
+                            class="ant-skeleton-input ant-skeleton-input-sm"
+                            style="width: 150px;"
+                          />
+                        </div>
+                      </td>
+                      <td
+                        class="ant-table-cell"
+                      >
+                        <div
+                          class="ant-skeleton ant-skeleton-element ant-skeleton-active css-dev-only-do-not-override-1odpy5d"
+                        >
+                          <span
+                            class="ant-skeleton-input ant-skeleton-input-sm"
+                            style="width: 120px;"
+                          />
+                        </div>
+                      </td>
+                      <td
+                        class="ant-table-cell"
+                      >
+                        <div
+                          class="ant-skeleton ant-skeleton-element ant-skeleton-active css-dev-only-do-not-override-1odpy5d"
+                        >
+                          <span
+                            class="ant-skeleton-button ant-skeleton-button-sm"
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                    <tr
+                      class="ant-table-row ant-table-row-level-0"
+                      data-row-key="2"
+                    >
+                      <td
+                        class="ant-table-cell"
+                      >
+                        <div
+                          class="ant-skeleton ant-skeleton-element ant-skeleton-active css-dev-only-do-not-override-1odpy5d"
+                        >
+                          <span
+                            class="ant-skeleton-input ant-skeleton-input-sm"
+                            style="width: 150px;"
+                          />
+                        </div>
+                      </td>
+                      <td
+                        class="ant-table-cell"
+                      >
+                        <div
+                          class="ant-skeleton ant-skeleton-element ant-skeleton-active css-dev-only-do-not-override-1odpy5d"
+                        >
+                          <span
+                            class="ant-skeleton-input ant-skeleton-input-sm"
+                            style="width: 100px;"
+                          />
+                        </div>
+                      </td>
+                      <td
+                        class="ant-table-cell"
+                      >
+                        <div
+                          class="ant-skeleton ant-skeleton-element ant-skeleton-active css-dev-only-do-not-override-1odpy5d"
+                        >
+                          <span
+                            class="ant-skeleton-input ant-skeleton-input-sm"
+                            style="width: 120px;"
+                          />
+                        </div>
+                      </td>
+                      <td
+                        class="ant-table-cell"
+                      >
+                        <div
+                          class="ant-skeleton ant-skeleton-element ant-skeleton-active css-dev-only-do-not-override-1odpy5d"
+                        >
+                          <span
+                            class="ant-skeleton-input ant-skeleton-input-sm"
+                            style="width: 150px;"
+                          />
+                        </div>
+                      </td>
+                      <td
+                        class="ant-table-cell"
+                      >
+                        <div
+                          class="ant-skeleton ant-skeleton-element ant-skeleton-active css-dev-only-do-not-override-1odpy5d"
+                        >
+                          <span
+                            class="ant-skeleton-input ant-skeleton-input-sm"
+                            style="width: 120px;"
+                          />
+                        </div>
+                      </td>
+                      <td
+                        class="ant-table-cell"
+                      >
+                        <div
+                          class="ant-skeleton ant-skeleton-element ant-skeleton-active css-dev-only-do-not-override-1odpy5d"
+                        >
+                          <span
+                            class="ant-skeleton-button ant-skeleton-button-sm"
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                    <tr
+                      class="ant-table-row ant-table-row-level-0"
+                      data-row-key="3"
+                    >
+                      <td
+                        class="ant-table-cell"
+                      >
+                        <div
+                          class="ant-skeleton ant-skeleton-element ant-skeleton-active css-dev-only-do-not-override-1odpy5d"
+                        >
+                          <span
+                            class="ant-skeleton-input ant-skeleton-input-sm"
+                            style="width: 150px;"
+                          />
+                        </div>
+                      </td>
+                      <td
+                        class="ant-table-cell"
+                      >
+                        <div
+                          class="ant-skeleton ant-skeleton-element ant-skeleton-active css-dev-only-do-not-override-1odpy5d"
+                        >
+                          <span
+                            class="ant-skeleton-input ant-skeleton-input-sm"
+                            style="width: 100px;"
+                          />
+                        </div>
+                      </td>
+                      <td
+                        class="ant-table-cell"
+                      >
+                        <div
+                          class="ant-skeleton ant-skeleton-element ant-skeleton-active css-dev-only-do-not-override-1odpy5d"
+                        >
+                          <span
+                            class="ant-skeleton-input ant-skeleton-input-sm"
+                            style="width: 120px;"
+                          />
+                        </div>
+                      </td>
+                      <td
+                        class="ant-table-cell"
+                      >
+                        <div
+                          class="ant-skeleton ant-skeleton-element ant-skeleton-active css-dev-only-do-not-override-1odpy5d"
+                        >
+                          <span
+                            class="ant-skeleton-input ant-skeleton-input-sm"
+                            style="width: 150px;"
+                          />
+                        </div>
+                      </td>
+                      <td
+                        class="ant-table-cell"
+                      >
+                        <div
+                          class="ant-skeleton ant-skeleton-element ant-skeleton-active css-dev-only-do-not-override-1odpy5d"
+                        >
+                          <span
+                            class="ant-skeleton-input ant-skeleton-input-sm"
+                            style="width: 120px;"
+                          />
+                        </div>
+                      </td>
+                      <td
+                        class="ant-table-cell"
+                      >
+                        <div
+                          class="ant-skeleton ant-skeleton-element ant-skeleton-active css-dev-only-do-not-override-1odpy5d"
+                        >
+                          <span
+                            class="ant-skeleton-button ant-skeleton-button-sm"
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                    <tr
+                      class="ant-table-row ant-table-row-level-0"
+                      data-row-key="4"
+                    >
+                      <td
+                        class="ant-table-cell"
+                      >
+                        <div
+                          class="ant-skeleton ant-skeleton-element ant-skeleton-active css-dev-only-do-not-override-1odpy5d"
+                        >
+                          <span
+                            class="ant-skeleton-input ant-skeleton-input-sm"
+                            style="width: 150px;"
+                          />
+                        </div>
+                      </td>
+                      <td
+                        class="ant-table-cell"
+                      >
+                        <div
+                          class="ant-skeleton ant-skeleton-element ant-skeleton-active css-dev-only-do-not-override-1odpy5d"
+                        >
+                          <span
+                            class="ant-skeleton-input ant-skeleton-input-sm"
+                            style="width: 100px;"
+                          />
+                        </div>
+                      </td>
+                      <td
+                        class="ant-table-cell"
+                      >
+                        <div
+                          class="ant-skeleton ant-skeleton-element ant-skeleton-active css-dev-only-do-not-override-1odpy5d"
+                        >
+                          <span
+                            class="ant-skeleton-input ant-skeleton-input-sm"
+                            style="width: 120px;"
+                          />
+                        </div>
+                      </td>
+                      <td
+                        class="ant-table-cell"
+                      >
+                        <div
+                          class="ant-skeleton ant-skeleton-element ant-skeleton-active css-dev-only-do-not-override-1odpy5d"
+                        >
+                          <span
+                            class="ant-skeleton-input ant-skeleton-input-sm"
+                            style="width: 150px;"
+                          />
+                        </div>
+                      </td>
+                      <td
+                        class="ant-table-cell"
+                      >
+                        <div
+                          class="ant-skeleton ant-skeleton-element ant-skeleton-active css-dev-only-do-not-override-1odpy5d"
+                        >
+                          <span
+                            class="ant-skeleton-input ant-skeleton-input-sm"
+                            style="width: 120px;"
+                          />
+                        </div>
+                      </td>
+                      <td
+                        class="ant-table-cell"
+                      >
+                        <div
+                          class="ant-skeleton ant-skeleton-element ant-skeleton-active css-dev-only-do-not-override-1odpy5d"
+                        >
+                          <span
+                            class="ant-skeleton-button ant-skeleton-button-sm"
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      style="margin-top: 16px; text-align: right;"
+    >
+      <div
+        class="ant-skeleton ant-skeleton-element ant-skeleton-active css-dev-only-do-not-override-1odpy5d"
+      >
+        <span
+          class="ant-skeleton-button ant-skeleton-button-sm"
+          style="width: 200px;"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;

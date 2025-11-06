@@ -1,0 +1,140 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`TaskDetailSkeleton > Snapshot > should match snapshot 1`] = `
+<div
+  aria-label="Loading task details"
+  aria-live="polite"
+  role="status"
+>
+  <div
+    class="ant-card ant-card-bordered css-dev-only-do-not-override-1odpy5d"
+  >
+    <div
+      class="ant-card-head"
+    >
+      <div
+        class="ant-card-head-wrapper"
+      >
+        <div
+          class="ant-card-head-title"
+        >
+          <div
+            class="ant-space css-dev-only-do-not-override-1odpy5d ant-space-horizontal ant-space-align-center ant-space-gap-row-small ant-space-gap-col-small"
+          >
+            <div
+              class="ant-space-item"
+            >
+              <div
+                class="ant-skeleton ant-skeleton-element ant-skeleton-active css-dev-only-do-not-override-1odpy5d"
+              >
+                <span
+                  class="ant-skeleton-button ant-skeleton-button-sm"
+                  style="width: 80px;"
+                />
+              </div>
+            </div>
+            <div
+              class="ant-space-item"
+            >
+              <div
+                class="ant-skeleton ant-skeleton-element ant-skeleton-active css-dev-only-do-not-override-1odpy5d"
+              >
+                <span
+                  class="ant-skeleton-input ant-skeleton-input-sm"
+                  style="width: 200px;"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="ant-card-extra"
+        >
+          <div
+            class="ant-space css-dev-only-do-not-override-1odpy5d ant-space-horizontal ant-space-align-center ant-space-gap-row-small ant-space-gap-col-small"
+          >
+            <div
+              class="ant-space-item"
+            >
+              <div
+                class="ant-skeleton ant-skeleton-element ant-skeleton-active css-dev-only-do-not-override-1odpy5d"
+              >
+                <span
+                  class="ant-skeleton-button ant-skeleton-button-sm"
+                  style="width: 60px;"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="ant-card-body"
+    >
+      <div
+        class="ant-row css-dev-only-do-not-override-1odpy5d"
+        style="margin-left: -12px; margin-right: -12px;"
+      >
+        <div
+          class="ant-col ant-col-16 css-dev-only-do-not-override-1odpy5d"
+          style="padding-left: 12px; padding-right: 24px;"
+        >
+          <div
+            class="ant-skeleton ant-skeleton-active css-dev-only-do-not-override-1odpy5d"
+          >
+            <div
+              class="ant-skeleton-content"
+            >
+              <h3
+                class="ant-skeleton-title"
+                style="width: 38%;"
+              />
+              <ul
+                class="ant-skeleton-paragraph"
+              >
+                <li />
+                <li />
+                <li />
+                <li />
+                <li />
+                <li />
+                <li />
+                <li
+                  style="width: 61%;"
+                />
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div
+          class="ant-col ant-col-8 css-dev-only-do-not-override-1odpy5d"
+          style="padding-left: 12px; padding-right: 12px;"
+        >
+          <div
+            class="ant-skeleton ant-skeleton-active css-dev-only-do-not-override-1odpy5d"
+          >
+            <div
+              class="ant-skeleton-content"
+            >
+              <h3
+                class="ant-skeleton-title"
+                style="width: 38%;"
+              />
+              <ul
+                class="ant-skeleton-paragraph"
+              >
+                <li />
+                <li />
+                <li
+                  style="width: 61%;"
+                />
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

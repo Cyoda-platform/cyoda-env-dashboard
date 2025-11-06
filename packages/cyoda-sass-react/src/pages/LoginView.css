@@ -1,0 +1,31 @@
+.login-view-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.login-view-card {
+  width: 400px;
+  padding: 40px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+
+.login-view-logo {
+  width: 100%;
+  height: auto;
+  margin-bottom: 24px;
+}
+
+.login-view-actions {
+  margin-top: 24px;
+}
+
+.login-view-actions .ant-btn {
+  height: 40px;
+  font-size: 16px;
+}
+

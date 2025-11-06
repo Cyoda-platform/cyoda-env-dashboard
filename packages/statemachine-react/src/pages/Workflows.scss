@@ -1,0 +1,15 @@
+@use '../../../ui-lib-react/src/styles/table-mixins' as table;
+
+.page-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #00D4AA;
+  margin-bottom: 24px;
+  margin-top: 0;
+}
+
+.workflows-page {
+  @include table.table-container-wrapper;
+  @include table.resizable-columns;
+}
+
