@@ -1,7 +1,0 @@
-@use '../../../../ui-lib-react/src/styles/table-mixins' as table;
-
-.transition-state-machine-table {
-  @include table.table-container-wrapper;
-  @include table.resizable-columns;
-}
-
