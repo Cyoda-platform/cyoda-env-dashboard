@@ -1,0 +1,30 @@
+/**
+ * StreamGrid Styles
+ */
+
+@use '../../../../ui-lib-react/src/styles/table-mixins' as table;
+
+.stream-grid-modal {
+  @include table.table-container-wrapper;
+  .page-size {
+    font-size: 14px;
+    color: #666;
+  }
+
+  .stream-grid-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+
+    .page-info {
+      font-weight: 500;
+    }
+
+    .wrap-buttons {
+      display: flex;
+      gap: 10px;
+    }
+  }
+}
+
