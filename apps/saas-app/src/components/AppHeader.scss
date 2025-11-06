@@ -1,0 +1,169 @@
+// CYODA AI Assistant Theme - App Header
+.saas-app-header {
+  background: var(--refine-bg-secondary);
+  padding: 0 32px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  border-bottom: 1px solid rgba(0, 212, 170, 0.15);
+
+  // Clean dark background
+  background: linear-gradient(
+    180deg,
+    rgba(26, 35, 50, 1) 0%,
+    rgba(22, 30, 43, 1) 100%
+  );
+
+  // Thin teal accent line on top
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--refine-primary) 0%, rgba(0, 212, 170, 0.3) 100%);
+    opacity: 0.8;
+  }
+
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 48px;
+    padding: 0;
+
+    .logo-section {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      position: relative;
+
+      .cyoda-logo {
+        width: 180px;
+        height: 36px;
+        display: block;
+        transition: opacity var(--refine-transition-base);
+        margin: 0;
+
+        &:hover {
+          opacity: 0.85;
+        }
+
+        .st0 {
+          fill: rgba(26, 35, 50, 1);
+        }
+
+        .st1 {
+          fill: var(--refine-primary);
+        }
+
+        .st2 {
+          display: none;
+        }
+      }
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      height: 100%;
+      gap: 24px;
+
+      .processing-features {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 14px;
+        color: var(--refine-text-secondary);
+
+        .consistency-time {
+          white-space: nowrap;
+          color: var(--refine-text-secondary);
+          font-size: 14px;
+        }
+
+        .delimiter {
+          color: rgba(255, 255, 255, 0.3);
+        }
+
+        .live-update-toggle,
+        .proxy-mode-toggle {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+
+          span {
+            white-space: nowrap;
+          }
+        }
+
+        .info-icon {
+          cursor: pointer;
+          color: var(--refine-text-tertiary);
+          transition: color var(--refine-transition-base);
+
+          &:hover {
+            color: var(--refine-primary);
+          }
+        }
+      }
+
+      .entity-type-section {
+        display: flex;
+        align-items: center;
+      }
+    }
+  }
+}
+
+// Global styling for EntityTypeSwitch component
+.entity-type-switch {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  .entity-type-label {
+    font-size: 11px;
+    color: var(--refine-text-tertiary);
+    font-weight: 500;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .ant-radio-group {
+    .ant-radio-button-wrapper {
+      background: transparent;
+      border-color: rgba(255, 255, 255, 0.15);
+      color: var(--refine-text-secondary);
+      font-size: 13px;
+      padding: 4px 14px;
+      height: 32px;
+      line-height: 22px;
+      transition: all var(--refine-transition-base);
+
+      &:hover {
+        color: var(--refine-primary);
+        border-color: var(--refine-primary);
+      }
+
+      &.ant-radio-button-wrapper-checked {
+        background: var(--refine-primary);
+        border-color: var(--refine-primary);
+        color: #fff;
+        font-weight: 500;
+
+        &:hover {
+          background: var(--refine-primary-dark);
+          border-color: var(--refine-primary-dark);
+        }
+      }
+    }
+  }
+}
+
