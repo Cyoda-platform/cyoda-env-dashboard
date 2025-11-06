@@ -642,7 +642,7 @@ __metadata:
 
 "@cyoda/http-api-react@file:../../packages/http-api-react::locator=%40cyoda%2Fdemo-app%40workspace%3Aapps%2Fdemo-app":
   version: 1.0.0
-  resolution: "@cyoda/http-api-react@file:../../packages/http-api-react#../../packages/http-api-react::hash=f1b9dc&locator=%40cyoda%2Fdemo-app%40workspace%3Aapps%2Fdemo-app"
+  resolution: "@cyoda/http-api-react@file:../../packages/http-api-react#../../packages/http-api-react::hash=2e132c&locator=%40cyoda%2Fdemo-app%40workspace%3Aapps%2Fdemo-app"
   dependencies:
     "@tanstack/react-query": "npm:^5.62.11"
     "@tanstack/react-query-devtools": "npm:^5.62.11"
@@ -653,13 +653,13 @@ __metadata:
   peerDependencies:
     react: ^18.3.1
     react-dom: ^18.3.1
-  checksum: 10c0/4ca590ead4d1c33a0c4e09901f5a1ed443378fe788a59b3c652766d4c5e6ebb717069f2ad12414e20240060ea3c2f6cd10dee08327bbd1d491119d4d576430ef
+  checksum: 10c0/6a05957d2f48b70fddc92ca1618b677836759536253471b1402557fc25687e284a76c51adbdfe7184c422faf0465426c55c7aa3ad33ef16c48b875fa343d2224
   languageName: node
   linkType: hard
 
 "@cyoda/http-api-react@file:../http-api-react::locator=%40cyoda%2Fprocessing-manager-react%40workspace%3Apackages%2Fprocessing-manager-react":
   version: 1.0.0
-  resolution: "@cyoda/http-api-react@file:../http-api-react#../http-api-react::hash=f1b9dc&locator=%40cyoda%2Fprocessing-manager-react%40workspace%3Apackages%2Fprocessing-manager-react"
+  resolution: "@cyoda/http-api-react@file:../http-api-react#../http-api-react::hash=2e132c&locator=%40cyoda%2Fprocessing-manager-react%40workspace%3Apackages%2Fprocessing-manager-react"
   dependencies:
     "@tanstack/react-query": "npm:^5.62.11"
     "@tanstack/react-query-devtools": "npm:^5.62.11"
@@ -670,13 +670,13 @@ __metadata:
   peerDependencies:
     react: ^18.3.1
     react-dom: ^18.3.1
-  checksum: 10c0/4ca590ead4d1c33a0c4e09901f5a1ed443378fe788a59b3c652766d4c5e6ebb717069f2ad12414e20240060ea3c2f6cd10dee08327bbd1d491119d4d576430ef
+  checksum: 10c0/6a05957d2f48b70fddc92ca1618b677836759536253471b1402557fc25687e284a76c51adbdfe7184c422faf0465426c55c7aa3ad33ef16c48b875fa343d2224
   languageName: node
   linkType: hard
 
 "@cyoda/http-api-react@file:../http-api-react::locator=%40cyoda%2Fsource-configuration-react%40workspace%3Apackages%2Fsource-configuration-react":
   version: 1.0.0
-  resolution: "@cyoda/http-api-react@file:../http-api-react#../http-api-react::hash=f1b9dc&locator=%40cyoda%2Fsource-configuration-react%40workspace%3Apackages%2Fsource-configuration-react"
+  resolution: "@cyoda/http-api-react@file:../http-api-react#../http-api-react::hash=2e132c&locator=%40cyoda%2Fsource-configuration-react%40workspace%3Apackages%2Fsource-configuration-react"
   dependencies:
     "@tanstack/react-query": "npm:^5.62.11"
     "@tanstack/react-query-devtools": "npm:^5.62.11"
@@ -687,7 +687,7 @@ __metadata:
   peerDependencies:
     react: ^18.3.1
     react-dom: ^18.3.1
-  checksum: 10c0/4ca590ead4d1c33a0c4e09901f5a1ed443378fe788a59b3c652766d4c5e6ebb717069f2ad12414e20240060ea3c2f6cd10dee08327bbd1d491119d4d576430ef
+  checksum: 10c0/6a05957d2f48b70fddc92ca1618b677836759536253471b1402557fc25687e284a76c51adbdfe7184c422faf0465426c55c7aa3ad33ef16c48b875fa343d2224
   languageName: node
   linkType: hard
 
@@ -836,7 +836,7 @@ __metadata:
 
 "@cyoda/statemachine-react@file:../../packages/statemachine-react::locator=%40cyoda%2Fdemo-app%40workspace%3Aapps%2Fdemo-app":
   version: 1.0.0
-  resolution: "@cyoda/statemachine-react@file:../../packages/statemachine-react#../../packages/statemachine-react::hash=dd96de&locator=%40cyoda%2Fdemo-app%40workspace%3Aapps%2Fdemo-app"
+  resolution: "@cyoda/statemachine-react@file:../../packages/statemachine-react#../../packages/statemachine-react::hash=c23e44&locator=%40cyoda%2Fdemo-app%40workspace%3Aapps%2Fdemo-app"
   dependencies:
     "@cyoda/http-api-react": "npm:^1.0.0"
     "@cyoda/ui-lib-react": "npm:^1.0.0"
@@ -853,7 +853,7 @@ __metadata:
     react-dom: "npm:^18.3.1"
     react-router-dom: "npm:^7.9.4"
     zustand: "npm:^5.0.2"
-  checksum: 10c0/85da0230de22f690633c806214fde30cc10107b971ba55bce034bd29ee47e5fc94865c5e0d7ac12e0bbfb933b96e62297d7576c6c27008d438ec03f10772dbe8
+  checksum: 10c0/f4a0cd45e9d85211dcc063ddb49ed4cfca32a0d296f3c257e1fe17f2a0766e542d31bfc04ca7f1ff096dfa3ccacd4a3846d4e7baffa43f8c6d665d42e6552e51
   languageName: node
   linkType: hard
 
@@ -937,7 +937,7 @@ __metadata:
 
 "@cyoda/tasks-react@file:../../packages/tasks-react::locator=%40cyoda%2Fdemo-app%40workspace%3Aapps%2Fdemo-app":
   version: 1.0.0
-  resolution: "@cyoda/tasks-react@file:../../packages/tasks-react#../../packages/tasks-react::hash=d14ae7&locator=%40cyoda%2Fdemo-app%40workspace%3Aapps%2Fdemo-app"
+  resolution: "@cyoda/tasks-react@file:../../packages/tasks-react#../../packages/tasks-react::hash=c2f43b&locator=%40cyoda%2Fdemo-app%40workspace%3Aapps%2Fdemo-app"
   dependencies:
     "@cyoda/http-api-react": "npm:^1.0.0"
     "@cyoda/ui-lib-react": "npm:^1.0.0"
@@ -951,7 +951,7 @@ __metadata:
     react-dom: "npm:^18.3.1"
     react-router-dom: "npm:^7.9.4"
     zustand: "npm:^5.0.2"
-  checksum: 10c0/ab400856e879458804c4484ccd994724b6e810581d2ab6d42a499cd5d09f7ee30e18f9d4743ed7f2a00825a5125a0919a6af19d8d9731ec53560524f962b8cd7
+  checksum: 10c0/6a9c917b9001be0f31cc3a35679fc2b37e1f384c503015e16d7e2b55d47c3f330f7d03dfd2167639be2428b1df942aacfaa077c8dce7f61fa551507cc8cc484a
   languageName: node
   linkType: hard
 
@@ -994,7 +994,7 @@ __metadata:
 
 "@cyoda/ui-lib-react@file:../../packages/ui-lib-react::locator=%40cyoda%2Fdemo-app%40workspace%3Aapps%2Fdemo-app":
   version: 1.0.0
-  resolution: "@cyoda/ui-lib-react@file:../../packages/ui-lib-react#../../packages/ui-lib-react::hash=7d8f0a&locator=%40cyoda%2Fdemo-app%40workspace%3Aapps%2Fdemo-app"
+  resolution: "@cyoda/ui-lib-react@file:../../packages/ui-lib-react#../../packages/ui-lib-react::hash=25e3f1&locator=%40cyoda%2Fdemo-app%40workspace%3Aapps%2Fdemo-app"
   dependencies:
     "@ant-design/icons": "npm:^6.1.0"
     "@types/sortablejs": "npm:^1.15.8"
@@ -1012,13 +1012,13 @@ __metadata:
   peerDependencies:
     react: ^18.3.1
     react-dom: ^18.3.1
-  checksum: 10c0/cbac6531e91272a3e61fb8b7ed61177de43b9c92c61544770ee6a051f3e012f6c88ddbd1df74613b70bc08b9f376f5af3c0c3a62a1c7b441ee1125252439846a
+  checksum: 10c0/fb1f1cf83bbf8cf90b4d1af14469107089e079aa9791f6fbb838567adbee55ee40a07b33d9437b70de13cb1d4ac34d3ae94eeb52f0a41eae573cdc076dc8de10
   languageName: node
   linkType: hard
 
 "@cyoda/ui-lib-react@file:../ui-lib-react::locator=%40cyoda%2Fprocessing-manager-react%40workspace%3Apackages%2Fprocessing-manager-react":
   version: 1.0.0
-  resolution: "@cyoda/ui-lib-react@file:../ui-lib-react#../ui-lib-react::hash=7d8f0a&locator=%40cyoda%2Fprocessing-manager-react%40workspace%3Apackages%2Fprocessing-manager-react"
+  resolution: "@cyoda/ui-lib-react@file:../ui-lib-react#../ui-lib-react::hash=25e3f1&locator=%40cyoda%2Fprocessing-manager-react%40workspace%3Apackages%2Fprocessing-manager-react"
   dependencies:
     "@ant-design/icons": "npm:^6.1.0"
     "@types/sortablejs": "npm:^1.15.8"
@@ -1036,13 +1036,13 @@ __metadata:
   peerDependencies:
     react: ^18.3.1
     react-dom: ^18.3.1
-  checksum: 10c0/cbac6531e91272a3e61fb8b7ed61177de43b9c92c61544770ee6a051f3e012f6c88ddbd1df74613b70bc08b9f376f5af3c0c3a62a1c7b441ee1125252439846a
+  checksum: 10c0/fb1f1cf83bbf8cf90b4d1af14469107089e079aa9791f6fbb838567adbee55ee40a07b33d9437b70de13cb1d4ac34d3ae94eeb52f0a41eae573cdc076dc8de10
   languageName: node
   linkType: hard
 
 "@cyoda/ui-lib-react@file:../ui-lib-react::locator=%40cyoda%2Fsource-configuration-react%40workspace%3Apackages%2Fsource-configuration-react":
   version: 1.0.0
-  resolution: "@cyoda/ui-lib-react@file:../ui-lib-react#../ui-lib-react::hash=7d8f0a&locator=%40cyoda%2Fsource-configuration-react%40workspace%3Apackages%2Fsource-configuration-react"
+  resolution: "@cyoda/ui-lib-react@file:../ui-lib-react#../ui-lib-react::hash=25e3f1&locator=%40cyoda%2Fsource-configuration-react%40workspace%3Apackages%2Fsource-configuration-react"
   dependencies:
     "@ant-design/icons": "npm:^6.1.0"
     "@types/sortablejs": "npm:^1.15.8"
@@ -1060,7 +1060,7 @@ __metadata:
   peerDependencies:
     react: ^18.3.1
     react-dom: ^18.3.1
-  checksum: 10c0/cbac6531e91272a3e61fb8b7ed61177de43b9c92c61544770ee6a051f3e012f6c88ddbd1df74613b70bc08b9f376f5af3c0c3a62a1c7b441ee1125252439846a
+  checksum: 10c0/fb1f1cf83bbf8cf90b4d1af14469107089e079aa9791f6fbb838567adbee55ee40a07b33d9437b70de13cb1d4ac34d3ae94eeb52f0a41eae573cdc076dc8de10
   languageName: node
   linkType: hard
 
@@ -4372,9 +4372,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cyoda-ui-react@workspace:.":
+"cyoda-saas-platform@workspace:.":
   version: 0.0.0-use.local
-  resolution: "cyoda-ui-react@workspace:."
+  resolution: "cyoda-saas-platform@workspace:."
   dependencies:
     "@auth0/auth0-react": "npm:^2.8.0"
     "@playwright/test": "npm:^1.49.1"
@@ -4395,7 +4395,7 @@ __metadata:
     jsdom: "npm:^27.0.0"
     mark.js: "npm:^8.11.1"
     monaco-editor: "npm:^0.54.0"
-    playwright: "npm:^1.49.1"
+    playwright: "npm:^1.56.1"
     prettier: "npm:^3.4.2"
     prismjs: "npm:^1.30.0"
     typescript: "npm:^5.7.3"
