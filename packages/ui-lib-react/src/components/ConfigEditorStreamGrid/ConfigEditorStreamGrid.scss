@@ -1,0 +1,39 @@
+@use '../../styles/table-mixins' as table;
+
+.config-editor-stream-grid {
+  @include table.table-container-wrapper;
+
+  &__content {
+    // Content styles
+  }
+
+  &__filter {
+    margin-bottom: 16px;
+
+    .filter-builder {
+      margin-bottom: 8px;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+    }
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+
+    .page-info {
+      font-weight: 500;
+    }
+  }
+
+  .page-size {
+    font-size: 14px;
+    color: #666;
+  }
+}
+

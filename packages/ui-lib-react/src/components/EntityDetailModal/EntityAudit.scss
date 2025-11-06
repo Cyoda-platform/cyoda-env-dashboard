@@ -1,0 +1,19 @@
+@use '../../styles/table-mixins' as table;
+
+.entity-audit {
+  @include table.table-container-wrapper;
+  padding: 16px 0;
+
+  .ant-table-expanded-row {
+    background-color: #fafafa;
+  }
+
+  pre {
+    margin: 0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+}
+

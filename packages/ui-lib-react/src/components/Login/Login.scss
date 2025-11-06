@@ -1,0 +1,41 @@
+.wrap-login-form {
+  .ant-form-item {
+    margin-bottom: 25px !important;
+  }
+
+  svg {
+    font-size: 14px;
+    max-width: none;
+    max-height: none;
+  }
+
+  h3.header {
+    font-size: 26px;
+    margin: 30px auto 40px auto;
+    text-align: center;
+    font-weight: 700;
+  }
+
+  .card-body {
+    margin-bottom: 20px;
+  }
+
+  .actions {
+    button {
+      width: 100%;
+    }
+
+    .auth0-button-wrapper {
+      margin-top: 10px;
+      
+      button {
+        width: 100%;
+      }
+    }
+  }
+
+  .text-center {
+    text-align: center;
+  }
+}
+

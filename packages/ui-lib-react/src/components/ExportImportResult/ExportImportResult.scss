@@ -1,0 +1,26 @@
+.export-import-result {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #dedede;
+
+  &__result-box {
+    white-space: nowrap;
+    margin-left: 10px;
+
+    .ant-btn-circle {
+      width: 30px;
+      height: 30px;
+      margin-left: 10px;
+      line-height: 0;
+    }
+  }
+
+  &__names-list {
+    margin-bottom: 5px;
+  }
+}
+

@@ -1,0 +1,19 @@
+.modelling-item-class-form {
+  &__field {
+    margin-right: 10px;
+
+    span {
+      color: rgb(96, 98, 102);
+      font-size: 14px;
+    }
+  }
+
+  &__flex {
+    display: flex;
+  }
+
+  &__button {
+    // Button wrapper styles
+  }
+}
+

@@ -1,0 +1,10 @@
+@use '../../styles/table-mixins' as table;
+
+.error-table-drawer {
+  @include table.table-container-wrapper;
+
+  .error-table-actions {
+    margin-bottom: 16px;
+  }
+}
+

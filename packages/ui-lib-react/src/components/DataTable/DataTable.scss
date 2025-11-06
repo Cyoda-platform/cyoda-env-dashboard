@@ -1,0 +1,32 @@
+@use '../../styles/table-mixins' as table;
+
+.cyoda-data-tables {
+  @include table.table-container-wrapper;
+
+  .pagination-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .tool {
+    margin-bottom: 16px;
+
+    .ant-form-inline {
+      display: block;
+    }
+
+    .ant-form-item {
+      margin-top: 5px;
+      margin-right: 10px;
+      display: inline-block !important;
+      min-width: 100% !important;
+    }
+  }
+
+  .pagination-bar {
+    margin-top: 20px;
+  }
+}
+
