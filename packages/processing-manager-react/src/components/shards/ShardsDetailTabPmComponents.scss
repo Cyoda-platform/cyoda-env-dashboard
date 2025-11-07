@@ -2,13 +2,19 @@
 .pm-components-tab {
   padding: 0;
 
-  // Header with Clear button
+  // Header with title and Clear button
   .pm-components-header {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 24px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+    .pm-components-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #fff;
+      margin: 0;
+    }
   }
 
   // Tabs styling (secondary level) - override parent styles

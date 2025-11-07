@@ -16,6 +16,7 @@ export const ShardsDetailTabZKInfo: React.FC = () => {
 
   return (
     <div className="zk-info-tab">
+      <h3 className="zk-info-title">ZooKeeper Info</h3>
       <Tabs activeKey={activeKey} onChange={setActiveKey}>
         <TabPane tab="Current Node Info" key="1">
           <CurrNodeInfo />

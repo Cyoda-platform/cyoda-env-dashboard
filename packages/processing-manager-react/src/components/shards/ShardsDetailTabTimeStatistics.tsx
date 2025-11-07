@@ -28,6 +28,7 @@ export const ShardsDetailTabTimeStatistics: React.FC = () => {
   return (
     <div className="time-statistics-tab">
       <div className="time-statistics-header">
+        <h3 className="time-statistics-title">Time statistics</h3>
         <Space>
           <Button onClick={handleClear}>Clear</Button>
           <Button icon={<SyncOutlined />} onClick={handleReload}>Reload</Button>

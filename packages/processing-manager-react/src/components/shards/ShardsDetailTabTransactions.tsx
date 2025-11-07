@@ -23,6 +23,7 @@ export const ShardsDetailTabTransactions: React.FC = () => {
   return (
     <div className="transactions-tab">
       <div className="transactions-header">
+        <h3 className="transactions-title">Transactions</h3>
         <Button onClick={handleClear} icon={<ClearOutlined />}>
           Clear
         </Button>

@@ -23,6 +23,7 @@ export const ShardsDetailTabProcessingEvents: React.FC = () => {
 
   return (
     <div className="processing-events-tab">
+      <h3 className="processing-events-title">Processing Events</h3>
       <Tabs activeKey={activeKey} onChange={setActiveKey}>
         <TabPane tab="Process Events Statistics" key="1">
           <ProcessEventsStatistics />

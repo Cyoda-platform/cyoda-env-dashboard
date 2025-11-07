@@ -22,6 +22,7 @@ export default function ShardsDetailTabPmComponents() {
   return (
     <div className="pm-components-tab">
       <div className="pm-components-header">
+        <h3 className="pm-components-title">PM components</h3>
         <PmComponentsClear />
       </div>
       <Tabs activeKey={activeTab} onChange={setActiveTab}>
