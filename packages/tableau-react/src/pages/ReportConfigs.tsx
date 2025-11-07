@@ -20,7 +20,7 @@ import type { ColumnsType } from 'antd/es/table';
 import type { ResizeCallbackData } from 'react-resizable';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { axios } from '@cyoda/http-api-react';
+import { axios, useGlobalUiSettingsStore, getReportingFetchTypes } from '@cyoda/http-api-react';
 import moment from 'moment';
 import { exportReportsByIds, importReports, createReportDefinition } from '@cyoda/http-api-react';
 import CreateReportDialog, { type CreateReportDialogRef, type CreateReportFormData } from '../components/CreateReportDialog';
@@ -45,6 +45,7 @@ interface ReportConfigRow {
   reportId?: string;
   reportExecutionTime: number;
   groupingVersion?: string;
+  entityType?: string | null;
 }
 
 interface RunningReport {
@@ -71,7 +72,8 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const storage = useMemo(() => new HelperStorage(), []);
-  
+  const { entityType } = useGlobalUiSettingsStore();
+
   const createDialogRef = useRef<CreateReportDialogRef>(null);
   const cloneDialogRef = useRef<CloneReportDialogRef>(null);
 
@@ -100,6 +102,24 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
   useEffect(() => {
     storage.set('reportConfigs:columnWidths', columnWidths);
   }, [columnWidths, storage]);
+
+  // Load entity types for filtering
+  const { data: entityTypesData = [] } = useQuery({
+    queryKey: ['entityTypes'],
+    queryFn: async () => {
+      try {
+        console.log('ReportConfigs - Fetching entity types...');
+        const response = await getReportingFetchTypes();
+        console.log('ReportConfigs - Entity types response:', response);
+        const data = response.data;
+        console.log('ReportConfigs - Entity types data:', data);
+        return Array.isArray(data) ? data : [];
+      } catch (error) {
+        console.error('ReportConfigs - Failed to load entity types:', error);
+        return [];
+      }
+    },
+  });
 
   // Load report definitions
   const { data: definitions = [], isLoading, refetch } = useQuery({
@@ -150,6 +170,19 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
       // Extract name from ID: "CYODA-Activity-fff" -> "fff"
       const name = report.gridConfigFields.id.split('-').slice(2).join('-');
 
+      // Find entity type info
+      const entityClass = report.gridConfigFields.type;
+      const entityTypeInfo = entityTypesData.find((et: any) => {
+        if (typeof et === 'object') {
+          // Extract short class name from full class name
+          // e.g., 'com.cyoda.tdb.model.search.SearchUsageEntity' -> 'SearchUsageEntity'
+          const shortName = et.name.split('.').pop();
+          return shortName === entityClass;
+        }
+        return et === entityClass;
+      });
+      const entityTypeValue = typeof entityTypeInfo === 'object' ? entityTypeInfo.type : null;
+
       return {
         id: report.gridConfigFields.id,
         groupingVersion: runningReport?.groupingVersion,
@@ -165,14 +198,33 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
           : '',
         reportId: runningReport?.reportId,
         reportExecutionTime: runningReport?.reportId ? 2 : 0,
+        entityType: entityTypeValue,
       };
     });
 
-    // Apply filters
+    console.log('ReportConfigs - entityTypesData:', entityTypesData);
+    console.log('ReportConfigs - entityType (global toggle):', entityType);
+    console.log('ReportConfigs - data before filter:', data.map(d => ({ entity: d.entity, entityType: d.entityType })));
+
+    // Filter by entity type from global toggle
+    if (entityTypesData.length > 0 && entityTypesData.some((et: any) => typeof et === 'object' && et.type)) {
+      data = data.filter((item: any) => {
+        // If entity has type info, filter by it
+        if (item.entityType) {
+          return item.entityType === entityType;
+        }
+        // If no type info, show in both modes (backward compatibility)
+        return true;
+      });
+    }
+
+    console.log('ReportConfigs - data after filter:', data.map(d => ({ entity: d.entity, entityType: d.entityType })));
+
+    // Apply other filters
     data = HelperReportDefinition.applyFiltersForReportTables(data, filterForm);
 
     return data;
-  }, [definitions, runningReports, filterForm]);
+  }, [definitions, runningReports, filterForm, entityType, entityTypesData]);
 
   // Extract unique users for filter
   const usersOptions = useMemo((): { value: string; label: string }[] => {

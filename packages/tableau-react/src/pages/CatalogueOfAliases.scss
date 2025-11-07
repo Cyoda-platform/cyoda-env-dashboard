@@ -17,6 +17,10 @@
   }
 
   .flex-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: nowrap;
     margin-bottom: 20px;
   }
 

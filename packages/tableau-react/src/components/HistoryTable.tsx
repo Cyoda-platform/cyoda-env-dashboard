@@ -9,6 +9,7 @@ import { InfoCircleOutlined, EditOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import type { ResizeCallbackData } from 'react-resizable';
 import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
 import { axiosPlatform, useGlobalUiSettingsStore } from '@cyoda/http-api-react';
 import { HelperStorage } from '@cyoda/ui-lib-react';
 import moment from 'moment';
@@ -29,6 +30,20 @@ const HistoryTable: React.FC<HistoryTableProps> = ({ filter, onChange }) => {
 
   // Get global entity type
   const { entityType } = useGlobalUiSettingsStore();
+
+  // Fetch entity types data
+  const { data: entityTypesData = [] } = useQuery({
+    queryKey: ['entityTypes'],
+    queryFn: async () => {
+      try {
+        const { data } = await axios.get('/platform-api/entity/types');
+        return data._embedded?.entityTypes || [];
+      } catch (error) {
+        console.error('Failed to load entity types:', error);
+        return [];
+      }
+    },
+  });
 
   // Column widths state - using percentages for adaptive behavior within fixed container
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>(() => {
@@ -186,7 +201,8 @@ const HistoryTable: React.FC<HistoryTableProps> = ({ filter, onChange }) => {
     if (!Array.isArray(reportHistoryData)) {
       return [];
     }
-    return reportHistoryData.map((report) => {
+
+    let data = reportHistoryData.map((report) => {
       // Safely handle configName
       const configName = report.configName || report.name || 'Unknown';
       const reportName: string[] = configName.split('-');
@@ -207,6 +223,19 @@ const HistoryTable: React.FC<HistoryTableProps> = ({ filter, onChange }) => {
       // Safely handle user
       const username = report.user?.username || report.userId || 'Unknown';
 
+      // Find entity type info
+      const reportType = report.type || '';
+      const entityTypeInfo = entityTypesData.find((et: any) => {
+        if (typeof et === 'object') {
+          // Extract short class name from full class name
+          // e.g., 'com.cyoda.tdb.model.search.SearchUsageEntity' -> 'SearchUsageEntity'
+          const shortName = et.name.split('.').pop();
+          return shortName === reportType;
+        }
+        return et === reportType;
+      });
+      const entityTypeValue = typeof entityTypeInfo === 'object' ? entityTypeInfo.type : null;
+
       return {
         id: report.id,
         groupingColumns: report.groupingColumns || [],
@@ -215,7 +244,7 @@ const HistoryTable: React.FC<HistoryTableProps> = ({ filter, onChange }) => {
         createDateTime: createTimeStr,
         createDateTimeMkTime: createTime.format('x'),
         config: configShortName,
-        type: report.type || '',
+        type: reportType,
         user: username,
         status: report.status || '',
         execution: executionStr,
@@ -223,9 +252,24 @@ const HistoryTable: React.FC<HistoryTableProps> = ({ filter, onChange }) => {
         totalRowsCount: report.totalRowsCount || 0,
         hierarhyEnable: report.hierarhyEnable || false,
         regroupingPossible: report.regroupingPossible || false,
+        entityType: entityTypeValue,
       };
     });
-  }, [reportHistoryData]);
+
+    // Filter by entity type from global toggle
+    if (entityTypesData.length > 0 && entityTypesData.some((et: any) => typeof et === 'object' && et.type)) {
+      data = data.filter((item: any) => {
+        // If entity has type info, filter by it
+        if (item.entityType) {
+          return item.entityType === entityType;
+        }
+        // If no type info, show in both modes (backward compatibility)
+        return true;
+      });
+    }
+
+    return data;
+  }, [reportHistoryData, entityTypesData, entityType]);
 
   // Handle info button click - shows report details modal
   const handleInfoClick = useCallback(async (record: TableDataRow) => {

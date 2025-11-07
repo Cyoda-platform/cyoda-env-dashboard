@@ -23,7 +23,7 @@ import {
 import type { TableColumnsType } from 'antd';
 import type { ResizeCallbackData } from 'react-resizable';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { axios } from '@cyoda/http-api-react';
+import { axios, useGlobalUiSettingsStore, getReportingFetchTypes } from '@cyoda/http-api-react';
 import moment from 'moment';
 import CreateReportDialog from '../components/CreateReportDialog';
 import HistoryFilter from '../components/HistoryFilter';
@@ -56,12 +56,14 @@ interface TableRow extends StreamReportConfig {
   deleteLoading?: boolean;
   loadingReportButton?: boolean;
   reportExecutionTime?: number;
+  entityType?: string | null;
 }
 
 export const ReportConfigsStream: React.FC = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const storage = new HelperStorage();
+  const { entityType } = useGlobalUiSettingsStore();
 
   const [createDialogVisible, setCreateDialogVisible] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
@@ -140,8 +142,13 @@ export const ReportConfigsStream: React.FC = () => {
   const { data: entityData = [] } = useQuery({
     queryKey: ['entityTypes'],
     queryFn: async () => {
-      const { data } = await axios.get(`${API_BASE}/platform-api/entity-info/fetch/types`);
-      return data;
+      try {
+        const { data } = await getReportingFetchTypes();
+        return Array.isArray(data) ? data : [];
+      } catch (error) {
+        console.warn('Failed to load entity types:', error);
+        return [];
+      }
     },
   });
 
@@ -169,10 +176,17 @@ export const ReportConfigsStream: React.FC = () => {
     let data = definitions
       .map((report) => {
         const entity = report.streamDataDef?.requestClass?.split('.').pop() || '';
-        const entityRow = entityData.find((el: any) => el.name === report.streamDataDef?.requestClass);
+        const entityClass = report.streamDataDef?.requestClass;
+
+        // Find entity type info
+        const entityTypeInfo = entityData.find((el: any) =>
+          typeof el === 'object' ? el.name === entityClass : el === entityClass
+        );
+        const entityTypeValue = typeof entityTypeInfo === 'object' ? entityTypeInfo.type : null;
+
         let entityClassNameLabel = entity;
-        if (entityRow) {
-          entityClassNameLabel += ` (${entityRow.type || 'BUSINESS'})`;
+        if (entityTypeValue) {
+          entityClassNameLabel += ` (${entityTypeValue === 'BUSINESS' ? 'Business' : 'Technical'})`;
         }
 
         return {
@@ -182,15 +196,28 @@ export const ReportConfigsStream: React.FC = () => {
           createdHuman: moment(report.createDate).format('YYYY-MM-DD HH:mm'),
           deleteLoading: false,
           loadingReportButton: false,
+          entityType: entityTypeValue,
         } as TableRow;
       })
       .reverse();
 
-    // Apply filters
+    // Filter by entity type from global toggle
+    if (entityData.length > 0 && entityData.some((et: any) => typeof et === 'object' && et.type)) {
+      data = data.filter((item: any) => {
+        // If entity has type info, filter by it
+        if (item.entityType) {
+          return item.entityType === entityType;
+        }
+        // If no type info, show in both modes (backward compatibility)
+        return true;
+      });
+    }
+
+    // Apply other filters
     data = HelperReportDefinition.applyFiltersForReportTables(data, filterForm);
 
     return data;
-  }, [definitions, entityData, filterForm]);
+  }, [definitions, entityData, filterForm, entityType]);
 
   const usersOptions = useMemo(() => {
     const users = definitions.map((report) => ({

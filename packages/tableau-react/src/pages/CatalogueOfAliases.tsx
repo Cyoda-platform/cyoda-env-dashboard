@@ -13,7 +13,7 @@ import type { TableColumnsType } from 'antd';
 import type { ResizeCallbackData } from 'react-resizable';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import moment from 'moment';
-import { getAllCatalogItems, createCatalogItem, updateCatalogItem, deleteCatalogItem, exportCatalogItems, importCatalogItems } from '@cyoda/http-api-react';
+import { getAllCatalogItems, createCatalogItem, updateCatalogItem, deleteCatalogItem, exportCatalogItems, importCatalogItems, useGlobalUiSettingsStore, getReportingFetchTypes } from '@cyoda/http-api-react';
 import type { CatalogItem } from '@cyoda/http-api-react';
 import CatalogueOfAliasesFilter from '../components/CatalogueOfAliasesFilter';
 import ModellingPopUpAliasNew, { ModellingPopUpAliasNewRef } from '../components/Modelling/Alias/ModellingPopUpAliasNew';
@@ -33,6 +33,7 @@ interface TableDataRow {
   createdHuman: string;
   createdTimestamp: number;
   source: CatalogItem;
+  entityType?: string | null;
 }
 
 interface FilterForm {
@@ -47,6 +48,7 @@ const CatalogueOfAliases: React.FC = () => {
   const { message } = App.useApp();
   const queryClient = useQueryClient();
   const storage = useMemo(() => new HelperStorage(), []);
+  const { entityType } = useGlobalUiSettingsStore();
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [filterForm, setFilterForm] = useState<FilterForm>({});
   const [pageSize, setPageSize] = useState<number>(50);
@@ -102,6 +104,20 @@ const CatalogueOfAliases: React.FC = () => {
     };
   }, []);
 
+  // Fetch entity types for filtering
+  const { data: entityTypesData = [] } = useQuery({
+    queryKey: ['entityTypes'],
+    queryFn: async () => {
+      try {
+        const { data } = await getReportingFetchTypes();
+        return Array.isArray(data) ? data : [];
+      } catch (error) {
+        console.warn('Failed to load entity types:', error);
+        return [];
+      }
+    },
+  });
+
   // Fetch catalog items
   const { data: catalogItems = [], isLoading, refetch } = useQuery({
     queryKey: ['catalogItems'],
@@ -120,20 +136,42 @@ const CatalogueOfAliases: React.FC = () => {
 
   // Transform data for table
   const tableData = useMemo(() => {
-    let data: TableDataRow[] = catalogItems.map((item) => ({
-      id: item.id || '',
-      name: item.name,
-      description: item.desc || '',
-      entity: getShortEntityName(item.entityClass),
-      user: item.user || '',
-      state: item.state || '',
-      created: item.createDate || '',
-      createdHuman: item.createDate ? moment(item.createDate).format('DD-MM-YYYY HH:mm') : '',
-      createdTimestamp: item.createDate ? moment(item.createDate).unix() : 0,
-      source: item,
-    }));
+    let data: TableDataRow[] = catalogItems.map((item) => {
+      // Find entity type info
+      const entityClass = item.entityClass;
+      const entityTypeInfo = entityTypesData.find((et: any) =>
+        typeof et === 'object' ? et.name === entityClass : et === entityClass
+      );
+      const entityTypeValue = typeof entityTypeInfo === 'object' ? entityTypeInfo.type : null;
 
-    // Apply filters
+      return {
+        id: item.id || '',
+        name: item.name,
+        description: item.desc || '',
+        entity: getShortEntityName(item.entityClass),
+        user: item.user || '',
+        state: item.state || '',
+        created: item.createDate || '',
+        createdHuman: item.createDate ? moment(item.createDate).format('DD-MM-YYYY HH:mm') : '',
+        createdTimestamp: item.createDate ? moment(item.createDate).unix() : 0,
+        source: item,
+        entityType: entityTypeValue,
+      };
+    });
+
+    // Filter by entity type from global toggle
+    if (entityTypesData.length > 0 && entityTypesData.some((et: any) => typeof et === 'object' && et.type)) {
+      data = data.filter((item: any) => {
+        // If entity has type info, filter by it
+        if (item.entityType) {
+          return item.entityType === entityType;
+        }
+        // If no type info, show in both modes (backward compatibility)
+        return true;
+      });
+    }
+
+    // Apply other filters
     if (filterForm.states && filterForm.states.length > 0) {
       data = data.filter((item) => filterForm.states!.includes(item.state));
     }
@@ -157,7 +195,7 @@ const CatalogueOfAliases: React.FC = () => {
     }
 
     return data;
-  }, [catalogItems, filterForm]);
+  }, [catalogItems, filterForm, entityType, entityTypesData]);
 
   // Get filter options
   const filterOptions = useMemo(() => {
