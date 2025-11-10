@@ -43,8 +43,8 @@ async function openReportEditor(page: any): Promise<boolean> {
   await page.waitForLoadState('networkidle');
   await page.waitForTimeout(2000);
 
-  // Try to find edit button (this is the most reliable way)
-  let editButton = page.locator('.ant-table-tbody button[aria-label="edit"]').first();
+  // Try to find edit button by icon (EditOutlined)
+  let editButton = page.locator('.ant-table-tbody button:has(.anticon-edit)').first();
   let editButtonCount = await editButton.count();
 
   // If no edit buttons in BUSINESS mode, try PERSISTENCE mode
@@ -54,7 +54,7 @@ async function openReportEditor(page: any): Promise<boolean> {
     await page.reload();
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
-    editButton = page.locator('.ant-table-tbody button[aria-label="edit"]').first();
+    editButton = page.locator('.ant-table-tbody button:has(.anticon-edit)').first();
     editButtonCount = await editButton.count();
   }
 

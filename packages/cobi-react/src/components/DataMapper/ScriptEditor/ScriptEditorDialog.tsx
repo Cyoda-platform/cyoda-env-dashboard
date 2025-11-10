@@ -191,33 +191,33 @@ const ScriptEditorDialog = forwardRef<ScriptEditorDialogRef, ScriptEditorDialogP
                     defaultLanguage="javascript"
                     value={scriptBody}
                     onChange={handleScriptBodyChange}
-                    theme="cyoda-dark"
+                    theme="cyoda-neon-dark"
                     beforeMount={(monaco) => {
-                      monaco.editor.defineTheme('cyoda-dark', {
+                      monaco.editor.defineTheme('cyoda-neon-dark', {
                         base: 'vs-dark',
                         inherit: true,
                         rules: [
                           { token: 'comment', foreground: '6B7280', fontStyle: 'italic' },
-                          { token: 'keyword', foreground: 'FB923C', fontStyle: 'bold' },
-                          { token: 'string', foreground: '34D399' },
-                          { token: 'number', foreground: 'FBBF24' },
+                          { token: 'keyword', foreground: 'F59E0B', fontStyle: 'bold' },
+                          { token: 'string', foreground: '14B8A6' },
+                          { token: 'number', foreground: 'F59E0B' },
                           { token: 'function', foreground: 'A78BFA' },
                           { token: 'variable', foreground: 'E0E0E0' },
-                          { token: 'type', foreground: '60A5FA' },
-                          { token: 'operator', foreground: '60A5FA' },
+                          { token: 'type', foreground: '14B8A6' },
+                          { token: 'operator', foreground: 'A78BFA' },
                           { token: 'delimiter', foreground: 'A8B5C8' },
                         ],
                         colors: {
-                          'editor.background': '#1E2A3A',
+                          'editor.background': '#0f172a',
                           'editor.foreground': '#E0E0E0',
                           'editorLineNumber.foreground': '#6B7280',
-                          'editorLineNumber.activeForeground': '#00D4AA',
-                          'editor.lineHighlightBackground': '#243142',
-                          'editor.selectionBackground': '#00D4AA33',
-                          'editorCursor.foreground': '#00D4AA',
+                          'editorLineNumber.activeForeground': '#14b8a6',
+                          'editor.lineHighlightBackground': '#1e293b',
+                          'editor.selectionBackground': '#14b8a633',
+                          'editorCursor.foreground': '#14b8a6',
                           'scrollbarSlider.background': '#374151',
                           'scrollbarSlider.hoverBackground': '#4B5563',
-                          'scrollbarSlider.activeBackground': '#00D4AA',
+                          'scrollbarSlider.activeBackground': '#14b8a6',
                         },
                       });
                     }}

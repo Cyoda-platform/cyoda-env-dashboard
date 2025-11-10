@@ -41,17 +41,18 @@
       &-btn {
         color: inherit !important;
       }
+    }
 
-      // Active tab
-      &.ant-tabs-tab-active {
-        background: var(--refine-bg-secondary) !important;
-        border-color: rgba(255, 255, 255, 0.1) !important;
-        border-bottom-color: transparent !important;
+    // Active tab - separate rule for higher specificity
+    .ant-tabs-tab.ant-tabs-tab-active {
+      background: linear-gradient(180deg, rgba(26, 35, 50, 1) 0%, rgba(22, 30, 43, 1) 100%) !important;
+      border-color: rgba(255, 255, 255, 0.1) !important;
+      border-bottom-color: transparent !important;
+      color: var(--refine-primary) !important;
 
-        .ant-tabs-tab-btn {
-          color: var(--refine-primary) !important;
-          font-weight: 600 !important;
-        }
+      .ant-tabs-tab-btn {
+        color: var(--refine-primary) !important;
+        font-weight: 600 !important;
       }
     }
 
@@ -65,7 +66,7 @@
     // Tab content area
     .ant-tabs-content {
       padding: 24px;
-      background: var(--refine-bg-secondary);
+      background: linear-gradient(180deg, rgba(26, 35, 50, 1) 0%, rgba(22, 30, 43, 1) 100%);
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-top: none;
       min-height: 400px;
@@ -76,6 +77,52 @@
       color: #ff4d4f !important;
       font-weight: 600 !important;
     }
+  }
+
+  // Additional specificity override for active tab - maximum specificity
+  &__tabs .ant-tabs.ant-tabs-top.ant-tabs-card .ant-tabs-nav .ant-tabs-nav-list .ant-tabs-tab.ant-tabs-tab-active {
+    background: linear-gradient(180deg, rgba(26, 35, 50, 1) 0%, rgba(22, 30, 43, 1) 100%) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    border-bottom-color: transparent !important;
+    color: var(--refine-primary) !important;
+
+    .ant-tabs-tab-btn {
+      color: var(--refine-primary) !important;
+      font-weight: 600 !important;
+    }
+  }
+
+  // Even more specific - target the exact structure
+  div.report-editor__tabs .ant-tabs.ant-tabs-top.ant-tabs-card > .ant-tabs-nav .ant-tabs-nav-list > .ant-tabs-tab.ant-tabs-tab-active {
+    background: linear-gradient(180deg, rgba(26, 35, 50, 1) 0%, rgba(22, 30, 43, 1) 100%) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    border-bottom-color: transparent !important;
+    color: var(--refine-primary) !important;
+
+    > .ant-tabs-tab-btn {
+      color: var(--refine-primary) !important;
+      font-weight: 600 !important;
+    }
+  }
+
+  // Override Ant Design CSS-in-JS for active tabs - MAXIMUM SPECIFICITY
+  // Target all possible CSS-in-JS class combinations
+  .ant-tabs-tab-active,
+  .ant-tabs-tab.ant-tabs-tab-active,
+  div.ant-tabs-tab.ant-tabs-tab-active,
+  .ant-tabs-nav-list .ant-tabs-tab.ant-tabs-tab-active,
+  .ant-tabs-card .ant-tabs-tab.ant-tabs-tab-active,
+  :where(.css-dev-only-do-not-override-vcstrd) .ant-tabs-tab.ant-tabs-tab-active,
+  :where(.css-dev-only-do-not-override-vcstrd).ant-tabs-tab.ant-tabs-tab-active,
+  .ant-tabs-tab-active[class*="css-"],
+  [class*="css-"].ant-tabs-tab-active,
+  .ant-tabs-tab.ant-tabs-tab-active[class*="css-"],
+  [class*="css-"] .ant-tabs-tab.ant-tabs-tab-active {
+    background: linear-gradient(180deg, rgba(26, 35, 50, 1) 0%, rgba(22, 30, 43, 1) 100%) !important;
+    background-color: rgba(26, 35, 50, 1) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    border-bottom-color: transparent !important;
+    color: var(--refine-primary) !important;
   }
 
   &__actions {

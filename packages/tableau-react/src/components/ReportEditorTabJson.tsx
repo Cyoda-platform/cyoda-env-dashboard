@@ -34,44 +34,45 @@ const ReportEditorTabJson: React.FC<ReportEditorTabJsonProps> = ({
     }
   }, [configDefinition]);
 
-  // Define custom theme before editor mounts
+  // Define custom Neon Dark theme before editor mounts
   const handleEditorWillMount: BeforeMount = (monaco) => {
-    monaco.editor.defineTheme('cyoda-dark', {
+    monaco.editor.defineTheme('cyoda-neon-dark', {
       base: 'vs-dark',
       inherit: true,
       rules: [
         // Comments
         { token: 'comment', foreground: '6B7280', fontStyle: 'italic' },
-        // Keywords
-        { token: 'keyword', foreground: 'FB923C', fontStyle: 'bold' },
-        { token: 'keyword.json', foreground: 'FBBF24' },
-        // Strings
-        { token: 'string.key.json', foreground: 'F472B6' },
-        { token: 'string.value.json', foreground: '34D399' },
-        { token: 'string', foreground: '34D399' },
-        // Numbers
-        { token: 'number', foreground: 'FBBF24' },
-        // Delimiters
+        // Keywords - Neon Amber
+        { token: 'keyword', foreground: 'F59E0B', fontStyle: 'bold' },
+        { token: 'keyword.json', foreground: 'F59E0B' },
+        // Strings - Neon Pink for keys, Neon Teal for values
+        { token: 'string.key.json', foreground: 'EC4899' },
+        { token: 'string.value.json', foreground: '14B8A6' },
+        { token: 'string', foreground: '14B8A6' },
+        // Numbers - Neon Amber
+        { token: 'number', foreground: 'F59E0B' },
+        // Delimiters - Neon Purple for {}, Neon Amber for []
         { token: 'delimiter.bracket.json', foreground: 'A78BFA' },
-        { token: 'delimiter.array.json', foreground: 'FBBF24' },
+        { token: 'delimiter.array.json', foreground: 'F59E0B' },
         { token: 'delimiter', foreground: 'A8B5C8' },
       ],
       colors: {
-        'editor.background': '#1E2A3A',
+        // Match header gradient color - using top color from header
+        'editor.background': '#1a2332',
         'editor.foreground': '#E0E0E0',
         'editorLineNumber.foreground': '#6B7280',
-        'editorLineNumber.activeForeground': '#00D4AA',
-        'editor.lineHighlightBackground': '#243142',
-        'editor.selectionBackground': '#00D4AA33',
-        'editor.inactiveSelectionBackground': '#00D4AA22',
-        'editorCursor.foreground': '#00D4AA',
+        'editorLineNumber.activeForeground': '#14b8a6',
+        'editor.lineHighlightBackground': '#1e293b',
+        'editor.selectionBackground': '#14b8a633',
+        'editor.inactiveSelectionBackground': '#14b8a622',
+        'editorCursor.foreground': '#14b8a6',
         'editorWhitespace.foreground': '#374151',
         'editorIndentGuide.background': '#374151',
         'editorIndentGuide.activeBackground': '#4B5563',
         'scrollbar.shadow': '#00000000',
         'scrollbarSlider.background': '#374151',
         'scrollbarSlider.hoverBackground': '#4B5563',
-        'scrollbarSlider.activeBackground': '#00D4AA',
+        'scrollbarSlider.activeBackground': '#14b8a6',
       },
     });
   };
@@ -102,7 +103,7 @@ const ReportEditorTabJson: React.FC<ReportEditorTabJsonProps> = ({
       <MonacoEditor
         height="600px"
         language="json"
-        theme="cyoda-dark"
+        theme="cyoda-neon-dark"
         value={jsonString}
         onChange={handleEditorChange}
         beforeMount={handleEditorWillMount}

@@ -58,6 +58,124 @@ code {
   color: white;
 }
 
+// Global link styling - Override Ant Design with maximum specificity
+// This fixes the issue where Ant Design's CSS-in-JS applies styles with high specificity
+a,
+a:link,
+a:visited {
+  color: var(--refine-primary) !important;
+  text-decoration: none !important;
+  transition: all var(--refine-transition-base) !important;
+}
+
+a:hover,
+a:focus {
+  color: var(--refine-primary-light) !important;
+  text-decoration: none !important;
+}
+
+a:active {
+  color: var(--refine-primary-dark) !important;
+  text-decoration: none !important;
+}
+
+// Global tab styling - Override Ant Design active tab background
+// Force all active tabs to use the same background as the header
+// Using multiple selectors with maximum specificity
+.ant-tabs-tab-active,
+.ant-tabs-tab.ant-tabs-tab-active,
+div.ant-tabs-tab.ant-tabs-tab-active,
+.ant-tabs-nav-list .ant-tabs-tab.ant-tabs-tab-active,
+.ant-tabs-card .ant-tabs-tab.ant-tabs-tab-active,
+.ant-tabs-card > .ant-tabs-nav .ant-tabs-tab.ant-tabs-tab-active,
+.ant-tabs-card > .ant-tabs-nav .ant-tabs-nav-list > .ant-tabs-tab.ant-tabs-tab-active,
+:where(.css-dev-only-do-not-override-vcstrd) .ant-tabs-tab.ant-tabs-tab-active,
+:where(.css-dev-only-do-not-override-vcstrd).ant-tabs-tab.ant-tabs-tab-active,
+.ant-tabs-tab-active[class*="css-"],
+[class*="css-"].ant-tabs-tab-active,
+.ant-tabs-tab.ant-tabs-tab-active[class*="css-"],
+[class*="css-"] .ant-tabs-tab.ant-tabs-tab-active,
+div[class*="ant-tabs-tab"][class*="ant-tabs-tab-active"],
+div[class*="css-"][class*="ant-tabs-tab-active"] {
+  background: linear-gradient(180deg, rgba(26, 35, 50, 1) 0%, rgba(22, 30, 43, 1) 100%) !important;
+  background-color: rgba(26, 35, 50, 1) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  border-bottom-color: transparent !important;
+}
+
+// Tabs dropdown menu styling (appears when tabs don't fit on screen)
+.ant-tabs-dropdown,
+.ant-tabs-dropdown-menu,
+div[class*="ant-tabs-dropdown"] {
+  background: #1a2332 !important;
+  background-color: #1a2332 !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+.ant-tabs-dropdown-menu-item,
+div[class*="ant-tabs-dropdown-menu-item"] {
+  color: #E5E7EB !important;
+
+  &:hover {
+    background: rgba(0, 212, 170, 0.1) !important;
+    color: #00D4AA !important;
+  }
+
+  &.ant-tabs-dropdown-menu-item-active {
+    background: rgba(0, 212, 170, 0.15) !important;
+    color: #00D4AA !important;
+  }
+}
+
+// Additional specificity for links inside common containers
+#root a,
+.ant-layout a,
+.ant-table a,
+.ant-card a,
+.ant-modal a,
+.ant-drawer a,
+div a,
+span a,
+p a,
+td a,
+th a,
+li a {
+  color: var(--refine-primary) !important;
+  text-decoration: none !important;
+
+  &:hover,
+  &:focus {
+    color: var(--refine-primary-light) !important;
+    text-decoration: none !important;
+  }
+
+  &:active {
+    color: var(--refine-primary-dark) !important;
+    text-decoration: none !important;
+  }
+}
+
+// Override Ant Design's CSS-in-JS generated classes
+:where(.css-dev-only-do-not-override-vcstrd) a,
+:where(.css-dev-only-do-not-override-vcstrd) a:link,
+:where(.css-dev-only-do-not-override-vcstrd) a:visited,
+:where(.css-dev-only-do-not-override-vcstrd) a:hover,
+:where(.css-dev-only-do-not-override-vcstrd) a:active,
+:where(.css-dev-only-do-not-override-vcstrd) a:focus {
+  color: var(--refine-primary) !important;
+  text-decoration: none !important;
+}
+
+:where(.css-dev-only-do-not-override-vcstrd) a:hover,
+:where(.css-dev-only-do-not-override-vcstrd) a:focus {
+  color: var(--refine-primary-light) !important;
+}
+
+:where(.css-dev-only-do-not-override-vcstrd) a:active {
+  color: var(--refine-primary-dark) !important;
+}
+
 // Card styling - Dark theme
 .card {
   background: transparent !important;

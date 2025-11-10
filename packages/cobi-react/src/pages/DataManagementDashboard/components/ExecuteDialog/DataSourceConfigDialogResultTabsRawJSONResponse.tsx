@@ -8,35 +8,35 @@ interface DataSourceConfigDialogResultTabsRawJSONResponseProps {
 const DataSourceConfigDialogResultTabsRawJSONResponse: React.FC<DataSourceConfigDialogResultTabsRawJSONResponseProps> = ({ data }) => {
   const jsonString = JSON.stringify(data, null, 2);
 
-  // Define custom theme
+  // Define custom Neon Dark theme
   const handleEditorWillMount: BeforeMount = (monaco) => {
-    monaco.editor.defineTheme('cyoda-dark', {
+    monaco.editor.defineTheme('cyoda-neon-dark', {
       base: 'vs-dark',
       inherit: true,
       rules: [
         { token: 'comment', foreground: '6B7280', fontStyle: 'italic' },
-        { token: 'keyword', foreground: 'FB923C', fontStyle: 'bold' },
-        { token: 'keyword.json', foreground: 'FBBF24' },
-        { token: 'string.key.json', foreground: 'F472B6' },
-        { token: 'string.value.json', foreground: '34D399' },
-        { token: 'string', foreground: '34D399' },
-        { token: 'number', foreground: 'FBBF24' },
+        { token: 'keyword', foreground: 'F59E0B', fontStyle: 'bold' },
+        { token: 'keyword.json', foreground: 'F59E0B' },
+        { token: 'string.key.json', foreground: 'EC4899' },
+        { token: 'string.value.json', foreground: '14B8A6' },
+        { token: 'string', foreground: '14B8A6' },
+        { token: 'number', foreground: 'F59E0B' },
         { token: 'delimiter.bracket.json', foreground: 'A78BFA' },
-        { token: 'delimiter.array.json', foreground: 'FBBF24' },
+        { token: 'delimiter.array.json', foreground: 'F59E0B' },
         { token: 'delimiter', foreground: 'A8B5C8' },
       ],
       colors: {
-        'editor.background': '#1E2A3A',
+        'editor.background': '#0f172a',
         'editor.foreground': '#E0E0E0',
         'editorLineNumber.foreground': '#6B7280',
-        'editorLineNumber.activeForeground': '#00D4AA',
-        'editor.lineHighlightBackground': '#243142',
-        'editor.selectionBackground': '#00D4AA33',
-        'editorCursor.foreground': '#00D4AA',
+        'editorLineNumber.activeForeground': '#14b8a6',
+        'editor.lineHighlightBackground': '#1e293b',
+        'editor.selectionBackground': '#14b8a633',
+        'editorCursor.foreground': '#14b8a6',
         'scrollbar.shadow': '#00000000',
         'scrollbarSlider.background': '#374151',
         'scrollbarSlider.hoverBackground': '#4B5563',
-        'scrollbarSlider.activeBackground': '#00D4AA',
+        'scrollbarSlider.activeBackground': '#14b8a6',
       },
     });
   };
@@ -46,7 +46,7 @@ const DataSourceConfigDialogResultTabsRawJSONResponse: React.FC<DataSourceConfig
       <MonacoEditor
         height="100%"
         language="json"
-        theme="cyoda-dark"
+        theme="cyoda-neon-dark"
         value={jsonString}
         beforeMount={handleEditorWillMount}
         options={{

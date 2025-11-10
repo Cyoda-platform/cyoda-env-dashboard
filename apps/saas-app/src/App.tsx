@@ -91,6 +91,18 @@ const theme = {
       itemActiveColor: '#00D4AA',
       inkBarColor: '#00D4AA',
       cardBg: 'transparent',
+      cardGutter: 4,
+      // Active tab background - same as header
+      cardHeight: 40,
+    },
+    Dropdown: {
+      // Match header gradient color
+      colorBgElevated: '#1a2332',
+      colorText: '#E5E7EB',
+      colorTextDescription: '#9CA3AF',
+      controlItemBgHover: 'rgba(0, 212, 170, 0.1)',
+      controlItemBgActive: 'rgba(0, 212, 170, 0.15)',
+      colorBorder: 'rgba(255, 255, 255, 0.1)',
     },
     Transfer: {
       listBg: '#1E2A3A',
