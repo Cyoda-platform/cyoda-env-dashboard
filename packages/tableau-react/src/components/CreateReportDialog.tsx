@@ -81,7 +81,6 @@ const CreateReportDialog = forwardRef<CreateReportDialogRef, CreateReportDialogP
       queryFn: async () => {
         try {
           const { data } = await getReportingFetchTypes(true);
-          console.log('Entity types loaded:', data);
           return data || [];
         } catch (error) {
           console.error('Failed to load entity types:', error);
@@ -92,15 +91,12 @@ const CreateReportDialog = forwardRef<CreateReportDialogRef, CreateReportDialogP
 
     // Filter entity options based on entity type using HelperEntities (like Vue version)
     const entityOptions = useMemo((): EntityOption[] => {
-      console.log('Filtering entity options:', { entityData, entityType });
       if (!entityData || !Array.isArray(entityData) || entityData.length === 0) {
-        console.log('No entity data available');
         return [];
       }
 
       // Use HelperEntities.getOptionsFromData to filter and format options
       const options = HelperEntities.getOptionsFromData(entityData, entityType);
-      console.log('Filtered options:', options);
       return options;
     }, [entityData, entityType]);
 

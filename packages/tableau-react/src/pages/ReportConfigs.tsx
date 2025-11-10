@@ -108,11 +108,8 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
     queryKey: ['entityTypes'],
     queryFn: async () => {
       try {
-        console.log('ReportConfigs - Fetching entity types...');
         const response = await getReportingFetchTypes();
-        console.log('ReportConfigs - Entity types response:', response);
         const data = response.data;
-        console.log('ReportConfigs - Entity types data:', data);
         return Array.isArray(data) ? data : [];
       } catch (error) {
         console.error('ReportConfigs - Failed to load entity types:', error);
@@ -202,10 +199,6 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
       };
     });
 
-    console.log('ReportConfigs - entityTypesData:', entityTypesData);
-    console.log('ReportConfigs - entityType (global toggle):', entityType);
-    console.log('ReportConfigs - data before filter:', data.map(d => ({ entity: d.entity, entityType: d.entityType })));
-
     // Filter by entity type from global toggle
     if (entityTypesData.length > 0 && entityTypesData.some((et: any) => typeof et === 'object' && et.type)) {
       data = data.filter((item: any) => {
@@ -217,8 +210,6 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
         return true;
       });
     }
-
-    console.log('ReportConfigs - data after filter:', data.map(d => ({ entity: d.entity, entityType: d.entityType })));
 
     // Apply other filters
     data = HelperReportDefinition.applyFiltersForReportTables(data, filterForm);
