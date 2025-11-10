@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Menu, Modal, Button } from 'antd';
+import { Layout, Menu, Modal, Button, Tooltip } from 'antd';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   DatabaseOutlined,
@@ -132,48 +132,84 @@ export const LeftSideMenu: React.FC<LeftSideMenuProps> = ({ collapsed, onCollaps
     e.preventDefault();
   };
 
+  // Handle submenu click - toggle submenu open/close
+  const handleSubMenuClick = (key: string) => {
+    if (collapsed) {
+      // In collapsed mode, toggle the submenu inline (show/hide submenu icons)
+      setOpenKeys(prevKeys => {
+        if (prevKeys.includes(key)) {
+          // Close the submenu
+          return prevKeys.filter(k => k !== key);
+        } else {
+          // Open the submenu (close others)
+          return [key];
+        }
+      });
+    }
+  };
+
   const menuItems: MenuItem[] = [
     {
       key: '/trino',
       icon: <DatabaseOutlined />,
       label: <span data-path="/trino">Trino SQL schemas</span>,
+      title: 'Trino SQL schemas',
     },
     {
       key: 'reporting',
-      icon: <FileTextOutlined />,
+      icon: collapsed ? (
+        <Tooltip title="Reporting" placement="right">
+          <FileTextOutlined />
+        </Tooltip>
+      ) : (
+        <FileTextOutlined />
+      ),
       label: 'Reporting',
+      onTitleClick: () => handleSubMenuClick('reporting'),
       children: [
         {
           key: '/tableau/reports',
           icon: <BarChartOutlined />,
           label: <span data-path="/tableau/reports">Report config editor</span>,
+          title: 'Report config editor',
         },
         {
           key: '/tableau/reports/stream',
           icon: <LineChartOutlined />,
           label: <span data-path="/tableau/reports/stream">Stream Reports</span>,
+          title: 'Stream Reports',
         },
         {
           key: '/tableau/catalogue-of-aliases',
           icon: <TagsOutlined />,
           label: <span data-path="/tableau/catalogue-of-aliases">Catalog of aliases</span>,
+          title: 'Catalog of aliases',
         },
       ],
     },
     {
       key: 'lifecycle',
-      icon: <ApartmentOutlined />,
+      icon: collapsed ? (
+        <Tooltip title="Lifecycle" placement="right">
+          <ApartmentOutlined />
+        </Tooltip>
+      ) : (
+        <ApartmentOutlined />
+      ),
       label: 'Lifecycle',
+      onTitleClick: () => handleSubMenuClick('lifecycle'),
       children: [
         {
           key: '/workflows',
           icon: <ProjectOutlined />,
           label: <span data-path="/workflows">Workflow</span>,
+          title: 'Workflow',
         },
         {
           key: '/instances',
           icon: <AppstoreOutlined />,
           label: <span data-path="/instances">Instances</span>,
+          title: 'Instances',
         },
       ],
     },
@@ -181,16 +217,19 @@ export const LeftSideMenu: React.FC<LeftSideMenuProps> = ({ collapsed, onCollaps
       key: '/tasks',
       icon: <CheckSquareOutlined />,
       label: <span data-path="/tasks">Tasks</span>,
+      title: 'Tasks',
     },
     {
       key: '/entity-viewer',
       icon: <EyeOutlined />,
       label: <span data-path="/entity-viewer">Entity viewer</span>,
+      title: 'Entity viewer',
     },
     {
       key: '/processing-ui',
       icon: <ClusterOutlined />,
       label: <span data-path="/processing-ui">Processing</span>,
+      title: 'Processing',
     },
     {
       type: 'divider',
@@ -199,12 +238,14 @@ export const LeftSideMenu: React.FC<LeftSideMenuProps> = ({ collapsed, onCollaps
       key: 'logout',
       icon: <LogoutOutlined />,
       label: 'Logout',
+      title: 'Logout',
       danger: true,
     },
     {
       key: 'version',
       icon: <InfoCircleOutlined />,
       label: 'Version App',
+      title: 'Version App',
     },
   ];
 
@@ -250,12 +291,14 @@ export const LeftSideMenu: React.FC<LeftSideMenuProps> = ({ collapsed, onCollaps
 
   // Handle submenu open/close
   const handleOpenChange = (keys: string[]) => {
-    // Only update openKeys when sidebar is expanded
-    // When collapsed, let Ant Design handle the popup menu automatically
-    if (!collapsed) {
-      setOpenKeys(keys);
-    }
+    // Update openKeys in both collapsed and expanded modes
+    // In collapsed mode, this shows submenu items inline
+    // In expanded mode, this shows submenu items normally
+    // Allow multiple submenus to be open in both modes
+    setOpenKeys(keys);
   };
+
+
 
   return (
     <>
@@ -282,10 +325,13 @@ export const LeftSideMenu: React.FC<LeftSideMenuProps> = ({ collapsed, onCollaps
             theme="dark"
             mode="inline"
             selectedKeys={getSelectedKey()}
-            openKeys={collapsed ? undefined : openKeys}
+            openKeys={openKeys}
             onOpenChange={handleOpenChange}
             onClick={handleMenuClick}
             items={menuItems}
+            rootClassName={collapsed ? 'menu-collapsed' : ''}
+            inlineIndent={0}
+            inlineCollapsed={false}
             style={{
               borderRight: 0,
               borderInlineEnd: 0,

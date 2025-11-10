@@ -16,19 +16,10 @@ interface ResizableTitleProps extends React.HTMLAttributes<any> {
 export const ResizableTitle = (props: any) => {
   const { onResize, width, ...restProps } = props;
 
-  console.log('ResizableTitle props:', {
-    width,
-    hasOnResize: !!onResize,
-    allProps: Object.keys(props)
-  });
-
   // If no width or onResize, return plain th
   if (!width || !onResize) {
-    console.log('ResizableTitle: returning plain th - width:', width, 'onResize:', !!onResize);
     return <th {...restProps} />;
   }
-
-  console.log('ResizableTitle: rendering Resizable');
 
   return (
     <Resizable

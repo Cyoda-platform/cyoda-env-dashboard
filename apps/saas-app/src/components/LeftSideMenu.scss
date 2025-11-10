@@ -1,42 +1,164 @@
 // Refine.dev Enterprise Theme - Left Side Menu
 
-// Popup submenu styling (for collapsed sidebar)
+// IMPORTANT: Hide ALL popup submenus - we want inline submenu only
 .ant-menu-submenu-popup {
-  .ant-menu {
-    background: var(--refine-bg-secondary) !important;
-    border-radius: 8px;
-    padding: 8px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+  display: none !important;
+}
+
+// Custom collapsed menu styles (when Menu has menu-collapsed class)
+.ant-menu.menu-collapsed {
+  .ant-menu-item {
+    margin: 4px 0 !important;
+    padding: 0 !important;
+    width: 80px !important;
+    height: 48px !important;
+    line-height: 48px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
   }
 
-  .ant-menu-item {
-    border-radius: 8px;
+  .ant-menu-submenu {
     margin: 4px 0 !important;
-    transition: all var(--refine-transition-base);
+    width: 80px !important;
 
-    &.ant-menu-item-selected {
-      background: linear-gradient(135deg, #00d4aa 0%, #4d9fff 100%) !important;
-      color: white !important;
-      font-weight: 600;
-      box-shadow: var(--refine-shadow-md);
-
-      .anticon {
-        color: white !important;
+    // FORCE submenu to show inline when open
+    &.ant-menu-submenu-open {
+      > .ant-menu-sub {
+        display: block !important;
+        position: relative !important;
+        left: 0 !important;
+        top: 0 !important;
+        transform: none !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        pointer-events: auto !important;
       }
     }
+  }
 
-    &:hover:not(.ant-menu-item-selected) {
-      background: var(--refine-glass-bg) !important;
-      color: var(--refine-text-primary) !important;
+  .ant-menu-submenu-title {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 80px !important;
+    height: 48px !important;
+    line-height: 48px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+  }
+
+  .ant-menu-item-icon,
+  .anticon {
+    font-size: 16px !important;
+    margin: 0 !important;
+  }
+
+  // Submenu items - FORCE show inline with smaller icons
+  .ant-menu-sub {
+    background: transparent !important;
+    padding: 0 !important;
+    width: 80px !important;
+    // FORCE inline display - override Ant Design's popup behavior
+    display: block !important;
+    position: relative !important;
+    left: 0 !important;
+    top: 0 !important;
+    transform: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+
+    .ant-menu-item {
+      margin: 2px 0 !important;
+      padding: 0 !important;
+      width: 80px !important;
+      height: 40px !important;
+      line-height: 40px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      position: relative !important;
+
+      &::before {
+        content: '' !important;
+        display: block !important;
+        width: 4px !important;
+        height: 4px !important;
+        border-radius: 50% !important;
+        background-color: rgba(255, 255, 255, 0.45) !important;
+        position: absolute !important;
+        left: 14px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+      }
+
+      &.ant-menu-item-selected::before {
+        background-color: #1890ff !important;
+        width: 6px !important;
+        height: 6px !important;
+      }
 
       .anticon {
-        color: var(--refine-primary-light) !important;
+        font-size: 14px !important;
       }
     }
+  }
+
+  // Hide text in collapsed state
+  .ant-menu-title-content {
+    display: none !important;
+    opacity: 0;
+    width: 0;
+  }
+
+  // Hide submenu arrow
+  .ant-menu-submenu-arrow {
+    display: none !important;
   }
 }
+
+// Popup submenu styling (for collapsed sidebar) - DISABLED, we use inline instead
+// .ant-menu-submenu-popup {
+//   .ant-menu {
+//     background: var(--refine-bg-secondary) !important;
+//     border-radius: 8px;
+//     padding: 8px;
+//     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+//     backdrop-filter: blur(20px);
+//     -webkit-backdrop-filter: blur(20px);
+//   }
+
+//   .ant-menu-item {
+//     border-radius: 8px;
+//     margin: 4px 0 !important;
+//     transition: all var(--refine-transition-base);
+
+//     &.ant-menu-item-selected {
+//       background: linear-gradient(135deg, #00d4aa 0%, #4d9fff 100%) !important;
+//       color: white !important;
+//       font-weight: 600;
+//       box-shadow: var(--refine-shadow-md);
+
+//       .anticon {
+//         color: white !important;
+//       }
+//     }
+
+//     &:hover:not(.ant-menu-item-selected) {
+//       background: var(--refine-glass-bg) !important;
+//       color: var(--refine-text-primary) !important;
+
+//       .anticon {
+//         color: var(--refine-primary-light) !important;
+//       }
+//     }
+//   }
+// }
 
 .saas-left-side-menu {
   background: var(--refine-bg-secondary) !important;
@@ -191,6 +313,12 @@
         transition: all var(--refine-transition-base);
       }
 
+      // Submenu icons are smaller than parent menu icons
+      .anticon {
+        font-size: 14px !important;
+        transition: all var(--refine-transition-base);
+      }
+
       &.ant-menu-item-selected {
         background: linear-gradient(135deg, #00d4aa 0%, #4d9fff 100%) !important;
         color: white !important;
@@ -262,6 +390,25 @@
     .ant-menu-submenu {
       margin: 4px 0 !important;
       width: 80px !important;
+
+      // HIDE submenu by default
+      > .ant-menu-sub {
+        display: none !important;
+      }
+
+      // FORCE submenu to show inline when open
+      &.ant-menu-submenu-open {
+        > .ant-menu-sub {
+          display: block !important;
+          position: relative !important;
+          left: 0 !important;
+          top: 0 !important;
+          transform: none !important;
+          opacity: 1 !important;
+          visibility: visible !important;
+          pointer-events: auto !important;
+        }
+      }
     }
 
     .ant-menu-submenu-title {
@@ -278,8 +425,63 @@
 
     .ant-menu-item-icon,
     .anticon {
-      font-size: 20px !important;
+      font-size: 16px !important;
       margin: 0 !important;
+    }
+
+    // Submenu items in collapsed mode - FORCE show inline with smaller icons
+    .ant-menu-sub {
+      background: transparent !important;
+      padding: 0 !important;
+      width: 80px !important;
+      // FORCE inline display - override Ant Design's popup behavior
+      display: block !important;
+      position: relative !important;
+      left: 0 !important;
+      top: 0 !important;
+      transform: none !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      pointer-events: auto !important;
+      max-height: none !important;
+      overflow: visible !important;
+
+      .ant-menu-item {
+        margin: 2px 0 !important;
+        padding: 0 !important;
+        width: 80px !important;
+        height: 40px !important;
+        line-height: 40px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        position: relative !important;
+
+        // Add dot indicator for submenu items
+        &::before {
+          content: '' !important;
+          display: block !important;
+          width: 4px !important;
+          height: 4px !important;
+          border-radius: 50% !important;
+          background-color: rgba(255, 255, 255, 0.45) !important;
+          position: absolute !important;
+          left: 14px !important;
+          top: 50% !important;
+          transform: translateY(-50%) !important;
+        }
+
+        &.ant-menu-item-selected::before {
+          background-color: #1890ff !important;
+          width: 6px !important;
+          height: 6px !important;
+        }
+
+        .anticon {
+          font-size: 14px !important;
+          margin: 0 !important;
+        }
+      }
     }
 
     // Hide text in collapsed state
