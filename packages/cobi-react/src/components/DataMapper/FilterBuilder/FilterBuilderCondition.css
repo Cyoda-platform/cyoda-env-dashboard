@@ -1,9 +1,16 @@
 .builder-condition-row {
   margin-bottom: 10px;
   position: relative;
+  padding-left: 20px;
 }
 
-.builder-condition-row:before {
+.builder-condition-row .ant-row {
+  position: relative;
+  z-index: 1;
+}
+
+/* Dotted lines for nested conditions */
+.builder-condition-row.inner-fields:before {
   content: "";
   height: calc(50% + 20px);
   border-color: rgba(255, 255, 255, 0.15);
@@ -15,7 +22,7 @@
   top: -18px;
 }
 
-.builder-condition-row:after {
+.builder-condition-row.inner-fields:after {
   height: 25px;
   top: calc(50% - 3px);
   content: "";
@@ -27,7 +34,7 @@
   position: absolute;
 }
 
-.builder-condition-row.last::after {
+.builder-condition-row.inner-fields.last::after {
   display: none;
 }
 
@@ -112,6 +119,43 @@
 .builder-condition-row .ant-picker-focused {
   border-color: var(--refine-primary, #00D4AA) !important;
   box-shadow: 0 0 0 2px rgba(0, 212, 170, 0.1) !important;
+}
+
+/* InputNumber specific styling */
+.builder-condition-row .ant-input-number {
+  width: 100%;
+}
+
+.builder-condition-row .ant-input-number-input {
+  height: 38px;
+  line-height: 38px;
+  padding: 0 11px;
+  color: var(--refine-text-primary, #F9FAFB) !important;
+}
+
+/* InputNumber handler (arrows) styling */
+.builder-condition-row .ant-input-number-handler-wrap {
+  background-color: transparent !important;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.builder-condition-row .ant-input-number-handler {
+  border: none !important;
+  background-color: transparent !important;
+}
+
+.builder-condition-row .ant-input-number-handler:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.builder-condition-row .ant-input-number-handler-up-inner,
+.builder-condition-row .ant-input-number-handler-down-inner {
+  color: var(--refine-text-secondary, #D1D5DB) !important;
+}
+
+.builder-condition-row .ant-input-number-handler:hover .ant-input-number-handler-up-inner,
+.builder-condition-row .ant-input-number-handler:hover .ant-input-number-handler-down-inner {
+  color: var(--refine-primary, #00D4AA) !important;
 }
 
 /* Delete button */

@@ -13,6 +13,7 @@ interface FilterBuilderConditionProps {
   disableRemove?: boolean;
   disableColumn?: boolean;
   readOnly?: boolean;
+  className?: string;
   isLast?: boolean;
   onRemove: () => void;
   onChange: () => void;
@@ -25,6 +26,7 @@ const FilterBuilderCondition: React.FC<FilterBuilderConditionProps> = ({
   disableRemove = false,
   disableColumn = false,
   readOnly = false,
+  className = '',
   isLast = false,
   onRemove,
   onChange,
@@ -153,6 +155,7 @@ const FilterBuilderCondition: React.FC<FilterBuilderConditionProps> = ({
           value={condition.lookback ? Number(condition.lookback) : 0}
           onChange={(val) => handleValueChange(val, 'lookback')}
           disabled={readOnly}
+          step={1}
         />
       );
     }
@@ -165,6 +168,7 @@ const FilterBuilderCondition: React.FC<FilterBuilderConditionProps> = ({
           value={value as number}
           onChange={(val) => handleValueChange(val, field)}
           disabled={readOnly}
+          step={selectedType === 'Integer' || selectedType === 'Long' ? 1 : 0.1}
         />
       );
     }
@@ -223,7 +227,7 @@ const FilterBuilderCondition: React.FC<FilterBuilderConditionProps> = ({
   };
 
   return (
-    <div className={`builder-condition-row ${isLast ? 'last' : ''}`}>
+    <div className={`builder-condition-row ${isLast ? 'last' : ''} ${className}`}>
       <Row gutter={16}>
         <Col span={5} className={isExistErrorFieldName && showErrors ? 'col-err' : ''}>
           <Select

@@ -52,8 +52,8 @@ export default class HelperReportDefinition {
       description: '',
       requestClass: '',
       condition: {
-        '@bean': '',
-        operator: '',
+        '@bean': 'com.cyoda.core.conditions.GroupCondition',
+        operator: 'AND',
         conditions: [],
       },
       sorting: [],

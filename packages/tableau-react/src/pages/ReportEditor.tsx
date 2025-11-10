@@ -166,6 +166,9 @@ const ReportEditor: React.FC = () => {
     console.log('Full config:', copyConfigDefinition);
     console.log('colDefs:', copyConfigDefinition.colDefs);
     console.log('Sample colDef:', copyConfigDefinition.colDefs?.[0]);
+    console.log('condition:', copyConfigDefinition.condition);
+    console.log('condition @bean:', copyConfigDefinition.condition?.['@bean']);
+    console.log('condition.conditions:', copyConfigDefinition.condition?.conditions);
 
     // Validate the configuration
     const validate = HelperReportDefinition.validateConfigDefinition(

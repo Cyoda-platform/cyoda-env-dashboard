@@ -30,10 +30,10 @@ const ReportEditorTabFilterBuilder: React.FC<ReportEditorTabFilterBuilderProps> 
 }) => {
   // Initialize condition if new report and empty
   useEffect(() => {
-    if (isNew && (!configDefinition.condition || !configDefinition.condition.conditions || configDefinition.condition.conditions.length === 0)) {
+    if (isNew && (!configDefinition.condition || !configDefinition.condition['@bean'] || !configDefinition.condition.conditions || configDefinition.condition.conditions.length === 0)) {
       onChange({
         condition: {
-          '@bean': 'com.cyoda.core.conditions.queryable.Group',
+          '@bean': 'com.cyoda.core.conditions.GroupCondition',
           operator: 'AND',
           conditions: [],
         },

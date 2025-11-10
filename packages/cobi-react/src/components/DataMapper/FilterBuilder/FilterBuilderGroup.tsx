@@ -13,6 +13,7 @@ interface FilterBuilderGroupProps {
   level?: number;
   showErrors?: boolean;
   readOnly?: boolean;
+  className?: string;
   onRemove?: () => void;
   onChange: () => void;
 }
@@ -23,6 +24,7 @@ const FilterBuilderGroup: React.FC<FilterBuilderGroupProps> = ({
   level = 0,
   showErrors = false,
   readOnly = false,
+  className = '',
   onRemove,
   onChange,
 }) => {
@@ -90,7 +92,7 @@ const FilterBuilderGroup: React.FC<FilterBuilderGroupProps> = ({
     <div
       className={`builder-condition-group ${level > 0 ? 'wrap-actions' : ''} ${
         level === 0 ? 'first' : ''
-      }`}
+      } ${className}`}
     >
       <div className="group-actions">
         <Radio.Group
@@ -131,35 +133,35 @@ const FilterBuilderGroup: React.FC<FilterBuilderGroupProps> = ({
 
       {condition.conditions.map((childCondition, index) => {
         const isLast = !condition.conditions[index + 1];
-        const className = `inner-fields ${isLast ? 'last' : ''}`;
+        const innerFieldsClass = `inner-fields ${isLast ? 'last' : ''}`;
 
         if (isGroup(index)) {
           return (
-            <div key={`${index}-${level + 1}`} className={className}>
-              <FilterBuilderGroup
-                condition={childCondition as FilterGroup}
-                cols={cols}
-                level={level + 1}
-                showErrors={showErrors}
-                readOnly={readOnly}
-                onRemove={() => handleRemoveCondition(index)}
-                onChange={onChange}
-              />
-            </div>
+            <FilterBuilderGroup
+              key={`${index}-${level + 1}`}
+              condition={childCondition as FilterGroup}
+              cols={cols}
+              level={level + 1}
+              showErrors={showErrors}
+              readOnly={readOnly}
+              className={innerFieldsClass}
+              onRemove={() => handleRemoveCondition(index)}
+              onChange={onChange}
+            />
           );
         } else {
           return (
-            <div key={`${index}-${level + 1}`} className={className}>
-              <FilterBuilderCondition
-                condition={childCondition as FilterCondition}
-                cols={cols}
-                showErrors={showErrors}
-                readOnly={readOnly}
-                isLast={isLast}
-                onRemove={() => handleRemoveCondition(index)}
-                onChange={onChange}
-              />
-            </div>
+            <FilterBuilderCondition
+              key={`${index}-${level + 1}`}
+              condition={childCondition as FilterCondition}
+              cols={cols}
+              showErrors={showErrors}
+              readOnly={readOnly}
+              className={innerFieldsClass}
+              isLast={isLast}
+              onRemove={() => handleRemoveCondition(index)}
+              onChange={onChange}
+            />
           );
         }
       })}

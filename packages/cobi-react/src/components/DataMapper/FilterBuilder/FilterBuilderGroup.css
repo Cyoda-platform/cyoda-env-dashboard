@@ -2,7 +2,8 @@
   position: relative;
 }
 
-.builder-condition-group:before {
+/* Dotted lines for nested groups */
+.builder-condition-group.inner-fields:before {
   content: "";
   height: 40px;
   border-color: rgba(255, 255, 255, 0.15);
@@ -14,7 +15,7 @@
   top: -18px;
 }
 
-.builder-condition-group:after {
+.builder-condition-group.inner-fields:after {
   height: calc(100% - 17px);
   top: 17px;
   content: "";
@@ -62,9 +63,16 @@
   justify-content: center;
 }
 
-.builder-condition-group .wrap-actions,
-.builder-condition-group .inner-fields {
+.builder-condition-group .wrap-actions {
   padding-left: 20px;
+}
+
+.builder-condition-group.inner-fields {
+  padding-left: 20px;
+}
+
+.builder-condition-group.inner-fields.last:after {
+  display: none;
 }
 
 .builder-condition-group .group-actions {
@@ -130,9 +138,7 @@
   color: var(--refine-text-primary, #F9FAFB);
 }
 
-.builder-condition-group:last-child.wrap-actions.inner-fields:after {
-  display: none;
-}
+/* Removed - now handled by .inner-fields.last:after */
 
 .builder-condition-group .ant-picker {
   width: 100% !important;

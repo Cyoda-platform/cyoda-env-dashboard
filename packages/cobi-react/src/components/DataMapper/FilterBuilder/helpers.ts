@@ -5,7 +5,7 @@ export const HelperFilter = {
     return {
       '@bean': 'com.cyoda.core.conditions.GroupCondition',
       operator: 'AND',
-      conditions: [],
+      conditions: [this.getCondition()], // Automatically add one empty condition
     };
   },
 
