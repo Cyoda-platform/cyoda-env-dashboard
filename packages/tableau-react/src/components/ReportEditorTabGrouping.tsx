@@ -7,7 +7,7 @@
 
 import React, { useMemo, useEffect } from 'react';
 import { Form, Switch, Divider } from 'antd';
-import { Transfer } from '@cyoda/ui-lib-react';
+import { Transfer, HelperFormat } from '@cyoda/ui-lib-react';
 import type { ReportDefinition } from '../types';
 import './ReportEditorTabGrouping.scss';
 
@@ -23,22 +23,24 @@ const ReportEditorTabGrouping: React.FC<ReportEditorTabGroupingProps> = ({
   onChange,
 }) => {
   // Prepare options data from cols
+  // Use full path for key/name (for matching), but short path for title (for display)
   const optionsData = useMemo(() => {
     return cols.map((col) => ({
       '@bean': col['@bean'],
-      name: col.alias,
-      key: col.alias,
-      title: col.alias,
+      name: col.alias, // Full path for matching
+      key: col.alias,  // Full path for matching
+      title: HelperFormat.shortNamePath(col.alias), // Short path for display
     }));
   }, [cols]);
 
   // Current selected grouping
+  // Use full path for key/name (for matching), but short path for title (for display)
   const selectedGrouping = useMemo(() => {
     return (configDefinition.grouping || []).map((group: any) => ({
       '@bean': group['@bean'],
-      name: group.name,
-      key: group.name,
-      title: group.name,
+      name: group.name, // Full path for matching
+      key: group.name,  // Full path for matching
+      title: HelperFormat.shortNamePath(group.name), // Short path for display
     }));
   }, [configDefinition.grouping]);
 
@@ -86,7 +88,7 @@ const ReportEditorTabGrouping: React.FC<ReportEditorTabGroupingProps> = ({
         value={selectedGrouping}
         onChange={handleGroupingChange}
         fieldKey="name"
-        fieldLabel="name"
+        fieldLabel="title"
         strLengthRight={40}
         showSearch
       />

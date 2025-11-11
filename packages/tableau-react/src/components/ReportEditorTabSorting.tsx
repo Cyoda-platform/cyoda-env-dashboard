@@ -8,6 +8,7 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { Transfer, Switch } from 'antd';
 import type { TransferProps } from 'antd';
+import { HelperFormat } from '@cyoda/ui-lib-react';
 import type { ReportDefinition } from '../types';
 import './ReportEditorTabSorting.scss';
 
@@ -35,26 +36,28 @@ const ReportEditorTabSorting: React.FC<ReportEditorTabSortingProps> = ({
   const [sortingData, setSortingData] = useState<SortingItem[]>([]);
 
   // Prepare options data from cols
+  // Use full path for key (for matching), but short path for title (for display)
   const optionsData = useMemo(() => {
     return cols.map((col) => ({
       column: {
         '@bean': col['@bean'],
-        name: col.alias,
+        name: col.alias, // Full path
       },
       reverse: false,
-      key: col.alias,
-      title: col.alias,
+      key: col.alias, // Full path for matching
+      title: HelperFormat.shortNamePath(col.alias), // Short path for display
     }));
   }, [cols]);
 
   // Initialize sorting data from config
+  // Use full path for key (for matching), but short path for title (for display)
   useEffect(() => {
     if (configDefinition.sorting && configDefinition.sorting.length > 0) {
       const data = configDefinition.sorting.map((sort: any) => ({
         column: sort.column,
         reverse: sort.reverse || false,
-        key: sort.column.name,
-        title: sort.column.name,
+        key: sort.column.name, // Full path for matching
+        title: HelperFormat.shortNamePath(sort.column.name), // Short path for display
       }));
       setSortingData(data);
     }
@@ -75,7 +78,12 @@ const ReportEditorTabSorting: React.FC<ReportEditorTabSortingProps> = ({
       }
       // Otherwise create new item from optionsData
       const option = optionsData.find((item) => item.key === key);
-      return option || { column: { '@bean': '', name: key as string }, reverse: false, key: key as string, title: key as string };
+      return option || {
+        column: { '@bean': '', name: key as string },
+        reverse: false,
+        key: key as string,
+        title: HelperFormat.shortNamePath(key as string)
+      };
     });
 
     setSortingData(newSorting);

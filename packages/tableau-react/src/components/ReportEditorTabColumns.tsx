@@ -1,12 +1,12 @@
 /**
  * ReportEditorTabColumns Component
  * Tab for selecting which columns to include in the report
- * 
+ *
  * Migrated from: .old_project/packages/http-api/src/views/ConfigEditor/tabs/ConfigEditorReportsTabColumn.vue
  */
 
 import React, { useMemo } from 'react';
-import { Transfer } from '@cyoda/ui-lib-react';
+import { Transfer, HelperFormat } from '@cyoda/ui-lib-react';
 import type { ReportDefinition } from '../types';
 import './ReportEditorTabColumns.scss';
 
@@ -22,22 +22,24 @@ const ReportEditorTabColumns: React.FC<ReportEditorTabColumnsProps> = ({
   onChange,
 }) => {
   // Prepare options data from cols
+  // Use full path for key/name (for matching), but short path for title (for display)
   const optionsData = useMemo(() => {
     return cols.map((col) => ({
       '@bean': col['@bean'],
-      name: col.alias,
-      key: col.alias,
-      title: col.alias,
+      name: col.alias, // Full path for matching
+      key: col.alias,  // Full path for matching
+      title: HelperFormat.shortNamePath(col.alias), // Short path for display
     }));
   }, [cols]);
 
   // Current selected columns
+  // Use full path for key/name (for matching), but short path for title (for display)
   const selectedColumns = useMemo(() => {
     return (configDefinition.columns || []).map((col: any) => ({
       '@bean': col['@bean'],
-      name: col.name,
-      key: col.name,
-      title: col.name,
+      name: col.name, // Full path for matching
+      key: col.name,  // Full path for matching
+      title: HelperFormat.shortNamePath(col.name), // Short path for display
     }));
   }, [configDefinition.columns]);
 
@@ -57,7 +59,7 @@ const ReportEditorTabColumns: React.FC<ReportEditorTabColumnsProps> = ({
         value={selectedColumns}
         onChange={handleChange}
         fieldKey="name"
-        fieldLabel="name"
+        fieldLabel="title"
         strLengthRight={40}
         showSearch
       />

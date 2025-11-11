@@ -397,20 +397,25 @@ const HistoryTable: React.FC<HistoryTableProps> = ({ filter, onChange }) => {
   const handleRowClick = async (record: TableDataRow) => {
     setSelectedRowId(record.id);
 
-    try {
-      // Fetch report definition
-      const { data: reportDef } = await axiosPlatform.get(
-        `/api/platform-api/reporting/report/${record.id}`
-      );
+    // Check if report has 0 rows
+    if (parseInt(String(record.rows), 10) === 0) {
+      notification.warning({
+        message: 'Warning',
+        description: 'Data cannot be loaded, because report have 0 rows',
+      });
+      return;
+    }
 
-      // Fetch config definition
+    try {
+      // Fetch config definition using the report ID
+      // In old Vue project: api.getConfig(id) -> /platform-api/reporting/report/${id}/config
       const { data: configDef } = await axiosPlatform.get(
-        `/api/platform-api/reporting/config/${reportDef.configId}`
+        `/api/platform-api/reporting/report/${record.id}/config`
       );
 
       onChange({
-        reportDefinition: reportDef,
-        configDefinition: configDef,
+        reportDefinition: record,
+        configDefinition: configDef.content,
       });
     } catch (error) {
       notification.error({

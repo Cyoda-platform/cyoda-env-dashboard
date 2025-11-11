@@ -89,6 +89,7 @@
 
     .wrap-table {
       @include table.flex-table-wrapper;
+      flex: 2; // Make Report table larger (2x)
 
       .label {
         display: block;
@@ -102,7 +103,10 @@
     }
 
     .wrap-group {
-      flex: 1;
+      flex: 1; // Make Group table smaller (1x)
+      min-width: 0; // Allow flex item to shrink
+      max-width: 100%;
+      overflow: hidden;
 
       .label {
         display: block;

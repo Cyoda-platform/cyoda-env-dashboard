@@ -8,6 +8,7 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { Transfer, Select } from 'antd';
 import type { TransferProps } from 'antd';
+import { HelperFormat } from '@cyoda/ui-lib-react';
 import type { ReportDefinition, ReportColumn } from '../types';
 import './ReportEditorTabSummary.scss';
 
@@ -39,20 +40,22 @@ const ReportEditorTabSummary: React.FC<ReportEditorTabSummaryProps> = ({
   const [summaryData, setSummaryData] = useState<SummaryItem[]>([]);
 
   // Prepare options data from cols
+  // Use full path for key (for matching), but short path for title (for display)
   const optionsData = useMemo(() => {
     return cols.map((col) => ({
       column: {
         '@bean': col['@bean'],
-        name: col.alias,
+        name: col.alias, // Full path
       },
       aggregation: 'COUNT',
-      key: col.alias,
-      title: col.alias,
+      key: col.alias, // Full path for matching
+      title: HelperFormat.shortNamePath(col.alias), // Short path for display
       typeShort: col.typeShort,
     }));
   }, [cols]);
 
   // Initialize summary data from config
+  // Use full path for key (for matching), but short path for title (for display)
   useEffect(() => {
     if (configDefinition.summary && configDefinition.summary.length > 0) {
       const data = configDefinition.summary.map((sum: any) => {
@@ -60,12 +63,12 @@ const ReportEditorTabSummary: React.FC<ReportEditorTabSummaryProps> = ({
         const column = sum[0];
         const aggregation = sum[1]?.[0] || 'COUNT';
         const col = cols.find((c) => c.alias === column.name);
-        
+
         return {
           column,
           aggregation,
-          key: column.name,
-          title: column.name,
+          key: column.name, // Full path for matching
+          title: HelperFormat.shortNamePath(column.name), // Short path for display
           typeShort: col?.typeShort,
         };
       });
@@ -92,7 +95,7 @@ const ReportEditorTabSummary: React.FC<ReportEditorTabSummaryProps> = ({
         column: { '@bean': '', name: key as string },
         aggregation: 'COUNT',
         key: key as string,
-        title: key as string,
+        title: HelperFormat.shortNamePath(key as string),
       };
     });
 

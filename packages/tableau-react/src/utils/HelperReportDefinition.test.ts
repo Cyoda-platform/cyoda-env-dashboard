@@ -217,6 +217,30 @@ describe('HelperReportDefinition', () => {
       });
     });
 
+    it('should build columns from colDefs with full paths including @class', () => {
+      const config = {
+        colDefs: [
+          {
+            fullPath: 'aliasDefModels.[*]@com#cyoda#core#model#catalog#ReportAliasPathDefModel.fullPath',
+            colType: 'java.lang.String'
+          },
+        ],
+        aliasDefs: [],
+      };
+
+      const result = HelperReportDefinition.buildCols(config);
+
+      expect(result).toHaveLength(1);
+      expect(result[0]).toMatchObject({
+        colType: 'colDef',
+        alias: 'aliasDefModels.[*]@com#cyoda#core#model#catalog#ReportAliasPathDefModel.fullPath',
+        name: 'aliasDefModels.[*]@com#cyoda#core#model#catalog#ReportAliasPathDefModel.fullPath',
+        typeShort: 'String',
+        type: 'java.lang.String',
+        '@bean': 'com.cyoda.core.reports.columns.ReportSimpleColumn',
+      });
+    });
+
     it('should build columns from aliasDefs', () => {
       const config = {
         colDefs: [],

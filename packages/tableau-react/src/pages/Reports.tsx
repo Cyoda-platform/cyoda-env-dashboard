@@ -63,16 +63,16 @@ const HistoryReportsTab: React.FC<{ onResetState: () => void }> = ({ onResetStat
       setConfigDefinition(newConfigDef);
       setReportDefinition(newReportDef);
 
-      // Set table link rows from report definition
-      if (newReportDef.id) {
-        setTableLinkRows(`/platform-api/reporting/report/${newReportDef.id}/rows`);
-      }
+      // Clear table link rows - it will be set when user clicks on a group
+      setTableLinkRows('');
     },
     []
   );
 
   // Handle group row click
   const handleHistoryGroupsChange = useCallback((row: any) => {
+    console.log('Reports: Group row clicked:', row);
+    console.log('Reports: Setting tableLinkRows to:', row._link_rows);
     setTableLinkRows(row._link_rows);
     setIsVisibleTables(false);
     // Reset tables
@@ -135,6 +135,7 @@ const HistoryReportsTab: React.FC<{ onResetState: () => void }> = ({ onResetStat
         <div
           className={`wrap-table ${settings.displayGroupType === 'out' ? 'full' : ''}`}
         >
+          <span className="label">Report</span>
           <HistoryTable
             filter={filter}
             settings={settings}

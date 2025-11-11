@@ -179,15 +179,13 @@ export default class HelperReportDefinition {
         const colTypeStr = el.colType || '';
         const typeShort = colTypeStr.includes('.') ? colTypeStr.split('.').pop() || '' : colTypeStr;
 
-        // Convert fullPath to short path
-        // fullPath: "changeLog.[*]@com#cyoda#tdb#model#metadata#ModelChangeLogEntry.changes.[*]"
-        // shortPath: "changeLog.[*].changes.[*]"
-        const aliasValue = this.fullPathToShortPath(el.fullPath);
-
+        // Use fullPath directly (not converted to short path)
+        // This matches the original Vue implementation and ensures proper matching
+        // with configDefinition.columns which also use full paths
         return {
           colType: 'colDef',
-          alias: aliasValue,
-          name: aliasValue,
+          alias: el.fullPath,
+          name: el.fullPath,
           typeShort,
           type: colTypeStr,
           '@bean': SIMPLE_COLUMN,

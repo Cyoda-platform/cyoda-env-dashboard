@@ -121,19 +121,24 @@ const ReportTableRows: React.FC<ReportTableRowsProps> = ({
 
   // Flatten table row
   const flatTableRow = (obj: any, prefix = ''): any => {
+    // Handle null or undefined
+    if (!obj || typeof obj !== 'object') {
+      return {};
+    }
+
     const flattened: any = {};
-    
+
     Object.keys(obj).forEach((key) => {
       const value = obj[key];
       const newKey = prefix ? `${prefix}_${key}` : key;
-      
+
       if (value && typeof value === 'object' && !Array.isArray(value)) {
         Object.assign(flattened, flatTableRow(value, newKey));
       } else {
         flattened[newKey] = value;
       }
     });
-    
+
     return flattened;
   };
 
@@ -141,10 +146,20 @@ const ReportTableRows: React.FC<ReportTableRowsProps> = ({
   const setTableDataFromResponse = (data: ReportingReportRows) => {
     if (Object.keys(data).length > 0) {
       let reportRows = data._embedded.reportRows;
+      console.log('ReportTableRows: reportRows:', reportRows);
       if (lazyLoading) {
         reportRows = reportRows.slice(0, pageSize);
       }
-      const flattenedData = reportRows.map((el) => flatTableRow(el.content));
+      const flattenedData = reportRows.map((el) => {
+        console.log('ReportTableRows: Processing row:', el);
+        // Use el.content if it exists, otherwise use el directly
+        const rowData = el.content !== undefined ? el.content : el;
+        console.log('ReportTableRows: rowData:', rowData);
+        const flattened = flatTableRow(rowData);
+        console.log('ReportTableRows: Flattened result:', flattened);
+        return flattened;
+      });
+      console.log('ReportTableRows: Final flattenedData:', flattenedData);
       setTableData(flattenedData);
     }
   };
@@ -152,16 +167,22 @@ const ReportTableRows: React.FC<ReportTableRowsProps> = ({
   // Load data on mount and when tableLinkRows changes
   useEffect(() => {
     const loadData = async () => {
-      if (!tableLinkRows) return;
+      if (!tableLinkRows) {
+        console.log('ReportTableRows: No tableLinkRows provided');
+        return;
+      }
 
       try {
         const size = lazyLoading ? pageSize : 100000;
-        const data = await loadRows(`${tableLinkRows}?size=${size}`);
+        const url = `${tableLinkRows}?size=${size}`;
+        console.log('ReportTableRows: Loading data from:', url);
+        const data = await loadRows(url);
+        console.log('ReportTableRows: Loaded data:', data);
 
         setTableColumnsFromConfig();
         setTableDataFromResponse(data);
       } catch (error) {
-        console.error('Failed to load report rows:', error);
+        console.error('ReportTableRows: Failed to load report rows:', error);
       }
     };
 
@@ -219,32 +240,50 @@ const ReportTableRows: React.FC<ReportTableRowsProps> = ({
   };
 
   // Create Ant Design columns from table columns with resizable support
-  const antColumns = tableColumns.map((col) => ({
-    title: col.label,
-    dataIndex: col.prop,
-    key: col.prop,
-    width: columnWidths[col.prop],
-    ellipsis: true,
-    onHeaderCell: (column: any) => ({
-      width: column.width,
-      onResize: handleResize(col.prop),
-    }),
-    render: (value: any, record: any) => {
-      // Check if value is an object or array
-      if (value && typeof value === 'object') {
+  const antColumns = tableColumns.map((col) => {
+    // Calculate default width based on label length to fit the text
+    // Use character count * 8px as base (approximate character width)
+    const calculatedWidth = col.label.length * 8 + 50; // 50px for padding and borders
+    const defaultWidth = Math.max(120, calculatedWidth); // Min 120px, no max limit
+    const width = columnWidths[col.prop] || defaultWidth;
+
+    return {
+      title: col.label,
+      dataIndex: col.prop,
+      key: col.prop,
+      width: width,
+      minWidth: 120,
+      ellipsis: {
+        showTitle: true,
+      },
+      onHeaderCell: (column: any) => ({
+        width: column.width,
+        onResize: handleResize(col.prop),
+      }),
+      render: (value: any, record: any) => {
+        // Check if value is an object or array
+        if (value && typeof value === 'object') {
+          return (
+            <span
+              className="clickable-cell"
+              onClick={() => handleCellClick(record, col.prop)}
+              style={{ cursor: 'pointer', color: '#00D4AA', textDecoration: 'underline' }}
+              title={Array.isArray(value) ? `Array with ${value.length} items` : 'Object - click to view details'}
+            >
+              {Array.isArray(value) ? `[Array: ${value.length} items]` : '[Object]'}
+            </span>
+          );
+        }
+        // For long text values, add tooltip
+        const displayValue = value?.toString() || '';
         return (
-          <span
-            className="clickable-cell"
-            onClick={() => handleCellClick(record, col.prop)}
-            style={{ cursor: 'pointer', color: '#00D4AA', textDecoration: 'underline' }}
-          >
-            {Array.isArray(value) ? `[Array: ${value.length} items]` : '[Object]'}
+          <span title={displayValue.length > 50 ? displayValue : undefined}>
+            {displayValue}
           </span>
         );
-      }
-      return value;
-    },
-  }));
+      },
+    };
+  });
 
   // Render the table with data
   return (
@@ -268,7 +307,7 @@ const ReportTableRows: React.FC<ReportTableRowsProps> = ({
           showTotal: (total) => `Total ${total} rows`,
           onShowSizeChange: (current, size) => setPageSize(size),
         }}
-        scroll={{ x: true, y: 400 }}
+        scroll={{ x: 'max-content', y: 500 }}
         bordered
         size="small"
         onRow={(record) => ({
