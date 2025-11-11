@@ -4,6 +4,14 @@
  */
 
 .catalogue-alias-change-state-dialog {
+  .ant-modal-header {
+    border-bottom: none !important;
+  }
+
+  .ant-modal-footer {
+    border-top: none !important;
+  }
+
   .ant-select {
     width: 100%;
   }

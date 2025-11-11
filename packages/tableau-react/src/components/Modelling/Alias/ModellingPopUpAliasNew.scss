@@ -1,10 +1,25 @@
 .modelling-popup-alias-new {
+  .ant-modal-header {
+    border-bottom: none !important;
+  }
+
+  .ant-modal-footer {
+    border-top: none !important;
+  }
+
   .ant-steps {
     margin-bottom: 24px;
   }
 
   .ant-table {
     margin-top: 16px;
+  }
+
+  .actions-settings {
+    display: flex !important;
+    justify-content: flex-end !important;
+    align-items: center !important;
+    gap: 16px !important;
   }
 
   .icon-trash-remove {

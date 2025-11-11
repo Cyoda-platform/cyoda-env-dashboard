@@ -40,7 +40,7 @@ export interface ModellingPopUpAliasNewProps {
 }
 
 export interface ModellingPopUpAliasNewRef {
-  open: (requestClass?: string, editItem?: any) => void;
+  open: (requestClassOrItem?: string | any, editItem?: any) => void;
   close: () => void;
 }
 
@@ -117,15 +117,36 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
     });
 
     useImperativeHandle(ref, () => ({
-      open: (requestClass?: string, item?: any) => {
+      open: (requestClassOrItem?: string | any, item?: any) => {
         setVisible(true);
         setCurrentStep(0);
-        setEditItem(item || null);
 
-        if (item) {
+        // Support both calling conventions:
+        // 1. open(requestClass, item) - new way with explicit requestClass
+        // 2. open(item) - old way, extract entityClass from item
+        let requestClass: string | undefined;
+        let editItem: any;
+
+        if (typeof requestClassOrItem === 'string') {
+          // New way: open(requestClass, item)
+          requestClass = requestClassOrItem;
+          editItem = item;
+        } else if (requestClassOrItem && typeof requestClassOrItem === 'object') {
+          // Old way: open(item) - extract entityClass from item
+          editItem = requestClassOrItem;
+          requestClass = editItem.entityClass;
+        } else {
+          // Create mode: open() or open(undefined)
+          editItem = null;
+          requestClass = undefined;
+        }
+
+        setEditItem(editItem || null);
+
+        if (editItem) {
           // Edit mode
-          const paths = item.aliasDef.aliasPaths?.value || [];
-          const entityClass = requestClass || item.entityClass || '';
+          const paths = editItem.aliasDef.aliasPaths?.value || [];
+          const entityClass = requestClass || editItem.entityClass || '';
 
           // Deserialize mapperParameters if it's a string
           const deserializedPaths: AliasPathLocal[] = paths.map((p: any) => ({
@@ -136,18 +157,18 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
           }));
 
           setAliasForm({
-            name: item.aliasDef.name,
-            desc: item.desc || '',
-            aliasType: item.aliasDef.aliasType || 'SIMPLE',
+            name: editItem.aliasDef.name,
+            desc: editItem.desc || '',
+            aliasType: editItem.aliasDef.aliasType || 'SIMPLE',
             entityClass: entityClass,
             aliasPaths: deserializedPaths,
           });
           setSelectedColumns(paths.map((p: any) => p.colDef));
           form.setFieldsValue({
-            name: item.aliasDef.name,
-            desc: item.desc || '',
+            name: editItem.aliasDef.name,
+            desc: editItem.desc || '',
             entityClass: entityClass,
-            aliasType: item.aliasDef.aliasType || 'SIMPLE',
+            aliasType: editItem.aliasDef.aliasType || 'SIMPLE',
           });
         } else {
           // Create mode
@@ -662,7 +683,7 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
       title: 'Paths',
       content: (
         <div>
-          <div className="actions-settings" style={{ marginBottom: 16 }}>
+          <div className="actions-settings" style={{ marginBottom: 16, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '12px' }}>
             <ModellingPopUpToggles onChange={handleTogglesChange} />
             <ModellingPopUpSearch onChange={handleSearchChange} />
           </div>
@@ -897,6 +918,7 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
           onCancel={() => setVisible(false)}
           width={aliasEditType === 'catalog' ? '90%' : '80%'}
           footer={null}
+          className="modelling-popup-alias-new"
         >
           <Steps current={currentStep} items={steps} style={{ marginBottom: 24 }} />
 

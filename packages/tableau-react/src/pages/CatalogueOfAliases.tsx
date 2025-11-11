@@ -319,7 +319,7 @@ const CatalogueOfAliases: React.FC = () => {
   };
 
   const handleEdit = (record: TableDataRow) => {
-    aliasDialogRef.current?.open(record.source);
+    aliasDialogRef.current?.open(record.source.entityClass, record.source);
   };
 
   const handleDelete = (record: TableDataRow) => {

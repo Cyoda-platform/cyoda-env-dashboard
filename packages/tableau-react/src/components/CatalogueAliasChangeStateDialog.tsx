@@ -83,6 +83,7 @@ export const CatalogueAliasChangeStateDialog = forwardRef<
       title="Attempt Transition"
       open={visible}
       onCancel={() => setVisible(false)}
+      className="catalogue-alias-change-state-dialog"
       onOk={handleConfirm}
       confirmLoading={transitionMutation.isPending}
       width={500}
