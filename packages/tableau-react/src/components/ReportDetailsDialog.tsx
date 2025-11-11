@@ -134,6 +134,34 @@ const ReportDetailsDialog: React.FC<ReportDetailsDialogProps> = ({
     },
   ];
 
+  // Calculate dynamic width based on content
+  const calculateWidth = () => {
+    // Base width
+    let width = 500;
+
+    // Increase width if there are many grouping columns
+    if (groupingColumns && groupingColumns.length > 5) {
+      width = Math.max(width, 600);
+    }
+
+    // Increase width if there are many sorting columns
+    if (sortingArray.length > 5) {
+      width = Math.max(width, 600);
+    }
+
+    // Increase width if there are conditions
+    if (conditions.length > 0) {
+      width = Math.max(width, 700);
+    }
+
+    // Increase width if there are many conditions
+    if (conditions.length > 3) {
+      width = Math.max(width, 800);
+    }
+
+    return width;
+  };
+
   return (
     <Modal
       title={
@@ -158,7 +186,7 @@ const ReportDetailsDialog: React.FC<ReportDetailsDialogProps> = ({
           OK
         </Button>,
       ]}
-      width={800}
+      width={calculateWidth()}
       className="report-details-dialog"
       destroyOnClose
     >

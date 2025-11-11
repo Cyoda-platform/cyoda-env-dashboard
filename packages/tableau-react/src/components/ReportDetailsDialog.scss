@@ -1,4 +1,15 @@
 .report-details-dialog {
+  // Remove borders from modal header and footer
+  .ant-modal-header {
+    border-bottom: none !important;
+    padding-bottom: 16px;
+  }
+
+  .ant-modal-footer {
+    border-top: none !important;
+    padding-top: 16px;
+  }
+
   .report-details-header {
     .report-config-name {
       font-size: 16px;
@@ -28,7 +39,9 @@
 
   .tab-content {
     padding: 16px 0;
-    min-height: 200px;
+    min-height: 80px;
+    max-height: 400px;
+    overflow-y: auto;
 
     ul {
       list-style: disc;

@@ -304,7 +304,7 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
 
       // Create new config with cloned data
       const { data } = await axios.post(
-        `/platform-api/reporting/definitions/${encodeURIComponent(newName)}`,
+        `/platform-api/reporting/definitions?name=${encodeURIComponent(newName)}`,
         configDefinition
       );
       return data;

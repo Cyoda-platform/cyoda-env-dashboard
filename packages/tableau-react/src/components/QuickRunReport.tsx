@@ -9,7 +9,7 @@ import { PlayCircleOutlined, EditOutlined, StopOutlined } from '@ant-design/icon
 import type { MenuProps } from 'antd';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { axios } from '@cyoda/http-api-react';
+import { axios, useGlobalUiSettingsStore, getReportingFetchTypes } from '@cyoda/http-api-react';
 import ReportResultDialog from './ReportResultDialog';
 import './QuickRunReport.scss';
 
@@ -59,6 +59,23 @@ const QuickRunReport: React.FC<QuickRunReportProps> = ({
   const [showResultDialog, setShowResultDialog] = useState(false);
   const [resultData, setResultData] = useState<any>(null);
 
+  // Get global entity type from store
+  const { entityType } = useGlobalUiSettingsStore();
+
+  // Load entity types data for filtering
+  const { data: entityTypesData = [] } = useQuery({
+    queryKey: ['reportingFetchTypes'],
+    queryFn: async () => {
+      try {
+        const response = await getReportingFetchTypes();
+        return response.data || [];
+      } catch (error) {
+        console.error('Failed to load entity types:', error);
+        return [];
+      }
+    },
+  });
+
   // Load report definitions
   const { data: definitions = [] } = useQuery({
     queryKey: ['reportDefinitions', 'quickRun'],
@@ -78,17 +95,49 @@ const QuickRunReport: React.FC<QuickRunReportProps> = ({
     },
   });
 
-  // Convert definitions to options
+  // Convert definitions to options with entity type filtering
   const configOptions = useMemo(() => {
-    return definitions.map((report) => {
+    let options = definitions.map((report) => {
+      // Extract name from ID by removing "CYODA-{EntityType}-" prefix
+      // Example: "CYODA-EntityModel-dist rep (Copy)" -> "dist rep (Copy)"
+      const name = report.gridConfigFields.id.split('-').slice(2).join('-');
+
+      // Find entity type info
+      const entityClass = report.gridConfigFields.type;
+      const entityTypeInfo = entityTypesData.find((et: any) => {
+        if (typeof et === 'object') {
+          // Extract short class name from full class name
+          // e.g., 'com.cyoda.tdb.model.search.SearchUsageEntity' -> 'SearchUsageEntity'
+          const shortName = et.name.split('.').pop();
+          return shortName === entityClass;
+        }
+        return et === entityClass;
+      });
+      const entityTypeValue = typeof entityTypeInfo === 'object' ? entityTypeInfo.type : null;
+
       return {
         id: report.gridConfigFields.id,
         groupingVersion: report.gridConfigFields.groupingVersion,
-        name: report.gridConfigFields.name || report.gridConfigFields.id,
+        name: name,
         entity: report.gridConfigFields.type,
+        entityType: entityTypeValue,
       };
     });
-  }, [definitions]);
+
+    // Filter by entity type from global toggle
+    if (entityTypesData.length > 0 && entityTypesData.some((et: any) => typeof et === 'object' && et.type)) {
+      options = options.filter((item: any) => {
+        // If entity has type info, filter by it
+        if (item.entityType) {
+          return item.entityType === entityType;
+        }
+        // If no type info, show in both modes (backward compatibility)
+        return true;
+      });
+    }
+
+    return options;
+  }, [definitions, entityTypesData, entityType]);
 
   // Check if current config is running
   const isRunningReport = useMemo(() => {
