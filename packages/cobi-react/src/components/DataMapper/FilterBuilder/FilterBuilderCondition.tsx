@@ -1,9 +1,8 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import { Row, Col, Select, Input, InputNumber, DatePicker, Button, Modal } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 import { FilterCondition, ColumnInfo, CONDITION_TYPES, ConditionType, FilterConditionValue } from './types';
-import { shortLabel } from './helpers';
 import './FilterBuilderCondition.css';
 
 interface FilterBuilderConditionProps {
@@ -238,7 +237,7 @@ const FilterBuilderCondition: React.FC<FilterBuilderConditionProps> = ({
             disabled={disableColumn || readOnly}
             style={{ width: '100%' }}
             options={cols.map((col) => ({
-              label: shortLabel(col.alias),
+              label: col.alias,
               value: col.alias,
             }))}
           />

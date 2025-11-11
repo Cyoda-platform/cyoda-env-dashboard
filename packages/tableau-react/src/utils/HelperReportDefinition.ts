@@ -3,6 +3,8 @@
  * Migrated from: .old_project/packages/http-api/src/helpers/HelperReportDefinition.ts
  */
 
+import { HelperFormat } from '@cyoda/ui-lib-react';
+
 export interface HistoryFilterForm {
   authors: string[];
   states: string[];
@@ -153,6 +155,16 @@ export default class HelperReportDefinition {
   }
 
   /**
+   * Convert fullPath to short path by removing @class#name parts
+   * Example: "changeLog.[*]@com#cyoda#tdb#model#metadata#ModelChangeLogEntry.changes.[*]"
+   *       -> "changeLog.[*].changes.[*]"
+   * @deprecated Use HelperFormat.shortNamePath instead
+   */
+  private static fullPathToShortPath(fullPath: string): string {
+    return HelperFormat.shortNamePath(fullPath);
+  }
+
+  /**
    * Build column list from report definition colDefs and aliasDefs
    */
   public static buildCols(configDefinition: any): any[] {
@@ -167,10 +179,15 @@ export default class HelperReportDefinition {
         const colTypeStr = el.colType || '';
         const typeShort = colTypeStr.includes('.') ? colTypeStr.split('.').pop() || '' : colTypeStr;
 
+        // Convert fullPath to short path
+        // fullPath: "changeLog.[*]@com#cyoda#tdb#model#metadata#ModelChangeLogEntry.changes.[*]"
+        // shortPath: "changeLog.[*].changes.[*]"
+        const aliasValue = this.fullPathToShortPath(el.fullPath);
+
         return {
           colType: 'colDef',
-          alias: el.fullPath,
-          name: el.fullPath,
+          alias: aliasValue,
+          name: aliasValue,
           typeShort,
           type: colTypeStr,
           '@bean': SIMPLE_COLUMN,

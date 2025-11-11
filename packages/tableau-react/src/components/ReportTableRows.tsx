@@ -9,7 +9,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Table } from 'antd';
 import type { ResizeCallbackData } from 'react-resizable';
 import { axios } from '@cyoda/http-api-react';
-import { HelperStorage } from '@cyoda/ui-lib-react';
+import { HelperStorage, HelperFormat } from '@cyoda/ui-lib-react';
 import type { ConfigDefinition, ReportingReportRows, TableColumn, TableauConnectionData } from '@/types';
 import type { ColumnData } from './ColumnCollectionsDialog';
 import EntityDetailModal from './EntityDetailModal';
@@ -91,7 +91,7 @@ const ReportTableRows: React.FC<ReportTableRowsProps> = ({
   const setTableColumnsFromConfig = () => {
     if (configDefinition && configDefinition.columns) {
       const columns = configDefinition.columns.map((el) => {
-        const name = shortNamePath(el.name);
+        const name = HelperFormat.shortNamePath(el.name);
         return {
           label: name,
           prop: getFieldName(name),
@@ -117,12 +117,6 @@ const ReportTableRows: React.FC<ReportTableRowsProps> = ({
       });
     }
     return field;
-  };
-
-  // Short name path helper
-  const shortNamePath = (path: string): string => {
-    // Simplified version - you may need to implement full logic
-    return path.split('.').pop() || path;
   };
 
   // Flatten table row

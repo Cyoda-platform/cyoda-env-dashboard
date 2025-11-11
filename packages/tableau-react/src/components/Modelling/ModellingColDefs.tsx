@@ -7,6 +7,7 @@
 import React, { useRef, useState, useMemo } from 'react';
 import { Button, Table, Modal, App } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
+import { HelperFormat } from '@cyoda/ui-lib-react';
 import { ModellingPopUp, ModellingPopUpRef } from './ModellingPopUp';
 import type { ColDef } from '../../types/modelling';
 import './ModellingColDefs.scss';
@@ -23,16 +24,14 @@ export const ModellingColDefs: React.FC<ModellingColDefsProps> = ({ configDefini
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
   const tableData = useMemo(() => {
-    const data = (
+    return (
       configDefinition.colDefs?.map((el: ColDef, index: number) => ({
         key: index,
-        fullPath: el.fullPath,
+        fullPath: el.fullPath, // Keep original fullPath in data
+        fullPathDisplay: HelperFormat.shortNamePath(el.fullPath), // Formatted for display
         colDef: el,
       })) || []
     );
-    console.log('ModellingColDefs - tableData:', data);
-    console.log('ModellingColDefs - configDefinition.colDefs:', configDefinition.colDefs);
-    return data;
   }, [configDefinition.colDefs]);
 
   const checked = useMemo(() => {
@@ -106,11 +105,11 @@ export const ModellingColDefs: React.FC<ModellingColDefsProps> = ({ configDefini
   const columns = [
     {
       title: 'PATH',
-      dataIndex: 'fullPath',
-      key: 'fullPath',
+      dataIndex: 'fullPathDisplay',
+      key: 'fullPathDisplay',
       render: (text: string, record: any) => {
-        // Explicitly render the fullPath value
-        return <span style={{ color: 'var(--refine-text-primary, #e5e7eb)' }}>{text || record.fullPath || 'N/A'}</span>;
+        // Render the formatted display path
+        return <span style={{ color: 'var(--refine-text-primary, #e5e7eb)' }}>{text || record.fullPathDisplay || 'N/A'}</span>;
       },
     },
     {

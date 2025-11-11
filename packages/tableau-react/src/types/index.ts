@@ -78,6 +78,14 @@ export interface ColDef {
   '@bean'?: string;
   fullPath: string;
   colType?: string;
+  parts?: {
+    '@meta': string;
+    value: Array<{
+      rootClass: string;
+      path: string;
+      type: string;
+    }>;
+  };
   [key: string]: any;
 }
 

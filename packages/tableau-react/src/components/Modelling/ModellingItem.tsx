@@ -104,12 +104,25 @@ export const ModellingItem: React.FC<ModellingItemProps> = ({
     return path.join('.');
   }, [parentColDef, reportInfoRow]);
 
+  // Get the element (unwrap LIST/MAP types to get the actual element type)
+  const getElement = useMemo(() => {
+    let element = reportInfoRow;
+    if (element.elementType) {
+      element = element.elementType;
+    }
+    if (element.elementInfo) {
+      element = element.elementInfo;
+    }
+    return element;
+  }, [reportInfoRow]);
+
   const label = useMemo(() => {
+    const element = getElement;
     return {
       fullPath,
-      colType: reportInfoRow.type,
+      colType: element.clazzType || reportInfoRow.type,
     };
-  }, [fullPath, reportInfoRow.type]);
+  }, [fullPath, getElement, reportInfoRow.type]);
 
   const getChecked = useMemo(() => {
     return checked.find((path) => {
@@ -335,7 +348,8 @@ export const ModellingItem: React.FC<ModellingItemProps> = ({
               className={!isChildAvailable ? 'no-child' : ''}
               style={{ marginLeft: 8 }}
               data-col-type={reportInfoRow.type}
-              data-clazz-type={reportInfoRow.clazzType || reportInfoRow.type}
+              data-clazz-type={getElement.clazzType || reportInfoRow.type}
+              data-column-path={getElement.columnPath}
             >
               {reportInfoRow.columnName}
               {isMap && (

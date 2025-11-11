@@ -7,7 +7,7 @@
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { Tabs, Button, message, Spin, Alert } from 'antd';
+import { Tabs, Button, Spin, Alert, App } from 'antd';
 import { ArrowLeftOutlined, SaveOutlined, PlayCircleOutlined, StopOutlined } from '@ant-design/icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { axios } from '@cyoda/http-api-react';
@@ -27,6 +27,7 @@ import QueryPlanButton from '../components/QueryPlanButton';
 import ReportScheduling from '../components/ReportScheduling';
 
 const ReportEditor: React.FC = () => {
+  const { message } = App.useApp();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -56,12 +57,6 @@ const ReportEditor: React.FC = () => {
     if (reportData) {
       // Handle both wrapped (reportData.content) and unwrapped responses
       const definition = reportData.content || reportData;
-
-      // Log the data loaded from server for debugging
-      console.log('=== LOADED REPORT FROM SERVER ===');
-      console.log('Full definition:', definition);
-      console.log('colDefs:', definition.colDefs);
-      console.log('Sample colDef:', definition.colDefs?.[0]);
 
       // Expand short column names to full bean names (like Vue project does)
       const expandedDefinition = HelperReportDefinition.expandColumnNames(definition);

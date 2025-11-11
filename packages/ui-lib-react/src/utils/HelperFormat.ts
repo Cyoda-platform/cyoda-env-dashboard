@@ -96,5 +96,31 @@ export default class HelperFormat {
     if (str.length <= length) return str;
     return str.substring(0, length) + '...';
   }
+
+  /**
+   * Shorten path name by removing @class#name parts
+   * Example: values@org#cyoda#gs#jsondb#JsonObjectValues.strings.[#name] -> values.strings.[#name]
+   * Example: changeLog.[*]@com#cyoda#tdb#model#metadata#ModelChangeLogEntry.changes.[*] -> changeLog.[*].changes.[*]
+   */
+  public static shortNamePath(path: string | null | undefined): string {
+    if (!path) return '';
+
+    if (path.includes('@')) {
+      const data: string[] = [];
+      const classesPaths = path.split('@');
+      classesPaths.forEach((classesPath) => {
+        if (classesPath.indexOf('#') > -1) {
+          const strings = classesPath.split('.');
+          strings.shift();
+          data.push(strings.join('.'));
+        } else {
+          data.push(classesPath);
+        }
+      });
+      return data.join('.');
+    } else {
+      return path;
+    }
+  }
 }
 

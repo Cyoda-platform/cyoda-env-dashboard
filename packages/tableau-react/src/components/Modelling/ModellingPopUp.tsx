@@ -145,16 +145,36 @@ export const ModellingPopUp = forwardRef<ModellingPopUpRef, ModellingPopUpProps>
                   return existing;
                 }
 
-                // For new selections, try to find the colType from the checkbox element
+                // For new selections, get field type, Java type, and column path from the checkbox element
                 const checkbox = document.querySelector(`input[type="checkbox"][value="${fullPath}"]`);
                 const colType = checkbox?.getAttribute('data-col-type') || 'LEAF';
+                const clazzType = checkbox?.getAttribute('data-clazz-type') || 'java.lang.String';
+                const columnPath = checkbox?.getAttribute('data-column-path') || fullPath;
+
+                // Build the parts structure required by the server
+                // IMPORTANT: path should be the columnPath (e.g., "changeLog.[*]@com#cyoda#tdb#model#metadata#ModelChangeLogEntry")
+                // NOT the fullPath!
+                const parts = {
+                  '@meta': 'com.cyoda.core.reports.columndefs.ReportColPartDef[]',
+                  value: [
+                    {
+                      rootClass: requestClass,
+                      path: columnPath,  // Use columnPath, not fullPath!
+                      type: clazzType,
+                    },
+                  ],
+                };
 
                 // ColDef should NOT have @bean property - it's not a bean, just a data structure
-                return {
+                const newColDef = {
                   fullPath,
                   colType,
+                  parts,
                 } as ColDef;
+
+                return newColDef;
               });
+
               setSelected(newColumns);
             }}
           >

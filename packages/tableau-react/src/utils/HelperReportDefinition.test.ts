@@ -23,8 +23,8 @@ describe('HelperReportDefinition', () => {
       expect(result).toHaveProperty('description', '');
       expect(result).toHaveProperty('requestClass', '');
       expect(result).toHaveProperty('condition');
-      expect(result.condition).toHaveProperty('@bean', '');
-      expect(result.condition).toHaveProperty('operator', '');
+      expect(result.condition).toHaveProperty('@bean', 'com.cyoda.core.conditions.GroupCondition');
+      expect(result.condition).toHaveProperty('operator', 'AND');
       expect(result.condition).toHaveProperty('conditions', []);
       expect(result).toHaveProperty('sorting', []);
       expect(result).toHaveProperty('grouping', []);
