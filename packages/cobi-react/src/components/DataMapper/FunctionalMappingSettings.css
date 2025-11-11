@@ -268,9 +268,9 @@
 }
 
 .code-preview-section pre {
-  background: #1e1e1e !important;
+  background: #0f172a !important;
   color: #d4d4d4 !important;
-  border: 1px solid #333 !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
 }
 

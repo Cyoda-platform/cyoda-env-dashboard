@@ -604,6 +604,120 @@ div.ant-card.ant-card-borderless > .ant-card-body {
   }
 }
 
+// Date picker dropdown (calendar) styling - Dark theme
+.ant-picker-dropdown {
+  .ant-picker-panel-container {
+    background: var(--refine-bg-secondary, #1E2A3A) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  }
+
+  .ant-picker-panel {
+    background: transparent !important;
+    border: none !important;
+  }
+
+  // Header (month/year selector)
+  .ant-picker-header {
+    background: rgba(0, 0, 0, 0.2) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: var(--refine-text-primary) !important;
+
+    button {
+      color: var(--refine-text-secondary) !important;
+
+      &:hover {
+        color: var(--refine-primary) !important;
+      }
+    }
+  }
+
+  // Calendar body
+  .ant-picker-body {
+    background: transparent !important;
+  }
+
+  // Day cells
+  .ant-picker-cell {
+    color: var(--refine-text-primary) !important;
+
+    &:hover:not(.ant-picker-cell-selected):not(.ant-picker-cell-disabled) .ant-picker-cell-inner {
+      background: rgba(0, 212, 170, 0.1) !important;
+    }
+
+    &.ant-picker-cell-in-view {
+      color: var(--refine-text-primary) !important;
+    }
+
+    &.ant-picker-cell-disabled {
+      color: var(--refine-text-muted) !important;
+    }
+  }
+
+  .ant-picker-cell-inner {
+    color: inherit !important;
+  }
+
+  // Selected day
+  .ant-picker-cell-selected .ant-picker-cell-inner {
+    background: var(--refine-primary, #00D4AA) !important;
+    color: #1A2332 !important;
+  }
+
+  // Today
+  .ant-picker-cell-today .ant-picker-cell-inner::before {
+    border-color: var(--refine-primary, #00D4AA) !important;
+  }
+
+  // Time picker panel
+  .ant-picker-time-panel {
+    background: var(--refine-bg-tertiary, #243142) !important;
+    border-left: 1px solid rgba(255, 255, 255, 0.1) !important;
+  }
+
+  .ant-picker-time-panel-column {
+    background: transparent !important;
+
+    > li {
+      color: var(--refine-text-primary) !important;
+
+      &:hover {
+        background: rgba(0, 212, 170, 0.1) !important;
+      }
+
+      &.ant-picker-time-panel-cell-selected {
+        background: var(--refine-primary, #00D4AA) !important;
+        color: #1A2332 !important;
+      }
+    }
+  }
+
+  // Footer (Now, OK buttons)
+  .ant-picker-footer {
+    background: rgba(0, 0, 0, 0.2) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+  }
+
+  .ant-picker-now-btn,
+  .ant-picker-ok {
+    color: var(--refine-primary, #00D4AA) !important;
+
+    &:hover {
+      color: #00E5BF !important;
+    }
+  }
+
+  // Input in datetime picker
+  .ant-picker-input > input {
+    background: rgba(0, 0, 0, 0.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: var(--refine-text-primary) !important;
+
+    &:focus {
+      border-color: var(--refine-primary, #00D4AA) !important;
+    }
+  }
+}
+
 // Modal styling
 .ant-modal {
   .ant-modal-content {

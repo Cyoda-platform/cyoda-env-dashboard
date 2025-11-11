@@ -100,8 +100,8 @@ export const CYODA_DARK_THEME: editor.IStandaloneThemeData = {
     { token: 'invalid', foreground: 'EF4444', fontStyle: 'bold' },
   ],
   colors: {
-    // Editor background - Dark slate (matching state machine)
-    'editor.background': '#0f172a',
+    // Editor background - Dark navy (matching header gradient)
+    'editor.background': '#1a2332',
     'editor.foreground': '#E0E0E0',
 
     // Line numbers - Neon Teal accent
@@ -128,7 +128,7 @@ export const CYODA_DARK_THEME: editor.IStandaloneThemeData = {
     'editorIndentGuide.activeBackground': '#4B5563',
 
     // Gutter
-    'editorGutter.background': '#0f172a',
+    'editorGutter.background': '#1a2332',
     'editorGutter.modifiedBackground': '#A78BFA', // Neon Purple
     'editorGutter.addedBackground': '#14b8a6', // Neon Teal
     'editorGutter.deletedBackground': '#EF4444',
@@ -153,18 +153,18 @@ export const CYODA_DARK_THEME: editor.IStandaloneThemeData = {
     'editor.findRangeHighlightBackground': '#F59E0B11',
 
     // Widgets
-    'editorWidget.background': '#0f172a',
+    'editorWidget.background': '#1a2332',
     'editorWidget.border': '#374151',
-    'editorSuggestWidget.background': '#0f172a',
+    'editorSuggestWidget.background': '#1a2332',
     'editorSuggestWidget.border': '#374151',
     'editorSuggestWidget.selectedBackground': '#1e293b',
-    'editorHoverWidget.background': '#0f172a',
+    'editorHoverWidget.background': '#1a2332',
     'editorHoverWidget.border': '#374151',
 
     // Peek view - Neon Teal accent
     'peekView.border': '#14b8a6',
-    'peekViewEditor.background': '#0a0f1a',
-    'peekViewResult.background': '#0f172a',
+    'peekViewEditor.background': '#1a2332',
+    'peekViewResult.background': '#1a2332',
     'peekViewTitle.background': '#1e293b',
 
     // Diff editor - Neon colors
