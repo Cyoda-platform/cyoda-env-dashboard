@@ -8,6 +8,12 @@
 .report-configs {
   padding: 0; // No padding - AppLayout handles spacing
   border: none !important;
+  border-top: none !important;
+
+  &::before,
+  &::after {
+    display: none !important;
+  }
 
   .success-row {
     background: #f0f9eb;
@@ -23,6 +29,7 @@
     align-items: center;
     justify-content: flex-end;
     flex-wrap: nowrap;
+    margin-top: 24px;
     margin-bottom: 15px;
   }
 

@@ -1,4 +1,9 @@
 .report-editor-tab-columns {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 0;
+
   // Add spacing for button
   > button {
     margin-bottom: 24px;

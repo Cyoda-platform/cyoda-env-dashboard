@@ -43,6 +43,15 @@
       border: none !important;
       padding: 0 !important;
     }
+
+    // Убираем вторую линию (над контентом табов, ближе к кнопкам)
+    .ant-tabs-content-holder {
+      border-top: none !important;
+
+      &::before {
+        display: none !important;
+      }
+    }
   }
 }
 

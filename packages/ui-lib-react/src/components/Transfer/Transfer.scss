@@ -1,7 +1,13 @@
 .transfer-component {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+
   .ant-transfer {
     display: flex;
     align-items: center;
+    flex-wrap: nowrap;
+    min-width: min-content;
   }
 
   .ant-transfer-list {
@@ -10,8 +16,9 @@
     border-radius: 8px;
 
     // Adaptive sizing - override inline styles
-    min-width: 450px !important;
-    width: 500px !important;
+    min-width: 300px !important;
+    width: 100% !important;
+    max-width: 500px !important;
     // Let the list grow based on content, with a reasonable max
     min-height: 500px !important;
     max-height: calc(100vh - 250px) !important;
@@ -113,6 +120,53 @@
         background: rgba(255, 255, 255, 0.05);
         border-color: rgba(255, 255, 255, 0.05);
         color: var(--refine-text-muted, #6B7280);
+      }
+    }
+  }
+
+  // Responsive adjustments for smaller screens
+  @media (max-width: 1400px) {
+    .ant-transfer-list {
+      min-width: 250px !important;
+      max-width: 400px !important;
+    }
+
+    .ant-transfer-operation {
+      margin: 0 20px;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .ant-transfer-list {
+      min-width: 200px !important;
+      max-width: 350px !important;
+    }
+
+    .ant-transfer-operation {
+      margin: 0 16px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .ant-transfer {
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .ant-transfer-list {
+      min-width: 100% !important;
+      max-width: 100% !important;
+    }
+
+    .ant-transfer-operation {
+      margin: 0;
+      display: flex;
+      flex-direction: row;
+      gap: 8px;
+
+      .ant-btn {
+        flex: 1;
+        margin-bottom: 0 !important;
       }
     }
   }
