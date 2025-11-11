@@ -10,12 +10,13 @@ import type { ColumnsType } from 'antd/es/table';
 import type { ResizeCallbackData } from 'react-resizable';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import { axiosPlatform, useGlobalUiSettingsStore } from '@cyoda/http-api-react';
+import { axiosPlatform, useGlobalUiSettingsStore, getReportConfig } from '@cyoda/http-api-react';
 import { HelperStorage } from '@cyoda/ui-lib-react';
 import moment from 'moment';
 import type { ReportHistoryData, TableDataRow, HistorySettings, ConfigDefinition } from '@/types';
 import type { HistoryFilterForm } from '../utils/HelperReportDefinition';
 import { ResizableTitle } from './ResizableTitle';
+import ReportDetailsDialog from './ReportDetailsDialog';
 import './HistoryTable.scss';
 
 interface HistoryTableProps {
@@ -26,6 +27,13 @@ interface HistoryTableProps {
 
 const HistoryTable: React.FC<HistoryTableProps> = ({ filter, onChange }) => {
   const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
+  const [detailsDialogVisible, setDetailsDialogVisible] = useState(false);
+  const [selectedReportDetails, setSelectedReportDetails] = useState<{
+    id: string;
+    config: string;
+    groupingColumns: string[];
+  } | null>(null);
+  const [detailsConfigDefinition, setDetailsConfigDefinition] = useState<ConfigDefinition | null>(null);
   const storage = useMemo(() => new HelperStorage(), []);
 
   // Get global entity type
@@ -273,16 +281,24 @@ const HistoryTable: React.FC<HistoryTableProps> = ({ filter, onChange }) => {
 
   // Handle info button click - shows report details modal
   const handleInfoClick = useCallback(async (record: TableDataRow) => {
-    // TODO: Implement info modal showing:
-    // - Group by columns
-    // - Filters
-    // - Sorting
-    // - Other report configuration details
-    notification.info({
-      message: 'Report Details',
-      description: `Report ID: ${record.id}\nConfig: ${record.config}\nRows: ${record.totalRowsCount}`,
-      duration: 5,
-    });
+    try {
+      // Fetch config definition for the report using the correct API
+      const { data: configDef } = await getReportConfig(record.id);
+
+      setSelectedReportDetails({
+        id: record.id,
+        config: record.config,
+        groupingColumns: record.groupingColumns || [],
+      });
+      setDetailsConfigDefinition(configDef.content || configDef);
+      setDetailsDialogVisible(true);
+    } catch (error) {
+      console.error('Failed to load report details:', error);
+      notification.error({
+        message: 'Error',
+        description: 'Failed to load report configuration details',
+      });
+    }
   }, []);
 
   // Handle edit button click - opens hierarchy edit modal
@@ -435,6 +451,16 @@ const HistoryTable: React.FC<HistoryTableProps> = ({ filter, onChange }) => {
             cell: ResizableTitle,
           },
         }}
+      />
+
+      {/* Report Details Dialog */}
+      <ReportDetailsDialog
+        visible={detailsDialogVisible}
+        reportId={selectedReportDetails?.id || ''}
+        reportConfig={selectedReportDetails?.config || ''}
+        groupingColumns={selectedReportDetails?.groupingColumns || []}
+        configDefinition={detailsConfigDefinition}
+        onClose={() => setDetailsDialogVisible(false)}
       />
     </div>
   );

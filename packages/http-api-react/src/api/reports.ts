@@ -44,8 +44,8 @@ export const reportUrls = {
   REPORT_HISTORY: (username = currentUserName()) =>
     `platform-api/history?username=${encodeURIComponent(username)}&fields=id,configName,reportFailed,finishTime`,
   REPORT_STATUS: (reportId: string) => `platform-api/report/${reportId}/status`,
-  REPORT_CONFIG: (reportId: string) => `platform-api/report/${reportId}/config`,
-  REPORT_STATISTICS: (reportId: string) => `platform-api/report/${reportId}/stats?full=false`,
+  REPORT_CONFIG: (reportId: string) => `platform-api/reporting/report/${reportId}/config`,
+  REPORT_STATISTICS: (reportId: string) => `platform-api/reporting/report/${reportId}/stats?full=false`,
   REPORT_GROUPS: (reportId: string) => `platform-api/report/${reportId}/groups`,
   REPORT_GROUP: (reportId: string, groupId: string) => `platform-api/report/${reportId}/groups/${groupId}`,
   RUN_REPORT_FROM_PREDEFINED_CONFIG: (gridConfig: string) => `/platform-api/reporting/pre?gridConfig=${gridConfig}`,
