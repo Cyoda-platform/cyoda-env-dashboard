@@ -1,10 +1,16 @@
 .modelling-popup-alias-new {
   .ant-modal-header {
     border-bottom: none !important;
+    padding: 20px 24px !important;
   }
 
   .ant-modal-footer {
     border-top: none !important;
+    padding: 16px 24px !important;
+  }
+
+  .ant-modal-body {
+    padding: 24px !important;
   }
 
   .ant-steps {
@@ -20,6 +26,12 @@
     justify-content: flex-end !important;
     align-items: center !important;
     gap: 16px !important;
+  }
+
+  // Wrapper for columns list with extra padding
+  .columns-list-wrapper {
+    padding-left: 8px;
+    padding-right: 8px;
   }
 
   .icon-trash-remove {

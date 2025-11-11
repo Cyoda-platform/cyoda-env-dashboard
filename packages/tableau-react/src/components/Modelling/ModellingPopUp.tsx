@@ -134,9 +134,10 @@ export const ModellingPopUp = forwardRef<ModellingPopUpRef, ModellingPopUpProps>
         )}
 
         {reportingInfoRows.length > 0 ? (
-          <Checkbox.Group
-            value={selected.map(col => col.fullPath)}
-            onChange={(checkedPaths) => {
+          <div className="columns-list-wrapper">
+            <Checkbox.Group
+              value={selected.map(col => col.fullPath)}
+              onChange={(checkedPaths) => {
               // Convert fullPaths back to ColDef objects
               const newColumns: ColDef[] = (checkedPaths as string[]).map(fullPath => {
                 // Try to find existing column to preserve all properties
@@ -192,7 +193,8 @@ export const ModellingPopUp = forwardRef<ModellingPopUpRef, ModellingPopUpProps>
                 disablePreview={disablePreview}
               />
             )}
-          </Checkbox.Group>
+            </Checkbox.Group>
+          </div>
         ) : (
           <Alert message="No data" type="error" showIcon />
         )}

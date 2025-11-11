@@ -1,14 +1,16 @@
 .modelling-popup {
   .ant-modal-header {
     border-bottom: none !important;
+    padding: 20px 24px !important;
   }
 
   .ant-modal-footer {
     border-top: none !important;
+    padding: 16px 24px !important;
   }
 
   .ant-modal-body {
-    padding: 30px;
+    padding: 24px;
     max-height: 70vh;
     overflow-y: auto;
   }
@@ -39,6 +41,12 @@
       gap: 12px;
       align-items: flex-end;
     }
+  }
+
+  // Wrapper for columns list with extra padding
+  .columns-list-wrapper {
+    padding-left: 8px;
+    padding-right: 8px;
   }
 
   // Remove any unwanted backgrounds from checkbox group

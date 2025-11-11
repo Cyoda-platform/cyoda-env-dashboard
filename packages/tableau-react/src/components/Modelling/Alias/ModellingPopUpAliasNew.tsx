@@ -690,9 +690,10 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
           {!aliasForm.entityClass ? (
             <Alert message="Please select an entity class first" type="info" showIcon />
           ) : (
-            <Checkbox.Group
-              value={selectedColumns.map(col => col.fullPath)}
-              onChange={(checkedPaths) => {
+            <div className="columns-list-wrapper">
+              <Checkbox.Group
+                value={selectedColumns.map(col => col.fullPath)}
+                onChange={(checkedPaths) => {
                 // Convert fullPaths back to ColDef objects
                 const newColumns: ColDef[] = (checkedPaths as string[]).map(fullPath => {
                   // Try to find existing column to preserve all properties
@@ -739,7 +740,8 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
                   search={search}
                 />
               )}
-            </Checkbox.Group>
+              </Checkbox.Group>
+            </div>
           )}
         </div>
       ),
