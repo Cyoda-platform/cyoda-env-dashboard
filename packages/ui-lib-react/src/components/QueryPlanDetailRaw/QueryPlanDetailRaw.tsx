@@ -1,8 +1,6 @@
 import React, { useState, forwardRef, useImperativeHandle, useMemo } from 'react'
 import { Modal, Button } from 'antd'
-import Prism from 'prismjs'
-import 'prismjs/themes/prism.css'
-import beautify from 'js-beautify'
+import { CodeEditor } from '../CodeEditor'
 import './QueryPlanDetailRaw.scss'
 
 export interface QueryPlanDetailRawRef {
@@ -14,60 +12,61 @@ export interface QueryPlanDetailRawProps {
   queryPlan?: any
   title?: string
   className?: string
+  visible?: boolean
+  onClose?: () => void
 }
 
 /**
  * QueryPlanDetailRaw Component
  * Displays raw query plan in a modal with syntax highlighting
+ * Supports both ref-based and props-based visibility control
  */
 export const QueryPlanDetailRaw = forwardRef<QueryPlanDetailRawRef, QueryPlanDetailRawProps>(({
   queryPlan = {},
   title = '',
-  className = ''
+  className = '',
+  visible,
+  onClose
 }, ref) => {
-  const [dialogVisible, setDialogVisible] = useState(false)
+  const [internalVisible, setInternalVisible] = useState(false)
+
+  // Use props-based visibility if provided, otherwise use internal state
+  const isVisible = visible !== undefined ? visible : internalVisible
+  const handleClose = onClose || (() => setInternalVisible(false))
 
   useImperativeHandle(ref, () => ({
-    dialogVisible,
-    setDialogVisible
+    dialogVisible: internalVisible,
+    setDialogVisible: setInternalVisible
   }))
 
   const computedTitle = useMemo(() => {
     return `Query Plan Raw For ${title}`
   }, [title])
 
-  const codeObj = useMemo(() => {
-    const data = beautify.js(JSON.stringify(queryPlan).trim(), {
-      indent_size: 2,
-      space_in_empty_paren: true,
-      wrap_line_length: 50
-    })
-    return {
-      className: 'language-javascript',
-      code: Prism.highlight(data, Prism.languages.javascript, 'javascript')
-    }
+  const formattedCode = useMemo(() => {
+    return JSON.stringify(queryPlan, null, 2)
   }, [queryPlan])
 
   return (
     <Modal
-      open={dialogVisible}
-      onCancel={() => setDialogVisible(false)}
+      open={isVisible}
+      onCancel={handleClose}
       title={computedTitle}
       width="80%"
       className={`query-plan-detail-raw ${className}`}
       maskClosable={false}
       footer={[
-        <Button key="close" onClick={() => setDialogVisible(false)}>
+        <Button key="close" onClick={handleClose}>
           Close
         </Button>
       ]}
     >
-      <pre className={codeObj.className}>
-        <code
-          className={codeObj.className}
-          dangerouslySetInnerHTML={{ __html: codeObj.code }}
-        />
-      </pre>
+      <CodeEditor
+        value={formattedCode}
+        language="json"
+        readOnly={true}
+        height="500px"
+      />
     </Modal>
   )
 })

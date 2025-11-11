@@ -8,6 +8,7 @@
 import React, { useMemo } from 'react';
 import { Transfer } from '@cyoda/ui-lib-react';
 import type { ReportDefinition } from '../types';
+import './ReportEditorTabColumns.scss';
 
 interface ReportEditorTabColumnsProps {
   cols: any[];

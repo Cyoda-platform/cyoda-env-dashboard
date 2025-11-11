@@ -1,7 +1,7 @@
 /**
  * FilterBuilderQueryPlan Component
  * Shows query execution plan for filter conditions
- * 
+ *
  * Migrated from: .old_project/packages/cyoda-ui-lib/src/components-library/patterns/FilterBuilder/QueryPlan/FilterBuilderQueryPlan.vue
  */
 
@@ -9,6 +9,7 @@ import React, { useState } from 'react';
 import { Button, Modal, Alert, Radio, Spin } from 'antd';
 import { ThunderboltOutlined } from '@ant-design/icons';
 import { axios } from '@cyoda/http-api-react';
+import QueryPlanDetail from './QueryPlanDetail';
 import type { ReportDefinition } from '../types';
 import './FilterBuilderQueryPlan.scss';
 
@@ -55,20 +56,6 @@ const FilterBuilderQueryPlan: React.FC<FilterBuilderQueryPlanProps> = ({
     } finally {
       setLoading(false);
     }
-  };
-
-  const renderQueryPlanDetail = (plan: any, title: string, description: string) => {
-    if (!plan) return null;
-
-    return (
-      <div className="query-plan-detail">
-        <h3>{title}</h3>
-        <p className="description">{description}</p>
-        <pre className="query-plan-json">
-          {JSON.stringify(plan, null, 2)}
-        </pre>
-      </div>
-    );
   };
 
   return (
@@ -131,19 +118,21 @@ const FilterBuilderQueryPlan: React.FC<FilterBuilderQueryPlanProps> = ({
               </Radio.Group>
             </div>
 
-            {viewType === 'optimized' &&
-              renderQueryPlanDetail(
-                queryPlan.optimized,
-                'Optimized',
-                'Some conditions Cyoda platform can optimize and this condition will be executed'
-              )}
+            {viewType === 'optimized' && queryPlan.optimized && (
+              <QueryPlanDetail
+                queryPlan={queryPlan.optimized}
+                title="Optimized"
+                description="Some conditions Cyoda platform can optimize and this condition will be executed"
+              />
+            )}
 
-            {viewType === 'original' &&
-              renderQueryPlanDetail(
-                queryPlan.original,
-                'Original',
-                'This condition shown as it is and before optimization'
-              )}
+            {viewType === 'original' && queryPlan.original && (
+              <QueryPlanDetail
+                queryPlan={queryPlan.original}
+                title="Original"
+                description="This condition shown as it is and before optimization"
+              />
+            )}
           </>
         )}
       </Modal>

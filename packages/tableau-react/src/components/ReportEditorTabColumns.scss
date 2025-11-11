@@ -1,0 +1,20 @@
+.report-editor-tab-columns {
+  // Add spacing for button
+  > button {
+    margin-bottom: 24px;
+  }
+
+  h2 {
+    margin-top: 0;
+    margin-bottom: 16px;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--refine-text-primary);
+  }
+
+  // Add spacing for the Transfer component
+  .transfer-wrapper {
+    margin-top: 24px;
+  }
+}
+

@@ -94,7 +94,7 @@ export const SiftLoggerConfView: React.FC = () => {
         }
         listStyle={{
           width: 'calc((100% - 200px) / 2)',
-          height: 400,
+          height: 500,
         }}
       />
       <Divider />

@@ -9,6 +9,14 @@
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 8px;
 
+    // Adaptive sizing - override inline styles
+    min-width: 450px !important;
+    width: 500px !important;
+    // Let the list grow based on content, with a reasonable max
+    min-height: 500px !important;
+    max-height: calc(100vh - 250px) !important;
+    height: auto !important;
+
     // Header styling
     &-header {
       background: rgba(0, 0, 0, 0.2);
@@ -29,6 +37,10 @@
     // Body/content area
     &-body {
       background: transparent;
+      // Let content area grow with items
+      min-height: 400px !important;
+      max-height: calc(100vh - 350px) !important;
+      height: auto !important;
 
       // Search input
       .ant-input-affix-wrapper {

@@ -3,21 +3,9 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { QueryPlanDetailRaw } from './QueryPlanDetailRaw'
 import { createRef } from 'react'
 
-// Mock Prism
-vi.mock('prismjs', () => ({
-  default: {
-    highlight: vi.fn((code) => code),
-    languages: {
-      javascript: {}
-    }
-  }
-}))
-
-// Mock js-beautify
-vi.mock('js-beautify', () => ({
-  default: {
-    js: vi.fn((code) => code)
-  }
+// Mock CodeEditor
+vi.mock('../CodeEditor', () => ({
+  CodeEditor: ({ value }: any) => <div data-testid="code-editor">{value}</div>
 }))
 
 describe('QueryPlanDetailRaw', () => {
@@ -59,12 +47,12 @@ describe('QueryPlanDetailRaw', () => {
     const ref = createRef<any>()
     const queryPlan = { query: 'SELECT * FROM table' }
     render(<QueryPlanDetailRaw ref={ref} queryPlan={queryPlan} title="Test" />)
-    
+
     ref.current?.setDialogVisible(true)
-    
+
     await waitFor(() => {
-      const codeElement = document.querySelector('code')
-      expect(codeElement).toBeInTheDocument()
+      const codeEditor = screen.getByTestId('code-editor')
+      expect(codeEditor).toBeInTheDocument()
     })
   })
 
@@ -108,15 +96,15 @@ describe('QueryPlanDetailRaw', () => {
     })
   })
 
-  it('renders code with language-javascript class', async () => {
+  it('renders CodeEditor component', async () => {
     const ref = createRef<any>()
     render(<QueryPlanDetailRaw ref={ref} title="Test" />)
-    
+
     ref.current?.setDialogVisible(true)
-    
+
     await waitFor(() => {
-      const codeElement = document.querySelector('.language-javascript')
-      expect(codeElement).toBeInTheDocument()
+      const codeEditor = screen.getByTestId('code-editor')
+      expect(codeEditor).toBeInTheDocument()
     })
   })
 

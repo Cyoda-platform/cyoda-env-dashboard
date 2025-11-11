@@ -138,6 +138,28 @@ export const ReportEditorStream: React.FC = () => {
       // Work with just the streamDataDef part
       const streamDataDef = reportData.streamDataDef || reportData;
 
+      // Ensure condition has a default value if not present
+      if (!streamDataDef.condition) {
+        streamDataDef.condition = {
+          '@bean': 'com.cyoda.core.conditions.GroupCondition',
+          operator: 'OR',
+          conditions: [],
+        };
+      }
+
+      // Ensure rangeCondition has a default value if not present
+      if (!streamDataDef.rangeCondition) {
+        streamDataDef.rangeCondition = {
+          '@bean': 'com.cyoda.core.conditions.queryable.GreaterThan',
+          fieldName: 'creationDate',
+          operation: 'GREATER_THAN',
+          value: {
+            '@type': 'java.util.Date',
+            value: new Date().toISOString(),
+          },
+        };
+      }
+
       // Initialize rangeColDefs from rangeCondition if it exists (Vue lines 221-227)
       // This is for existing reports that have been saved with a range condition
       if (streamDataDef.rangeCondition && streamDataDef.rangeCondition.fieldName) {
@@ -223,6 +245,12 @@ export const ReportEditorStream: React.FC = () => {
 
   const handleConfigChange = useCallback((updates: Partial<StreamReportDefinition>) => {
     setConfigDefinition((prev) => ({ ...prev, ...updates }));
+  }, []);
+
+  const handleConditionChange = useCallback(() => {
+    // FilterBuilderGroup mutates the condition object directly
+    // We just need to notify the parent that it changed
+    setConfigDefinition((prev) => ({ ...prev, condition: prev.condition }));
   }, []);
 
   const handleRangeColDefsChange = useCallback((ranges: ColDef[]) => {
@@ -419,7 +447,7 @@ export const ReportEditorStream: React.FC = () => {
                   level={0}
                   cols={cols}
                   condition={configDefinition.condition}
-                  onChange={(condition) => handleConfigChange({ condition })}
+                  onChange={handleConditionChange}
                 />
 
                 <Divider />

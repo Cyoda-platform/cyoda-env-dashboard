@@ -169,8 +169,8 @@ const ReportEditorTabSummary: React.FC<ReportEditorTabSummaryProps> = ({
         titles={['Possible summary values', 'Selected summary values']}
         showSearch
         listStyle={{
-          width: 350,
-          height: 400,
+          width: 500,
+          height: 500,
         }}
         operations={['', '']}
         locale={{

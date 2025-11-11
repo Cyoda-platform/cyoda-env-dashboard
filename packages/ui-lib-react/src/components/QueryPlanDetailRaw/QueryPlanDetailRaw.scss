@@ -1,14 +1,65 @@
+/**
+ * QueryPlanDetailRaw Component Styles - Dark Theme
+ */
+
 .query-plan-detail-raw {
-  pre {
-    background-color: #f5f5f5;
-    padding: 16px;
-    border-radius: 4px;
-    overflow-x: auto;
+  .ant-modal-content {
+    background-color: #1E2A3A !important;
   }
 
-  code {
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 14px;
+  .ant-modal-header {
+    background-color: #1E2A3A !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+
+    .ant-modal-title {
+      color: #F9FAFB !important;
+      font-weight: 600;
+    }
+  }
+
+  .ant-modal-body {
+    background-color: #1E2A3A !important;
+    padding: 0 !important;
+  }
+
+  .ant-modal-footer {
+    background-color: #1E2A3A !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+
+    .ant-btn {
+      background-color: rgba(255, 255, 255, 0.05) !important;
+      border-color: rgba(255, 255, 255, 0.2) !important;
+      color: #F9FAFB !important;
+
+      &:hover:not(:disabled) {
+        background-color: rgba(0, 212, 170, 0.15) !important;
+        border-color: #00D4AA !important;
+        color: #00D4AA !important;
+      }
+    }
+  }
+
+  // Override CodeEditor styles for dark theme
+  .code-editor {
+    border-color: rgba(255, 255, 255, 0.1) !important;
+
+    .monaco-editor,
+    .monaco-editor-background,
+    .monaco-editor .margin {
+      background-color: #0f172a !important;
+    }
+
+    &.code-editor-readonly {
+      .monaco-editor-background,
+      .minimap {
+        background-color: #0f172a !important;
+      }
+    }
+
+    .margin-view-overlays {
+      background: #0f172a !important;
+      border-right-color: rgba(255, 255, 255, 0.1) !important;
+    }
   }
 }
 

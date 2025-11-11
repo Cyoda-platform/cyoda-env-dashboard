@@ -110,8 +110,9 @@ export const Transfer: React.FC<TransferComponentProps> = ({
         titles={titles}
         showSearch={showSearch}
         listStyle={{
-          width: 250,
-          height: 400
+          // Sizes are controlled by CSS for adaptive behavior
+          width: 500,
+          height: 500
         }}
         operations={['', '']}
         locale={{
