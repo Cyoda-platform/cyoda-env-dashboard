@@ -1,5 +1,6 @@
 import React, { useState, useImperativeHandle, forwardRef, useMemo } from 'react'
 import { Modal } from 'antd'
+import { RightOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
 import { CodeEditor } from '../CodeEditor'
 import './DataLineageCompare.scss'
@@ -53,14 +54,35 @@ export const DataLineageCompare = forwardRef<DataLineageCompareRef, DataLineageC
 
     const getDataFor = (field: 'currValue' | 'prevValue'): string => {
       if (!compareData?.changedFields) return ''
-      
-      return compareData.changedFields
-        .map((el) => `${el.columnPath}: ${el.columnPathContainer[field]}`)
-        .join('\n')
+
+      const lines = compareData.changedFields.map((el) => {
+        const value = el.columnPathContainer[field]
+        // Format value for better readability
+        const formattedValue = typeof value === 'object'
+          ? JSON.stringify(value, null, 2)
+          : String(value ?? 'null')
+        return `${el.columnPath}: ${formattedValue}`
+      })
+
+      console.log(`DataLineageCompare: ${field} lines:`, lines)
+      return lines.join('\n')
     }
 
-    const oldStr = useMemo(() => getDataFor('prevValue'), [compareData])
-    const newStr = useMemo(() => getDataFor('currValue'), [compareData])
+    const oldStr = useMemo(() => {
+      console.log('DataLineageCompare: compareData =', compareData)
+      console.log('DataLineageCompare: changedFields =', compareData?.changedFields)
+      const data = getDataFor('prevValue')
+      console.log('DataLineageCompare: oldStr =', data)
+      console.log('DataLineageCompare: oldStr length =', data.length)
+      return data
+    }, [compareData])
+
+    const newStr = useMemo(() => {
+      const data = getDataFor('currValue')
+      console.log('DataLineageCompare: newStr =', data)
+      console.log('DataLineageCompare: newStr length =', data.length)
+      return data
+    }, [compareData])
 
     const handleClose = () => {
       setDialogVisible(false)
@@ -77,27 +99,30 @@ export const DataLineageCompare = forwardRef<DataLineageCompareRef, DataLineageC
         className={`data-lineage-compare ${className}`}
       >
         {checkedTransactions.length >= 2 && (
-          <div className="row flex">
-            <div>
-              <strong>Date:</strong> {transformDate(checkedTransactions[0].dateTime)}
-              <br />
-              <strong>Transaction Id:</strong> {checkedTransactions[0].transactionId}
+          <div className="compare-header">
+            <div className="compare-header__left">
+              <div><strong>Date:</strong> {transformDate(checkedTransactions[0].dateTime)}</div>
+              <div><strong>Transaction Id:</strong> {checkedTransactions[0].transactionId}</div>
             </div>
-            <div>
-              <strong>Date:</strong> {transformDate(checkedTransactions[1].dateTime)}
-              <br />
-              <strong>Transaction Id:</strong> {checkedTransactions[1].transactionId}
+            <div className="compare-header__arrow">
+              <RightOutlined />
+            </div>
+            <div className="compare-header__right">
+              <div><strong>Date:</strong> {transformDate(checkedTransactions[1].dateTime)}</div>
+              <div><strong>Transaction Id:</strong> {checkedTransactions[1].transactionId}</div>
             </div>
           </div>
         )}
-        <CodeEditor
-          value={oldStr}
-          language="text"
-          readOnly
-          diffEditor
-          originalValue={oldStr}
-          modifiedValue={newStr}
-        />
+        <div className="compare-content">
+          <CodeEditor
+            diff={true}
+            oldString={oldStr}
+            newString={newStr}
+            language="plain"
+            diffReadonly={true}
+            height="500px"
+          />
+        </div>
       </Modal>
     )
   }

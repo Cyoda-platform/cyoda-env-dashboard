@@ -199,16 +199,14 @@ const EntityDataLineage: React.FC<EntityDataLineageProps> = ({ entityClass, enti
       </Spin>
 
       {/* Compare Modal - using DataLineageCompare component */}
-      {selectedTransactions.length >= 2 && compareData && (
-        <DataLineageCompare
-          ref={compareRef}
-          checkedTransactions={selectedTransactions.map(tx => ({
-            transactionId: tx.transactionId,
-            dateTime: moment(tx.dateTime, 'DD-MM-YYYY HH:mm:ss.SSS').format('DD-MM-YYYY HH:mm:ss.SSS'),
-          }))}
-          compareData={compareData}
-        />
-      )}
+      <DataLineageCompare
+        ref={compareRef}
+        checkedTransactions={selectedTransactions.map(tx => ({
+          transactionId: tx.transactionId,
+          dateTime: moment(tx.dateTime, 'DD-MM-YYYY HH:mm:ss.SSS').format('DD-MM-YYYY HH:mm:ss.SSS'),
+        }))}
+        compareData={compareData}
+      />
     </div>
   );
 };

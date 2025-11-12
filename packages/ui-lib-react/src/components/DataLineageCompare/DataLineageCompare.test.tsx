@@ -6,10 +6,9 @@ import type { DataLineageCompareRef } from './DataLineageCompare'
 
 // Mock CodeEditor to avoid monaco-editor issues in tests
 vi.mock('../CodeEditor', () => ({
-  CodeEditor: ({ value, originalValue, modifiedValue }: any) => (
+  CodeEditor: ({ value }: any) => (
     <div data-testid="code-editor">
-      <div data-testid="original-value">{originalValue}</div>
-      <div data-testid="modified-value">{modifiedValue}</div>
+      <div data-testid="editor-value">{value}</div>
     </div>
   )
 }))

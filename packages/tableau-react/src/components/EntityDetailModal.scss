@@ -1,3 +1,19 @@
+// EntityDetailModal - Remove borders and match tab background
+.ant-modal:has(.entity-detail-tab) {
+  .ant-modal-header {
+    border-bottom: none !important;
+  }
+
+  .ant-modal-footer {
+    border-top: none !important;
+  }
+
+  // Match active tab background to modal background
+  .ant-tabs-tab.ant-tabs-tab-active {
+    background: var(--refine-bg-secondary, #1E2A3A) !important;
+  }
+}
+
 .entity-detail-tab {
   padding: 16px 0;
 

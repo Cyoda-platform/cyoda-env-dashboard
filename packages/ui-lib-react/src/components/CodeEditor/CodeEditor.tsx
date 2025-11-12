@@ -3,17 +3,23 @@ import * as monaco from 'monaco-editor'
 import { registerCyodaDarkTheme, CYODA_EDITOR_OPTIONS } from './monacoTheme'
 import './CodeEditor.scss'
 
-// Monaco editor worker setup
-self.MonacoEnvironment = {
-  getWorker(_, label) {
+// Monaco editor worker setup - load workers from CDN
+window.MonacoEnvironment = {
+  getWorkerUrl: function (_moduleId: string, label: string) {
     if (label === 'json') {
-      return new Worker(new URL('monaco-editor/esm/vs/language/json/json.worker', import.meta.url))
+      return 'https://cdn.jsdelivr.net/npm/monaco-editor@0.54.0/min/vs/language/json/json.worker.js'
+    }
+    if (label === 'css' || label === 'scss' || label === 'less') {
+      return 'https://cdn.jsdelivr.net/npm/monaco-editor@0.54.0/min/vs/language/css/css.worker.js'
+    }
+    if (label === 'html' || label === 'handlebars' || label === 'razor') {
+      return 'https://cdn.jsdelivr.net/npm/monaco-editor@0.54.0/min/vs/language/html/html.worker.js'
     }
     if (label === 'typescript' || label === 'javascript') {
-      return new Worker(new URL('monaco-editor/esm/vs/language/typescript/ts.worker', import.meta.url))
+      return 'https://cdn.jsdelivr.net/npm/monaco-editor@0.54.0/min/vs/language/typescript/ts.worker.js'
     }
-    return new Worker(new URL('monaco-editor/esm/vs/editor/editor.worker', import.meta.url))
-  }
+    return 'https://cdn.jsdelivr.net/npm/monaco-editor@0.54.0/min/vs/editor/editor.worker.js'
+  },
 }
 
 export type CodeLanguage = 'javascript' | 'typescript' | 'json' | 'xml' | 'html' | 'css' | 'plain'
@@ -88,7 +94,9 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
     if (isObject && typeof val === 'object') {
       return JSON.stringify(val, null, 2)
     }
-    return String(val || '')
+    // Replace escaped newlines with actual newlines
+    const stringValue = String(val || '')
+    return stringValue.replace(/\\n/g, '\n').replace(/\\t/g, '\t')
   }
 
   // Parse JSON if needed
@@ -142,20 +150,56 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
       onReady?.(editor)
     } else {
       // Diff editor
-      const originalModel = monaco.editor.createModel(oldString, monacoLanguage)
-      const modifiedModel = monaco.editor.createModel(newString, monacoLanguage)
+      const originalValue = formatValue(oldString || '')
+      const modifiedValue = formatValue(newString || '')
+
+      console.log('CodeEditor: Creating diff editor')
+      console.log('  originalValue:', originalValue)
+      console.log('  modifiedValue:', modifiedValue)
+      console.log('  container:', containerRef.current)
+
+      const originalModel = monaco.editor.createModel(originalValue, monacoLanguage)
+      const modifiedModel = monaco.editor.createModel(modifiedValue, monacoLanguage)
 
       const diffEditor = monaco.editor.createDiffEditor(containerRef.current, {
         ...CYODA_EDITOR_OPTIONS,
         originalEditable: !diffReadonly,
         theme: 'cyoda-dark',
-        renderOverviewRuler: false,
+        renderOverviewRuler: true,
+        renderSideBySide: true,
+        enableSplitViewResizing: true,
+        readOnly: diffReadonly,
+        automaticLayout: true,
+        // Diff-specific options
+        ignoreTrimWhitespace: false,
+        renderIndicators: true,
+        diffWordWrap: 'on',
+        diffAlgorithm: 'advanced',
+      })
+
+      console.log('CodeEditor: Diff editor created:', diffEditor)
+      console.log('CodeEditor: Container dimensions:', {
+        width: containerRef.current.offsetWidth,
+        height: containerRef.current.offsetHeight,
+        clientWidth: containerRef.current.clientWidth,
+        clientHeight: containerRef.current.clientHeight
       })
 
       diffEditor.setModel({
         original: originalModel,
         modified: modifiedModel
       })
+
+      console.log('CodeEditor: Models set')
+
+      // Force layout after a short delay to ensure container has dimensions
+      setTimeout(() => {
+        console.log('CodeEditor: Forcing layout')
+        diffEditor.layout()
+        // Ensure side-by-side mode is enabled
+        diffEditor.updateOptions({ renderSideBySide: true })
+        console.log('CodeEditor: Side-by-side mode enforced')
+      }, 100)
 
       // Listen for content changes on modified model
       modifiedModel.onDidChangeContent(() => {
@@ -164,30 +208,97 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
       })
 
       editorRef.current = diffEditor
+      setIsInitialized(true)
       onReady?.(diffEditor)
     }
 
-    setIsInitialized(true)
-
     return () => {
       editorRef.current?.dispose()
+      editorRef.current = null
+      setIsInitialized(false)
     }
   }, []) // Only run once on mount
 
   // Update value when it changes externally
   useEffect(() => {
-    if (!editorRef.current || !isInitialized) return
+    console.log('CodeEditor: Update effect triggered', {
+      hasEditor: !!editorRef.current,
+      isInitialized,
+      diff,
+      oldString: oldString?.substring(0, 50),
+      newString: newString?.substring(0, 50)
+    })
+
+    if (!editorRef.current || !isInitialized) {
+      console.log('CodeEditor: Skipping update - editor not ready')
+      return
+    }
 
     if (!diff && 'setValue' in editorRef.current) {
       const editor = editorRef.current as monaco.editor.IStandaloneCodeEditor
       const currentValue = editor.getValue()
       const newValue = formatValue(value)
-      
+
       if (currentValue !== newValue) {
+        console.log('CodeEditor: Updating standard editor value')
         editor.setValue(newValue)
       }
+    } else if (diff && 'getModel' in editorRef.current) {
+      // Update diff editor models
+      const diffEditor = editorRef.current as monaco.editor.IStandaloneDiffEditor
+      const model = diffEditor.getModel()
+
+      console.log('CodeEditor: Updating diff editor', { hasModel: !!model })
+
+      if (model) {
+        console.log('CodeEditor: Raw diff input', {
+          oldString: oldString?.substring(0, 200),
+          newString: newString?.substring(0, 200),
+          areEqual: oldString === newString
+        })
+
+        const originalValue = formatValue(oldString || '')
+        const modifiedValue = formatValue(newString || '')
+
+        console.log('CodeEditor: Formatted diff values', {
+          originalValue: originalValue,
+          modifiedValue: modifiedValue,
+          originalLength: originalValue.length,
+          modifiedLength: modifiedValue.length,
+          currentOriginalLength: model.original.getValue().length,
+          currentModifiedLength: model.modified.getValue().length,
+          areEqual: originalValue === modifiedValue
+        })
+
+        // Always update models to ensure diff is recalculated
+        console.log('CodeEditor: Setting original value')
+        model.original.setValue(originalValue)
+        console.log('CodeEditor: Setting modified value')
+        model.modified.setValue(modifiedValue)
+
+        // Force layout update to ensure diff is computed and displayed
+        setTimeout(() => {
+          if (editorRef.current && 'updateOptions' in editorRef.current) {
+            const diffEditor = editorRef.current as monaco.editor.IStandaloneDiffEditor
+            const lineChanges = diffEditor.getLineChanges()
+            const currentModel = diffEditor.getModel()
+
+            console.log('CodeEditor: Detailed diff state:', {
+              lineChangesCount: lineChanges?.length || 0,
+              lineChanges: lineChanges,
+              originalValue: currentModel?.original.getValue().substring(0, 200),
+              modifiedValue: currentModel?.modified.getValue().substring(0, 200)
+            })
+
+            // Force re-render
+            diffEditor.updateOptions({})
+            diffEditor.layout()
+            console.log('CodeEditor: Forced diff editor layout update and re-render')
+          }
+        }, 100)
+      }
     }
-  }, [value, isInitialized, diff])
+  }, [value, oldString, newString, isInitialized, diff])
 
   // Update language when it changes
   useEffect(() => {

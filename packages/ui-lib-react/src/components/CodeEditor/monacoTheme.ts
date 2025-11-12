@@ -1,13 +1,13 @@
 /**
  * Cyoda Neon Dark Theme for Monaco Editor
- * Vibrant neon colors matching the state machine diagram theme
+ * Vibrant neon colors matching the CYODA brand theme
  *
  * Color Palette:
- * - Neon Teal (#14b8a6): States, primary accents
+ * - CYODA Teal (#00D4AA): States, primary accents, brand color
  * - Neon Purple (#a78bfa): Transitions, functions
  * - Neon Pink (#ec4899): Criteria, special highlights
  * - Neon Amber (#f59e0b): Current state, warnings
- * - Dark Background (#0f172a): Canvas background
+ * - Dark Background (#1a2332): Canvas background (matching saas-app)
  */
 
 import type { editor } from 'monaco-editor';
@@ -23,7 +23,7 @@ export const CYODA_DARK_THEME: editor.IStandaloneThemeData = {
 
     // JSON specific tokens - HIGHEST PRIORITY
     { token: 'string.key.json', foreground: 'EC4899' }, // Neon Pink for JSON keys
-    { token: 'string.value.json', foreground: '14B8A6' }, // Neon Teal for JSON values
+    { token: 'string.value.json', foreground: '00D4AA' }, // CYODA Teal for JSON values
     { token: 'number.json', foreground: 'F59E0B' }, // Neon Amber for numbers
     { token: 'keyword.json', foreground: 'F59E0B' }, // Neon Amber for true/false/null
     { token: 'delimiter.bracket.json', foreground: 'A78BFA' }, // Neon Purple for {}
@@ -31,11 +31,11 @@ export const CYODA_DARK_THEME: editor.IStandaloneThemeData = {
     { token: 'delimiter.colon.json', foreground: 'A8B5C8' }, // Gray for :
     { token: 'delimiter.comma.json', foreground: 'A8B5C8' }, // Gray for ,
 
-    // Generic strings - Neon Teal (fallback)
-    { token: 'string', foreground: '14B8A6' },
-    { token: 'string.quoted', foreground: '14B8A6' },
-    { token: 'string.double', foreground: '14B8A6' },
-    { token: 'string.single', foreground: '14B8A6' },
+    // Generic strings - CYODA Teal (fallback)
+    { token: 'string', foreground: '00D4AA' },
+    { token: 'string.quoted', foreground: '00D4AA' },
+    { token: 'string.double', foreground: '00D4AA' },
+    { token: 'string.single', foreground: '00D4AA' },
 
     // Keywords - Neon Amber
     { token: 'keyword', foreground: 'F59E0B', fontStyle: 'bold' },
@@ -102,23 +102,23 @@ export const CYODA_DARK_THEME: editor.IStandaloneThemeData = {
   colors: {
     // Editor background - Dark navy (matching header gradient)
     'editor.background': '#1a2332',
-    'editor.foreground': '#E0E0E0',
+    'editor.foreground': '#F9FAFB', // Light text for readability
 
-    // Line numbers - Neon Teal accent
+    // Line numbers - CYODA Teal accent
     'editorLineNumber.foreground': '#6B7280',
-    'editorLineNumber.activeForeground': '#14b8a6',
+    'editorLineNumber.activeForeground': '#00D4AA',
 
     // Current line
     'editor.lineHighlightBackground': '#1e293b',
     'editor.lineHighlightBorder': '#00000000',
 
-    // Selection - Neon Teal
-    'editor.selectionBackground': '#14b8a633',
-    'editor.inactiveSelectionBackground': '#14b8a622',
-    'editor.selectionHighlightBackground': '#14b8a622',
+    // Selection - CYODA Teal
+    'editor.selectionBackground': '#00D4AA33',
+    'editor.inactiveSelectionBackground': '#00D4AA22',
+    'editor.selectionHighlightBackground': '#00D4AA22',
 
-    // Cursor - Neon Teal
-    'editorCursor.foreground': '#14b8a6',
+    // Cursor - CYODA Teal
+    'editorCursor.foreground': '#00D4AA',
 
     // Whitespace
     'editorWhitespace.foreground': '#374151',
@@ -130,22 +130,22 @@ export const CYODA_DARK_THEME: editor.IStandaloneThemeData = {
     // Gutter
     'editorGutter.background': '#1a2332',
     'editorGutter.modifiedBackground': '#A78BFA', // Neon Purple
-    'editorGutter.addedBackground': '#14b8a6', // Neon Teal
+    'editorGutter.addedBackground': '#00D4AA', // CYODA Teal
     'editorGutter.deletedBackground': '#EF4444',
 
-    // Scrollbar - Neon Teal accent
+    // Scrollbar - CYODA Teal accent
     'scrollbar.shadow': '#00000000',
     'scrollbarSlider.background': '#374151',
     'scrollbarSlider.hoverBackground': '#4B5563',
-    'scrollbarSlider.activeBackground': '#14b8a6',
+    'scrollbarSlider.activeBackground': '#00D4AA',
 
     // Minimap
     'minimap.background': '#0a0f1a',
-    'minimap.selectionHighlight': '#14b8a633',
+    'minimap.selectionHighlight': '#00D4AA33',
 
-    // Brackets - Neon Teal
-    'editorBracketMatch.background': '#14b8a622',
-    'editorBracketMatch.border': '#14b8a6',
+    // Brackets - CYODA Teal
+    'editorBracketMatch.background': '#00D4AA22',
+    'editorBracketMatch.border': '#00D4AA',
 
     // Find/Replace - Neon Amber
     'editor.findMatchBackground': '#F59E0B44',
@@ -161,20 +161,26 @@ export const CYODA_DARK_THEME: editor.IStandaloneThemeData = {
     'editorHoverWidget.background': '#1a2332',
     'editorHoverWidget.border': '#374151',
 
-    // Peek view - Neon Teal accent
-    'peekView.border': '#14b8a6',
+    // Peek view - CYODA Teal accent
+    'peekView.border': '#00D4AA',
     'peekViewEditor.background': '#1a2332',
     'peekViewResult.background': '#1a2332',
     'peekViewTitle.background': '#1e293b',
 
-    // Diff editor - Neon colors
-    'diffEditor.insertedTextBackground': '#14b8a622',
-    'diffEditor.removedTextBackground': '#EF444422',
+    // Diff editor - CYODA colors with better visibility (brighter for readability)
+    'diffEditor.insertedTextBackground': '#00D4AA40', // Brighter teal background for added text
+    'diffEditor.removedTextBackground': '#EF444440', // Brighter red background for removed text
+    'diffEditor.insertedLineBackground': '#00D4AA25', // Lighter teal for full line
+    'diffEditor.removedLineBackground': '#EF444425', // Lighter red for full line
+    'diffEditor.insertedTextBorder': '#00D4AA80', // Visible teal border for added text
+    'diffEditor.removedTextBorder': '#EF444480', // Visible red border for removed text
+    'diffEditor.border': '#374151', // Border between editors
+    'diffEditor.diagonalFill': '#1e293b80', // Diagonal fill for unchanged regions
 
     // Overview ruler
     'editorOverviewRuler.border': '#00000000',
     'editorOverviewRuler.modifiedForeground': '#A78BFA', // Neon Purple
-    'editorOverviewRuler.addedForeground': '#14b8a6', // Neon Teal
+    'editorOverviewRuler.addedForeground': '#00D4AA', // CYODA Teal
     'editorOverviewRuler.deletedForeground': '#EF4444',
     'editorOverviewRuler.errorForeground': '#EF4444',
     'editorOverviewRuler.warningForeground': '#F59E0B', // Neon Amber
@@ -183,7 +189,7 @@ export const CYODA_DARK_THEME: editor.IStandaloneThemeData = {
     'editorError.foreground': '#EF4444',
     'editorWarning.foreground': '#F59E0B', // Neon Amber
     'editorInfo.foreground': '#A78BFA', // Neon Purple
-    'editorHint.foreground': '#14b8a6', // Neon Teal
+    'editorHint.foreground': '#00D4AA', // CYODA Teal
   },
 };
 
@@ -213,5 +219,6 @@ export const CYODA_EDITOR_OPTIONS: editor.IStandaloneEditorConstructionOptions =
  */
 export function registerCyodaDarkTheme(monaco: any) {
   monaco.editor.defineTheme('cyoda-dark', CYODA_DARK_THEME);
+  monaco.editor.setTheme('cyoda-dark');
 }
 
