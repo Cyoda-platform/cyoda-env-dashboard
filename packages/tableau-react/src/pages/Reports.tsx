@@ -79,10 +79,11 @@ const HistoryReportsTab: React.FC<{ onResetState: () => void }> = ({ onResetStat
     setSelectedGroupData({
       linkRows: row._link_rows,
       configDefinition: configDefinition,
+      reportDefinitionId: reportDefinition?.id,
       lazyLoading: settings.lazyLoading,
     });
     setIsModalVisible(true);
-  }, [configDefinition, settings.lazyLoading]);
+  }, [configDefinition, reportDefinition?.id, settings.lazyLoading]);
 
   // Handle modal close
   const handleModalClose = useCallback(() => {

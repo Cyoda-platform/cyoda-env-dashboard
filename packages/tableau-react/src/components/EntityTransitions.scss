@@ -1,0 +1,26 @@
+.entity-transitions {
+  margin-bottom: 20px;
+
+  h4 {
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 15px;
+  }
+
+  .ant-form-inline {
+    .ant-form-item {
+      margin-right: 16px;
+    }
+  }
+
+  // Ensure select dropdown is visible
+  .ant-select {
+    width: 220px;
+  }
+}
+
+// Ensure dropdown appears above modal content
+.ant-select-dropdown {
+  z-index: 1050 !important;
+}
+

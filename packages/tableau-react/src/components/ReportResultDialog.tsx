@@ -35,6 +35,7 @@ const ReportResultDialog: React.FC<ReportResultDialogProps> = ({
       <ReportTableRows
         tableLinkRows={reportData.linkRows}
         configDefinition={reportData.configDefinition}
+        reportDefinitionId={reportData.reportDefinitionId}
         lazyLoading={reportData.lazyLoading || false}
         onShowColumnDetail={onShowColumnDetail}
       />

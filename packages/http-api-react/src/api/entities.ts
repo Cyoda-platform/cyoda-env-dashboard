@@ -24,6 +24,27 @@ export function getEntity(entityClass: string, entityId: string, params?: any) {
 }
 
 /**
+ * Get entity data in lazy-loaded format (returns Entity[] array with columnInfo, value, type)
+ * This is used for entity detail modal to display entity fields in a tree structure
+ */
+export function getEntityLoad(
+  entityId: string,
+  entityClass: string,
+  parentFldClass: string = '',
+  columnPath: string = ''
+) {
+  const params: any = {
+    entityClass,
+    entityId: encodeURIComponent(entityId),
+  };
+  if (parentFldClass) params.parentFldClass = encodeURIComponent(parentFldClass);
+  if (columnPath) params.columnPath = encodeURIComponent(columnPath);
+
+  const query = qs.stringify(params, stringifyOpts);
+  return axios.get<Entity[]>(`/platform-api/entity-info/fetch/lazy${query}`);
+}
+
+/**
  * Search entities
  */
 export function searchEntities(entityClass: string, searchParams: any) {

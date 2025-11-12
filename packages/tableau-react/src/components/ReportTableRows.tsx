@@ -20,6 +20,7 @@ interface ReportTableRowsProps {
   tableLinkRows: string;
   lazyLoading: boolean;
   configDefinition: ConfigDefinition;
+  reportDefinitionId?: string;
   onShowColumnDetail?: (data: ColumnData) => void;
 }
 
@@ -27,6 +28,7 @@ const ReportTableRows: React.FC<ReportTableRowsProps> = ({
   tableLinkRows,
   lazyLoading,
   configDefinition,
+  reportDefinitionId,
   onShowColumnDetail,
 }) => {
   const [tableData, setTableData] = useState<any[]>([]);
@@ -218,6 +220,9 @@ const ReportTableRows: React.FC<ReportTableRowsProps> = ({
 
   // Handle row double click
   const handleRowDoubleClick = (record: any) => {
+    console.log('ReportTableRows: Row double-clicked:', record);
+    console.log('ReportTableRows: configDefinition:', configDefinition);
+    console.log('ReportTableRows: reportDefinitionId:', reportDefinitionId);
     setSelectedRow(record);
     setIsModalVisible(true);
   };
@@ -320,6 +325,7 @@ const ReportTableRows: React.FC<ReportTableRowsProps> = ({
         visible={isModalVisible}
         selectedRow={selectedRow}
         configDefinition={configDefinition}
+        reportDefinitionId={reportDefinitionId}
         onClose={handleModalClose}
       />
     </div>

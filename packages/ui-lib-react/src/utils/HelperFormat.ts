@@ -122,5 +122,54 @@ export default class HelperFormat {
       return path;
     }
   }
+
+  /**
+   * Check if value is XML
+   */
+  public static isXml(value: any): boolean {
+    if (typeof value !== 'string') return false;
+    const trimmed = value.trim();
+    return trimmed.startsWith('<') && trimmed.endsWith('>');
+  }
+
+  /**
+   * Check if value is JSON (object or array)
+   */
+  public static isJson(value: any): boolean {
+    if (typeof value !== 'string') return false;
+    if (!value || value.indexOf('{') === -1) return false;
+    try {
+      JSON.parse(value);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Check if value should be displayed inline (short value)
+   * Returns true if value is short, not XML, and not JSON
+   */
+  public static isShortDetailTreeItem(value: any): boolean {
+    if (value === null || value === undefined) return true;
+
+    const str = String(value);
+    if (!str || str === '') return true;
+
+    // Check if it's XML or JSON
+    if (this.isXml(str) || this.isJson(str)) return false;
+
+    // Check length
+    return str.length < 80;
+  }
+
+  /**
+   * Get formatted value for display
+   */
+  public static getValue(value: any): string {
+    if (value === null || value === undefined || value === '') return '-';
+    if (typeof value === 'object') return JSON.stringify(value, null, 2);
+    return String(value);
+  }
 }
 

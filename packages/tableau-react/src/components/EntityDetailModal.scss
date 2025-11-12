@@ -10,6 +10,22 @@
       margin-bottom: 16px;
     }
 
+    // Standard fields styling - table layout like old project
+    .standard-fields {
+      p {
+        margin-bottom: 4px;
+        line-height: 1.8;
+        display: flex;
+        align-items: flex-start;
+
+        .field-label {
+          font-weight: 500;
+          min-width: 180px;
+          flex-shrink: 0;
+        }
+      }
+    }
+
     .entity-header {
       display: flex;
       justify-content: space-between;
