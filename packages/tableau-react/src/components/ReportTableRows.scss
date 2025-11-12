@@ -70,6 +70,13 @@
     align-items: center;
   }
 
+  // Center pagination
+  .ant-pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 16px;
+  }
+
   // Loading state
   .loading-container {
     display: flex;

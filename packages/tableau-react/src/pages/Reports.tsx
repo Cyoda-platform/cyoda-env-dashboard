@@ -11,7 +11,7 @@ import HistoryTable from '../components/HistoryTable';
 import HistoryFilter from '../components/HistoryFilter';
 import HistorySetting from '../components/HistorySetting';
 import ReportTableGroup from '../components/ReportTableGroup';
-import ReportTableRows from '../components/ReportTableRows';
+import ReportResultDialog from '../components/ReportResultDialog';
 import QuickRunReport from '../components/QuickRunReport';
 import ReportUISettings from '../components/ReportUISettings';
 import ColumnCollectionsDialog, { type ColumnCollectionsDialogRef } from '../components/ColumnCollectionsDialog';
@@ -44,8 +44,10 @@ const HistoryReportsTab: React.FC<{ onResetState: () => void }> = ({ onResetStat
 
   const [configDefinition, setConfigDefinition] = useState<ConfigDefinition>({});
   const [reportDefinition, setReportDefinition] = useState<ReportHistoryData | null>(null);
-  const [tableLinkRows, setTableLinkRows] = useState<string>('');
-  const [isVisibleTables, setIsVisibleTables] = useState<boolean>(true);
+
+  // Modal state for group results
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const [selectedGroupData, setSelectedGroupData] = useState<any>(null);
 
   // Calculate tableLinkGroup from report definition
   const tableLinkGroup = useMemo(() => {
@@ -62,21 +64,30 @@ const HistoryReportsTab: React.FC<{ onResetState: () => void }> = ({ onResetStat
     }) => {
       setConfigDefinition(newConfigDef);
       setReportDefinition(newReportDef);
-
-      // Clear table link rows - it will be set when user clicks on a group
-      setTableLinkRows('');
     },
     []
   );
 
-  // Handle group row click
+  // Handle group row click (for 'out' mode - to select the row)
   const handleHistoryGroupsChange = useCallback((row: any) => {
-    console.log('Reports: Group row clicked:', row);
-    console.log('Reports: Setting tableLinkRows to:', row._link_rows);
-    setTableLinkRows(row._link_rows);
-    setIsVisibleTables(false);
-    // Reset tables
-    setTimeout(() => setIsVisibleTables(true), 0);
+    console.log('Reports: Group row clicked (out mode):', row);
+  }, []);
+
+  // Handle group click - open modal with results
+  const handleGroupClick = useCallback((row: any) => {
+    console.log('Reports: Opening modal for group:', row);
+    setSelectedGroupData({
+      linkRows: row._link_rows,
+      configDefinition: configDefinition,
+      lazyLoading: settings.lazyLoading,
+    });
+    setIsModalVisible(true);
+  }, [configDefinition, settings.lazyLoading]);
+
+  // Handle modal close
+  const handleModalClose = useCallback(() => {
+    setIsModalVisible(false);
+    setSelectedGroupData(null);
   }, []);
 
   // Handle filter change
@@ -88,13 +99,6 @@ const HistoryReportsTab: React.FC<{ onResetState: () => void }> = ({ onResetStat
   const handleSettingsChange = useCallback((newSettings: HistorySettings) => {
     setSettings(newSettings);
   }, []);
-
-  useEffect(() => {
-    // Reset tables when settings change
-    setIsVisibleTables(false);
-    const timer = setTimeout(() => setIsVisibleTables(true), 0);
-    return () => clearTimeout(timer);
-  }, [settings]);
 
   return (
     <div className="history-view-reports">
@@ -152,6 +156,7 @@ const HistoryReportsTab: React.FC<{ onResetState: () => void }> = ({ onResetStat
               lazyLoading={settings.lazyLoading}
               configDefinition={configDefinition}
               onRowClick={handleHistoryGroupsChange}
+              onGroupClick={handleGroupClick}
               onShowColumnDetail={(data) => columnCollectionsDialogRef.current?.showDetail(data)}
             />
           </div>
@@ -167,23 +172,19 @@ const HistoryReportsTab: React.FC<{ onResetState: () => void }> = ({ onResetStat
             displayGroupType={settings.displayGroupType}
             lazyLoading={settings.lazyLoading}
             configDefinition={configDefinition}
-            onRowClick={handleHistoryGroupsChange}
+            onGroupClick={handleGroupClick}
             onShowColumnDetail={(data) => columnCollectionsDialogRef.current?.showDetail(data)}
           />
         </div>
       )}
 
-      {/* Report Table Rows */}
-      {isVisibleTables && settings.displayGroupType === 'out' && tableLinkRows && (
-        <div>
-          <ReportTableRows
-            lazyLoading={settings.lazyLoading}
-            configDefinition={configDefinition}
-            tableLinkRows={tableLinkRows}
-            onShowColumnDetail={(data) => columnCollectionsDialogRef.current?.showDetail(data)}
-          />
-        </div>
-      )}
+      {/* Modal for Group Results */}
+      <ReportResultDialog
+        visible={isModalVisible}
+        reportData={selectedGroupData}
+        onClose={handleModalClose}
+        onShowColumnDetail={(data) => columnCollectionsDialogRef.current?.showDetail(data)}
+      />
 
       {/* Column Collections Dialog */}
       <ColumnCollectionsDialog ref={columnCollectionsDialogRef} />

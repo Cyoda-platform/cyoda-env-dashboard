@@ -61,5 +61,12 @@
     margin: 10px 0;
     padding-left: 20px;
   }
+
+  // Center pagination
+  .ant-pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 16px;
+  }
 }
 

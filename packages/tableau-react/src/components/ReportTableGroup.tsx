@@ -10,7 +10,6 @@ import type { ResizeCallbackData } from 'react-resizable';
 import { useQuery } from '@tanstack/react-query';
 import { axios } from '@cyoda/http-api-react';
 import { RightOutlined } from '@ant-design/icons';
-import ReportTableRows from './ReportTableRows';
 import type { ColumnData } from './ColumnCollectionsDialog';
 import HelperReportTable, { type ReportGroup, type WrappedEntityModel } from '../utils/HelperReportTable';
 import type { ConfigDefinition } from '../types';
@@ -27,6 +26,7 @@ interface ReportTableGroupProps {
   smallPagination?: boolean;
   onRowClick?: (row: any) => void;
   onShowColumnDetail?: (data: ColumnData) => void;
+  onGroupClick?: (row: any) => void; // New prop for opening modal with group results
 }
 
 interface TableDataRow {
@@ -49,6 +49,7 @@ const ReportTableGroup: React.FC<ReportTableGroupProps> = ({
   smallPagination = false,
   onRowClick,
   onShowColumnDetail,
+  onGroupClick,
 }) => {
   const storage = useMemo(() => new HelperStorage(), []);
   const [currentPage, setCurrentPage] = useState(1);
@@ -158,12 +159,23 @@ const ReportTableGroup: React.FC<ReportTableGroupProps> = ({
   // Handle row click
   const handleRowClick = useCallback(
     (record: TableDataRow) => {
-      if (!record.isNext && displayGroupType === 'out') {
+      // If it's a nested group, don't handle click (let expand/collapse work)
+      if (record.isNext) {
+        return;
+      }
+
+      // For 'out' mode, select the row and notify parent
+      if (displayGroupType === 'out') {
         setSelectedRowKey(record.key);
         onRowClick?.(record);
       }
+
+      // For both modes, open modal with group results
+      if (record._link_rows) {
+        onGroupClick?.(record);
+      }
     },
-    [displayGroupType, onRowClick]
+    [displayGroupType, onRowClick, onGroupClick]
   );
 
   // Handle page size change
@@ -171,10 +183,10 @@ const ReportTableGroup: React.FC<ReportTableGroupProps> = ({
     storage.set(STORAGE_KEY, pageSize);
   }, [pageSize, storage]);
 
-  // Expandable row render
+  // Expandable row render - only for nested groups
   const expandedRowRender = useCallback(
     (record: TableDataRow) => {
-      // If it has nested groups, render another ReportTableGroup
+      // Only render nested groups (isNext = true)
       if (record.isNext && record._link_groups) {
         return (
           <div className="inner-group-table">
@@ -185,36 +197,27 @@ const ReportTableGroup: React.FC<ReportTableGroupProps> = ({
               configDefinition={configDefinition}
               lazyLoading={lazyLoading}
               smallPagination={smallPagination}
+              onGroupClick={onGroupClick}
+              onShowColumnDetail={onShowColumnDetail}
             />
           </div>
         );
       }
 
-      // If displayGroupType is 'in', render rows directly
-      if (displayGroupType === 'in' && record._link_rows) {
-        return (
-          <ReportTableRows
-            tableLinkRows={record._link_rows}
-            lazyLoading={lazyLoading}
-            configDefinition={configDefinition}
-            onShowColumnDetail={onShowColumnDetail}
-          />
-        );
-      }
-
       return null;
     },
-    [displayGroupType, configDefinition, lazyLoading, smallPagination]
+    [displayGroupType, configDefinition, lazyLoading, smallPagination, onGroupClick, onShowColumnDetail]
   );
 
-  // Determine if row is expandable
+  // Determine if row is expandable - only for nested groups
   const isRowExpandable = useCallback(
     (record: TableDataRow) => {
       if (tableData.length === 0) return false;
       const firstRow = tableData[0];
-      return firstRow.isNext || displayGroupType === 'in';
+      // Only expandable if it has nested groups (isNext = true)
+      return firstRow.isNext;
     },
-    [tableData, displayGroupType]
+    [tableData]
   );
 
   // Calculate max height for table

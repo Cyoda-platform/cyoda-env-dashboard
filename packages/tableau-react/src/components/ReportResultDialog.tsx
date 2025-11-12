@@ -6,23 +6,26 @@
 import React from 'react';
 import { Modal } from 'antd';
 import ReportTableRows from './ReportTableRows';
+import type { ColumnData } from './ColumnCollectionsDialog';
 
 interface ReportResultDialogProps {
   visible: boolean;
   reportData: any;
   onClose: () => void;
+  onShowColumnDetail?: (data: ColumnData) => void;
 }
 
 const ReportResultDialog: React.FC<ReportResultDialogProps> = ({
   visible,
   reportData,
   onClose,
+  onShowColumnDetail,
 }) => {
   if (!reportData) return null;
 
   return (
     <Modal
-      title="Report Results"
+      title="Group Results"
       open={visible}
       onCancel={onClose}
       width="90%"
@@ -32,7 +35,8 @@ const ReportResultDialog: React.FC<ReportResultDialogProps> = ({
       <ReportTableRows
         tableLinkRows={reportData.linkRows}
         configDefinition={reportData.configDefinition}
-        lazyLoading={false}
+        lazyLoading={reportData.lazyLoading || false}
+        onShowColumnDetail={onShowColumnDetail}
       />
     </Modal>
   );
