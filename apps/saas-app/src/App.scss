@@ -254,6 +254,7 @@ div.ant-card.ant-card-borderless > .ant-card-body {
     text-transform: uppercase;
     letter-spacing: 0.5px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
     padding: 12px 16px;
 
     &::before {
@@ -272,6 +273,7 @@ div.ant-card.ant-card-borderless > .ant-card-body {
       > td {
         background: transparent !important;
         border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+        border-right: 1px solid rgba(255, 255, 255, 0.03) !important;
         color: var(--refine-text-primary) !important;
         padding: 12px 16px;
         font-size: 13px;

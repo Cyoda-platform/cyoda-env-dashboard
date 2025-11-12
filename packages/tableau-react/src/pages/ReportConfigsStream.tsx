@@ -94,12 +94,26 @@ export const ReportConfigsStream: React.FC = () => {
     return saved && Object.keys(saved).length > 0 ? saved : defaultWidths;
   });
 
+  // Sort state - load from localStorage
+  const [sortField, setSortField] = useState<string | null>(() => {
+    return storage.get('reportConfigsStream:sortField', null);
+  });
+  const [sortOrder, setSortOrder] = useState<'ascend' | 'descend' | null>(() => {
+    return storage.get('reportConfigsStream:sortOrder', null);
+  });
+
   // Save column widths to localStorage
   useEffect(() => {
     if (Object.keys(columnWidths).length > 0) {
       storage.set('reportConfigsStream:columnWidths', columnWidths);
     }
   }, [columnWidths]);
+
+  // Save sort settings to localStorage
+  useEffect(() => {
+    storage.set('reportConfigsStream:sortField', sortField);
+    storage.set('reportConfigsStream:sortOrder', sortOrder);
+  }, [sortField, sortOrder]);
 
   // Handle column resize
   const handleResize = useCallback((key: string) => {
@@ -455,6 +469,7 @@ export const ReportConfigsStream: React.FC = () => {
       key: 'name',
       width: columnWidths.name,
       sorter: (a, b) => a.name.localeCompare(b.name),
+      sortOrder: sortField === 'name' ? sortOrder : null,
       onHeaderCell: () => ({
         width: columnWidths.name,
         onResize: handleResize('name'),
@@ -466,6 +481,7 @@ export const ReportConfigsStream: React.FC = () => {
       key: 'description',
       width: columnWidths.description,
       sorter: (a, b) => (a.description || '').localeCompare(b.description || ''),
+      sortOrder: sortField === 'description' ? sortOrder : null,
       onHeaderCell: () => ({
         width: columnWidths.description,
         onResize: handleResize('description'),
@@ -477,6 +493,7 @@ export const ReportConfigsStream: React.FC = () => {
       key: 'entityClassNameLabel',
       width: columnWidths.requestClass,
       sorter: (a, b) => a.entityClassNameLabel.localeCompare(b.entityClassNameLabel),
+      sortOrder: sortField === 'entityClassNameLabel' ? sortOrder : null,
       onHeaderCell: () => ({
         width: columnWidths.requestClass,
         onResize: handleResize('requestClass'),
@@ -488,6 +505,7 @@ export const ReportConfigsStream: React.FC = () => {
       key: 'owner',
       width: columnWidths.user,
       sorter: (a, b) => a.owner.localeCompare(b.owner),
+      sortOrder: sortField === 'owner' ? sortOrder : null,
       onHeaderCell: () => ({
         width: columnWidths.user,
         onResize: handleResize('user'),
@@ -499,6 +517,7 @@ export const ReportConfigsStream: React.FC = () => {
       key: 'createdHuman',
       width: columnWidths.createDateTime,
       sorter: (a, b) => a.createDate.localeCompare(b.createDate),
+      sortOrder: sortField === 'createdHuman' ? sortOrder : null,
       onHeaderCell: () => ({
         width: columnWidths.createDateTime,
         onResize: handleResize('createDateTime'),
@@ -623,6 +642,19 @@ export const ReportConfigsStream: React.FC = () => {
         dataSource={tableData}
         rowKey="id"
         loading={isLoading}
+        onChange={(pagination, filters, sorter: any) => {
+          // Handle sorting
+          if (sorter && !Array.isArray(sorter)) {
+            if (sorter.order) {
+              setSortField(sorter.columnKey || sorter.field);
+              setSortOrder(sorter.order);
+            } else {
+              // Clear sorting
+              setSortField(null);
+              setSortOrder(null);
+            }
+          }
+        }}
         components={{
           header: {
             cell: ResizableTitle,

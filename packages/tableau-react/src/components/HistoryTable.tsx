@@ -73,10 +73,24 @@ const HistoryTable: React.FC<HistoryTableProps> = ({ filter, onChange }) => {
     return (saved && Object.keys(saved).length > 0) ? saved : defaultWidths;
   });
 
+  // Sort state - load from localStorage
+  const [sortField, setSortField] = useState<string | null>(() => {
+    return storage.get('historyTable:sortField', null);
+  });
+  const [sortOrder, setSortOrder] = useState<'ascend' | 'descend' | null>(() => {
+    return storage.get('historyTable:sortOrder', null);
+  });
+
   // Save column widths to localStorage whenever they change
   useEffect(() => {
     storage.set('historyTable:columnWidths', columnWidths);
   }, [columnWidths, storage]);
+
+  // Save sort settings to localStorage whenever they change
+  useEffect(() => {
+    storage.set('historyTable:sortField', sortField);
+    storage.set('historyTable:sortOrder', sortOrder);
+  }, [sortField, sortOrder, storage]);
 
   // Handle column resize - redistribute widths proportionally
   const handleResize = useCallback((key: string) => {
@@ -319,7 +333,7 @@ const HistoryTable: React.FC<HistoryTableProps> = ({ filter, onChange }) => {
       key: 'createDateTime',
       width: columnWidths.createDateTime,
       sorter: (a, b) => Number(a.createDateTimeMkTime) - Number(b.createDateTimeMkTime),
-      defaultSortOrder: 'descend',
+      sortOrder: sortField === 'createDateTime' ? sortOrder : (sortField === null ? 'descend' : null),
     },
     {
       title: 'Config',
@@ -391,7 +405,7 @@ const HistoryTable: React.FC<HistoryTableProps> = ({ filter, onChange }) => {
         </div>
       ),
     },
-  ], [columnWidths, handleInfoClick, handleEditClick]);
+  ], [columnWidths, sortField, sortOrder, handleInfoClick, handleEditClick]);
 
   // Handle row click
   const handleRowClick = async (record: TableDataRow) => {
@@ -447,6 +461,19 @@ const HistoryTable: React.FC<HistoryTableProps> = ({ filter, onChange }) => {
         size="small"
         scroll={{ x: true, y: 250 }}
         pagination={false}
+        onChange={(pagination, filters, sorter: any) => {
+          // Handle sorting
+          if (sorter && !Array.isArray(sorter)) {
+            if (sorter.order) {
+              setSortField(sorter.columnKey || sorter.field);
+              setSortOrder(sorter.order);
+            } else {
+              // Clear sorting
+              setSortField(null);
+              setSortOrder(null);
+            }
+          }
+        }}
         onRow={(record) => ({
           onClick: () => handleRowClick(record),
           className: record.id === selectedRowId ? 'selected-row' : '',

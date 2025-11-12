@@ -70,12 +70,26 @@ const CatalogueOfAliases: React.FC = () => {
     return saved && Object.keys(saved).length > 0 ? saved : defaultWidths;
   });
 
+  // Sort state - load from localStorage
+  const [sortField, setSortField] = useState<string | null>(() => {
+    return storage.get('catalogueOfAliases:sortField', null);
+  });
+  const [sortOrder, setSortOrder] = useState<'ascend' | 'descend' | null>(() => {
+    return storage.get('catalogueOfAliases:sortOrder', null);
+  });
+
   // Save column widths to localStorage
   useEffect(() => {
     if (Object.keys(columnWidths).length > 0) {
       storage.set('catalogueOfAliases:columnWidths', columnWidths);
     }
   }, [columnWidths, storage]);
+
+  // Save sort settings to localStorage
+  useEffect(() => {
+    storage.set('catalogueOfAliases:sortField', sortField);
+    storage.set('catalogueOfAliases:sortOrder', sortOrder);
+  }, [sortField, sortOrder, storage]);
 
   // Handle column resize
   const handleResize = useCallback((key: string) => {
@@ -368,6 +382,7 @@ const CatalogueOfAliases: React.FC = () => {
       dataIndex: 'name',
       key: 'name',
       sorter: (a, b) => a.name.localeCompare(b.name),
+      sortOrder: sortField === 'name' ? sortOrder : null,
       width: columnWidths.name,
       onHeaderCell: () => ({
         width: columnWidths.name,
@@ -379,6 +394,7 @@ const CatalogueOfAliases: React.FC = () => {
       dataIndex: 'description',
       key: 'description',
       sorter: (a, b) => a.description.localeCompare(b.description),
+      sortOrder: sortField === 'description' ? sortOrder : null,
       width: columnWidths.description,
       onHeaderCell: () => ({
         width: columnWidths.description,
@@ -390,6 +406,7 @@ const CatalogueOfAliases: React.FC = () => {
       dataIndex: 'entity',
       key: 'entity',
       sorter: (a, b) => a.entity.localeCompare(b.entity),
+      sortOrder: sortField === 'entity' ? sortOrder : null,
       width: columnWidths.entity,
       onHeaderCell: () => ({
         width: columnWidths.entity,
@@ -401,6 +418,7 @@ const CatalogueOfAliases: React.FC = () => {
       dataIndex: 'user',
       key: 'user',
       sorter: (a, b) => a.user.localeCompare(b.user),
+      sortOrder: sortField === 'user' ? sortOrder : null,
       width: columnWidths.author,
       onHeaderCell: () => ({
         width: columnWidths.author,
@@ -412,6 +430,7 @@ const CatalogueOfAliases: React.FC = () => {
       dataIndex: 'state',
       key: 'state',
       sorter: (a, b) => a.state.localeCompare(b.state),
+      sortOrder: sortField === 'state' ? sortOrder : null,
       width: columnWidths.state,
       onHeaderCell: () => ({
         width: columnWidths.state,
@@ -423,6 +442,7 @@ const CatalogueOfAliases: React.FC = () => {
       dataIndex: 'createdHuman',
       key: 'created',
       sorter: (a, b) => a.createdTimestamp - b.createdTimestamp,
+      sortOrder: sortField === 'created' ? sortOrder : null,
       width: columnWidths.created,
       onHeaderCell: () => ({
         width: columnWidths.created,
@@ -490,6 +510,19 @@ const CatalogueOfAliases: React.FC = () => {
         columns={columns}
         dataSource={tableData}
         loading={isLoading}
+        onChange={(pagination, filters, sorter: any) => {
+          // Handle sorting
+          if (sorter && !Array.isArray(sorter)) {
+            if (sorter.order) {
+              setSortField(sorter.columnKey || sorter.field);
+              setSortOrder(sorter.order);
+            } else {
+              // Clear sorting
+              setSortField(null);
+              setSortOrder(null);
+            }
+          }
+        }}
         components={{
           header: {
             cell: ResizableTitle,

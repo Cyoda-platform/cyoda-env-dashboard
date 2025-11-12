@@ -88,7 +88,7 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
   // Column widths state - load from localStorage
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>(() => {
     const saved = storage.get('reportConfigs:columnWidths', {});
-    return saved || {
+    const defaultWidths = {
       name: 200,
       description: 250,
       entityClassNameLabel: 180,
@@ -96,12 +96,28 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
       createdHuman: 150,
       action: 180,
     };
+    // Check if saved has any keys, if not use defaults
+    return Object.keys(saved).length > 0 ? saved : defaultWidths;
+  });
+
+  // Sort state - load from localStorage
+  const [sortField, setSortField] = useState<string | null>(() => {
+    return storage.get('reportConfigs:sortField', null);
+  });
+  const [sortOrder, setSortOrder] = useState<'ascend' | 'descend' | null>(() => {
+    return storage.get('reportConfigs:sortOrder', null);
   });
 
   // Save column widths to localStorage whenever they change
   useEffect(() => {
     storage.set('reportConfigs:columnWidths', columnWidths);
   }, [columnWidths, storage]);
+
+  // Save sort settings to localStorage whenever they change
+  useEffect(() => {
+    storage.set('reportConfigs:sortField', sortField);
+    storage.set('reportConfigs:sortOrder', sortOrder);
+  }, [sortField, sortOrder, storage]);
 
   // Load entity types for filtering
   const { data: entityTypesData = [] } = useQuery({
@@ -516,6 +532,7 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
         dataIndex: 'name',
         key: 'name',
         sorter: (a, b) => a.name.localeCompare(b.name),
+        sortOrder: sortField === 'name' ? sortOrder : null,
         width: columnWidths.name,
         ellipsis: true,
         onHeaderCell: () => {
@@ -549,6 +566,7 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
           showTitle: true,
         },
         sorter: (a, b) => a.entityClassNameLabel.localeCompare(b.entityClassNameLabel),
+        sortOrder: sortField === 'entity' ? sortOrder : null,
         render: (text: string) => (
           <Tooltip title={text}>
             <span>{text}</span>
@@ -569,6 +587,7 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
         width: columnWidths.username,
         ellipsis: true,
         sorter: (a, b) => a.username.localeCompare(b.username),
+        sortOrder: sortField === 'username' ? sortOrder : null,
         onHeaderCell: () => {
           const w = columnWidths.username;
           return {
@@ -583,6 +602,7 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
         key: 'created',
         width: columnWidths.createdHuman,
         sorter: (a, b) => a.created.localeCompare(b.created),
+        sortOrder: sortField === 'created' ? sortOrder : null,
         onHeaderCell: () => {
           const w = columnWidths.createdHuman;
           return {
@@ -603,7 +623,7 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
             onResize: handleResize('action'),
           } as any;
         },
-      render: (_, record) => (
+        render: (_, record) => (
         <Space size="small">
           <Tooltip title="Edit">
             <Button
@@ -660,7 +680,7 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
   ];
 
   return resizableColumns;
-}, [columnWidths, handleResize, handleEditReport, handleCloneClick, handleRunReport, handleCancelReport, handleDeleteReport]);
+}, [columnWidths, sortField, sortOrder, handleResize, handleEditReport, handleCloneClick, handleRunReport, handleCancelReport, handleDeleteReport]);
 
   return (
     <div className="report-configs">
@@ -734,6 +754,19 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
         onRow={(record) => ({
           onClick: () => setSelectedRowId(record.id),
         })}
+        onChange={(pagination, filters, sorter: any) => {
+          // Handle sorting
+          if (sorter && !Array.isArray(sorter)) {
+            if (sorter.order) {
+              setSortField(sorter.columnKey || sorter.field);
+              setSortOrder(sorter.order);
+            } else {
+              // Clear sorting
+              setSortField(null);
+              setSortOrder(null);
+            }
+          }
+        }}
         pagination={{
           pageSize: pageSize,
           showSizeChanger: true,
