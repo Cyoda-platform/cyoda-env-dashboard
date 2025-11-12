@@ -9,6 +9,7 @@ import type { ColumnsType } from 'antd/es/table';
 import type { ResizeCallbackData } from 'react-resizable';
 import { useQuery } from '@tanstack/react-query';
 import { axios } from '@cyoda/http-api-react';
+import { RightOutlined } from '@ant-design/icons';
 import ReportTableRows from './ReportTableRows';
 import type { ColumnData } from './ColumnCollectionsDialog';
 import HelperReportTable, { type ReportGroup, type WrappedEntityModel } from '../utils/HelperReportTable';
@@ -256,6 +257,20 @@ const ReportTableGroup: React.FC<ReportTableGroupProps> = ({
         },
       };
 
+  // Custom expand icon
+  const expandIcon = ({ expanded, onExpand, record }: any) => (
+    <RightOutlined
+      onClick={(e) => onExpand(record, e)}
+      style={{
+        transform: expanded ? 'rotate(90deg)' : 'rotate(0deg)',
+        transition: 'transform 0.2s',
+        cursor: 'pointer',
+        fontSize: '12px',
+        color: 'var(--refine-text-secondary)',
+      }}
+    />
+  );
+
   return (
     <div className="report-table-group">
       <Table
@@ -270,12 +285,13 @@ const ReportTableGroup: React.FC<ReportTableGroupProps> = ({
         bordered
         size="small"
         showHeader={showHeader}
-        scroll={{ x: true, y: maxHeight }}
+        scroll={{ y: maxHeight }}
         pagination={paginationConfig}
         expandable={{
           expandedRowRender: isRowExpandable(tableData[0]) ? expandedRowRender : undefined,
           expandedRowKeys: expandedRowKeys,
           onExpandedRowsChange: (keys) => setExpandedRowKeys(keys as string[]),
+          expandIcon: expandIcon,
         }}
         onRow={(record) => ({
           onClick: () => handleRowClick(record),

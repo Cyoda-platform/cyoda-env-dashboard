@@ -11,7 +11,7 @@ import type { HistorySettings } from '../types';
 describe('HistorySetting', () => {
   const mockSettings: HistorySettings = {
     lazyLoading: false,
-    displayGroupType: 'out',
+    displayGroupType: 'in',
   };
 
   const mockOnChange = vi.fn();
@@ -86,25 +86,25 @@ describe('HistorySetting', () => {
   });
 
   describe('Group Display Radio Buttons', () => {
-    it('should show "Out Table" as selected by default', () => {
+    it('should show "In Table" as selected by default', () => {
       renderWithProviders(
         <HistorySetting settings={mockSettings} onChange={mockOnChange} />
       );
 
-      const outButton = screen.getByText('Out Table').closest('.ant-radio-button-wrapper');
-      expect(outButton).toHaveClass('ant-radio-button-wrapper-checked');
+      const inButton = screen.getByText('In Table').closest('.ant-radio-button-wrapper');
+      expect(inButton).toHaveClass('ant-radio-button-wrapper-checked');
     });
 
-    it('should show "In Table" as selected when displayGroupType is "in"', () => {
+    it('should show "Out Table" as selected when displayGroupType is "out"', () => {
       renderWithProviders(
         <HistorySetting
-          settings={{ ...mockSettings, displayGroupType: 'in' }}
+          settings={{ ...mockSettings, displayGroupType: 'out' }}
           onChange={mockOnChange}
         />
       );
 
-      const inButton = screen.getByText('In Table').closest('.ant-radio-button-wrapper');
-      expect(inButton).toHaveClass('ant-radio-button-wrapper-checked');
+      const outButton = screen.getByText('Out Table').closest('.ant-radio-button-wrapper');
+      expect(outButton).toHaveClass('ant-radio-button-wrapper-checked');
     });
 
     it('should call onChange when "In Table" is clicked', () => {

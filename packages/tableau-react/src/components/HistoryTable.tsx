@@ -21,7 +21,6 @@ import './HistoryTable.scss';
 
 interface HistoryTableProps {
   filter: HistoryFilterForm | any; // Accept both old and new filter formats
-  settings?: HistorySettings;
   onChange: (data: { reportDefinition: ReportHistoryData; configDefinition: ConfigDefinition }) => void;
 }
 

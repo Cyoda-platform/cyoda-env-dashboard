@@ -39,7 +39,7 @@ const HistoryReportsTab: React.FC<{ onResetState: () => void }> = ({ onResetStat
 
   const [settings, setSettings] = useState<HistorySettings>({
     lazyLoading: false,
-    displayGroupType: 'out',
+    displayGroupType: 'in',
   });
 
   const [configDefinition, setConfigDefinition] = useState<ConfigDefinition>({});
@@ -131,7 +131,7 @@ const HistoryReportsTab: React.FC<{ onResetState: () => void }> = ({ onResetStat
       )}
 
       {/* Report Table */}
-      <div className="report-table">
+      <div className={`report-table ${settings.displayGroupType === 'in' ? 'vertical' : ''}`}>
         <div
           className={`wrap-table ${settings.displayGroupType === 'out' ? 'full' : ''}`}
         >
@@ -157,6 +157,21 @@ const HistoryReportsTab: React.FC<{ onResetState: () => void }> = ({ onResetStat
           </div>
         )}
       </div>
+
+      {/* Group Table for "In Table" mode - shown below Report table */}
+      {settings.displayGroupType === 'in' && tableLinkGroup && (
+        <div className="wrap-group-below">
+          <span className="label">Group</span>
+          <ReportTableGroup
+            tableLinkGroup={tableLinkGroup}
+            displayGroupType={settings.displayGroupType}
+            lazyLoading={settings.lazyLoading}
+            configDefinition={configDefinition}
+            onRowClick={handleHistoryGroupsChange}
+            onShowColumnDetail={(data) => columnCollectionsDialogRef.current?.showDetail(data)}
+          />
+        </div>
+      )}
 
       {/* Report Table Rows */}
       {isVisibleTables && settings.displayGroupType === 'out' && tableLinkRows && (

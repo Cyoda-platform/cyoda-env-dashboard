@@ -8,11 +8,14 @@
 .report-table-group {
   @include table.table-container-wrapper;
   @include table.resizable-columns;
+  width: 100%;
+  overflow-x: visible; // No horizontal scroll for group table
 
   .ant-table {
     font-size: 12px;
     background: transparent !important;
     border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    table-layout: auto; // Allow table to adjust column widths automatically
 
     .ant-table-thead > tr > th {
       background: rgba(36, 49, 66, 0.9) !important;

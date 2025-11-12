@@ -87,6 +87,11 @@
     margin-top: 24px;
     margin-bottom: 20px;
 
+    // Vertical layout for "In Table" mode
+    &.vertical {
+      display: block;
+    }
+
     .wrap-table {
       @include table.flex-table-wrapper;
       flex: 2; // Make Report table larger (2x)
@@ -117,6 +122,22 @@
         text-transform: uppercase;
         letter-spacing: 0.5px;
       }
+    }
+  }
+
+  // Group table below Report table for "In Table" mode
+  .wrap-group-below {
+    margin-top: 20px;
+    width: 100%;
+
+    .label {
+      display: block;
+      margin-bottom: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--refine-text-secondary) !important;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
   }
 
