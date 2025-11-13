@@ -272,42 +272,6 @@ describe('CatalogueOfAliases', () => {
     }, { timeout: 10000 });
   }, 15000);
 
-  it('should handle bulk delete', async () => {
-    const user = userEvent.setup();
-    (httpApiReact.deleteCatalogItem as any).mockResolvedValue({});
-
-    render(<CatalogueOfAliases />, { wrapper: createWrapper() });
-
-    await waitFor(() => {
-      expect(screen.getByText('Test Alias 1')).toBeInTheDocument();
-    }, { timeout: 10000 });
-
-    // Select checkboxes
-    const checkboxes = screen.getAllByRole('checkbox');
-    await user.click(checkboxes[1]); // First item
-    await user.click(checkboxes[2]); // Second item
-
-    // Bulk delete button should appear
-    await waitFor(() => {
-      expect(screen.getByRole('button', { name: /delete selected/i })).toBeInTheDocument();
-    }, { timeout: 10000 });
-
-    const bulkDeleteButton = screen.getByRole('button', { name: /delete selected/i });
-    await user.click(bulkDeleteButton);
-
-    // Confirmation modal
-    await waitFor(() => {
-      expect(screen.getByText(/do you really want to remove 2 aliases/i)).toBeInTheDocument();
-    }, { timeout: 10000 });
-
-    const okButton = screen.getByRole('button', { name: /ok/i });
-    await user.click(okButton);
-
-    await waitFor(() => {
-      expect(httpApiReact.deleteCatalogItem).toHaveBeenCalledTimes(2);
-    }, { timeout: 10000 });
-  }, 15000);
-
   it('should handle export', async () => {
     const user = userEvent.setup();
     const mockExportData = {

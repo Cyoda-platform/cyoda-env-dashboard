@@ -266,21 +266,6 @@ const CatalogueOfAliases: React.FC = () => {
     },
   });
 
-  // Bulk delete mutation
-  const bulkDeleteMutation = useMutation({
-    mutationFn: async (ids: string[]) => {
-      await Promise.all(ids.map((id) => deleteCatalogItem(id)));
-    },
-    onSuccess: () => {
-      message.success('Aliases deleted successfully');
-      setSelectedRowKeys([]);
-      refetch();
-    },
-    onError: () => {
-      message.error('Failed to delete aliases');
-    },
-  });
-
   // Export mutation
   const exportMutation = useMutation({
     mutationFn: async (ids: string[]) => {
@@ -341,14 +326,6 @@ const CatalogueOfAliases: React.FC = () => {
       title: 'Confirm Delete',
       content: 'Do you really want to remove this alias?',
       onOk: () => deleteMutation.mutate(record.id),
-    });
-  };
-
-  const handleBulkDelete = () => {
-    Modal.confirm({
-      title: 'Confirm Delete',
-      content: `Do you really want to remove ${selectedRowKeys.length} aliases?`,
-      onOk: () => bulkDeleteMutation.mutate(selectedRowKeys as string[]),
     });
   };
 
@@ -542,14 +519,6 @@ const CatalogueOfAliases: React.FC = () => {
         }}
         scroll={{ x: 1200 }}
       />
-
-      {selectedRowKeys.length > 0 && (
-        <div className="form-multiple-selection">
-          <Button type="primary" danger icon={<DeleteOutlined />} onClick={handleBulkDelete}>
-            Delete Selected ({selectedRowKeys.length})
-          </Button>
-        </div>
-      )}
 
       <ModellingPopUpAliasNew
         ref={aliasDialogRef}
