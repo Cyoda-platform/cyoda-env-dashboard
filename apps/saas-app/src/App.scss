@@ -423,6 +423,28 @@ div.ant-card.ant-card-borderless > .ant-card-body {
   }
 }
 
+// Global pagination alignment - center all pagination controls
+.ant-pagination {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+// Pagination bar wrapper
+.pagination-bar {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pagination-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+}
+
 // Button styling improvements - Fixed black hover issue
 .ant-btn {
   border-radius: 6px;
