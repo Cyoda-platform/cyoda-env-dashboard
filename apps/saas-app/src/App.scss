@@ -729,7 +729,7 @@ div.ant-card.ant-card-borderless > .ant-card-body {
 
   .ant-modal-header {
     background: var(--refine-bg-tertiary);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: none !important;
 
     .ant-modal-title {
       color: var(--refine-text-primary);
@@ -741,7 +741,7 @@ div.ant-card.ant-card-borderless > .ant-card-body {
   }
 
   .ant-modal-footer {
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: none !important;
   }
 }
 
@@ -1059,7 +1059,7 @@ div[style*="background-color:#000"] {
 
   .ant-modal-header {
     background: var(--refine-bg-secondary) !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: none !important;
 
     .ant-modal-title {
       color: var(--refine-text-primary) !important;
@@ -1074,7 +1074,7 @@ div[style*="background-color:#000"] {
 
   .ant-modal-footer {
     background: var(--refine-bg-secondary) !important;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: none !important;
 
     .ant-btn-default {
       background: transparent !important;

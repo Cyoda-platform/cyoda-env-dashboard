@@ -7,6 +7,7 @@ import React from 'react';
 import { Modal } from 'antd';
 import ReportTableRows from './ReportTableRows';
 import type { ColumnData } from './ColumnCollectionsDialog';
+import './ReportResultDialog.scss';
 
 interface ReportResultDialogProps {
   visible: boolean;
@@ -31,6 +32,7 @@ const ReportResultDialog: React.FC<ReportResultDialogProps> = ({
       width="90%"
       footer={null}
       destroyOnClose
+      className="report-result-dialog"
     >
       <ReportTableRows
         tableLinkRows={reportData.linkRows}

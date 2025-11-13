@@ -114,6 +114,15 @@ const EntityDataLineage: React.FC<EntityDataLineageProps> = ({ entityClass, enti
     // Sort by timestamp to ensure correct order
     const sorted = sortedSelectedTransactions;
 
+    console.log('🔍 Selected transactions (original order):', selectedTransactions);
+    console.log('🔍 Sorted transactions:', sorted);
+    console.log('🔍 API params:', {
+      firstTx: sorted[0].transactionId,
+      firstTxDate: sorted[0].dateTime,
+      lastTx: sorted[1].transactionId,
+      lastTxDate: sorted[1].dateTime,
+    });
+
     setCompareLoading(true);
     try {
       const { data } = await axios.get('/platform-api/transactions/diff', {
@@ -124,8 +133,8 @@ const EntityDataLineage: React.FC<EntityDataLineageProps> = ({ entityClass, enti
           lastTx: sorted[1].transactionId,
         },
       });
-      console.log('Compare data from API:', data);
-      console.log('Changed fields:', data?.changedFields);
+      console.log('🔍 Compare data from API:', data);
+      console.log('🔍 Changed fields:', data?.changedFields);
       setCompareData(data);
       // Open the compare modal
       compareRef.current?.setDialogVisible(true);
@@ -206,10 +215,14 @@ const EntityDataLineage: React.FC<EntityDataLineageProps> = ({ entityClass, enti
       {/* Compare Modal - using DataLineageCompare component */}
       <DataLineageCompare
         ref={compareRef}
-        checkedTransactions={sortedSelectedTransactions.map(tx => ({
-          transactionId: tx.transactionId,
-          dateTime: moment(tx.dateTime, 'DD-MM-YYYY HH:mm:ss.SSS').format('DD-MM-YYYY HH:mm:ss.SSS'),
-        }))}
+        checkedTransactions={(() => {
+          const mapped = sortedSelectedTransactions.map(tx => ({
+            transactionId: tx.transactionId,
+            dateTime: moment(tx.dateTime, 'DD-MM-YYYY HH:mm:ss.SSS').format('DD-MM-YYYY HH:mm:ss.SSS'),
+          }));
+          console.log('🔍 Passing to DataLineageCompare:', mapped);
+          return mapped;
+        })()}
         compareData={compareData}
       />
     </div>
