@@ -10,6 +10,16 @@ export default defineConfig({
     'process.env': {},
   },
   optimizeDeps: {
+    // Exclude local packages from pre-bundling to enable HMR for SCSS
+    exclude: [
+      '@cyoda/ui-lib-react',
+      '@cyoda/http-api-react',
+      '@cyoda/cyoda-sass-react',
+      '@cyoda/tableau-react',
+      '@cyoda/statemachine-react',
+      '@cyoda/tasks-react',
+      '@cyoda/processing-manager-react',
+    ],
     esbuildOptions: {
       define: {
         global: 'globalThis',
@@ -30,6 +40,10 @@ export default defineConfig({
   },
   server: {
     port: 3000,
+    watch: {
+      // Watch files in linked packages for changes
+      ignored: ['!**/node_modules/@cyoda/**'],
+    },
     proxy: {
       // Proxy all /platform-processing requests to real Cyoda backend server
       // This must come BEFORE /api to match more specific paths first

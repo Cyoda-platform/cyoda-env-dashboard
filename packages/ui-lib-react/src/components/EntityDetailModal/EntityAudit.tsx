@@ -6,6 +6,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Table, Tag, Spin } from 'antd';
+import { RightOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import './EntityAudit.scss';
 
@@ -168,6 +169,17 @@ const EntityAudit: React.FC<EntityAuditProps> = ({ entityClass, entityId }) => {
                 pagination={false}
                 size="small"
                 bordered
+              />
+            ),
+            expandIcon: ({ expanded, onExpand, record }) => (
+              <RightOutlined
+                onClick={(e) => onExpand(record, e)}
+                rotate={expanded ? 90 : 0}
+                style={{
+                  cursor: 'pointer',
+                  transition: 'transform 0.2s',
+                  fontSize: '12px',
+                }}
               />
             ),
           }}
