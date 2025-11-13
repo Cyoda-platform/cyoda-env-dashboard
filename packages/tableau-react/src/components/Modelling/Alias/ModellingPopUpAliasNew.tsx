@@ -683,9 +683,13 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
       title: 'Paths',
       content: (
         <div>
-          <div className="actions-settings" style={{ marginBottom: 16, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '12px' }}>
-            <ModellingPopUpToggles onChange={handleTogglesChange} />
-            <ModellingPopUpSearch onChange={handleSearchChange} />
+          <div className="actions-settings" style={{ marginBottom: 16, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '12px', width: '100%' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
+              <ModellingPopUpToggles onChange={handleTogglesChange} />
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
+              <ModellingPopUpSearch onChange={handleSearchChange} />
+            </div>
           </div>
           {!aliasForm.entityClass ? (
             <Alert message="Please select an entity class first" type="info" showIcon />

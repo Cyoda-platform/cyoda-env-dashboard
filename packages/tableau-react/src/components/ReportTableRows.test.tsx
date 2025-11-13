@@ -12,6 +12,35 @@ import axios from 'axios';
 vi.mock('axios');
 const mockedAxios = vi.mocked(axios);
 
+// Create mock axios instance with interceptors
+const mockAxiosInstance = {
+  get: vi.fn(),
+  post: vi.fn(),
+  put: vi.fn(),
+  delete: vi.fn(),
+  interceptors: {
+    request: { use: vi.fn(), eject: vi.fn() },
+    response: { use: vi.fn(), eject: vi.fn() },
+  },
+};
+
+// Mock http-api-react with all necessary exports
+vi.mock('@cyoda/http-api-react', () => ({
+  axios: mockAxiosInstance,
+  axiosPlatform: mockAxiosInstance,
+  axiosPublic: mockAxiosInstance,
+  axiosProcessing: mockAxiosInstance,
+  axiosGrafana: mockAxiosInstance,
+  axiosAI: mockAxiosInstance,
+  useGlobalUiSettingsStore: vi.fn(() => ({
+    dateFormat: 'YYYY.MM.DD',
+    timeFormat: 'HH:mm:ss',
+  })),
+  getReportConfig: vi.fn(),
+  getReportingFetchTypes: vi.fn(),
+  getHistory: vi.fn(),
+}));
+
 describe('ReportTableRows', () => {
   const mockConfigDefinition: ConfigDefinition = {
     id: 'config-1',
