@@ -382,16 +382,11 @@ export const ReportConfigsStream: React.FC = () => {
         `${API_BASE}/platform-api/stream-data/export-by-ids?includeIds=${ids.join(',')}`
       );
 
-      const definitions = exportResponse;
+      console.log('Export API response:', exportResponse);
 
-      // Create export data
-      const exportData = {
-        data: {
-          value: definitions,
-        },
-        type: 'reportsStream',
-        exportDate: new Date().toISOString(),
-      };
+      // The API already returns the data in the correct format
+      // Just save it as-is (like the old Vue project does)
+      const exportData = exportResponse;
 
       // Download as JSON file
       const blob = new Blob([JSON.stringify(exportData, null, 2)], {
@@ -431,11 +426,11 @@ export const ReportConfigsStream: React.FC = () => {
       let successCount = 0;
       let failCount = 0;
 
-      // Use the import endpoint
+      // Use the import endpoint - send the whole importData object, not just the value array
       try {
         await axios.post(
           `${API_BASE}/platform-api/stream-data/import`,
-          importData.data.value
+          importData
         );
         successCount = importData.data.value.length;
       } catch (error) {
