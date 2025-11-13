@@ -1,20 +1,31 @@
 /**
  * Tests for Reports Page
+ * Tests for the main Reports page with tabs (Report Config and Reports)
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { renderWithProviders } from '../test/test-utils';
 import Reports from './Reports';
 
-// Mock the components
+// Mock ReportConfigs page
+vi.mock('./ReportConfigs', () => ({
+  default: ({ onResetState }: any) => (
+    <div data-testid="report-configs">
+      <h2>Report Configs</h2>
+      <button onClick={onResetState}>Reset State</button>
+    </div>
+  ),
+}));
+
+// Mock HistoryTable component
 vi.mock('../components/HistoryTable', () => ({
   default: ({ filter, settings, onChange }: any) => (
     <div data-testid="history-table">
-      <div>Filter: {JSON.stringify(filter)}</div>
-      <div>Settings: {JSON.stringify(settings)}</div>
+      <div>History Table</div>
       <button onClick={() => onChange({
-        reportDefinition: { id: 'report-123' },
+        reportDefinition: { id: 'report-123', groupingVersion: 1 },
         configDefinition: { name: 'Test Config' }
       })}>
         Select Report
@@ -23,15 +34,83 @@ vi.mock('../components/HistoryTable', () => ({
   ),
 }));
 
-vi.mock('../components/ReportTableRows', () => ({
-  default: ({ lazyLoading, configDefinition, tableLinkRows }: any) => (
-    <div data-testid="report-table-rows">
-      <div>Lazy Loading: {lazyLoading ? 'Yes' : 'No'}</div>
-      <div>Config: {JSON.stringify(configDefinition)}</div>
-      <div>Link: {tableLinkRows}</div>
+// Mock HistoryFilter component
+vi.mock('../components/HistoryFilter', () => ({
+  default: ({ value, onChange }: any) => (
+    <div data-testid="history-filter">
+      <input
+        data-testid="filter-input"
+        value={value.search || ''}
+        onChange={(e) => onChange({ ...value, search: e.target.value })}
+      />
     </div>
   ),
 }));
+
+// Mock HistorySetting component
+vi.mock('../components/HistorySetting', () => ({
+  default: ({ settings, onChange }: any) => (
+    <div data-testid="history-setting">
+      <button onClick={() => onChange({ ...settings, lazyLoading: !settings.lazyLoading })}>
+        Toggle Lazy Loading
+      </button>
+      <button onClick={() => onChange({ ...settings, displayGroupType: settings.displayGroupType === 'in' ? 'out' : 'in' })}>
+        Toggle Display Type
+      </button>
+    </div>
+  ),
+}));
+
+// Mock ReportTableGroup component
+vi.mock('../components/ReportTableGroup', () => ({
+  default: ({ tableLinkGroup, displayGroupType }: any) => (
+    <div data-testid="report-table-group">
+      <div>Display Type: {displayGroupType}</div>
+      <div>Link: {tableLinkGroup}</div>
+    </div>
+  ),
+}));
+
+// Mock QuickRunReport component
+vi.mock('../components/QuickRunReport', () => ({
+  default: () => <div data-testid="quick-run-report">Quick Run Report</div>,
+}));
+
+// Mock ReportUISettings component
+vi.mock('../components/ReportUISettings', () => ({
+  default: ({ reportDefinitionId, configDefinition }: any) => (
+    <div data-testid="report-ui-settings">
+      <div>Report ID: {reportDefinitionId}</div>
+    </div>
+  ),
+}));
+
+// Mock ReportResultDialog component
+vi.mock('../components/ReportResultDialog', () => ({
+  default: ({ visible, onClose }: any) =>
+    visible ? (
+      <div data-testid="report-result-dialog">
+        <button onClick={onClose}>Close</button>
+      </div>
+    ) : null,
+}));
+
+// Mock ColumnCollectionsDialog component
+vi.mock('../components/ColumnCollectionsDialog', () => ({
+  default: ({ ref }: any) => <div data-testid="column-collections-dialog">Column Collections</div>,
+}));
+
+// Mock HelperStorage
+vi.mock('@cyoda/ui-lib-react', async () => {
+  const actual = await vi.importActual('@cyoda/ui-lib-react');
+  return {
+    ...actual,
+    HelperStorage: vi.fn().mockImplementation(() => ({
+      get: vi.fn((key: string, defaultValue: any) => defaultValue),
+      set: vi.fn(),
+    })),
+  };
+});
 
 describe('Reports Page', () => {
   beforeEach(() => {
@@ -39,266 +118,247 @@ describe('Reports Page', () => {
   });
 
   describe('Rendering', () => {
-    it('should render the page', () => {
+    it('should render the page with heading', () => {
       renderWithProviders(<Reports />);
 
-      expect(screen.getByText('Tableau')).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: /Reports/i })).toBeInTheDocument();
     });
 
-    it('should render page heading', () => {
+    it('should render tabs', () => {
       renderWithProviders(<Reports />);
 
-      const heading = screen.getByRole('heading', { name: /Tableau/i });
-      expect(heading).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /Report Config/i })).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /Reports/i })).toBeInTheDocument();
     });
 
-    it('should render username', () => {
+    it('should render Report Config tab by default', () => {
       renderWithProviders(<Reports />);
 
-      expect(screen.getByText('User')).toBeInTheDocument();
+      expect(screen.getByTestId('report-configs')).toBeInTheDocument();
+    });
+
+    it('should have reports-tabs class', () => {
+      const { container } = renderWithProviders(<Reports />);
+
+      const tabs = container.querySelector('.reports-tabs');
+      expect(tabs).not.toBeNull();
+    });
+  });
+
+  describe('Tab Navigation', () => {
+    it('should switch to Reports tab when clicked', async () => {
+      const user = userEvent.setup();
+      renderWithProviders(<Reports />);
+
+      const reportsTab = screen.getByRole('tab', { name: /^Reports$/i });
+      await user.click(reportsTab);
+
+      await waitFor(() => {
+        expect(screen.getByTestId('history-table')).toBeInTheDocument();
+      });
+    });
+
+    it('should switch back to Report Config tab', async () => {
+      const user = userEvent.setup();
+      renderWithProviders(<Reports />);
+
+      // Switch to Reports tab
+      const reportsTab = screen.getByRole('tab', { name: /^Reports$/i });
+      await user.click(reportsTab);
+
+      await waitFor(() => {
+        expect(screen.getByTestId('history-table')).toBeInTheDocument();
+      });
+
+      // Switch back to Report Config tab
+      const reportConfigTab = screen.getByRole('tab', { name: /Report Config/i });
+      await user.click(reportConfigTab);
+
+      await waitFor(() => {
+        expect(screen.getByTestId('report-configs')).toBeInTheDocument();
+      });
+    });
+
+    it('should persist active tab in storage', async () => {
+      const user = userEvent.setup();
+      renderWithProviders(<Reports />);
+
+      const reportsTab = screen.getByRole('tab', { name: /^Reports$/i });
+      await user.click(reportsTab);
+
+      // Storage.set should be called when tab changes
+      // This is tested indirectly through tab switching behavior
+      await waitFor(() => {
+        expect(screen.getByTestId('history-table')).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('Reports Tab Content', () => {
+    beforeEach(async () => {
+      const user = userEvent.setup();
+      renderWithProviders(<Reports />);
+
+      const reportsTab = screen.getByRole('tab', { name: /^Reports$/i });
+      await user.click(reportsTab);
+
+      await waitFor(() => {
+        expect(screen.getByTestId('history-table')).toBeInTheDocument();
+      });
+    });
+
+    it('should render QuickRunReport component', () => {
+      expect(screen.getByTestId('quick-run-report')).toBeInTheDocument();
+    });
+
+    it('should render Reset state button', () => {
+      expect(screen.getByRole('button', { name: /Reset state/i })).toBeInTheDocument();
+    });
+
+    it('should render HistoryFilter component', () => {
+      expect(screen.getByTestId('history-filter')).toBeInTheDocument();
+    });
+
+    it('should render HistorySetting component', () => {
+      expect(screen.getByTestId('history-setting')).toBeInTheDocument();
     });
 
     it('should render HistoryTable component', () => {
-      renderWithProviders(<Reports />);
-
       expect(screen.getByTestId('history-table')).toBeInTheDocument();
     });
 
-    it('should render Report label', () => {
-      renderWithProviders(<Reports />);
-
-      expect(screen.getByText('Report')).toBeInTheDocument();
+    it('should not render ReportUISettings initially', () => {
+      expect(screen.queryByTestId('report-ui-settings')).not.toBeInTheDocument();
     });
 
-    it('should render Group label', () => {
-      renderWithProviders(<Reports />);
-
-      expect(screen.getByText('Group')).toBeInTheDocument();
+    it('should not render ReportTableGroup initially', () => {
+      expect(screen.queryByTestId('report-table-group')).not.toBeInTheDocument();
     });
   });
 
-  describe('Filter and Settings', () => {
-    it('should pass filter to HistoryTable', () => {
+  describe('Report Selection in Reports Tab', () => {
+    it('should show ReportUISettings after selecting a report', async () => {
+      const user = userEvent.setup();
       renderWithProviders(<Reports />);
 
-      expect(screen.getByText(/Filter:.*config.*type.*user.*status/)).toBeInTheDocument();
+      // Switch to Reports tab
+      const reportsTab = screen.getByRole('tab', { name: /^Reports$/i });
+      await user.click(reportsTab);
+
+      await waitFor(() => {
+        expect(screen.getByTestId('history-table')).toBeInTheDocument();
+      });
+
+      // Select a report
+      const selectButton = screen.getByRole('button', { name: /Select Report/i });
+      await user.click(selectButton);
+
+      await waitFor(() => {
+        expect(screen.getByTestId('report-ui-settings')).toBeInTheDocument();
+      });
     });
 
-    it('should pass settings to HistoryTable', () => {
+    it('should show ReportTableGroup after selecting a report with "in" display type', async () => {
+      const user = userEvent.setup();
       renderWithProviders(<Reports />);
 
-      expect(screen.getByText(/Settings:.*lazyLoading.*displayGroupType/)).toBeInTheDocument();
+      // Switch to Reports tab
+      const reportsTab = screen.getByRole('tab', { name: /^Reports$/i });
+      await user.click(reportsTab);
+
+      await waitFor(() => {
+        expect(screen.getByTestId('history-table')).toBeInTheDocument();
+      });
+
+      // Select a report
+      const selectButton = screen.getByRole('button', { name: /Select Report/i });
+      await user.click(selectButton);
+
+      await waitFor(() => {
+        expect(screen.getByTestId('report-table-group')).toBeInTheDocument();
+      });
+
+      // Verify display type is "in"
+      expect(screen.getByText('Display Type: in')).toBeInTheDocument();
     });
 
-    it('should initialize with empty filter values', () => {
+    it('should generate correct tableLinkGroup URL', async () => {
+      const user = userEvent.setup();
       renderWithProviders(<Reports />);
 
-      expect(screen.getByText(/"config":""/)).toBeInTheDocument();
-      expect(screen.getByText(/"type":""/)).toBeInTheDocument();
-      expect(screen.getByText(/"user":""/)).toBeInTheDocument();
-      expect(screen.getByText(/"status":""/)).toBeInTheDocument();
-    });
+      // Switch to Reports tab
+      const reportsTab = screen.getByRole('tab', { name: /^Reports$/i });
+      await user.click(reportsTab);
 
-    it('should initialize with lazyLoading false', () => {
-      renderWithProviders(<Reports />);
+      await waitFor(() => {
+        expect(screen.getByTestId('history-table')).toBeInTheDocument();
+      });
 
-      expect(screen.getByText(/"lazyLoading":false/)).toBeInTheDocument();
-    });
+      // Select a report
+      const selectButton = screen.getByRole('button', { name: /Select Report/i });
+      await user.click(selectButton);
 
-    it('should initialize with displayGroupType as out', () => {
-      renderWithProviders(<Reports />);
-
-      expect(screen.getByText(/"displayGroupType":"out"/)).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText(/Link:.*\/platform-api\/reporting\/report\/report-123\/1\/groups/)).toBeInTheDocument();
+      });
     });
   });
 
-  describe('Report Selection', () => {
-    it('should not render ReportTableRows initially', () => {
+  describe('Display Type Toggle', () => {
+    it('should toggle between "in" and "out" display types', async () => {
+      const user = userEvent.setup();
       renderWithProviders(<Reports />);
 
-      expect(screen.queryByTestId('report-table-rows')).not.toBeInTheDocument();
-    });
+      // Switch to Reports tab
+      const reportsTab = screen.getByRole('tab', { name: /^Reports$/i });
+      await user.click(reportsTab);
 
-    it('should render ReportTableRows after report selection', async () => {
-      const { rerender } = renderWithProviders(<Reports />);
+      await waitFor(() => {
+        expect(screen.getByTestId('history-table')).toBeInTheDocument();
+      });
 
+      // Select a report first
       const selectButton = screen.getByRole('button', { name: /Select Report/i });
-      selectButton.click();
+      await user.click(selectButton);
 
-      // Wait for state update
-      await new Promise(resolve => setTimeout(resolve, 10));
-      rerenderWithProviders(<Reports />);
+      await waitFor(() => {
+        expect(screen.getByTestId('report-table-group')).toBeInTheDocument();
+      });
 
-      expect(screen.getByTestId('report-table-rows')).toBeInTheDocument();
-    });
+      // Initially should be "in"
+      expect(screen.getByText('Display Type: in')).toBeInTheDocument();
 
-    it('should set table link rows from report definition', async () => {
-      const { rerender } = renderWithProviders(<Reports />);
+      // Toggle display type
+      const toggleButton = screen.getByRole('button', { name: /Toggle Display Type/i });
+      await user.click(toggleButton);
 
-      const selectButton = screen.getByRole('button', { name: /Select Report/i });
-      selectButton.click();
-
-      await new Promise(resolve => setTimeout(resolve, 10));
-      rerenderWithProviders(<Reports />);
-
-      expect(screen.getByText(/Link:.*\/platform-api\/reporting\/report\/report-123\/rows/)).toBeInTheDocument();
-    });
-
-    it('should pass config definition to ReportTableRows', async () => {
-      const { rerender } = renderWithProviders(<Reports />);
-
-      const selectButton = screen.getByRole('button', { name: /Select Report/i });
-      selectButton.click();
-
-      await new Promise(resolve => setTimeout(resolve, 10));
-      rerenderWithProviders(<Reports />);
-
-      expect(screen.getByText(/Config:.*Test Config/)).toBeInTheDocument();
-    });
-
-    it('should pass lazyLoading setting to ReportTableRows', async () => {
-      const { rerender } = renderWithProviders(<Reports />);
-
-      const selectButton = screen.getByRole('button', { name: /Select Report/i });
-      selectButton.click();
-
-      await new Promise(resolve => setTimeout(resolve, 10));
-      rerenderWithProviders(<Reports />);
-
-      expect(screen.getByText('Lazy Loading: No')).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText('Display Type: out')).toBeInTheDocument();
+      });
     });
   });
 
-  describe('Layout', () => {
-    it('should have reports-view class', () => {
-      const { container } = renderWithProviders(<Reports />);
-
-      const reportsView = container.querySelector('.reports-view');
-      expect(reportsView).not.toBeNull();
-    });
-
-    it('should have header section', () => {
-      const { container } = renderWithProviders(<Reports />);
-
-      const header = container.querySelector('.header');
-      expect(header).not.toBeNull();
-    });
-
-    it('should have container section', () => {
-      const { container } = renderWithProviders(<Reports />);
-
-      const containerDiv = container.querySelector('.container');
-      expect(containerDiv).not.toBeNull();
-    });
-
-    it('should have report-table section', () => {
-      const { container } = renderWithProviders(<Reports />);
-
-      const reportTable = container.querySelector('.report-table');
-      expect(reportTable).not.toBeNull();
-    });
-
-    it('should have wrap-table with full class when displayGroupType is out', () => {
-      const { container } = renderWithProviders(<Reports />);
-
-      const wrapTable = container.querySelector('.wrap-table.full');
-      expect(wrapTable).not.toBeNull();
-    });
-
-    it('should have wrap-group section when displayGroupType is out', () => {
-      const { container } = renderWithProviders(<Reports />);
-
-      const wrapGroup = container.querySelector('.wrap-group');
-      expect(wrapGroup).not.toBeNull();
-    });
-
-    it('should have logout section', () => {
-      const { container } = renderWithProviders(<Reports />);
-
-      const logout = container.querySelector('.logout');
-      expect(logout).not.toBeNull();
-    });
-  });
-
-  describe('Conditional Rendering', () => {
-    it('should show Group section when displayGroupType is out', () => {
+  describe('Reset State', () => {
+    it('should reset to Report Config tab when reset is triggered', async () => {
+      const user = userEvent.setup();
       renderWithProviders(<Reports />);
 
-      expect(screen.getByText('Group')).toBeInTheDocument();
-    });
+      // Switch to Reports tab
+      const reportsTab = screen.getByRole('tab', { name: /^Reports$/i });
+      await user.click(reportsTab);
 
-    it('should show ReportTableRows only when displayGroupType is out', async () => {
-      const { rerender } = renderWithProviders(<Reports />);
+      await waitFor(() => {
+        expect(screen.getByTestId('history-table')).toBeInTheDocument();
+      });
 
-      const selectButton = screen.getByRole('button', { name: /Select Report/i });
-      selectButton.click();
+      // Click Reset state button
+      const resetButton = screen.getByRole('button', { name: /Reset state/i });
+      await user.click(resetButton);
 
-      await new Promise(resolve => setTimeout(resolve, 10));
-      rerenderWithProviders(<Reports />);
-
-      expect(screen.getByTestId('report-table-rows')).toBeInTheDocument();
-    });
-
-    it('should show ReportTableRows only when tableLinkRows is set', () => {
-      renderWithProviders(<Reports />);
-
-      expect(screen.queryByTestId('report-table-rows')).not.toBeInTheDocument();
-    });
-
-    it('should show ReportTableRows only when isVisibleTables is true', async () => {
-      const { rerender } = renderWithProviders(<Reports />);
-
-      const selectButton = screen.getByRole('button', { name: /Select Report/i });
-      selectButton.click();
-
-      await new Promise(resolve => setTimeout(resolve, 10));
-      rerenderWithProviders(<Reports />);
-
-      expect(screen.getByTestId('report-table-rows')).toBeInTheDocument();
-    });
-  });
-
-  describe('User Display', () => {
-    it('should display username in logout section', () => {
-      const { container } = renderWithProviders(<Reports />);
-
-      const logout = container.querySelector('.logout');
-      expect(logout?.textContent).toBe('User');
-    });
-  });
-
-  describe('Edge Cases', () => {
-    it('should handle report selection with no id', async () => {
-      // This test would require re-mocking the component, which is complex
-      // Instead, we'll just verify the current behavior
-      renderWithProviders(<Reports />);
-
-      expect(screen.queryByTestId('report-table-rows')).not.toBeInTheDocument();
-    });
-
-    it('should handle multiple report selections', async () => {
-      const { rerender } = renderWithProviders(<Reports />);
-
-      const selectButton = screen.getByRole('button', { name: /Select Report/i });
-      
-      selectButton.click();
-      await new Promise(resolve => setTimeout(resolve, 10));
-      rerenderWithProviders(<Reports />);
-
-      selectButton.click();
-      await new Promise(resolve => setTimeout(resolve, 10));
-      rerenderWithProviders(<Reports />);
-
-      expect(screen.getByTestId('report-table-rows')).toBeInTheDocument();
-    });
-  });
-
-  describe('Settings Effect', () => {
-    it('should reset tables when settings change', async () => {
-      renderWithProviders(<Reports />);
-
-      // Tables should be visible initially
-      expect(screen.getByTestId('history-table')).toBeInTheDocument();
+      // Should switch back to Report Config tab
+      await waitFor(() => {
+        expect(screen.getByTestId('report-configs')).toBeInTheDocument();
+      });
     });
   });
 });

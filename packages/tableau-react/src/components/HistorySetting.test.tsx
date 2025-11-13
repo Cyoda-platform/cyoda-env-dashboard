@@ -80,7 +80,7 @@ describe('HistorySetting', () => {
 
       expect(mockOnChange).toHaveBeenCalledWith({
         lazyLoading: true,
-        displayGroupType: 'out',
+        displayGroupType: 'in',
       });
     });
   });
@@ -108,8 +108,14 @@ describe('HistorySetting', () => {
     });
 
     it('should call onChange when "In Table" is clicked', () => {
+      // Start with 'out' to test clicking 'in'
+      const settingsWithOut: HistorySettings = {
+        lazyLoading: false,
+        displayGroupType: 'out',
+      };
+
       renderWithProviders(
-        <HistorySetting settings={mockSettings} onChange={mockOnChange} />
+        <HistorySetting settings={settingsWithOut} onChange={mockOnChange} />
       );
 
       const inButton = screen.getByText('In Table');
@@ -151,20 +157,20 @@ describe('HistorySetting', () => {
 
       expect(mockOnChange).toHaveBeenCalledWith({
         lazyLoading: true,
-        displayGroupType: 'out',
+        displayGroupType: 'in',
       });
 
       // Update settings
-      const newSettings = { lazyLoading: true, displayGroupType: 'out' as const };
+      const newSettings = { lazyLoading: true, displayGroupType: 'in' as const };
       rerender(<HistorySetting settings={newSettings} onChange={mockOnChange} />);
 
       // Change display group type
-      const inButton = screen.getByText('In Table');
-      fireEvent.click(inButton);
+      const outButton = screen.getByText('Out Table');
+      fireEvent.click(outButton);
 
       expect(mockOnChange).toHaveBeenCalledWith({
         lazyLoading: true,
-        displayGroupType: 'in',
+        displayGroupType: 'out',
       });
     });
   });

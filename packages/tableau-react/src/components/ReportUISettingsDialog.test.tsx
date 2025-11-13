@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { screen, fireEvent, waitFor } from '@testing-library/react';
+import { screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { renderWithProviders } from '../test/test-utils';
 import ReportUISettingsDialog from './ReportUISettingsDialog';
 import { useReportsStore } from '../stores/reportsStore';
@@ -136,7 +136,7 @@ describe('ReportUISettingsDialog', () => {
 
   describe('Field Selection', () => {
     it('should save settings when field is selected', async () => {
-      renderWithProviders(
+      const { container } = renderWithProviders(
         <ReportUISettingsDialog
           visible={true}
           reportDefinitionId="report-123"
@@ -146,27 +146,24 @@ describe('ReportUISettingsDialog', () => {
         />
       );
 
-      // Simulate selecting a field by directly calling the form's onChange
-      // This is more reliable than trying to interact with Ant Design's Select dropdown in tests
-      const form = screen.getByRole('combobox').closest('form');
-
-      // Trigger the Select's onChange by finding the select element and simulating change
+      // Find the Select component
       const selectElement = screen.getByRole('combobox');
+      expect(selectElement).toBeInTheDocument();
 
-      // Open dropdown
-      fireEvent.mouseDown(selectElement);
+      // Simulate selecting a value by triggering the onChange event directly
+      // This is more reliable than trying to interact with Ant Design's Select dropdown in tests
+      await act(async () => {
+        fireEvent.mouseDown(selectElement);
+      });
 
-      // Wait for options to appear
-      await waitFor(
-        () => {
-          expect(screen.getByRole('option', { name: 'name' })).toBeInTheDocument();
-        },
-        { timeout: 3000 }
-      );
+      // Wait a bit for the dropdown to render
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
-      // Click the option
-      const nameOption = screen.getByRole('option', { name: 'name' });
-      fireEvent.click(nameOption);
+      // Find and click the option
+      const nameOption = await screen.findByText('name');
+      await act(async () => {
+        fireEvent.click(nameOption);
+      });
 
       // Check that settings were saved to store
       await waitFor(
@@ -174,7 +171,7 @@ describe('ReportUISettingsDialog', () => {
           const storedSettings = useReportsStore.getState().getStoredSettings('report-123');
           expect(storedSettings?.settings.idField).toBe('name');
         },
-        { timeout: 3000 }
+        { timeout: 1000 }
       );
     });
 
@@ -200,19 +197,18 @@ describe('ReportUISettingsDialog', () => {
 
       // Open the select dropdown
       const select = screen.getByRole('combobox');
-      fireEvent.mouseDown(select);
+      await act(async () => {
+        fireEvent.mouseDown(select);
+      });
 
-      // Wait for options to appear with increased timeout
-      await waitFor(
-        () => {
-          expect(screen.getByRole('option', { name: 'value' })).toBeInTheDocument();
-        },
-        { timeout: 3000 }
-      );
+      // Wait a bit for the dropdown to render
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
-      // Select a different option
-      const valueOption = screen.getByRole('option', { name: 'value' });
-      fireEvent.click(valueOption);
+      // Find and click the option
+      const valueOption = await screen.findByText('value');
+      await act(async () => {
+        fireEvent.click(valueOption);
+      });
 
       // Check that settings were updated
       await waitFor(
@@ -220,7 +216,7 @@ describe('ReportUISettingsDialog', () => {
           const storedSettings = useReportsStore.getState().getStoredSettings('report-123');
           expect(storedSettings?.settings.idField).toBe('value');
         },
-        { timeout: 3000 }
+        { timeout: 1000 }
       );
     });
   });

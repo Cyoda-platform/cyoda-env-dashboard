@@ -11,6 +11,38 @@ import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import CatalogueOfAliases from './CatalogueOfAliases';
 import * as httpApiReact from '@cyoda/http-api-react';
 
+// Mock antd App.useApp
+vi.mock('antd', async () => {
+  const actual = await vi.importActual('antd');
+  return {
+    ...actual,
+    App: {
+      ...((actual as any).App || {}),
+      useApp: () => ({
+        message: {
+          success: vi.fn(),
+          error: vi.fn(),
+          warning: vi.fn(),
+          info: vi.fn(),
+        },
+        notification: {
+          success: vi.fn(),
+          error: vi.fn(),
+          warning: vi.fn(),
+          info: vi.fn(),
+        },
+        modal: {
+          confirm: vi.fn(),
+          info: vi.fn(),
+          success: vi.fn(),
+          error: vi.fn(),
+          warning: vi.fn(),
+        },
+      }),
+    },
+  };
+});
+
 // Mock the API functions
 vi.mock('@cyoda/http-api-react', async () => {
   const actual = await vi.importActual('@cyoda/http-api-react');
