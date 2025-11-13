@@ -37,7 +37,7 @@ vi.mock('@cyoda/http-api-react', () => {
     useGlobalUiSettingsStore: vi.fn(() => ({
       dateFormat: 'YYYY.MM.DD',
       timeFormat: 'HH:mm:ss',
-      entityType: 'test.Entity',
+      entityType: 'BUSINESS',
     })),
     getReportConfig: vi.fn(),
     getReportingFetchTypes: vi.fn(),
@@ -69,7 +69,7 @@ describe('Integration Tests', () => {
             configName: 'test-config-report-1',
             createTime: '2025-10-16T10:00:00Z',
             finishTime: '2025-10-16T10:05:00Z',
-            type: 'STANDARD',
+            type: 'Entity1',
             userId: 'user1',
             status: 'COMPLETED',
             totalRowsCount: 1000,
@@ -309,7 +309,7 @@ describe('Integration Tests', () => {
 
       await waitFor(() => {
         expect(consoleError).toHaveBeenCalledWith(
-          'Failed to load report rows:',
+          'ReportTableRows: Failed to load report rows:',
           expect.any(Error)
         );
       });
@@ -357,7 +357,7 @@ describe('Integration Tests', () => {
         page: { totalElements: 100, totalPages: 10, size: 10, number: 0 },
       };
 
-      mockedAxios.get.mockResolvedValueOnce({ data: largeDataset });
+      mockedHttpApiAxios.get.mockResolvedValueOnce({ data: largeDataset });
 
       const queryClient = createTestQueryClient();
 
@@ -380,7 +380,7 @@ describe('Integration Tests', () => {
     });
 
     it('should load all data when lazy loading is disabled', async () => {
-      mockedAxios.get.mockResolvedValueOnce({ data: mockReportData });
+      mockedHttpApiAxios.get.mockResolvedValueOnce({ data: mockReportData });
 
       const queryClient = createTestQueryClient();
 
@@ -395,7 +395,7 @@ describe('Integration Tests', () => {
       );
 
       await waitFor(() => {
-        expect(mockedAxios.get).toHaveBeenCalledWith(
+        expect(mockedHttpApiAxios.get).toHaveBeenCalledWith(
           '/api/report/1/rows?size=100000'
         );
       });

@@ -150,7 +150,11 @@ const CreateReportDialog = forwardRef<CreateReportDialogRef, CreateReportDialogP
     const handleNext = async () => {
       try {
         if (currentStep === 0) {
-          await form.validateFields(['name', 'description']);
+          const fieldsToValidate = ['name'];
+          if (!hideFields.description) {
+            fieldsToValidate.push('description');
+          }
+          await form.validateFields(fieldsToValidate);
           setCurrentStep(1);
         }
       } catch (error) {
@@ -219,7 +223,7 @@ const CreateReportDialog = forwardRef<CreateReportDialogRef, CreateReportDialogP
                 <Input onChange={handleNameChange} placeholder="Enter report name" />
               </Form.Item>
 
-              {hideFields.description !== false && (
+              {!hideFields.description && (
                 <Form.Item
                   label="Description"
                   name="description"

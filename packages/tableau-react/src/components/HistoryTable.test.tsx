@@ -37,7 +37,7 @@ vi.mock('@cyoda/http-api-react', () => {
     useGlobalUiSettingsStore: vi.fn(() => ({
       dateFormat: 'YYYY.MM.DD',
       timeFormat: 'HH:mm:ss',
-      entityType: 'test.Entity',
+      entityType: 'BUSINESS',
     })),
     getReportConfig: vi.fn(),
     getReportingFetchTypes: vi.fn(),
@@ -91,7 +91,7 @@ describe('HistoryTable', () => {
             configName: 'test-config-report-1',
             createTime: '2025-10-16T10:00:00Z',
             finishTime: '2025-10-16T10:05:00Z',
-            type: 'STANDARD',
+            type: 'Entity1',
             userId: 'user1',
             status: 'COMPLETED',
             totalRowsCount: 1000,
@@ -107,7 +107,7 @@ describe('HistoryTable', () => {
             configName: 'test-config-report-2',
             createTime: '2025-10-16T11:00:00Z',
             finishTime: '2025-10-16T11:10:00Z',
-            type: 'CUSTOM',
+            type: 'Entity2',
             userId: 'user2',
             status: 'RUNNING',
             totalRowsCount: 500,
@@ -175,14 +175,15 @@ describe('HistoryTable', () => {
         { wrapper }
       );
 
+      // Config names are processed: 'test-config-report-1' becomes 'report-1'
       await waitFor(
         () => {
-          expect(screen.getByText('test-config-report-1')).toBeInTheDocument();
+          expect(screen.getByText('report-1')).toBeInTheDocument();
         },
         { timeout: 3000 }
       );
 
-      expect(screen.getByText('test-config-report-2')).toBeInTheDocument();
+      expect(screen.getByText('report-2')).toBeInTheDocument();
       expect(screen.getByText('testuser')).toBeInTheDocument();
       expect(screen.getByText('admin')).toBeInTheDocument();
     });
@@ -291,9 +292,10 @@ describe('HistoryTable', () => {
         { wrapper }
       );
 
+      // Config names are processed: 'test-config-report-1' becomes 'report-1'
       await waitFor(
         () => {
-          expect(screen.getByText('test-config-report-1')).toBeInTheDocument();
+          expect(screen.getByText('report-1')).toBeInTheDocument();
         },
         { timeout: 3000 }
       );

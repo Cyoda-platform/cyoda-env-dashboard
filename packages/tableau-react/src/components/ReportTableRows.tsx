@@ -33,7 +33,7 @@ const ReportTableRows: React.FC<ReportTableRowsProps> = ({
 }) => {
   const [tableData, setTableData] = useState<any[]>([]);
   const [tableColumns, setTableColumns] = useState<TableColumn[]>([]);
-  const [pageSize, setPageSize] = useState(50);
+  const [pageSize, setPageSize] = useState(10);
   const [selectedRow, setSelectedRow] = useState<any>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const storage = useMemo(() => new HelperStorage(), []);

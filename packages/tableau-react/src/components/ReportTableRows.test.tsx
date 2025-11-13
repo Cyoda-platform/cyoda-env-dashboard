@@ -173,7 +173,7 @@ describe('ReportTableRows', () => {
 
       await waitFor(() => {
         expect(consoleError).toHaveBeenCalledWith(
-          'Failed to load report rows:',
+          'ReportTableRows: Failed to load report rows:',
           expect.any(Error)
         );
       });
