@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
@@ -12,13 +12,13 @@ import ModellingPopUpAlias from './ModellingPopUpAlias';
 import type { AliasDef } from '../../../types/modelling';
 
 // Mock axios
-const mockGet = vi.fn(() => Promise.resolve({ data: [] }));
-const mockPost = vi.fn(() => Promise.resolve({ data: {} }));
-const mockPut = vi.fn(() => Promise.resolve({ data: {} }));
-const mockDelete = vi.fn(() => Promise.resolve({ data: {} }));
-const mockPatch = vi.fn(() => Promise.resolve({ data: {} }));
-
 vi.mock('axios', () => {
+  const mockGet = vi.fn(() => Promise.resolve({ data: [] }));
+  const mockPost = vi.fn(() => Promise.resolve({ data: {} }));
+  const mockPut = vi.fn(() => Promise.resolve({ data: {} }));
+  const mockDelete = vi.fn(() => Promise.resolve({ data: {} }));
+  const mockPatch = vi.fn(() => Promise.resolve({ data: {} }));
+
   const mockInstance = {
     interceptors: {
       request: { use: vi.fn(), eject: vi.fn() },
@@ -158,14 +158,14 @@ describe('ModellingPopUpAlias', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     // Mock axios.get to return catalog items array
-    mockGet.mockImplementation((url: string) => {
+    mockedAxios.get.mockImplementation((url: string) => {
       if (url.includes('/platform-api/catalog/item/class')) {
         return Promise.resolve({ data: mockCatalogItems });
       }
       return Promise.resolve({ data: [] });
     });
-    mockPost.mockResolvedValue({ data: { success: true } });
-    mockDelete.mockResolvedValue({ data: { success: true } });
+    mockedAxios.post.mockResolvedValue({ data: { success: true } });
+    mockedAxios.delete.mockResolvedValue({ data: { success: true } });
   });
 
   it('should render without crashing', () => {
@@ -306,7 +306,6 @@ describe('ModellingPopUpAlias', () => {
   });
 
   it('should show bulk actions when rows are selected', async () => {
-    const user = userEvent.setup();
     const ref = React.createRef<any>();
     render(
       <ModellingPopUpAlias
@@ -325,10 +324,10 @@ describe('ModellingPopUpAlias', () => {
       expect(screen.getByText('CatalogAlias1')).toBeInTheDocument();
     });
 
-    // Select a row
+    // Select a row using fireEvent instead of userEvent
     const checkbox = document.querySelectorAll('input[type="checkbox"]')[1] as HTMLInputElement;
     if (checkbox) {
-      await user.click(checkbox);
+      fireEvent.click(checkbox);
     }
 
     await waitFor(() => {
@@ -431,8 +430,15 @@ describe('ModellingPopUpAlias', () => {
 
     ref.current?.close();
 
+    // Wait for modal to have the closing class or be hidden
     await waitFor(() => {
-      expect(screen.queryByText('Catalog of Aliases')).not.toBeInTheDocument();
+      const modalWrap = document.querySelector('.ant-modal-wrap');
+      // Modal should either be removed or have display: none
+      expect(
+        !modalWrap ||
+        window.getComputedStyle(modalWrap).display === 'none' ||
+        modalWrap.classList.contains('ant-modal-wrap-hidden')
+      ).toBe(true);
     });
   });
 });

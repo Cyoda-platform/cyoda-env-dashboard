@@ -8,40 +8,43 @@ import { screen, waitFor, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithProviders, createTestQueryClient } from '../test/test-utils';
 import ReportConfigsStream from './ReportConfigsStream';
-import axios from 'axios';
+import { axios as httpApiAxios } from '@cyoda/http-api-react';
 
 // Mock axios
 vi.mock('axios');
-const mockedAxios = vi.mocked(axios);
-
-// Create mock axios instance with interceptors
-const mockAxiosInstance = {
-  get: vi.fn(),
-  post: vi.fn(),
-  put: vi.fn(),
-  delete: vi.fn(),
-  interceptors: {
-    request: { use: vi.fn(), eject: vi.fn() },
-    response: { use: vi.fn(), eject: vi.fn() },
-  },
-};
 
 // Mock http-api-react with all necessary exports
-vi.mock('@cyoda/http-api-react', () => ({
-  axios: mockAxiosInstance,
-  axiosPlatform: mockAxiosInstance,
-  axiosPublic: mockAxiosInstance,
-  axiosProcessing: mockAxiosInstance,
-  axiosGrafana: mockAxiosInstance,
-  axiosAI: mockAxiosInstance,
-  useGlobalUiSettingsStore: vi.fn(() => ({
-    dateFormat: 'YYYY.MM.DD',
-    timeFormat: 'HH:mm:ss',
-  })),
-  getReportConfig: vi.fn(),
-  getReportingFetchTypes: vi.fn().mockResolvedValue({ data: ['Entity1', 'Entity2'] }),
-  getHistory: vi.fn(),
-}));
+vi.mock('@cyoda/http-api-react', () => {
+  const mockAxiosInstance = {
+    get: vi.fn(),
+    post: vi.fn(),
+    put: vi.fn(),
+    delete: vi.fn(),
+    interceptors: {
+      request: { use: vi.fn(), eject: vi.fn() },
+      response: { use: vi.fn(), eject: vi.fn() },
+    },
+  };
+
+  return {
+    axios: mockAxiosInstance,
+    axiosPlatform: mockAxiosInstance,
+    axiosPublic: mockAxiosInstance,
+    axiosProcessing: mockAxiosInstance,
+    axiosGrafana: mockAxiosInstance,
+    axiosAI: mockAxiosInstance,
+    useGlobalUiSettingsStore: vi.fn(() => ({
+      dateFormat: 'YYYY.MM.DD',
+      timeFormat: 'HH:mm:ss',
+      entityType: 'test.Entity',
+    })),
+    getReportConfig: vi.fn(),
+    getReportingFetchTypes: vi.fn().mockResolvedValue({ data: ['Entity1', 'Entity2'] }),
+    getHistory: vi.fn(),
+  };
+});
+
+const mockedHttpApiAxios = vi.mocked(httpApiAxios);
 
 // Mock the ConfigEditorStreamGrid component
 vi.mock('@cyoda/ui-lib-react', async () => {
@@ -135,7 +138,7 @@ describe('ReportConfigsStream Page', () => {
     vi.clearAllMocks();
 
     // Mock API responses
-    mockedAxios.get.mockImplementation((url: string) => {
+    mockedHttpApiAxios.get.mockImplementation((url: string) => {
       if (url.includes('/platform-api/reporting/stream-definitions')) {
         return Promise.resolve({ data: mockStreamReports });
       }
@@ -153,7 +156,7 @@ describe('ReportConfigsStream Page', () => {
       return Promise.reject(new Error('Not found'));
     });
 
-    mockedAxios.post.mockImplementation((url: string, data: any) => {
+    mockedHttpApiAxios.post.mockImplementation((url: string, data: any) => {
       if (url.includes('/platform-api/reporting/stream-definitions')) {
         return Promise.resolve({
           data: { id: 'new-stream-id', ...data },
@@ -170,7 +173,7 @@ describe('ReportConfigsStream Page', () => {
       return Promise.reject(new Error('Not found'));
     });
 
-    mockedAxios.delete.mockResolvedValue({ data: { success: true } });
+    mockedHttpApiAxios.delete.mockResolvedValue({ data: { success: true } });
   });
 
   afterEach(() => {
@@ -248,7 +251,7 @@ describe('ReportConfigsStream Page', () => {
       await user.click(screen.getByText('Create'));
 
       await waitFor(() => {
-        expect(mockedAxios.post).toHaveBeenCalledWith(
+        expect(mockedHttpApiAxios.post).toHaveBeenCalledWith(
           expect.stringContaining('/platform-api/streamdata/definitions'),
           expect.objectContaining({
             name: 'Test Stream',
@@ -314,7 +317,7 @@ describe('ReportConfigsStream Page', () => {
         await user.click(deleteButtons[0]);
 
         await waitFor(() => {
-          expect(mockedAxios.delete).toHaveBeenCalledWith(
+          expect(mockedHttpApiAxios.delete).toHaveBeenCalledWith(
             expect.stringContaining('/platform-api/streamdata/definitions/stream-1')
           );
         });

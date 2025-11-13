@@ -6,40 +6,44 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, waitFor } from '@testing-library/react';
 import ReportTableRows from './ReportTableRows';
 import type { ConfigDefinition } from '@/types';
-import axios from 'axios';
+import { axios as httpApiAxios } from '@cyoda/http-api-react';
 
 // Mock axios
 vi.mock('axios');
-const mockedAxios = vi.mocked(axios);
-
-// Create mock axios instance with interceptors
-const mockAxiosInstance = {
-  get: vi.fn(),
-  post: vi.fn(),
-  put: vi.fn(),
-  delete: vi.fn(),
-  interceptors: {
-    request: { use: vi.fn(), eject: vi.fn() },
-    response: { use: vi.fn(), eject: vi.fn() },
-  },
-};
 
 // Mock http-api-react with all necessary exports
-vi.mock('@cyoda/http-api-react', () => ({
-  axios: mockAxiosInstance,
-  axiosPlatform: mockAxiosInstance,
-  axiosPublic: mockAxiosInstance,
-  axiosProcessing: mockAxiosInstance,
-  axiosGrafana: mockAxiosInstance,
-  axiosAI: mockAxiosInstance,
-  useGlobalUiSettingsStore: vi.fn(() => ({
-    dateFormat: 'YYYY.MM.DD',
-    timeFormat: 'HH:mm:ss',
-  })),
-  getReportConfig: vi.fn(),
-  getReportingFetchTypes: vi.fn(),
-  getHistory: vi.fn(),
-}));
+vi.mock('@cyoda/http-api-react', () => {
+  // Create mock axios instance with interceptors inside the mock
+  const mockAxiosInstance = {
+    get: vi.fn(),
+    post: vi.fn(),
+    put: vi.fn(),
+    delete: vi.fn(),
+    interceptors: {
+      request: { use: vi.fn(), eject: vi.fn() },
+      response: { use: vi.fn(), eject: vi.fn() },
+    },
+  };
+
+  return {
+    axios: mockAxiosInstance,
+    axiosPlatform: mockAxiosInstance,
+    axiosPublic: mockAxiosInstance,
+    axiosProcessing: mockAxiosInstance,
+    axiosGrafana: mockAxiosInstance,
+    axiosAI: mockAxiosInstance,
+    useGlobalUiSettingsStore: vi.fn(() => ({
+      dateFormat: 'YYYY.MM.DD',
+      timeFormat: 'HH:mm:ss',
+    })),
+    getReportConfig: vi.fn(),
+    getReportingFetchTypes: vi.fn(),
+    getHistory: vi.fn(),
+  };
+});
+
+// Get mocked axios instance
+const mockedHttpApiAxios = vi.mocked(httpApiAxios);
 
 describe('ReportTableRows', () => {
   const mockConfigDefinition: ConfigDefinition = {
@@ -106,7 +110,7 @@ describe('ReportTableRows', () => {
 
   describe('Data Loading', () => {
     it('should load report data from API', async () => {
-      mockedAxios.get.mockResolvedValueOnce({ data: mockReportData });
+      mockedHttpApiAxios.get.mockResolvedValueOnce({ data: mockReportData });
 
       render(
         <ReportTableRows
@@ -117,14 +121,14 @@ describe('ReportTableRows', () => {
       );
 
       await waitFor(() => {
-        expect(mockedAxios.get).toHaveBeenCalledWith(
+        expect(mockedHttpApiAxios.get).toHaveBeenCalledWith(
           '/api/report/123/rows?size=100000'
         );
       });
     });
 
     it('should load with lazy loading enabled', async () => {
-      mockedAxios.get.mockResolvedValueOnce({ data: mockReportData });
+      mockedHttpApiAxios.get.mockResolvedValueOnce({ data: mockReportData });
 
       render(
         <ReportTableRows
@@ -135,7 +139,7 @@ describe('ReportTableRows', () => {
       );
 
       await waitFor(() => {
-        expect(mockedAxios.get).toHaveBeenCalledWith(
+        expect(mockedHttpApiAxios.get).toHaveBeenCalledWith(
           '/api/report/123/rows?size=10'
         );
       });
@@ -151,13 +155,13 @@ describe('ReportTableRows', () => {
       );
 
       await waitFor(() => {
-        expect(mockedAxios.get).not.toHaveBeenCalled();
+        expect(mockedHttpApiAxios.get).not.toHaveBeenCalled();
       });
     });
 
     it('should handle API errors gracefully', async () => {
       const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
-      mockedAxios.get.mockRejectedValueOnce(new Error('API Error'));
+      mockedHttpApiAxios.get.mockRejectedValueOnce(new Error('API Error'));
 
       render(
         <ReportTableRows
@@ -180,7 +184,7 @@ describe('ReportTableRows', () => {
 
   describe('Data Transformation', () => {
     it('should flatten nested objects', async () => {
-      mockedAxios.get.mockResolvedValueOnce({ data: mockReportData });
+      mockedHttpApiAxios.get.mockResolvedValueOnce({ data: mockReportData });
 
       render(
         <ReportTableRows
@@ -214,7 +218,7 @@ describe('ReportTableRows', () => {
         page: { totalElements: 1, totalPages: 1, size: 10, number: 0 },
       };
 
-      mockedAxios.get.mockResolvedValueOnce({ data: dataWithArrays });
+      mockedHttpApiAxios.get.mockResolvedValueOnce({ data: dataWithArrays });
 
       render(
         <ReportTableRows
@@ -240,7 +244,7 @@ describe('ReportTableRows', () => {
         ],
       };
 
-      mockedAxios.get.mockResolvedValueOnce({ data: mockReportData });
+      mockedHttpApiAxios.get.mockResolvedValueOnce({ data: mockReportData });
 
       render(
         <ReportTableRows
@@ -261,7 +265,7 @@ describe('ReportTableRows', () => {
 
   describe('Tableau Integration', () => {
     it('should send data to Tableau Web Data Connector', async () => {
-      mockedAxios.get.mockResolvedValueOnce({ data: mockReportData });
+      mockedHttpApiAxios.get.mockResolvedValueOnce({ data: mockReportData });
 
       render(
         <ReportTableRows
@@ -277,7 +281,7 @@ describe('ReportTableRows', () => {
     });
 
     it('should set connection name from config description', async () => {
-      mockedAxios.get.mockResolvedValueOnce({ data: mockReportData });
+      mockedHttpApiAxios.get.mockResolvedValueOnce({ data: mockReportData });
 
       render(
         <ReportTableRows
@@ -293,7 +297,7 @@ describe('ReportTableRows', () => {
     });
 
     it('should create Tableau columns with correct structure', async () => {
-      mockedAxios.get.mockResolvedValueOnce({ data: mockReportData });
+      mockedHttpApiAxios.get.mockResolvedValueOnce({ data: mockReportData });
 
       render(
         <ReportTableRows
@@ -318,7 +322,7 @@ describe('ReportTableRows', () => {
       delete (global.window as any).tableau;
       const consoleWarn = vi.spyOn(console, 'warn').mockImplementation(() => {});
       
-      mockedAxios.get.mockResolvedValueOnce({ data: mockReportData });
+      mockedHttpApiAxios.get.mockResolvedValueOnce({ data: mockReportData });
 
       render(
         <ReportTableRows
@@ -341,7 +345,7 @@ describe('ReportTableRows', () => {
         page: { totalElements: 0, totalPages: 0, size: 10, number: 0 },
       };
 
-      mockedAxios.get.mockResolvedValueOnce({ data: emptyData });
+      mockedHttpApiAxios.get.mockResolvedValueOnce({ data: emptyData });
 
       render(
         <ReportTableRows
@@ -352,7 +356,7 @@ describe('ReportTableRows', () => {
       );
 
       await waitFor(() => {
-        expect(mockedAxios.get).toHaveBeenCalled();
+        expect(mockedHttpApiAxios.get).toHaveBeenCalled();
       });
 
       // Wait a bit to ensure submit is not called
@@ -372,7 +376,7 @@ describe('ReportTableRows', () => {
         page: { totalElements: 100, totalPages: 10, size: 10, number: 0 },
       };
 
-      mockedAxios.get.mockResolvedValueOnce({ data: largeDataset });
+      mockedHttpApiAxios.get.mockResolvedValueOnce({ data: largeDataset });
 
       render(
         <ReportTableRows
@@ -391,7 +395,7 @@ describe('ReportTableRows', () => {
     });
 
     it('should not limit rows when lazy loading is disabled', async () => {
-      mockedAxios.get.mockResolvedValueOnce({ data: mockReportData });
+      mockedHttpApiAxios.get.mockResolvedValueOnce({ data: mockReportData });
 
       render(
         <ReportTableRows
@@ -417,7 +421,7 @@ describe('ReportTableRows', () => {
         description: 'Test',
       };
 
-      mockedAxios.get.mockResolvedValueOnce({ data: mockReportData });
+      mockedHttpApiAxios.get.mockResolvedValueOnce({ data: mockReportData });
 
       render(
         <ReportTableRows
@@ -428,7 +432,7 @@ describe('ReportTableRows', () => {
       );
 
       await waitFor(() => {
-        expect(mockedAxios.get).toHaveBeenCalled();
+        expect(mockedHttpApiAxios.get).toHaveBeenCalled();
       });
     });
 
@@ -447,7 +451,7 @@ describe('ReportTableRows', () => {
         page: { totalElements: 1, totalPages: 1, size: 10, number: 0 },
       };
 
-      mockedAxios.get.mockResolvedValueOnce({ data: dataWithNulls });
+      mockedHttpApiAxios.get.mockResolvedValueOnce({ data: dataWithNulls });
 
       render(
         <ReportTableRows
@@ -468,7 +472,7 @@ describe('ReportTableRows', () => {
         columns: [{ name: 'test' }],
       };
 
-      mockedAxios.get.mockResolvedValueOnce({ data: mockReportData });
+      mockedHttpApiAxios.get.mockResolvedValueOnce({ data: mockReportData });
 
       render(
         <ReportTableRows

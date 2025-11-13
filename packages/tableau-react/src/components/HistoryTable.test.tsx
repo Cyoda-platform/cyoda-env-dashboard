@@ -9,38 +9,44 @@ import userEvent from '@testing-library/user-event';
 import HistoryTable from './HistoryTable';
 import type { HistoryFilter, HistorySettings } from '@/types';
 import axios from 'axios';
+import { axiosPlatform } from '@cyoda/http-api-react';
 
 // Mock axios
 vi.mock('axios');
 
-// Create mock axios instance with interceptors
-const mockAxiosInstance = {
-  get: vi.fn(),
-  post: vi.fn(),
-  put: vi.fn(),
-  delete: vi.fn(),
-  interceptors: {
-    request: { use: vi.fn(), eject: vi.fn() },
-    response: { use: vi.fn(), eject: vi.fn() },
-  },
-};
-
 // Mock http-api-react with all necessary exports
-vi.mock('@cyoda/http-api-react', () => ({
-  axios: mockAxiosInstance,
-  axiosPlatform: mockAxiosInstance,
-  axiosPublic: mockAxiosInstance,
-  axiosProcessing: mockAxiosInstance,
-  axiosGrafana: mockAxiosInstance,
-  axiosAI: mockAxiosInstance,
-  useGlobalUiSettingsStore: vi.fn(() => ({
-    dateFormat: 'YYYY.MM.DD',
-    timeFormat: 'HH:mm:ss',
-  })),
-  getReportConfig: vi.fn(),
-  getReportingFetchTypes: vi.fn(),
-  getHistory: vi.fn(),
-}));
+vi.mock('@cyoda/http-api-react', () => {
+  const mockAxiosInstance = {
+    get: vi.fn(),
+    post: vi.fn(),
+    put: vi.fn(),
+    delete: vi.fn(),
+    interceptors: {
+      request: { use: vi.fn(), eject: vi.fn() },
+      response: { use: vi.fn(), eject: vi.fn() },
+    },
+  };
+
+  return {
+    axios: mockAxiosInstance,
+    axiosPlatform: mockAxiosInstance,
+    axiosPublic: mockAxiosInstance,
+    axiosProcessing: mockAxiosInstance,
+    axiosGrafana: mockAxiosInstance,
+    axiosAI: mockAxiosInstance,
+    useGlobalUiSettingsStore: vi.fn(() => ({
+      dateFormat: 'YYYY.MM.DD',
+      timeFormat: 'HH:mm:ss',
+      entityType: 'test.Entity',
+    })),
+    getReportConfig: vi.fn(),
+    getReportingFetchTypes: vi.fn(),
+    getHistory: vi.fn(),
+  };
+});
+
+const mockedAxios = vi.mocked(axios);
+const mockedAxiosPlatform = vi.mocked(axiosPlatform);
 
 // Create a test query client
 const createTestQueryClient = () =>
@@ -76,44 +82,72 @@ describe('HistoryTable', () => {
 
   const mockOnChange = vi.fn();
 
-  const mockReportHistory = [
-    {
-      id: '1',
-      configName: 'test-config-report-1',
-      createTime: '2025-10-16T10:00:00Z',
-      finishTime: '2025-10-16T10:05:00Z',
-      type: 'STANDARD',
-      user: { username: 'testuser' },
-      status: 'COMPLETED',
-      totalRowsCount: 1000,
-      groupingColumns: ['col1', 'col2'],
-      groupingVersion: 'v1',
-      hierarhyEnable: false,
-      regroupingPossible: true,
+  const mockReportHistory = {
+    _embedded: {
+      reportHistoryFieldsViews: [
+        {
+          reportHistoryFields: {
+            id: '1',
+            configName: 'test-config-report-1',
+            createTime: '2025-10-16T10:00:00Z',
+            finishTime: '2025-10-16T10:05:00Z',
+            type: 'STANDARD',
+            userId: 'user1',
+            status: 'COMPLETED',
+            totalRowsCount: 1000,
+            groupingColumns: ['col1', 'col2'],
+            groupingVersion: 'v1',
+            hierarhyEnable: false,
+            regroupingPossible: true,
+          },
+        },
+        {
+          reportHistoryFields: {
+            id: '2',
+            configName: 'test-config-report-2',
+            createTime: '2025-10-16T11:00:00Z',
+            finishTime: '2025-10-16T11:10:00Z',
+            type: 'CUSTOM',
+            userId: 'user2',
+            status: 'RUNNING',
+            totalRowsCount: 500,
+            groupingColumns: ['col3'],
+            groupingVersion: 'v2',
+            hierarhyEnable: true,
+            regroupingPossible: false,
+          },
+        },
+      ],
     },
-    {
-      id: '2',
-      configName: 'test-config-report-2',
-      createTime: '2025-10-16T11:00:00Z',
-      finishTime: '2025-10-16T11:10:00Z',
-      type: 'CUSTOM',
-      user: { username: 'admin' },
-      status: 'RUNNING',
-      totalRowsCount: 500,
-      groupingColumns: ['col3'],
-      groupingVersion: 'v2',
-      hierarhyEnable: true,
-      regroupingPossible: false,
-    },
-  ];
+  };
 
   beforeEach(() => {
     vi.clearAllMocks();
+
+    // Mock entity types API call (used by global axios)
+    mockedAxios.get.mockResolvedValue({
+      data: {
+        _embedded: {
+          entityTypes: [
+            { name: 'test.Entity1', type: 'BUSINESS' },
+            { name: 'test.Entity2', type: 'BUSINESS' },
+          ],
+        },
+      },
+    });
+
+    // Mock users API call (used by axiosPlatform)
+    mockedAxiosPlatform.post.mockResolvedValue({
+      data: [
+        { userId: 'user1', username: 'testuser' },
+        { userId: 'user2', username: 'admin' },
+      ],
+    });
   });
 
   describe('Rendering', () => {
     it('should render the history table', async () => {
-      mockAxiosInstance.get.mockResolvedValueOnce({ data: mockReportHistory });
+      mockedAxiosPlatform.get.mockResolvedValueOnce({ data: mockReportHistory });
 
       const { container } = render(
         <HistoryTable
@@ -130,7 +164,7 @@ describe('HistoryTable', () => {
     });
 
     it('should display report data in table', async () => {
-      mockAxiosInstance.get.mockResolvedValueOnce({ data: mockReportHistory });
+      mockedAxiosPlatform.get.mockResolvedValueOnce({ data: mockReportHistory });
 
       render(
         <HistoryTable
@@ -141,16 +175,20 @@ describe('HistoryTable', () => {
         { wrapper }
       );
 
-      await waitFor(() => {
-        expect(screen.getByText('test-config-report-1')).toBeInTheDocument();
-        expect(screen.getByText('test-config-report-2')).toBeInTheDocument();
-        expect(screen.getByText('testuser')).toBeInTheDocument();
-        expect(screen.getByText('admin')).toBeInTheDocument();
-      });
+      await waitFor(
+        () => {
+          expect(screen.getByText('test-config-report-1')).toBeInTheDocument();
+        },
+        { timeout: 3000 }
+      );
+
+      expect(screen.getByText('test-config-report-2')).toBeInTheDocument();
+      expect(screen.getByText('testuser')).toBeInTheDocument();
+      expect(screen.getByText('admin')).toBeInTheDocument();
     });
 
     it('should show loading state', () => {
-      mockAxiosInstance.get.mockImplementation(() => new Promise(() => {}));
+      mockedAxiosPlatform.get.mockImplementation(() => new Promise(() => {}));
 
       const { container } = render(
         <HistoryTable
@@ -166,7 +204,7 @@ describe('HistoryTable', () => {
     });
 
     it('should handle empty data', async () => {
-      mockAxiosInstance.get.mockResolvedValueOnce({ data: [] });
+      mockedAxiosPlatform.get.mockResolvedValueOnce({ data: [] });
 
       const { container } = render(
         <HistoryTable
@@ -185,7 +223,7 @@ describe('HistoryTable', () => {
 
   describe('Data Transformation', () => {
     it('should format dates correctly', async () => {
-      mockAxiosInstance.get.mockResolvedValueOnce({ data: mockReportHistory });
+      mockedAxiosPlatform.get.mockResolvedValueOnce({ data: mockReportHistory });
 
       const { container } = render(
         <HistoryTable
@@ -204,7 +242,7 @@ describe('HistoryTable', () => {
     });
 
     it('should format row counts correctly', async () => {
-      mockAxiosInstance.get.mockResolvedValueOnce({ data: mockReportHistory });
+      mockedAxiosPlatform.get.mockResolvedValueOnce({ data: mockReportHistory });
 
       const { container } = render(
         <HistoryTable
@@ -222,7 +260,7 @@ describe('HistoryTable', () => {
     });
 
     it('should calculate execution time', async () => {
-      mockAxiosInstance.get.mockResolvedValueOnce({ data: mockReportHistory });
+      mockedAxiosPlatform.get.mockResolvedValueOnce({ data: mockReportHistory });
 
       const { container } = render(
         <HistoryTable
@@ -242,7 +280,7 @@ describe('HistoryTable', () => {
 
   describe('Row Selection', () => {
     it('should call onChange when report is loaded', async () => {
-      mockAxiosInstance.get.mockResolvedValueOnce({ data: mockReportHistory });
+      mockedAxiosPlatform.get.mockResolvedValueOnce({ data: mockReportHistory });
 
       render(
         <HistoryTable
@@ -253,9 +291,12 @@ describe('HistoryTable', () => {
         { wrapper }
       );
 
-      await waitFor(() => {
-        expect(screen.getByText('test-config-report-1')).toBeInTheDocument();
-      });
+      await waitFor(
+        () => {
+          expect(screen.getByText('test-config-report-1')).toBeInTheDocument();
+        },
+        { timeout: 3000 }
+      );
 
       // Verify data is loaded
       expect(screen.getByText('testuser')).toBeInTheDocument();
@@ -264,7 +305,7 @@ describe('HistoryTable', () => {
 
   describe('Filtering', () => {
     it('should refetch data when filter changes', async () => {
-      mockAxiosInstance.get.mockResolvedValue({ data: mockReportHistory });
+      mockedAxiosPlatform.get.mockResolvedValue({ data: mockReportHistory });
 
       const { rerender } = render(
         <HistoryTable
@@ -276,7 +317,7 @@ describe('HistoryTable', () => {
       );
 
       await waitFor(() => {
-        expect(mockAxiosInstance.get).toHaveBeenCalledTimes(1);
+        expect(mockedAxiosPlatform.get).toHaveBeenCalledTimes(1);
       });
 
       // Change filter
@@ -296,14 +337,14 @@ describe('HistoryTable', () => {
       );
 
       await waitFor(() => {
-        expect(mockAxiosInstance.get).toHaveBeenCalledTimes(2);
+        expect(mockedAxiosPlatform.get).toHaveBeenCalledTimes(2);
       });
     });
   });
 
   describe('Error Handling', () => {
     it('should handle API errors gracefully', async () => {
-      mockAxiosInstance.get.mockRejectedValueOnce(new Error('API Error'));
+      mockedAxiosPlatform.get.mockRejectedValueOnce(new Error('API Error'));
 
       const { container } = render(
         <HistoryTable
@@ -329,7 +370,7 @@ describe('HistoryTable', () => {
         },
       ];
 
-      mockAxiosInstance.get.mockResolvedValueOnce({ data: malformedData });
+      mockedAxiosPlatform.get.mockResolvedValueOnce({ data: malformedData });
 
       const { container } = render(
         <HistoryTable
@@ -354,7 +395,7 @@ describe('HistoryTable', () => {
         },
       ];
 
-      mockAxiosInstance.get.mockResolvedValueOnce({ data: dataWithNulls });
+      mockedAxiosPlatform.get.mockResolvedValueOnce({ data: dataWithNulls });
 
       const { container } = render(
         <HistoryTable

@@ -9,39 +9,45 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import HistoryTable from '../components/HistoryTable';
 import ReportTableRows from '../components/ReportTableRows';
 import axios from 'axios';
+import { axios as httpApiAxios, axiosPlatform } from '@cyoda/http-api-react';
 
 // Mock axios
 vi.mock('axios');
-const mockedAxios = vi.mocked(axios);
-
-// Create mock axios instance with interceptors
-const mockAxiosInstance = {
-  get: vi.fn(),
-  post: vi.fn(),
-  put: vi.fn(),
-  delete: vi.fn(),
-  interceptors: {
-    request: { use: vi.fn(), eject: vi.fn() },
-    response: { use: vi.fn(), eject: vi.fn() },
-  },
-};
 
 // Mock http-api-react with all necessary exports
-vi.mock('@cyoda/http-api-react', () => ({
-  axios: mockAxiosInstance,
-  axiosPlatform: mockAxiosInstance,
-  axiosPublic: mockAxiosInstance,
-  axiosProcessing: mockAxiosInstance,
-  axiosGrafana: mockAxiosInstance,
-  axiosAI: mockAxiosInstance,
-  useGlobalUiSettingsStore: vi.fn(() => ({
-    dateFormat: 'YYYY.MM.DD',
-    timeFormat: 'HH:mm:ss',
-  })),
-  getReportConfig: vi.fn(),
-  getReportingFetchTypes: vi.fn(),
-  getHistory: vi.fn(),
-}));
+vi.mock('@cyoda/http-api-react', () => {
+  const mockAxiosInstance = {
+    get: vi.fn(),
+    post: vi.fn(),
+    put: vi.fn(),
+    delete: vi.fn(),
+    interceptors: {
+      request: { use: vi.fn(), eject: vi.fn() },
+      response: { use: vi.fn(), eject: vi.fn() },
+    },
+  };
+
+  return {
+    axios: mockAxiosInstance,
+    axiosPlatform: mockAxiosInstance,
+    axiosPublic: mockAxiosInstance,
+    axiosProcessing: mockAxiosInstance,
+    axiosGrafana: mockAxiosInstance,
+    axiosAI: mockAxiosInstance,
+    useGlobalUiSettingsStore: vi.fn(() => ({
+      dateFormat: 'YYYY.MM.DD',
+      timeFormat: 'HH:mm:ss',
+      entityType: 'test.Entity',
+    })),
+    getReportConfig: vi.fn(),
+    getReportingFetchTypes: vi.fn(),
+    getHistory: vi.fn(),
+  };
+});
+
+const mockedAxios = vi.mocked(axios);
+const mockedHttpApiAxios = vi.mocked(httpApiAxios);
+const mockedAxiosPlatform = vi.mocked(axiosPlatform);
 
 // Create a test query client
 const createTestQueryClient = () =>
@@ -54,22 +60,28 @@ const createTestQueryClient = () =>
   });
 
 describe('Integration Tests', () => {
-  const mockReportHistory = [
-    {
-      id: '1',
-      configName: 'test-config-report-1',
-      createTime: '2025-10-16T10:00:00Z',
-      finishTime: '2025-10-16T10:05:00Z',
-      type: 'STANDARD',
-      user: { username: 'testuser' },
-      status: 'COMPLETED',
-      totalRowsCount: 1000,
-      groupingColumns: ['col1', 'col2'],
-      groupingVersion: 'v1',
-      hierarhyEnable: false,
-      regroupingPossible: true,
+  const mockReportHistory = {
+    _embedded: {
+      reportHistoryFieldsViews: [
+        {
+          reportHistoryFields: {
+            id: '1',
+            configName: 'test-config-report-1',
+            createTime: '2025-10-16T10:00:00Z',
+            finishTime: '2025-10-16T10:05:00Z',
+            type: 'STANDARD',
+            userId: 'user1',
+            status: 'COMPLETED',
+            totalRowsCount: 1000,
+            groupingColumns: ['col1', 'col2'],
+            groupingVersion: 'v1',
+            hierarhyEnable: false,
+            regroupingPossible: true,
+          },
+        },
+      ],
     },
-  ];
+  };
 
   const mockConfigDefinition = {
     id: 'config-1',
@@ -115,11 +127,35 @@ describe('Integration Tests', () => {
     };
 
     global.window.tableau = mockTableau;
+
+    // Mock entity types API call (used by global axios for HistoryTable)
+    mockedAxios.get.mockResolvedValue({
+      data: {
+        _embedded: {
+          entityTypes: [
+            { name: 'test.Entity1', type: 'BUSINESS' },
+            { name: 'test.Entity2', type: 'BUSINESS' },
+          ],
+        },
+      },
+    });
+
+    // Mock users API call (used by axiosPlatform for HistoryTable)
+    mockedAxiosPlatform.post.mockImplementation((url: string) => {
+      if (url.includes('/api/platform-api/users/get-by-ids')) {
+        return Promise.resolve({
+          data: [
+            { userId: 'user1', username: 'testuser' },
+          ],
+        });
+      }
+      return Promise.reject(new Error('Not found'));
+    });
   });
 
   describe('HistoryTable and ReportTableRows Integration', () => {
     it('should load report history and display in table', async () => {
-      mockedAxios.get.mockResolvedValueOnce({ data: mockReportHistory });
+      mockedAxiosPlatform.get.mockResolvedValueOnce({ data: mockReportHistory });
 
       const queryClient = createTestQueryClient();
 
@@ -144,15 +180,15 @@ describe('Integration Tests', () => {
       );
 
       await waitFor(() => {
-        expect(mockedAxios.get).toHaveBeenCalledWith(
-          '/platform-api/reporting/history',
+        expect(mockedAxiosPlatform.get).toHaveBeenCalledWith(
+          '/api/platform-api/reporting/history',
           expect.any(Object)
         );
       });
     });
 
     it('should load report data and send to Tableau', async () => {
-      mockedAxios.get.mockResolvedValueOnce({ data: mockReportData });
+      mockedHttpApiAxios.get.mockResolvedValueOnce({ data: mockReportData });
 
       const queryClient = createTestQueryClient();
 
@@ -190,7 +226,7 @@ describe('Integration Tests', () => {
         page: { totalElements: 1, totalPages: 1, size: 10, number: 0 },
       };
 
-      mockedAxios.get.mockResolvedValueOnce({ data: nestedData });
+      mockedHttpApiAxios.get.mockResolvedValueOnce({ data: nestedData });
 
       const queryClient = createTestQueryClient();
 
@@ -217,7 +253,7 @@ describe('Integration Tests', () => {
       const queryClient = createTestQueryClient();
 
       // First report
-      mockedAxios.get.mockResolvedValueOnce({ data: mockReportData });
+      mockedHttpApiAxios.get.mockResolvedValueOnce({ data: mockReportData });
 
       const { rerender } = render(
         <QueryClientProvider client={queryClient}>
@@ -235,7 +271,7 @@ describe('Integration Tests', () => {
 
       // Second report
       const newConfig = { ...mockConfigDefinition, description: 'Second Report' };
-      mockedAxios.get.mockResolvedValueOnce({ data: mockReportData });
+      mockedHttpApiAxios.get.mockResolvedValueOnce({ data: mockReportData });
 
       rerender(
         <QueryClientProvider client={queryClient}>
@@ -257,7 +293,7 @@ describe('Integration Tests', () => {
     it('should handle API errors gracefully', async () => {
       const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-      mockedAxios.get.mockRejectedValueOnce(new Error('API Error'));
+      mockedHttpApiAxios.get.mockRejectedValueOnce(new Error('API Error'));
 
       const queryClient = createTestQueryClient();
 
@@ -285,7 +321,7 @@ describe('Integration Tests', () => {
       delete (global.window as any).tableau;
       const consoleWarn = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
-      mockedAxios.get.mockResolvedValueOnce({ data: mockReportData });
+      mockedHttpApiAxios.get.mockResolvedValueOnce({ data: mockReportData });
 
       const queryClient = createTestQueryClient();
 

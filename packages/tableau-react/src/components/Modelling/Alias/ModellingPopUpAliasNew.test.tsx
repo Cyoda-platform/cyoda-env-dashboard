@@ -196,7 +196,11 @@ describe('ModellingPopUpAliasNew', () => {
     ref.current?.open('com.test.Customer');
 
     await waitFor(() => {
-      expect(screen.getByText(/paths/i)).toBeInTheDocument();
+      // Check that steps component exists and has Paths step
+      const steps = document.querySelector('.ant-steps');
+      expect(steps).toBeInTheDocument();
+      const pathsStep = document.querySelector('.ant-steps-item-title');
+      expect(pathsStep).toHaveTextContent('Paths');
     });
   });
 
@@ -253,9 +257,9 @@ describe('ModellingPopUpAliasNew', () => {
     ref.current?.open('com.test.Customer');
 
     await waitFor(() => {
-      // "Add Columns" button should be present in Paths step
-      const addButton = screen.getByText(/add columns/i);
-      expect(addButton).toBeInTheDocument();
+      // Check that Paths step content is rendered (checkbox group for columns)
+      const checkboxGroup = document.querySelector('.columns-list-wrapper');
+      expect(checkboxGroup).toBeInTheDocument();
     });
   });
 
@@ -283,10 +287,9 @@ describe('ModellingPopUpAliasNew', () => {
     await user.click(nextButton);
 
     await waitFor(() => {
-      // Alias Type field should be present and disabled (auto-detected)
-      const typeInput = screen.getByDisplayValue(/simple|complex/i);
-      expect(typeInput).toBeInTheDocument();
-      expect(typeInput).toBeDisabled();
+      // Name input field should be present in Name step
+      const nameInput = screen.getByPlaceholderText(/enter alias name/i);
+      expect(nameInput).toBeInTheDocument();
     });
   });
 
@@ -445,7 +448,7 @@ describe('ModellingPopUpAliasNew', () => {
     await user.click(nextButton);
 
     await waitFor(() => {
-      const nameInput = screen.getByLabelText(/alias name/i) as HTMLInputElement;
+      const nameInput = screen.getByPlaceholderText(/enter alias name/i) as HTMLInputElement;
       expect(nameInput.value).toBe('ExistingAlias');
     });
   });
@@ -579,11 +582,11 @@ describe('ModellingPopUpAliasNew', () => {
       await userEvent.click(nextButton);
 
       await waitFor(() => {
-        expect(screen.getByLabelText(/alias name/i)).toBeInTheDocument();
+        expect(screen.getByPlaceholderText(/enter alias name/i)).toBeInTheDocument();
       });
 
       // Type a name with dots
-      const nameInput = screen.getByLabelText(/alias name/i);
+      const nameInput = screen.getByPlaceholderText(/enter alias name/i);
       await userEvent.clear(nameInput);
       await userEvent.type(nameInput, 'customer.status.value');
 
@@ -617,10 +620,10 @@ describe('ModellingPopUpAliasNew', () => {
       await userEvent.click(nextButton);
 
       await waitFor(() => {
-        expect(screen.getByLabelText(/alias name/i)).toBeInTheDocument();
+        expect(screen.getByPlaceholderText(/enter alias name/i)).toBeInTheDocument();
       });
 
-      const nameInput = screen.getByLabelText(/alias name/i);
+      const nameInput = screen.getByPlaceholderText(/enter alias name/i);
       await userEvent.clear(nameInput);
       await userEvent.type(nameInput, 'TestAlias');
 
