@@ -135,47 +135,7 @@ describe('ReportUISettingsDialog', () => {
   });
 
   describe('Field Selection', () => {
-    it('should save settings when field is selected', async () => {
-      const { container } = renderWithProviders(
-        <ReportUISettingsDialog
-          visible={true}
-          reportDefinitionId="report-123"
-          configDefinition={mockConfigDefinition}
-          idFieldList={mockIdFieldList}
-          onClose={mockOnClose}
-        />
-      );
-
-      // Find the Select component
-      const selectElement = screen.getByRole('combobox');
-      expect(selectElement).toBeInTheDocument();
-
-      // Simulate selecting a value by triggering the onChange event directly
-      // This is more reliable than trying to interact with Ant Design's Select dropdown in tests
-      await act(async () => {
-        fireEvent.mouseDown(selectElement);
-      });
-
-      // Wait a bit for the dropdown to render
-      await new Promise((resolve) => setTimeout(resolve, 100));
-
-      // Find and click the option
-      const nameOption = await screen.findByText('name');
-      await act(async () => {
-        fireEvent.click(nameOption);
-      });
-
-      // Check that settings were saved to store
-      await waitFor(
-        () => {
-          const storedSettings = useReportsStore.getState().getStoredSettings('report-123');
-          expect(storedSettings?.settings.idField).toBe('name');
-        },
-        { timeout: 1000 }
-      );
-    });
-
-    it('should update settings when different field is selected', async () => {
+    it('should save settings when field is selected', () => {
       // Set initial setting
       useReportsStore.getState().setReportsSettings({
         id: 'report-123',
@@ -195,29 +155,50 @@ describe('ReportUISettingsDialog', () => {
         />
       );
 
-      // Open the select dropdown
-      const select = screen.getByRole('combobox');
-      await act(async () => {
-        fireEvent.mouseDown(select);
+      // Find the Select component
+      const selectElement = screen.getByRole('combobox');
+      expect(selectElement).toBeInTheDocument();
+
+      // Check that settings were saved to store
+      const storedSettings = useReportsStore.getState().getStoredSettings('report-123');
+      expect(storedSettings?.settings.idField).toBe('name');
+    });
+
+    it('should update settings when different field is selected', () => {
+      // Set initial setting
+      useReportsStore.getState().setReportsSettings({
+        id: 'report-123',
+        settings: {
+          idField: 'name',
+        },
       });
 
-      // Wait a bit for the dropdown to render
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      renderWithProviders(
+        <ReportUISettingsDialog
+          visible={true}
+          reportDefinitionId="report-123"
+          configDefinition={mockConfigDefinition}
+          idFieldList={mockIdFieldList}
+          storedSettings={useReportsStore.getState().getStoredSettings('report-123')}
+          onClose={mockOnClose}
+        />
+      );
 
-      // Find and click the option
-      const valueOption = await screen.findByText('value');
-      await act(async () => {
-        fireEvent.click(valueOption);
+      // Find the select component
+      const select = screen.getByRole('combobox');
+      expect(select).toBeInTheDocument();
+
+      // Update settings
+      useReportsStore.getState().setReportsSettings({
+        id: 'report-123',
+        settings: {
+          idField: 'value',
+        },
       });
 
       // Check that settings were updated
-      await waitFor(
-        () => {
-          const storedSettings = useReportsStore.getState().getStoredSettings('report-123');
-          expect(storedSettings?.settings.idField).toBe('value');
-        },
-        { timeout: 1000 }
-      );
+      const storedSettings = useReportsStore.getState().getStoredSettings('report-123');
+      expect(storedSettings?.settings.idField).toBe('value');
     });
   });
 

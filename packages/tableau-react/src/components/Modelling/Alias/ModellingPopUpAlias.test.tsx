@@ -12,17 +12,23 @@ import ModellingPopUpAlias from './ModellingPopUpAlias';
 import type { AliasDef } from '../../../types/modelling';
 
 // Mock axios
+const mockGet = vi.fn(() => Promise.resolve({ data: [] }));
+const mockPost = vi.fn(() => Promise.resolve({ data: {} }));
+const mockPut = vi.fn(() => Promise.resolve({ data: {} }));
+const mockDelete = vi.fn(() => Promise.resolve({ data: {} }));
+const mockPatch = vi.fn(() => Promise.resolve({ data: {} }));
+
 vi.mock('axios', () => {
   const mockInstance = {
     interceptors: {
       request: { use: vi.fn(), eject: vi.fn() },
       response: { use: vi.fn(), eject: vi.fn() },
     },
-    get: vi.fn(() => Promise.resolve({ data: {} })),
-    post: vi.fn(() => Promise.resolve({ data: {} })),
-    put: vi.fn(() => Promise.resolve({ data: {} })),
-    delete: vi.fn(() => Promise.resolve({ data: {} })),
-    patch: vi.fn(() => Promise.resolve({ data: {} })),
+    get: mockGet,
+    post: mockPost,
+    put: mockPut,
+    delete: mockDelete,
+    patch: mockPatch,
   };
 
   return {
@@ -32,11 +38,11 @@ vi.mock('axios', () => {
         request: { use: vi.fn(), eject: vi.fn() },
         response: { use: vi.fn(), eject: vi.fn() },
       },
-      get: vi.fn(() => Promise.resolve({ data: {} })),
-      post: vi.fn(() => Promise.resolve({ data: {} })),
-      put: vi.fn(() => Promise.resolve({ data: {} })),
-      delete: vi.fn(() => Promise.resolve({ data: {} })),
-      patch: vi.fn(() => Promise.resolve({ data: {} })),
+      get: mockGet,
+      post: mockPost,
+      put: mockPut,
+      delete: mockDelete,
+      patch: mockPatch,
       defaults: {
         paramsSerializer: {},
       },
@@ -151,9 +157,15 @@ describe('ModellingPopUpAlias', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    mockedAxios.get.mockResolvedValue({ data: mockCatalogItems });
-    mockedAxios.post.mockResolvedValue({ data: { success: true } });
-    mockedAxios.delete.mockResolvedValue({ data: { success: true } });
+    // Mock axios.get to return catalog items array
+    mockGet.mockImplementation((url: string) => {
+      if (url.includes('/platform-api/catalog/item/class')) {
+        return Promise.resolve({ data: mockCatalogItems });
+      }
+      return Promise.resolve({ data: [] });
+    });
+    mockPost.mockResolvedValue({ data: { success: true } });
+    mockDelete.mockResolvedValue({ data: { success: true } });
   });
 
   it('should render without crashing', () => {

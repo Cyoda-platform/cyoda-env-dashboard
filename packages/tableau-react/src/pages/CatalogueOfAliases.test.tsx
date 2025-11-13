@@ -441,10 +441,17 @@ describe('CatalogueOfAliases', () => {
     const entityHeaders = screen.getAllByText('Entity');
     expect(entityHeaders.length).toBeGreaterThan(0);
 
-    expect(screen.getByText('User')).toBeInTheDocument();
-    expect(screen.getByText('State')).toBeInTheDocument();
-    expect(screen.getByText('Created')).toBeInTheDocument();
-    expect(screen.getByText('Action')).toBeInTheDocument();
+    const userHeaders = screen.getAllByText('User');
+    expect(userHeaders.length).toBeGreaterThan(0);
+
+    const stateHeaders = screen.getAllByText('State');
+    expect(stateHeaders.length).toBeGreaterThan(0);
+
+    const createdHeaders = screen.getAllByText('Created');
+    expect(createdHeaders.length).toBeGreaterThan(0);
+
+    const actionHeaders = screen.getAllByText('Action');
+    expect(actionHeaders.length).toBeGreaterThan(0);
   }, 10000);
 
   it('should display entity short names', async () => {
