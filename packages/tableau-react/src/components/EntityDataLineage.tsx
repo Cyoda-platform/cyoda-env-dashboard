@@ -102,12 +102,17 @@ const EntityDataLineage: React.FC<EntityDataLineageProps> = ({ entityClass, enti
     }
   };
 
+  // Compute sorted transactions for display in compare modal
+  const sortedSelectedTransactions = React.useMemo(() => {
+    return [...selectedTransactions].sort((a, b) => a.timestamp - b.timestamp);
+  }, [selectedTransactions]);
+
   // Handle compare
   const handleCompare = async () => {
     if (selectedTransactions.length !== 2) return;
 
     // Sort by timestamp to ensure correct order
-    const sorted = [...selectedTransactions].sort((a, b) => a.timestamp - b.timestamp);
+    const sorted = sortedSelectedTransactions;
 
     setCompareLoading(true);
     try {
@@ -201,7 +206,7 @@ const EntityDataLineage: React.FC<EntityDataLineageProps> = ({ entityClass, enti
       {/* Compare Modal - using DataLineageCompare component */}
       <DataLineageCompare
         ref={compareRef}
-        checkedTransactions={selectedTransactions.map(tx => ({
+        checkedTransactions={sortedSelectedTransactions.map(tx => ({
           transactionId: tx.transactionId,
           dateTime: moment(tx.dateTime, 'DD-MM-YYYY HH:mm:ss.SSS').format('DD-MM-YYYY HH:mm:ss.SSS'),
         }))}

@@ -49,18 +49,23 @@ export const DataLineageTransactions: React.FC<DataLineageTransactionsProps> = (
     }
   }
 
+  // Compute sorted transactions for display in compare modal
+  const sortedCheckedTransactions = React.useMemo(() => {
+    return [...checkedTransactions].sort((a, b) => {
+      const dateA = dayjs(a.dateTime, 'DD-MM-YYYY HH:mm:ss.SSS')
+      const dateB = dayjs(b.dateTime, 'DD-MM-YYYY HH:mm:ss.SSS')
+      return dateA.unix() - dateB.unix()
+    })
+  }, [checkedTransactions])
+
   const handleCompare = async () => {
     if (checkedTransactions.length < 2 || !onCompare) return
 
     try {
       setIsLoadingCompare(true)
-      // Sort by date
-      const sorted = [...checkedTransactions].sort((a, b) => {
-        const dateA = dayjs(a.dateTime, 'DD-MM-YYYY HH:mm:ss.SSS')
-        const dateB = dayjs(b.dateTime, 'DD-MM-YYYY HH:mm:ss.SSS')
-        return dateA.unix() - dateB.unix()
-      })
-      
+      // Use pre-sorted transactions
+      const sorted = sortedCheckedTransactions
+
       const data = await onCompare(sorted[0], sorted[1])
       setCompareData(data)
       dataLineageCompareRef.current?.setDialogVisible(true)
@@ -106,7 +111,7 @@ export const DataLineageTransactions: React.FC<DataLineageTransactionsProps> = (
         {checkedTransactions.length >= 2 && compareData && (
           <DataLineageCompare
             ref={dataLineageCompareRef}
-            checkedTransactions={checkedTransactions}
+            checkedTransactions={sortedCheckedTransactions}
             compareData={compareData}
           />
         )}

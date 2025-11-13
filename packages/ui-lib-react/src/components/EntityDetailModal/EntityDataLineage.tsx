@@ -101,12 +101,17 @@ const EntityDataLineage: React.FC<EntityDataLineageProps> = ({ entityClass, enti
     }
   };
 
+  // Compute sorted transactions for display in compare modal
+  const sortedSelectedTransactions = React.useMemo(() => {
+    return [...selectedTransactions].sort((a, b) => a.timestamp - b.timestamp);
+  }, [selectedTransactions]);
+
   // Handle compare
   const handleCompare = async () => {
     if (selectedTransactions.length !== 2) return;
 
     // Sort by timestamp to ensure correct order
-    const sorted = [...selectedTransactions].sort((a, b) => a.timestamp - b.timestamp);
+    const sorted = sortedSelectedTransactions;
 
     setCompareLoading(true);
     try {
