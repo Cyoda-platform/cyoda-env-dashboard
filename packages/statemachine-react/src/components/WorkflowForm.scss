@@ -1,5 +1,76 @@
 @use '../../../ui-lib-react/src/styles/table-mixins' as table;
 
+.workflow-form {
+  // Override global tab styles with higher specificity
+  // Remove background from active tab to match the card background
+  :global(div.ant-tabs-tab.ant-tabs-tab-active),
+  :global(.ant-tabs-nav-list .ant-tabs-tab.ant-tabs-tab-active),
+  :global(.ant-tabs-tab.ant-tabs-tab-active) {
+    background: none !important;
+    background-color: transparent !important;
+    background-image: none !important;
+  }
+
+  // Remove background from all tabs
+  :global(div.ant-tabs-tab),
+  :global(.ant-tabs-tab) {
+    background: none !important;
+    background-color: transparent !important;
+    background-image: none !important;
+  }
+
+  // Ensure tab bar has no background
+  :global(.ant-tabs-nav) {
+    background: transparent !important;
+    background-color: transparent !important;
+  }
+
+  // Ensure tab content area has no background
+  :global(.ant-tabs-content) {
+    background: transparent !important;
+    background-color: transparent !important;
+  }
+
+  // Remove any hover background
+  :global(div.ant-tabs-tab:hover),
+  :global(.ant-tabs-tab:hover) {
+    background: none !important;
+    background-color: transparent !important;
+    background-image: none !important;
+  }
+
+  // Remove card background inside tabs
+  :global(.ant-tabs-tabpane) {
+    background: transparent !important;
+    background-color: transparent !important;
+  }
+}
+
+// Target the specific tabs component with even higher specificity
+:global(.workflow-form-tabs) {
+  :global(div.ant-tabs-tab.ant-tabs-tab-active),
+  :global(.ant-tabs-nav-list .ant-tabs-tab.ant-tabs-tab-active),
+  :global(.ant-tabs-tab.ant-tabs-tab-active) {
+    background: none !important;
+    background-color: transparent !important;
+    background-image: none !important;
+  }
+
+  :global(div.ant-tabs-tab),
+  :global(.ant-tabs-tab) {
+    background: none !important;
+    background-color: transparent !important;
+    background-image: none !important;
+  }
+
+  :global(div.ant-tabs-tab:hover),
+  :global(.ant-tabs-tab:hover) {
+    background: none !important;
+    background-color: transparent !important;
+    background-image: none !important;
+  }
+}
+
 // Dropdown styles for Select components
 :global(.workflow-form-dropdown) {
   .ant-select-item {

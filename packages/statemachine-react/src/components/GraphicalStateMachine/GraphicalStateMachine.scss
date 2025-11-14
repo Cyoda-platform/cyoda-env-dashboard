@@ -53,8 +53,6 @@
       left: 8px;
       z-index: 10;
       max-width: 450px;
-      max-height: 400px; // Maximum height before scrolling
-      overflow: auto; // Enable scrolling when content exceeds max-height
       background: #374151;
       border-radius: 4px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
@@ -69,6 +67,18 @@
 
         // Ensure the wrapper fits its content
         display: block;
+      }
+
+      // Remove height from spin container
+      .ant-spin-container {
+        min-height: auto !important;
+        height: auto !important;
+      }
+
+      // Remove height from spin nested loading
+      .ant-spin-nested-loading {
+        min-height: auto !important;
+        height: auto !important;
       }
 
       .ant-table {
@@ -120,8 +130,26 @@
           height: auto !important;
         }
 
-        // Ensure the actual table element fits content
+        // Remove height from tbody
+        tbody {
+          min-height: auto !important;
+          height: auto !important;
+        }
+
+        // Remove height from table element itself
         table {
+          min-height: auto !important;
+          height: auto !important;
+        }
+
+        // Remove placeholder height
+        .ant-table-placeholder {
+          min-height: auto !important;
+          height: auto !important;
+        }
+
+        // Remove empty state height
+        .ant-empty {
           min-height: auto !important;
           height: auto !important;
         }

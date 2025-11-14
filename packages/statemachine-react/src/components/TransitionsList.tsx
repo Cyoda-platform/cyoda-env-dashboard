@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { Table, Button, Space, Tooltip, Modal, message } from 'antd';
 import { PlusOutlined, CopyOutlined, DeleteOutlined, UnorderedListOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
-import { useTransitionsList, useDeleteTransition, useCopyTransition } from '../hooks/useStatemachine';
+import { useTransitionsList, useDeleteTransition, useCopyTransition, useStatesList } from '../hooks/useStatemachine';
 import { useQueryInvalidation } from '../hooks/useQueryInvalidation';
 import { StatesListModal } from './StatesListModal';
 import { StateIndicator } from './StateIndicator';
@@ -51,27 +51,51 @@ export const TransitionsList: React.FC<TransitionsListProps> = ({
 
   // Queries
   const { data: transitions = [], isLoading, refetch } = useTransitionsList(persistedType, workflowId);
+  const { data: states = [] } = useStatesList(persistedType, workflowId);
 
   // Mutations
   const deleteTransitionMutation = useDeleteTransition();
   const copyTransitionMutation = useCopyTransition();
-  
+
+  // Create a map of state IDs to state names for quick lookup
+  const statesMap = useMemo(() => {
+    const map = new Map<string, string>();
+    states.forEach((state: any) => {
+      map.set(state.id, state.name);
+    });
+    return map;
+  }, [states]);
+
   // Table data
   const tableData = useMemo<TransitionRow[]>(() => {
-    return transitions.map((transition: any, index: number) => ({
-      key: transition.id,
-      index: index + 1,
-      id: transition.id,
-      name: transition.name,
-      active: transition.active !== undefined ? transition.active : true,
-      persisted: transition.persisted !== undefined ? transition.persisted : true,
-      automated: transition.automated || false,
-      startStateName: transition.startStateName || transition.fromState || 'None',
-      startStateId: transition.startStateId || transition.fromState,
-      endStateName: transition.endStateName || transition.toState || 'None',
-      endStateId: transition.endStateId || transition.toState,
-    }));
-  }, [transitions]);
+    return transitions.map((transition: any, index: number) => {
+      // Get state names from the states map
+      const startStateId = transition.startStateId || transition.fromState;
+      const endStateId = transition.endStateId || transition.toState;
+
+      const startStateName = transition.startStateName ||
+        (startStateId === 'noneState' ? 'None' : statesMap.get(startStateId)) ||
+        'None';
+
+      const endStateName = transition.endStateName ||
+        statesMap.get(endStateId) ||
+        'None';
+
+      return {
+        key: transition.id,
+        index: index + 1,
+        id: transition.id,
+        name: transition.name,
+        active: transition.active !== undefined ? transition.active : true,
+        persisted: transition.persisted !== undefined ? transition.persisted : true,
+        automated: transition.automated || false,
+        startStateName,
+        startStateId,
+        endStateName,
+        endStateId,
+      };
+    });
+  }, [transitions, statesMap]);
   
   // Handlers
   const handleAddNew = () => {

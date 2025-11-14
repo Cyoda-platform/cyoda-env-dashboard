@@ -108,6 +108,7 @@ export const Transition: React.FC = () => {
   // Initialize form when transition data loads
   useEffect(() => {
     if (transition) {
+      console.log('[Transition] Loading transition data:', transition);
       form.setFieldsValue({
         name: transition.name,
         description: transition.description || '',
@@ -116,12 +117,12 @@ export const Transition: React.FC = () => {
         startStateId: transition.startStateId || transition.fromState,
         endStateId: transition.endStateId || transition.toState,
         criteriaIds: transition.criteriaIds || [],
-        processIds: transition.processIds || [],
+        processIds: transition.endProcessesIds || [],
       });
     } else if (isNew) {
       form.setFieldsValue({
         active: true,
-        automated: false,
+        automated: true,
       });
     }
   }, [transition, isNew, form]);
@@ -140,6 +141,7 @@ export const Transition: React.FC = () => {
       }
 
       const formData: TransitionFormType = {
+        '@bean': 'com.cyoda.core.model.stateMachine.dto.TransitionDto',
         name: values.name,
         description: values.description,
         active: values.active,
@@ -147,8 +149,9 @@ export const Transition: React.FC = () => {
         startStateId: values.startStateId,
         endStateId: finalEndStateId,
         criteriaIds: values.criteriaIds || [],
-        processIds: values.processIds || [],
+        endProcessesIds: values.processIds || [],
         workflowId,
+        entityClassName,
       };
 
       if (isNew) {
@@ -186,7 +189,7 @@ export const Transition: React.FC = () => {
           form.resetFields();
           form.setFieldsValue({
             active: true,
-            automated: false,
+            automated: true,
           });
         } else {
           // Navigate back to workflow detail

@@ -186,6 +186,11 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
     }
 
     cy.fit();
+    // Reduce zoom to 40% to avoid overlapping with the transitions table
+    cy.zoom(cy.zoom() * 0.4);
+    // Pan to the right and down to center the graph in the visible area (accounting for the table on the left)
+    const currentPan = cy.pan();
+    cy.pan({ x: currentPan.x + 500, y: currentPan.y + 100 });
     cy.userZoomingEnabled(false);
 
     // Set initialized flag (will be set after layout completes if no positionsMap)
@@ -675,7 +680,7 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
           <div className="wrap-map">
             {/* Transitions List */}
             {showListOfTransitions && (
-              <div className="gf-transitions-list">
+              <div className="gf-transitions-list" style={{ height: 'auto', minHeight: 'auto' }}>
                 <Table
                   size="small"
                   dataSource={activeTransitions.map((t) => ({

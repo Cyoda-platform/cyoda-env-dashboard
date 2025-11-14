@@ -4,7 +4,7 @@
  * Migrated from: .old_project/packages/statemachine/src/views/workflow/WorkflowId.vue
  */
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { Card, Radio, Divider, Space, Button } from 'antd';
 import { TableOutlined, ApartmentOutlined, SettingOutlined, ArrowLeftOutlined } from '@ant-design/icons';
@@ -14,7 +14,7 @@ import { ProcessesList } from '../components/ProcessesList';
 import { CriteriaList } from '../components/CriteriaList';
 import { GraphicalStateMachine } from '../components/GraphicalStateMachine';
 import { ConfigWorkflow } from '../components/ConfigWorkflow';
-import { useWorkflow, useTransitions, useProcesses, useCriteriaForWorkflow } from '../hooks/useStatemachine';
+import { useWorkflow, useTransitions, useProcesses, useCriteriaForWorkflow, useStatesList } from '../hooks/useStatemachine';
 import { useGraphicalStatemachineStore } from '../stores/graphicalStatemachineStore';
 import type { PersistedType } from '../types';
 
@@ -36,9 +36,37 @@ export const WorkflowDetail: React.FC = () => {
   const { data: transitions = [] } = useTransitions(persistedType, workflowId || '', !!workflowId && !isNew);
   const { data: processes = [] } = useProcesses(persistedType, workflowId || '', entityClassName, !!workflowId && !isNew);
   const { data: criteria = [] } = useCriteriaForWorkflow(persistedType, workflowId || '', entityClassName, !!workflowId && !isNew);
+  const { data: states = [] } = useStatesList(persistedType, workflowId || '', !!workflowId && !isNew);
 
   // Graphical state machine store
   const { positionsMap, updatePositionsMap } = useGraphicalStatemachineStore();
+
+  // Create a map of state IDs to state names for quick lookup
+  const statesMap = useMemo(() => {
+    const map = new Map<string, string>();
+    states.forEach((state: any) => {
+      map.set(state.id, state.name);
+    });
+    return map;
+  }, [states]);
+
+  // Enrich transitions with state names
+  const enrichedTransitions = useMemo(() => {
+    return transitions.map((transition: any) => {
+      const startStateId = transition.startStateId || transition.fromState;
+      const endStateId = transition.endStateId || transition.toState;
+
+      return {
+        ...transition,
+        startStateName: transition.startStateName ||
+          (startStateId === 'noneState' ? 'None' : statesMap.get(startStateId)) ||
+          'None',
+        endStateName: transition.endStateName ||
+          statesMap.get(endStateId) ||
+          'None',
+      };
+    });
+  }, [transitions, statesMap]);
 
   // Handler for adding new transition from graphical view
   const handleAddTransition = () => {
@@ -148,7 +176,7 @@ export const WorkflowDetail: React.FC = () => {
               {layoutMode === 'graphical' && (
                 <GraphicalStateMachine
                   workflowId={workflowId!}
-                  transitions={transitions}
+                  transitions={enrichedTransitions}
                   processes={processes}
                   criteria={criteria}
                   positionsMap={positionsMap}

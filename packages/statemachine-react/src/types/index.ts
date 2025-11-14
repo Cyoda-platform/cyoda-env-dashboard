@@ -71,14 +71,18 @@ export interface Transition {
 }
 
 export interface TransitionForm {
+  '@bean'?: string;
   id?: string;
   name: string;
   description?: string;
-  fromState: string;
-  toState: string;
-  criteriaId?: string;
-  processId?: string;
-  automatic?: boolean;
+  startStateId: string;
+  endStateId: string;
+  active?: boolean;
+  automated?: boolean;
+  criteriaIds?: string[];
+  endProcessesIds?: string[];
+  workflowId?: string;
+  entityClassName?: string;
 }
 
 // Criteria Types

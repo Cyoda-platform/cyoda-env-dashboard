@@ -103,6 +103,21 @@ div[class*="css-"][class*="ant-tabs-tab-active"] {
   border-bottom-color: transparent !important;
 }
 
+// Exception for workflow-form tabs - no background
+.workflow-form-tabs .ant-tabs-tab-active,
+.workflow-form-tabs .ant-tabs-tab.ant-tabs-tab-active,
+.workflow-form-tabs div.ant-tabs-tab.ant-tabs-tab-active,
+.workflow-form-tabs .ant-tabs-nav-list .ant-tabs-tab.ant-tabs-tab-active,
+.workflow-form-tabs .ant-tabs-tab,
+.workflow-form-tabs div.ant-tabs-tab,
+.workflow-form-tabs .ant-tabs-tab:hover,
+.workflow-form-tabs div.ant-tabs-tab:hover {
+  background: none !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border-bottom-color: #14b8a6 !important;
+}
+
 // Tabs dropdown menu styling (appears when tabs don't fit on screen)
 .ant-tabs-dropdown,
 .ant-tabs-dropdown-menu,

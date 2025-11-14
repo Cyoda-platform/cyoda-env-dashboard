@@ -110,6 +110,7 @@ export const CriteriaForm: React.FC<CriteriaFormProps> = ({
   // Initialize form when criteria data loads
   useEffect(() => {
     if (criteria) {
+      console.log('[CriteriaForm] Loading criteria data:', criteria);
       const formValues: any = {
         name: criteria.name,
         description: criteria.description || '',

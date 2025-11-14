@@ -314,6 +314,11 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
           activeKey={activeTab}
           onChange={setActiveTab}
           items={tabItems}
+          className="workflow-form-tabs"
+          tabBarStyle={{
+            background: 'transparent',
+            backgroundColor: 'transparent',
+          }}
         />
 
         <Form.Item>

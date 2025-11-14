@@ -304,12 +304,13 @@ export function useTransitionsList(persistedType: PersistedType, workflowId: str
 
 export function useTransition(persistedType: PersistedType, workflowId: string, transitionId: string, enabled = true) {
   const store = useStatemachineStore();
-  
+
   return useQuery({
     queryKey: statemachineKeys.transition(persistedType, workflowId, transitionId),
     queryFn: async () => {
       const response = await store.getTransition(persistedType, workflowId, transitionId);
-      return response.data;
+      console.log('[useTransition] API response:', response.data);
+      return response.data?.Data || response.data;
     },
     enabled: enabled && !!workflowId && !!transitionId,
   });
@@ -433,6 +434,8 @@ export function useCriteria(persistedType: PersistedType, criteriaId: string, en
     queryKey: statemachineKeys.criteriaItem(persistedType, criteriaId, entityClassName),
     queryFn: async () => {
       const response = await store.getCriteria(persistedType, criteriaId, entityClassName);
+      console.log('[useCriteria] API response:', response.data);
+      // getCriteria already normalizes the data in the store, so we use response.data directly
       return response.data;
     },
     enabled: enabled && !!criteriaId,
@@ -555,7 +558,8 @@ export function useProcess(persistedType: PersistedType, processId: string, enti
     queryKey: statemachineKeys.processItem(persistedType, processId, entityClassName),
     queryFn: async () => {
       const response = await store.getProcesses(persistedType, processId, entityClassName);
-      return response.data;
+      console.log('[useProcess] API response:', response.data);
+      return response.data?.Data || response.data;
     },
     enabled: enabled && !!processId,
   });
