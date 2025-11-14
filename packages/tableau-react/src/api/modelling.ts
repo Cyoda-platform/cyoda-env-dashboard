@@ -6,64 +6,11 @@
 import { axios } from '@cyoda/http-api-react';
 import type { ReportingInfoRow, RelatedPath, CatalogItem } from '../types/modelling';
 
-/**
- * Mock entity info data for demo mode
- */
-const getMockEntityInfo = (entityClass: string): ReportingInfoRow[] => {
-  const shortName = entityClass.split('.').pop() || 'Entity';
 
-  return [
-    {
-      columnName: 'id',
-      columnPath: 'id',
-      type: 'LEAF',
-    },
-    {
-      columnName: 'name',
-      columnPath: 'name',
-      type: 'LEAF',
-    },
-    {
-      columnName: 'createdAt',
-      columnPath: 'createdAt',
-      type: 'LEAF',
-    },
-    {
-      columnName: 'updatedAt',
-      columnPath: 'updatedAt',
-      type: 'LEAF',
-    },
-    {
-      columnName: 'status',
-      columnPath: 'status',
-      type: 'LEAF',
-    },
-    {
-      columnName: 'description',
-      columnPath: 'description',
-      type: 'LEAF',
-    },
-  ];
-};
-
-/**
- * Mock related paths data for demo mode
- * Returns empty array because most entities don't have JOIN relationships
- * JOIN relationships are defined in the backend and should come from the API
- *
- * Note: OBJECT type fields (like owner, metadata) are NOT joins - they are nested objects
- * that expand to show their properties. Only fields with explicit JOIN relationships
- * in the backend should appear in relatedPaths.
- */
-const getMockRelatedPaths = (entityClass: string): RelatedPath[] => {
-  // Return empty array - if the API returns empty, it means no JOIN relationships exist
-  // This matches the Vue project behavior where most entities have no joins
-  return [];
-};
 
 /**
  * Get reporting info (entity fields and types)
- * Falls back to mock data if API is unavailable (for demo mode)
+ * Returns real data from Cyoda backend API
  */
 export async function getReportingInfo(
   entityClass: string,
@@ -83,26 +30,28 @@ export async function getReportingInfo(
   try {
     const response = await axios.get<ReportingInfoRow[]>(`/platform-api/entity-info/model-info?${query}`);
 
-    // If response data is valid, return it
-    if (Array.isArray(response.data) && response.data.length > 0) {
+    // Always return the API response (even if empty array)
+    // Empty array means no entity info exists for this entity
+    if (Array.isArray(response.data)) {
       return response;
     }
 
-    // Fall back to mock data
-    console.warn(`API returned empty data for ${entityClass}, using mock data`);
+    // If response data is not an array, return empty array
+    console.warn(`Invalid response data for ${entityClass}, expected array`);
     return {
-      data: getMockEntityInfo(entityClass),
+      data: [],
       status: 200,
-      statusText: 'OK (Mock Data)',
+      statusText: 'OK',
       headers: {},
       config: {} as any,
     };
   } catch (error) {
-    console.warn(`API unavailable for ${entityClass}, using mock data:`, error);
+    // Only fall back to empty array if API call fails completely
+    console.warn(`API unavailable for ${entityClass}, returning empty array:`, error);
     return {
-      data: getMockEntityInfo(entityClass),
+      data: [],
       status: 200,
-      statusText: 'OK (Mock Data)',
+      statusText: 'OK',
       headers: {},
       config: {} as any,
     };
