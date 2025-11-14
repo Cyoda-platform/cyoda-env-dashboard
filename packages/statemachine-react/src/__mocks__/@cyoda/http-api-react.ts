@@ -1165,6 +1165,52 @@ export const useEntity = (
   };
 };
 
+// Mock HelperFeatureFlags
+export const HelperFeatureFlags = {
+  isFeatureEnabled: (featureName: string) => {
+    // Mock implementation - all features enabled by default
+    return true;
+  },
+  getFeatureValue: (featureName: string) => {
+    // Mock implementation
+    return null;
+  },
+};
+
+// Mock useGlobalUiSettingsStore
+export const useGlobalUiSettingsStore = () => ({
+  uiSettings: {},
+  setUiSettings: (settings: any) => {},
+  getUiSetting: (key: string) => null,
+  setUiSetting: (key: string, value: any) => {},
+});
+
+// Mock HelperStorage
+export const HelperStorage = {
+  get: (key: string) => {
+    try {
+      const value = localStorage.getItem(key);
+      return value ? JSON.parse(value) : null;
+    } catch {
+      return null;
+    }
+  },
+  set: (key: string, value: any) => {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+    } catch {
+      // Ignore errors
+    }
+  },
+  remove: (key: string) => {
+    try {
+      localStorage.removeItem(key);
+    } catch {
+      // Ignore errors
+    }
+  },
+};
+
 // Export all axios instances (they all use the same mock for now)
 export { axios };
 export const axiosPublic = axios;

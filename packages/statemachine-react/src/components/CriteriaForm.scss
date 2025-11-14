@@ -19,3 +19,58 @@
   }
 }
 
+// Tabs styling for FilterBuilder and Fields tabs
+.criteria-tabs {
+  :global(.ant-tabs-nav) {
+    margin-bottom: 0 !important;
+
+    &::before {
+      border-bottom: none !important;
+    }
+  }
+
+  :global(.ant-tabs-tab) {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-bottom: none !important;
+    color: var(--refine-text-secondary, #D1D5DB) !important;
+    padding: 8px 16px !important;
+    margin-right: 2px !important;
+    border-radius: 4px 4px 0 0 !important;
+    transition: all 0.2s !important;
+
+    &:hover {
+      color: var(--refine-text-primary, #F9FAFB) !important;
+      background: rgba(255, 255, 255, 0.08) !important;
+    }
+
+    &:global(.ant-tabs-tab-active) {
+      background: rgba(0, 212, 170, 0.1) !important;
+      border-color: var(--refine-primary, #00D4AA) !important;
+      border-bottom: none !important;
+      color: var(--refine-primary, #00D4AA) !important;
+      font-weight: 600 !important;
+
+      :global(.ant-tabs-tab-btn) {
+        color: var(--refine-primary, #00D4AA) !important;
+      }
+    }
+  }
+
+  :global(.ant-tabs-content-holder) {
+    background: rgba(255, 255, 255, 0.02) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 0 4px 4px 4px !important;
+    padding: 0 !important;
+  }
+
+  :global(.ant-tabs-content) {
+    height: 100%;
+  }
+
+  :global(.ant-tabs-tabpane) {
+    padding: 16px !important;
+    min-height: 200px;
+  }
+}
+

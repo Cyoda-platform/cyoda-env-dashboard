@@ -108,7 +108,6 @@ export const Transition: React.FC = () => {
   // Initialize form when transition data loads
   useEffect(() => {
     if (transition) {
-      console.log('[Transition] Loading transition data:', transition);
       form.setFieldsValue({
         name: transition.name,
         description: transition.description || '',

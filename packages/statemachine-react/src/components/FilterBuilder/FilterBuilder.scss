@@ -1,0 +1,297 @@
+// FilterBuilderGroup styles
+.builder-condition-group {
+  position: relative;
+
+  &.first:before,
+  &.first:after {
+    display: none;
+  }
+
+  &.inner-fields {
+    padding-left: 20px;
+
+    &:before {
+      content: "";
+      height: 40px;
+      border-color: rgba(255, 255, 255, 0.15);
+      border-style: dotted;
+      border-width: 0 0 2px 2px;
+      left: 10px;
+      position: absolute;
+      width: 10px;
+      top: -18px;
+    }
+
+    &:after {
+      height: calc(100% - 17px);
+      top: 17px;
+      content: "";
+      border-color: rgba(255, 255, 255, 0.15);
+      border-style: dotted;
+      border-width: 0 0 0 2px;
+      width: 10px;
+      left: 10px;
+      position: absolute;
+    }
+
+    &.last:after {
+      display: none;
+    }
+  }
+
+  .group-actions {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .button-add {
+    margin-left: 10px;
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--refine-primary, #00D4AA);
+    border-color: var(--refine-primary, #00D4AA);
+    box-shadow: 0 2px 4px rgba(0, 212, 170, 0.3);
+
+    &:hover {
+      background: var(--refine-primary-dark, #00B894);
+      border-color: var(--refine-primary-dark, #00B894);
+      box-shadow: 0 4px 8px rgba(0, 212, 170, 0.4);
+      transform: translateY(-1px);
+    }
+  }
+
+  .button-delete {
+    margin-left: 10px !important;
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  // Match All / Match Any Radio Buttons
+  .ant-radio-group {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    padding: 4px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .ant-radio-button-wrapper {
+    min-width: 120px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: transparent;
+    border: none;
+    color: var(--refine-text-secondary, #D1D5DB);
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 1;
+    transition: all 150ms;
+    border-radius: 6px;
+    padding: 0 20px;
+
+    &:not(:first-child)::before {
+      display: none;
+    }
+
+    &:hover {
+      color: var(--refine-text-primary, #F9FAFB);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    &-checked {
+      background: var(--refine-primary, #00D4AA);
+      color: #FFFFFF;
+      font-weight: 600;
+      border: 1px solid var(--refine-primary, #00D4AA);
+      box-shadow: 0 2px 4px rgba(0, 212, 170, 0.3);
+
+      &:hover {
+        background: var(--refine-primary-dark, #00B894);
+        border-color: var(--refine-primary-dark, #00B894);
+        color: #FFFFFF;
+      }
+    }
+  }
+
+  .ant-picker,
+  .ant-select,
+  .ant-input-number {
+    width: 100% !important;
+  }
+}
+
+// FilterBuilderCondition styles
+.builder-condition-row {
+  margin-bottom: 10px;
+  position: relative;
+  padding-left: 20px;
+
+  .ant-row {
+    position: relative;
+    z-index: 1;
+  }
+
+  &.inner-fields {
+    &:before {
+      content: "";
+      height: calc(50% + 20px);
+      border-color: rgba(255, 255, 255, 0.15);
+      border-style: dotted;
+      border-width: 0 0 2px 2px;
+      left: 10px;
+      position: absolute;
+      width: 10px;
+      top: -18px;
+    }
+
+    &:after {
+      height: 25px;
+      top: calc(50% - 3px);
+      content: "";
+      border-color: rgba(255, 255, 255, 0.15);
+      border-style: dotted;
+      border-width: 0 0 0 2px;
+      width: 10px;
+      left: 10px;
+      position: absolute;
+    }
+
+    &.last::after {
+      display: none;
+    }
+  }
+
+  .col-err {
+    .ant-select-selector,
+    .ant-input,
+    .ant-input-number,
+    .ant-picker {
+      border-color: #ff4d4f !important;
+    }
+  }
+
+  .error-validate {
+    color: #ff4d4f;
+    font-size: 12px;
+    margin-top: 5px;
+  }
+
+  // Select dropdown styling
+  .ant-select {
+    font-size: 14px;
+
+    &-selector {
+      background-color: rgba(255, 255, 255, 0.05) !important;
+      border-color: rgba(255, 255, 255, 0.1) !important;
+      color: var(--refine-text-primary, #F9FAFB) !important;
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+    }
+
+    &-selection-item {
+      color: var(--refine-text-primary, #F9FAFB) !important;
+      line-height: 38px;
+    }
+
+    &-selection-placeholder {
+      color: var(--refine-text-tertiary, #9CA3AF) !important;
+      line-height: 38px;
+    }
+
+    &:hover .ant-select-selector {
+      border-color: var(--refine-primary, #00D4AA) !important;
+    }
+
+    &-focused .ant-select-selector {
+      border-color: var(--refine-primary, #00D4AA) !important;
+      box-shadow: 0 0 0 2px rgba(0, 212, 170, 0.1) !important;
+    }
+  }
+
+  // Input styling
+  .ant-input,
+  .ant-input-number,
+  .ant-picker {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: var(--refine-text-primary, #F9FAFB) !important;
+    min-height: 40px;
+
+    &::placeholder {
+      color: var(--refine-text-tertiary, #9CA3AF) !important;
+    }
+
+    &:hover {
+      border-color: var(--refine-primary, #00D4AA) !important;
+    }
+
+    &:focus,
+    &-focused {
+      border-color: var(--refine-primary, #00D4AA) !important;
+      box-shadow: 0 0 0 2px rgba(0, 212, 170, 0.1) !important;
+    }
+  }
+
+  // InputNumber specific styling
+  .ant-input-number {
+    width: 100%;
+
+    &-input {
+      height: 38px;
+      line-height: 38px;
+      padding: 0 11px;
+      color: var(--refine-text-primary, #F9FAFB) !important;
+
+      &::placeholder {
+        color: var(--refine-text-tertiary, #9CA3AF) !important;
+      }
+    }
+
+    &-handler-wrap {
+      background-color: transparent !important;
+      border-left: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    &-handler {
+      border: none !important;
+      background-color: transparent !important;
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.1) !important;
+      }
+
+      &-up-inner,
+      &-down-inner {
+        color: var(--refine-text-secondary, #D1D5DB) !important;
+      }
+
+      &:hover &-up-inner,
+      &:hover &-down-inner {
+        color: var(--refine-primary, #00D4AA) !important;
+      }
+    }
+  }
+
+  // Delete button
+  .ant-btn-circle {
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+

@@ -164,7 +164,6 @@ export const ProcessForm: React.FC<ProcessFormProps> = ({
   // Initialize form when process data loads
   useEffect(() => {
     if (process) {
-      console.log('[ProcessForm] Loading process data:', process);
       const formValues: any = {
         name: process.name,
         description: process.description || '',

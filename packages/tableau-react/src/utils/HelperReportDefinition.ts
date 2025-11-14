@@ -175,9 +175,20 @@ export default class HelperReportDefinition {
 
     if (configDefinition && configDefinition.colDefs && configDefinition.colDefs.length > 0) {
       const colDefs = configDefinition.colDefs.map((el: any) => {
-        // Handle colType - it might be a simple string like 'LEAF' or a Java class name
-        const colTypeStr = el.colType || '';
-        const typeShort = colTypeStr.includes('.') ? colTypeStr.split('.').pop() || '' : colTypeStr;
+        // Extract type from parts.value[0].type (Java class name like "java.lang.String")
+        // This is the actual data type, not the column type (LEAF, LIST, etc.)
+        let typeStr = '';
+        if (el.parts?.value && Array.isArray(el.parts.value) && el.parts.value.length > 0) {
+          typeStr = el.parts.value[0].type || '';
+        }
+
+        // If no type in parts, fall back to colType
+        if (!typeStr) {
+          typeStr = el.colType || '';
+        }
+
+        // Extract short type name (e.g., "String" from "java.lang.String")
+        const typeShort = typeStr.includes('.') ? typeStr.split('.').pop() || '' : typeStr;
 
         // Use fullPath directly (not converted to short path)
         // This matches the original Vue implementation and ensures proper matching
@@ -187,7 +198,7 @@ export default class HelperReportDefinition {
           alias: el.fullPath,
           name: el.fullPath,
           typeShort,
-          type: colTypeStr,
+          type: typeStr,
           '@bean': SIMPLE_COLUMN,
         };
       });
