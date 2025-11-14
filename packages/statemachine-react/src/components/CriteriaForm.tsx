@@ -173,10 +173,6 @@ export const CriteriaForm: React.FC<CriteriaFormProps> = ({
   React.useEffect(() => {
     if (selectedChecker) {
       const newParams = getCriteriaCheckerParameters(selectedChecker);
-      console.log('CriteriaForm - Checker changed, updating parameters:', {
-        checker: selectedChecker,
-        parameters: newParams,
-      });
 
       // Only update parameters for new criteria or when checker changes
       if (isNew || (criteria && criteria.criteriaChecker !== selectedChecker)) {
@@ -306,6 +302,19 @@ export const CriteriaForm: React.FC<CriteriaFormProps> = ({
         return processedParam;
       });
 
+      // Validate that condition is an object, not a string
+      if (typeof condition === 'string') {
+        console.error('❌ CriteriaForm - condition is a string, not an object!', condition);
+        message.error('Invalid condition state. Please refresh the page and try again.');
+        return;
+      }
+
+      if (!condition || !condition['@bean']) {
+        console.error('❌ CriteriaForm - condition is missing @bean property!', condition);
+        message.error('Invalid condition. Please configure the criteria properly.');
+        return;
+      }
+
       const formData: CriteriaFormType = {
         '@bean': 'com.cyoda.core.model.stateMachine.dto.CriteriaDto',
         name: values.name || '',
@@ -318,8 +327,6 @@ export const CriteriaForm: React.FC<CriteriaFormProps> = ({
         // Note: colDefs is NOT sent to the API (it's removed in the old Vue project)
         // colDefs is only used internally for the criteria builder UI
       };
-
-      console.log('CriteriaForm - Submitting formData:', JSON.stringify(formData, null, 2));
 
       let resultId;
       if (isNew) {
