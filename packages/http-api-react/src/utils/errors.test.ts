@@ -4,16 +4,22 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { AxiosError } from 'axios';
-import { message } from 'antd';
+import { message, Modal, notification } from 'antd';
 import { HelperErrors } from './errors';
 
-// Mock Ant Design message
+// Mock Ant Design components
 vi.mock('antd', () => ({
   message: {
     error: vi.fn(),
     success: vi.fn(),
     warning: vi.fn(),
     info: vi.fn(),
+  },
+  Modal: {
+    error: vi.fn(),
+  },
+  notification: {
+    error: vi.fn(),
   },
 }));
 
@@ -85,7 +91,12 @@ describe('HelperErrors', () => {
 
       HelperErrors.handler(error);
 
-      expect(message.error).toHaveBeenCalledWith('Server Error: Internal server error');
+      // For 500 errors, Modal.error is used instead of message.error
+      expect(Modal.error).toHaveBeenCalledWith({
+        title: 'Error!',
+        content: 'The Cyoda server encountered an unexpected error: Internal server error',
+        width: 600,
+      });
     });
 
     it('should handle Axios error with status 503', () => {
@@ -190,7 +201,12 @@ describe('HelperErrors', () => {
 
       HelperErrors.handler(error);
 
-      expect(message.error).toHaveBeenCalledWith('Server Error: Network Error');
+      // For 500 errors, Modal.error is used
+      expect(Modal.error).toHaveBeenCalledWith({
+        title: 'Error!',
+        content: 'The Cyoda server encountered an unexpected error: Network Error',
+        width: 600,
+      });
     });
 
     it('should handle Axios error with no response', () => {
@@ -302,6 +318,108 @@ describe('HelperErrors', () => {
       // When errors array is empty, join returns empty string, which is falsy
       // So it doesn't set errorMessage and stays as default "An error occurred"
       expect(message.error).toHaveBeenCalledWith('Bad Request: ');
+    });
+  });
+
+  describe('error dictionary handling', () => {
+    it('should handle errors from dictionary', () => {
+      const error = {
+        isAxiosError: true,
+        response: {
+          status: 400,
+          data: {
+            errors: {
+              field1: 'NON_EXISTING_TRANSITION',
+              field2: 'ILLEGAL_UPDATE_CHANGES',
+            },
+          },
+        },
+        message: 'Request failed',
+      } as AxiosError;
+
+      HelperErrors.handler(error);
+
+      // Should show notifications with messages from dictionary
+      expect(notification.error).toHaveBeenCalledTimes(2);
+      expect(notification.error).toHaveBeenCalledWith({
+        message: 'Error',
+        description: "Transition doesn't exist",
+      });
+      expect(notification.error).toHaveBeenCalledWith({
+        message: 'Error',
+        description: 'Such changes are not allowed on update, maybe you want to create new entity?',
+      });
+    });
+
+    it('should handle single error from dictionary', () => {
+      const error = {
+        isAxiosError: true,
+        response: {
+          status: 400,
+          data: {
+            errors: {
+              field1: 'NON_EXISTING_WORKFLOW',
+            },
+          },
+        },
+        message: 'Request failed',
+      } as AxiosError;
+
+      HelperErrors.handler(error);
+
+      expect(notification.error).toHaveBeenCalledTimes(1);
+      expect(notification.error).toHaveBeenCalledWith({
+        message: 'Error',
+        description: "Workflow doesn't exist",
+      });
+    });
+
+    it('should handle mixed known and unknown error codes', () => {
+      const error = {
+        isAxiosError: true,
+        response: {
+          status: 400,
+          data: {
+            errors: {
+              field1: 'NON_EXISTING_WORKFLOW',
+              field2: 'UNKNOWN_ERROR_CODE',
+            },
+          },
+        },
+        message: 'Request failed',
+      } as AxiosError;
+
+      HelperErrors.handler(error);
+
+      // Should show notifications for both, using fallback for unknown code
+      expect(notification.error).toHaveBeenCalledTimes(2);
+      expect(notification.error).toHaveBeenCalledWith({
+        message: 'Error',
+        description: "Workflow doesn't exist",
+      });
+      expect(notification.error).toHaveBeenCalledWith({
+        message: 'Error',
+        description: 'UNKNOWN_ERROR_CODE',
+      });
+    });
+
+    it('should not use dictionary for non-object errors', () => {
+      const error = {
+        isAxiosError: true,
+        response: {
+          status: 400,
+          data: {
+            errors: ['Error 1', 'Error 2'],
+          },
+        },
+        message: 'Request failed',
+      } as AxiosError;
+
+      HelperErrors.handler(error);
+
+      // Should handle as array, not dictionary
+      expect(notification.error).not.toHaveBeenCalled();
+      expect(message.error).toHaveBeenCalledWith('Bad Request: Error 1, Error 2');
     });
   });
 });

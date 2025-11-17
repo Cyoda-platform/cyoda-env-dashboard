@@ -1,5 +1,6 @@
 import { AxiosError } from 'axios';
-import { message, Modal } from 'antd';
+import { message, Modal, notification } from 'antd';
+import ERROR_MESSAGES from '../dictionaries/errorMessages.json';
 
 /**
  * Error handler utility
@@ -37,6 +38,23 @@ export class HelperErrors {
       if (import.meta.env.DEV) {
         console.warn(`API ${status}:`, error.config?.url);
       }
+      return;
+    }
+
+    // Check if error message is 'canceled' (request was cancelled)
+    if (error.message === 'canceled') {
+      return;
+    }
+
+    // Check for errors from dictionary (like in Vue project)
+    if (data && data.errors && this.isErrorExistInDictionary(data.errors)) {
+      const messages = this.getAllErrorMessagesFromDictionaries(data.errors);
+      messages.forEach((msg) => {
+        notification.error({
+          message: 'Error',
+          description: msg,
+        });
+      });
       return;
     }
 
@@ -141,6 +159,27 @@ export class HelperErrors {
    */
   static error(msg: string): void {
     message.error(msg);
+  }
+
+  /**
+   * Check if error exists in dictionary
+   * Migrated from Vue project
+   */
+  private static isErrorExistInDictionary(errors: any): boolean {
+    if (typeof errors !== 'object') return false;
+    return Object.values(errors).some((error) => {
+      return ERROR_MESSAGES[error as keyof typeof ERROR_MESSAGES];
+    });
+  }
+
+  /**
+   * Get all error messages from dictionaries
+   * Migrated from Vue project
+   */
+  private static getAllErrorMessagesFromDictionaries(errors: any): string[] {
+    return Object.values(errors).map((error) => {
+      return ERROR_MESSAGES[error as keyof typeof ERROR_MESSAGES] || (error as string);
+    });
   }
 }
 
