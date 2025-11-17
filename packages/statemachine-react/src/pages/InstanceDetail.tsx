@@ -6,17 +6,23 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
-import { Tabs, Card, Spin, Typography, Space, Alert, Descriptions, Button } from 'antd';
+import { Tabs, Card, Spin, Typography, Space, Alert, Descriptions, Button, Switch, Divider } from 'antd';
 import type { TabsProps } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import {
   useWorkflow,
   useWorkflowEnabledTypes,
 } from '../hooks/useStatemachine';
-import { useEntity } from '@cyoda/http-api-react';
-import { DataLineage, TransitionChangesTable } from '@cyoda/ui-lib-react';
+import { getEntityLoad } from '@cyoda/http-api-react/api/entities';
+import type { Entity } from '@cyoda/http-api-react/types';
 import type { PersistedType } from '../types';
 import axios from 'axios';
+import { HelperDetailEntity } from '@cyoda/tableau-react/utils';
+import EntityDetailTree from '@cyoda/tableau-react/components/EntityDetailTree';
+import EntityTransitions from '@cyoda/tableau-react/components/EntityTransitions';
+import EntityAudit from '@cyoda/tableau-react/components/EntityAudit';
+import EntityDataLineage from '@cyoda/tableau-react/components/EntityDataLineage';
+import './InstanceDetail.scss';
 
 const { Title, Text } = Typography;
 
@@ -38,14 +44,31 @@ export const InstanceDetail: React.FC = () => {
   );
   const { data: workflowEnabledTypes = [] } = useWorkflowEnabledTypes();
 
-  // Load entity data using http-api-react hook
-  const { data: entityData, isLoading: loading } = useEntity(
-    entityClassName,
-    instanceId || '',
-    undefined,
-    { enabled: !!instanceId && !!entityClassName }
-  );
-  
+  // Load entity data
+  const [entityData, setEntityData] = useState<Entity[] | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const loadData = async () => {
+      if (!instanceId || !entityClassName) return;
+
+      setLoading(true);
+      try {
+        const { data } = await getEntityLoad(instanceId, entityClassName);
+        const filtered = HelperDetailEntity.filterData(data);
+        console.log('[InstanceDetail] Loaded entity data:', filtered);
+        setEntityData(filtered);
+      } catch (error) {
+        console.error('[InstanceDetail] Failed to load entity data:', error);
+        setEntityData(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, [instanceId, entityClassName]);
+
   // Determine if we should show JSON view
   const isShowDetailJson = () => {
     const entityRow = workflowEnabledTypes.find(
@@ -72,6 +95,7 @@ export const InstanceDetail: React.FC = () => {
             instanceId={instanceId!}
             entityClassName={entityClassName}
             entityData={entityData}
+            currentWorkflowId={currentWorkflowId}
           />
         ),
       },
@@ -118,7 +142,7 @@ export const InstanceDetail: React.FC = () => {
   }, [instanceId, entityClassName, entityData, currentWorkflowId, persistedType, workflowEnabledTypes]);
 
   return (
-    <div style={{ padding: '16px' }}>
+    <div className="instance-detail-page">
       {/* Back Button */}
       <div style={{ marginBottom: '16px' }}>
         <Button
@@ -150,6 +174,7 @@ export const InstanceDetail: React.FC = () => {
               onChange={setActiveTab}
               destroyInactiveTabPane={false}
               items={tabItems}
+              className="instance-detail-tabs"
             />
           </Spin>
         </Space>
@@ -164,9 +189,12 @@ export const InstanceDetail: React.FC = () => {
 const DetailView: React.FC<{
   instanceId: string;
   entityClassName: string;
-  entityData: any;
-}> = ({ instanceId, entityClassName, entityData }) => {
-  if (!entityData) {
+  entityData: Entity[] | null;
+  currentWorkflowId?: string;
+}> = ({ instanceId, entityClassName, entityData, currentWorkflowId }) => {
+  const [showEmptyFields, setShowEmptyFields] = useState(true);
+
+  if (!entityData || entityData.length === 0) {
     return (
       <Alert
         message="No Data"
@@ -177,26 +205,97 @@ const DetailView: React.FC<{
     );
   }
 
-  // Convert entity data array to descriptions format
-  // Entity data is an array of { type, columnName, value, presented } objects
-  const items = Array.isArray(entityData)
-    ? entityData
-        .filter((item: any) => item.presented !== false)
-        .map((item: any) => ({
-          key: item.columnName,
-          label: item.columnName,
-          children: item.value !== null && item.value !== undefined ? String(item.value) : '-',
-        }))
-    : [];
+  // Helper function to get value from column
+  const getValueFromColumn = (columnName: string): string => {
+    const field = entityData.find((item) => item.columnInfo?.columnName === columnName);
+    return field?.value || '-';
+  };
+
+  // Standard fields to extract
+  const standardFieldNames = ['id', 'state', 'previousTransition', 'creationDate', 'createdDate'];
+
+  // Extract standard fields
+  const standardFields = {
+    id: getValueFromColumn('id') !== '-' ? getValueFromColumn('id') : instanceId,
+    state: getValueFromColumn('state'),
+    previousTransition: getValueFromColumn('previousTransition'),
+    createdDate: getValueFromColumn('creationDate'),
+    lastUpdatedDate: getValueFromColumn('lastUpdateTime'),
+  };
+
+  // Filter out standard fields from entity data
+  const entityFields = entityData.filter((item) => {
+    const columnName = item.columnInfo?.columnName;
+    return !standardFieldNames.includes(columnName);
+  });
 
   return (
-    <div>
-      <Descriptions
-        bordered
-        column={1}
-        size="small"
-        items={items}
-      />
+    <div className="entity-detail-view">
+      {/* Standard fields section */}
+      <div className="entity-detail-section">
+        <h4>Standard fields</h4>
+        <div className="standard-fields">
+          <p>
+            <span className="field-label">Id:</span>
+            <span className="field-value">{standardFields.id}</span>
+          </p>
+          <p>
+            <span className="field-label">State:</span>
+            <span className="field-value">{standardFields.state}</span>
+          </p>
+          <p>
+            <span className="field-label">Previous Transition:</span>
+            <span className="field-value">{standardFields.previousTransition}</span>
+          </p>
+          <p>
+            <span className="field-label">Created Date:</span>
+            <span className="field-value">{standardFields.createdDate}</span>
+          </p>
+          <p>
+            <span className="field-label">Last updated date:</span>
+            <span className="field-value">{standardFields.lastUpdatedDate}</span>
+          </p>
+        </div>
+      </div>
+
+      <Divider />
+
+      {/* Transition Entity Section */}
+      {instanceId && entityClassName && currentWorkflowId && (
+        <>
+          <EntityTransitions
+            entityId={instanceId}
+            entityClass={entityClassName}
+            onTransitionChange={() => {
+              // Reload will be handled by parent component
+              window.location.reload();
+            }}
+          />
+          <Divider />
+        </>
+      )}
+
+      {/* Entity section */}
+      <div className="entity-detail-section">
+        <div className="entity-header">
+          <h4>Entity</h4>
+          <div className="entity-controls">
+            <span style={{ marginRight: 8 }}>Show Empty Fields</span>
+            <Switch
+              checked={showEmptyFields}
+              onChange={setShowEmptyFields}
+            />
+          </div>
+        </div>
+
+        {/* Use EntityDetailTree for better nested field display */}
+        <EntityDetailTree
+          entity={entityFields}
+          showEmpty={showEmptyFields}
+          entityId={instanceId}
+          entityClass={entityClassName}
+        />
+      </div>
     </div>
   );
 };
@@ -300,26 +399,11 @@ const AuditView: React.FC<{
   entityClassName: string;
   instanceId: string;
 }> = ({ entityClassName, instanceId }) => {
-  // Fetch transition changes
-  const fetchTransitionChanges = async ({ type, id }: { type: string; id: string }) => {
-    try {
-      const { data } = await axios.get(`/platform-api/pm/transition-changes`, {
-        params: { type, id },
-      });
-      return data || [];
-    } catch (error) {
-      console.error('Failed to fetch transition changes:', error);
-      return [];
-    }
-  };
-
   return (
     <div>
-      <TransitionChangesTable
-        type={entityClassName}
+      <EntityAudit
+        entityClass={entityClassName}
         entityId={instanceId}
-        disableLink={true}
-        onFetchChanges={fetchTransitionChanges}
       />
     </div>
   );
@@ -329,25 +413,11 @@ const DataLineageView: React.FC<{
   entityClassName: string;
   instanceId: string;
 }> = ({ entityClassName, instanceId }) => {
-  // Fetch data lineage transactions
-  const fetchDataLineageTransactions = async (requestClass: string, id: string) => {
-    try {
-      const { data } = await axios.get(`/platform-api/data-lineage/transactions`, {
-        params: { requestClass, id },
-      });
-      return data || [];
-    } catch (error) {
-      console.error('Failed to fetch data lineage:', error);
-      return [];
-    }
-  };
-
   return (
     <div>
-      <DataLineage
-        requestClass={entityClassName}
-        id={instanceId}
-        onLoadTransactions={fetchDataLineageTransactions}
+      <EntityDataLineage
+        entityClass={entityClassName}
+        entityId={instanceId}
       />
     </div>
   );

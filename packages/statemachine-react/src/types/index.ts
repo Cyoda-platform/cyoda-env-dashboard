@@ -187,10 +187,11 @@ export interface InstancesRequest {
 }
 
 export interface InstancesResponse {
-  instances: Instance[];
+  '@bean': string;
+  items: Instance[];
   pagingFilter: {
     offset: number;
-    limit: number;
+    maxResults: number;
   };
   hasMore: boolean;
 }

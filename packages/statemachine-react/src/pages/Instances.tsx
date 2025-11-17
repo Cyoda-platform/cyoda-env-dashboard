@@ -144,22 +144,27 @@ export const Instances: React.FC = () => {
       }
 
       // Add entity IDs filter if provided
-      if (filter.trim()) {
-        requestData.entityIds = filter
+      const filterValue = tableState.filter || '';
+      if (filterValue.trim()) {
+        requestData.entityIds = filterValue
           .split(',')
           .map((id) => id.trim())
           .filter((id) => id);
       }
 
+      console.log('[Instances] Request data:', requestData);
       const response = await instancesMutation.mutateAsync(requestData);
+      console.log('[Instances] Response:', response);
       setInstancesData(response);
     } catch (error) {
+      console.error('[Instances] Error loading instances:', error);
       message.error('Failed to load instances');
     }
   };
   
   // Handlers
   const handleEntityChange = (value: string) => {
+    console.log('[Instances] handleEntityChange called with value:', value);
     setEntityClassName(value);
     setCurrentPage(1);
     setInstancesData(null);
@@ -221,11 +226,16 @@ export const Instances: React.FC = () => {
 
   // Entity options - filtered by selected entity type
   const entityOptions = useMemo(() => {
-    return workflowEnabledTypes
+    console.log('[Instances] Building entityOptions from workflowEnabledTypes:', workflowEnabledTypes);
+    console.log('[Instances] hasEntityTypeInfo:', hasEntityTypeInfo, 'entityType:', entityType);
+
+    const options = workflowEnabledTypes
       .filter((type: any) => {
         // If feature flag is enabled and entity has type info, filter by entity type
         if (hasEntityTypeInfo && typeof type === 'object' && type.type) {
-          return type.type === entityType;
+          const matches = type.type === entityType;
+          console.log('[Instances] Filtering type:', type, 'matches:', matches);
+          return matches;
         }
         return true;
       })
@@ -258,10 +268,13 @@ export const Instances: React.FC = () => {
         };
       })
       .filter(Boolean); // Remove any null entries
+
+    console.log('[Instances] Final entityOptions:', options);
+    return options;
   }, [workflowEnabledTypes, entityType, hasEntityTypeInfo]);
   
   // Table data
-  const tableData: InstanceTableRow[] = (instancesData?.instances || []).map((instance) => ({
+  const tableData: InstanceTableRow[] = (instancesData?.items || []).map((instance) => ({
     ...instance,
     key: instance.entityId,
     entityClassNameLabel: entityOptions.find((opt) => opt.value === instance.entityClassName)?.label || instance.entityClassName,
@@ -354,8 +367,12 @@ export const Instances: React.FC = () => {
   
   // Load instances on mount if entity is selected
   useEffect(() => {
+    console.log('[Instances] useEffect triggered, entityClassName:', entityClassName);
     if (entityClassName) {
+      console.log('[Instances] Loading instances for entity:', entityClassName);
       loadInstances(0);
+    } else {
+      console.log('[Instances] No entityClassName selected, skipping load');
     }
   }, [entityClassName]);
   

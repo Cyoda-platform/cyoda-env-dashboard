@@ -356,7 +356,10 @@ export const useStatemachineStore = create<StatemachineState>()(
 
       // Instance API Methods
       postInstances: async (data) => {
-        return axios.post('/platform-api/statemachine/instances', data);
+        console.log('[statemachineStore] postInstances called with data:', data);
+        const response = await axios.post('/platform-api/statemachine/instances', data);
+        console.log('[statemachineStore] postInstances response:', response);
+        return response;
       },
       
       // Entity Info API Methods
