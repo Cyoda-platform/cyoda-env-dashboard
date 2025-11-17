@@ -191,6 +191,13 @@ export const Workflows: React.FC = () => {
           workflow.name.toLowerCase().includes(filterLower) ||
           workflow.entityClassNameLabel.toLowerCase().includes(filterLower)
         );
+      })
+      .sort((a, b) => {
+        // Sort by creation date: newest first (descending order)
+        if (!a.creationDate && !b.creationDate) return 0;
+        if (!a.creationDate) return 1;
+        if (!b.creationDate) return -1;
+        return new Date(b.creationDate).getTime() - new Date(a.creationDate).getTime();
       });
 
     return filtered;

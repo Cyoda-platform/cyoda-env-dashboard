@@ -97,17 +97,22 @@ export const Transition: React.FC = () => {
     }));
   }, [criteriaList]);
   
-  // Process options
+  // Process options - serialize objects to JSON strings for Select
   const processOptions = useMemo(() => {
     return processesList.map((process: any) => ({
       label: process.name,
-      value: process.id?.persistedId || process.id?.runtimeId || process.id,
+      value: JSON.stringify(process.id), // Serialize to string for Select
+      description: process.description,
+      processId: process.id, // Keep original for reference
     }));
   }, [processesList]);
   
   // Initialize form when transition data loads
   useEffect(() => {
     if (transition) {
+      // Convert process objects to JSON strings for the form
+      const processIds = (transition.endProcessesIds || []).map((p: any) => JSON.stringify(p));
+
       form.setFieldsValue({
         name: transition.name,
         description: transition.description || '',
@@ -116,7 +121,7 @@ export const Transition: React.FC = () => {
         startStateId: transition.startStateId || transition.fromState,
         endStateId: transition.endStateId || transition.toState,
         criteriaIds: transition.criteriaIds || [],
-        processIds: transition.endProcessesIds || [],
+        processIds,
       });
     } else if (isNew) {
       form.setFieldsValue({
@@ -139,6 +144,10 @@ export const Transition: React.FC = () => {
         finalEndStateId = 'noneState';
       }
 
+      // Convert JSON strings back to objects
+      const endProcessesIds = (values.processIds || []).map((p: string) => JSON.parse(p));
+
+      // Build the form data
       const formData: TransitionFormType = {
         '@bean': 'com.cyoda.core.model.stateMachine.dto.TransitionDto',
         name: values.name,
@@ -146,12 +155,14 @@ export const Transition: React.FC = () => {
         active: values.active,
         automated: values.automated,
         startStateId: values.startStateId,
-        endStateId: finalEndStateId,
+        endStateId: finalEndStateId, // Always include endStateId
         criteriaIds: values.criteriaIds || [],
-        endProcessesIds: values.processIds || [],
+        endProcessesIds,
         workflowId,
         entityClassName,
       };
+
+      console.log('=== Transition Form Data ===', formData);
 
       if (isNew) {
         const result = await createTransitionMutation.mutateAsync({
@@ -285,10 +296,21 @@ export const Transition: React.FC = () => {
 
     if (params?.id) {
       const currentProcessIds = form.getFieldValue('processIds') || [];
-      if (!currentProcessIds.includes(params.id)) {
-        form.setFieldsValue({
-          processIds: [...currentProcessIds, params.id],
-        });
+      // Find the process object by ID
+      const process = processesList.find((p: any) => {
+        const pId = p.id?.persistedId || p.id?.runtimeId;
+        const paramId = typeof params.id === 'object' ? params.id.persistedId : params.id;
+        return pId === paramId;
+      });
+
+      if (process?.id) {
+        const processIdStr = JSON.stringify(process.id);
+        // Check if not already added
+        if (!currentProcessIds.includes(processIdStr)) {
+          form.setFieldsValue({
+            processIds: [...currentProcessIds, processIdStr],
+          });
+        }
       }
     }
   };
@@ -533,13 +555,19 @@ export const Transition: React.FC = () => {
                         return (
                           <div style={{ marginTop: '5px' }}>
                             <span style={{ fontSize: '16px' }}>Edit: </span>
-                            {selectedProcessIds.map((processId: string, index: number) => {
+                            {selectedProcessIds.map((processIdStr: string, index: number) => {
+                              // Parse the JSON string back to object
+                              const processIdObj = JSON.parse(processIdStr);
                               const process = processesList.find((p: any) => {
-                                const pId = p.id?.persistedId || p.id?.runtimeId || p.id;
-                                return pId === processId;
+                                const pId = p.id?.persistedId || p.id?.runtimeId;
+                                const selectedId = processIdObj?.persistedId || processIdObj?.runtimeId;
+                                return pId === selectedId;
                               });
+
+                              const displayId = processIdObj?.persistedId || processIdObj?.runtimeId;
+
                               return (
-                                <span key={processId}>
+                                <span key={processIdStr}>
                                   <Popover
                                     content={process?.description || '-'}
                                     title={process?.name}
@@ -547,10 +575,10 @@ export const Transition: React.FC = () => {
                                   >
                                     <Button
                                       type="link"
-                                      onClick={() => handleEditProcess(processId)}
+                                      onClick={() => handleEditProcess(displayId)}
                                       style={{ fontSize: '16px', padding: 0 }}
                                     >
-                                      {process?.name || processId}
+                                      {process?.name || displayId}
                                     </Button>
                                   </Popover>
                                   {index < selectedProcessIds.length - 1 && <span> | </span>}

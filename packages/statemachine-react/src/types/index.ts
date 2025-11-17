@@ -18,15 +18,19 @@ export interface Workflow {
 }
 
 export interface WorkflowForm {
+  '@bean'?: string;
   id?: string;
   name: string;
   entityClassName: string;
   active: boolean;
   persisted: boolean;
   description?: string;
-  documentLink?: string;
+  metaData?: {
+    documentLink?: string;
+  };
   criteriaIds?: string[];
   useDecisionTree?: boolean;
+  decisionTrees?: any[];
 }
 
 // State Types

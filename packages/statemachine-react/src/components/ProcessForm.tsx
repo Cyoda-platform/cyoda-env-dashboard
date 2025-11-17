@@ -351,8 +351,8 @@ export const ProcessForm: React.FC<ProcessFormProps> = ({
             filterOption={(input, option) =>
               (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
             }
-            popupClassName="process-form-dropdown"
-            dropdownStyle={{ minWidth: '400px' }}
+            classNames={{ popup: { root: 'process-form-dropdown' } }}
+            styles={{ popup: { root: { minWidth: '400px' } } }}
           />
         </Form.Item>
       )}
@@ -379,11 +379,11 @@ export const ProcessForm: React.FC<ProcessFormProps> = ({
                     disabled={isRuntime}
                     placeholder={`Select ${param.name}`}
                     options={param.availableValues.map((val: any) => ({
-                      label: val,
-                      value: val,
+                      label: val.displayValue,
+                      value: val.value.value,
                     }))}
-                    popupClassName="process-form-dropdown"
-                    dropdownStyle={{ minWidth: '300px' }}
+                    classNames={{ popup: { root: 'process-form-dropdown' } }}
+                    styles={{ popup: { root: { minWidth: '300px' } } }}
                   />
                 </Form.Item>
               );

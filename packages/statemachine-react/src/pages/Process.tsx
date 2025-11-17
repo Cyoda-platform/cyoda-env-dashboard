@@ -357,8 +357,8 @@ export const Process: React.FC = () => {
                         disabled={isRuntime}
                         placeholder={`Select ${param.name}`}
                         options={param.availableValues.map((val: any) => ({
-                          label: val,
-                          value: val,
+                          label: val.displayValue,
+                          value: val.value.value,
                         }))}
                       />
                     </Form.Item>

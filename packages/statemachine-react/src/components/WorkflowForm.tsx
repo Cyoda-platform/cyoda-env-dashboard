@@ -60,11 +60,14 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
   useEffect(() => {
     if (workflow) {
       const useDecisionTree = workflow.useDecisionTree || false;
+      // Extract documentLink from metaData if it exists
+      const documentLink = (workflow as any).metaData?.documentLink || '';
+
       form.setFieldsValue({
         entityClassName: workflow.entityClassName,
         name: workflow.name,
         description: workflow.description || '',
-        documentLink: workflow.documentLink || '',
+        documentLink,
         criteriaIds: workflow.criteriaIds || [],
         active: workflow.active !== undefined ? workflow.active : true,
         useDecisionTree,
@@ -140,18 +143,23 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
     try {
       const values = await form.validateFields();
 
-      const formData: WorkflowFormType = {
-        name: values.name,
-        entityClassName: values.entityClassName,
-        active: values.active,
-        persisted: persistedType === 'persisted',
-        description: values.description,
-        documentLink: values.documentLink,
-        criteriaIds: values.criteriaIds,
-        useDecisionTree: values.useDecisionTree,
-      };
-
       if (isNew) {
+        // For new workflows, create a minimal object
+        const formData: WorkflowFormType = {
+          '@bean': 'com.cyoda.core.model.stateMachine.dto.WorkflowDto',
+          name: values.name,
+          entityClassName: values.entityClassName,
+          active: values.active,
+          persisted: persistedType === 'persisted',
+          description: values.description,
+          metaData: {
+            documentLink: values.documentLink || '',
+          },
+          criteriaIds: values.criteriaIds || [],
+          useDecisionTree: values.useDecisionTree || false,
+          decisionTrees: [],
+        };
+
         const newWorkflow = await createWorkflowMutation.mutateAsync(formData);
         message.success('Workflow created successfully');
 
@@ -162,10 +170,24 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
           `/workflow/${newWorkflow.id}?persistedType=persisted&entityClassName=${values.entityClassName}`
         );
       } else {
-        await updateWorkflowMutation.mutateAsync({
-          ...formData,
-          id: workflowId!,
-        });
+        // For updates, merge form values with the original workflow data
+        // This preserves all server-managed fields
+        const formData = {
+          ...(workflow as any), // Keep all original fields from server
+          name: values.name,
+          entityClassName: values.entityClassName,
+          active: values.active,
+          description: values.description,
+          metaData: {
+            ...(workflow as any)?.metaData,
+            documentLink: values.documentLink || '',
+          },
+          criteriaIds: values.criteriaIds || [],
+          useDecisionTree: values.useDecisionTree || false,
+          decisionTrees: (workflow as any)?.decisionTrees || [],
+        };
+
+        await updateWorkflowMutation.mutateAsync(formData);
         message.success('Workflow updated successfully');
 
         // Invalidate workflow data (replaces eventBus.$emit('workflow:reload'))
