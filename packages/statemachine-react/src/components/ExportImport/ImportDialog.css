@@ -1,0 +1,124 @@
+/**
+ * Import Dialog Styles
+ * Dark theme styles for Import Workflows dialog
+ */
+
+/* Info Alert - top section */
+.import-dialog .ant-alert-info {
+  background-color: #1e293b !important;
+  border-color: #3b82f6 !important;
+}
+
+.import-dialog .ant-alert-info .ant-alert-message,
+.import-dialog .ant-alert-info .ant-alert-description {
+  color: #f5f5f5 !important;
+}
+
+.import-dialog .ant-alert-info .ant-alert-icon {
+  color: #3b82f6 !important;
+}
+
+/* Upload Dragger - file upload area */
+.import-dialog .ant-upload-drag {
+  background-color: #1e293b !important;
+  border-color: #14b8a6 !important;
+}
+
+.import-dialog .ant-upload-drag:hover {
+  border-color: #14b8a6 !important;
+}
+
+.import-dialog .ant-upload-drag .ant-upload-drag-icon {
+  color: #14b8a6 !important;
+}
+
+.import-dialog .ant-upload-drag .ant-upload-text {
+  color: #f5f5f5 !important;
+}
+
+.import-dialog .ant-upload-drag .ant-upload-hint {
+  color: #94a3b8 !important;
+}
+
+/* Success Alert - found workflows */
+.import-dialog .ant-alert-success {
+  background-color: #064e3b !important;
+  border-color: #14b8a6 !important;
+}
+
+.import-dialog .ant-alert-success .ant-alert-message,
+.import-dialog .ant-alert-success .ant-alert-description {
+  color: #f5f5f5 !important;
+}
+
+.import-dialog .ant-alert-success .ant-alert-icon {
+  color: #14b8a6 !important;
+}
+
+/* Error Alert - validation and import errors */
+.import-dialog .ant-alert-error {
+  background-color: #7f1d1d !important;
+  border-color: #ef4444 !important;
+}
+
+.import-dialog .ant-alert-error .ant-alert-message,
+.import-dialog .ant-alert-error .ant-alert-description {
+  color: #f5f5f5 !important;
+}
+
+.import-dialog .ant-alert-error .ant-alert-icon {
+  color: #ef4444 !important;
+}
+
+/* Workflow names container */
+.import-dialog .workflow-names-container {
+  margin-top: 8px;
+  padding: 12px 16px;
+  background: rgba(20, 184, 166, 0.1);
+  border: 1px solid rgba(20, 184, 166, 0.3);
+  border-radius: 6px;
+  border-left: 3px solid #14b8a6;
+}
+
+.import-dialog .workflow-name {
+  color: #14b8a6;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+/* Checkbox text */
+.import-dialog .checkbox-label {
+  color: #f5f5f5;
+}
+
+.import-dialog .checkbox-description {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+/* Modal styling */
+.import-dialog .ant-modal-content {
+  background-color: #1e293b;
+}
+
+.import-dialog .ant-modal-header {
+  background-color: #1e293b;
+  border-bottom-color: #334155;
+}
+
+.import-dialog .ant-modal-title {
+  color: #f5f5f5;
+}
+
+.import-dialog .ant-modal-close {
+  color: #94a3b8;
+}
+
+.import-dialog .ant-modal-close:hover {
+  color: #f5f5f5;
+}
+
+.import-dialog .ant-modal-footer {
+  border-top-color: #334155;
+}
+

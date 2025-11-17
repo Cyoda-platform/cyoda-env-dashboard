@@ -8,11 +8,12 @@ import React, { useState } from 'react';
 import { Modal, Upload, Alert, Space, Typography, Checkbox } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
 import type { UploadFile } from 'antd';
-import { 
-  useImportWorkflows, 
-  readFileAsText, 
-  validateWorkflowData 
+import {
+  useImportWorkflows,
+  readFileAsText,
+  validateWorkflowData
 } from '../../hooks/useExportImport';
+import './ImportDialog.css';
 
 const { Dragger } = Upload;
 const { Text } = Typography;
@@ -110,6 +111,7 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
       cancelText="Cancel"
       okButtonProps={{ disabled: !parsedData || !!validationError }}
       width={600}
+      className="import-dialog"
     >
       <Space direction="vertical" size="large" style={{ width: '100%' }}>
         <Alert
@@ -151,8 +153,8 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
               description={
                 <div>
                   <Text strong>Workflows to import:</Text>
-                  <div style={{ marginTop: 8, padding: 8, background: '#f5f5f5', borderRadius: 4 }}>
-                    <Text type="secondary">{workflowNames}</Text>
+                  <div className="workflow-names-container">
+                    <span className="workflow-name">{workflowNames}</span>
                   </div>
                 </div>
               }
@@ -167,10 +169,10 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
           onChange={(e) => setNeedRewrite(e.target.checked)}
         >
           <Space direction="vertical" size={0}>
-            <Text>Overwrite existing workflows</Text>
-            <Text type="secondary" style={{ fontSize: 12 }}>
+            <span className="checkbox-label">Overwrite existing workflows</span>
+            <span className="checkbox-description">
               If enabled, existing workflows with the same ID will be replaced
-            </Text>
+            </span>
           </Space>
         </Checkbox>
 

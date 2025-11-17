@@ -504,7 +504,7 @@ export const CriteriaForm: React.FC<CriteriaFormProps> = ({
                       label: val,
                       value: val,
                     }))}
-                    popupClassName="criteria-form-dropdown"
+                    popupMatchSelectWidth={false}
                     dropdownStyle={{ minWidth: '300px' }}
                   />
                 </Form.Item>

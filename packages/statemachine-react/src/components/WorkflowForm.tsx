@@ -63,6 +63,9 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
       // Extract documentLink from metaData if it exists
       const documentLink = (workflow as any).metaData?.documentLink || '';
 
+      console.log('[WorkflowForm] Loading workflow:', workflow);
+      console.log('[WorkflowForm] criteriaIds:', workflow.criteriaIds);
+
       form.setFieldsValue({
         entityClassName: workflow.entityClassName,
         name: workflow.name,
@@ -172,6 +175,9 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
       } else {
         // For updates, include all fields from the original workflow (like Vue project does)
         // This ensures backend receives all required fields including owner, creationDate, etc.
+        // IMPORTANT: We must preserve transitionIds and stateIds from the original workflow
+        // Backend doesn't allow changing these fields directly - they are managed through
+        // separate transition/state endpoints
         const formData = {
           // Start with all fields from the original workflow
           ...workflow,
@@ -188,7 +194,13 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
           criteriaIds: values.criteriaIds || [],
           useDecisionTree: values.useDecisionTree || false,
           decisionTrees: (workflow as any)?.decisionTrees || [],
+          // Preserve transitionIds and stateIds from original workflow
+          // These are read-only fields managed by backend
+          transitionIds: (workflow as any)?.transitionIds || [],
+          stateIds: (workflow as any)?.stateIds || [],
         };
+
+        console.log('[WorkflowForm] Saving workflow with data:', formData);
 
         await updateWorkflowMutation.mutateAsync(formData);
         message.success('Workflow updated successfully');
@@ -196,8 +208,18 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
         // Invalidate workflow data (replaces eventBus.$emit('workflow:reload'))
         invalidateWorkflow(workflowId);
       }
-    } catch (error) {
-      message.error('Failed to save workflow');
+    } catch (error: any) {
+      console.error('[WorkflowForm] Save error:', error);
+
+      // Check for specific error codes
+      const errorMessage = error?.response?.data?.message || error?.message || 'Failed to save workflow';
+      const errorCode = error?.response?.data?.code;
+
+      if (errorCode === 'NON_EXISTING_TRANSITIONS_IN_LIST' || errorMessage.includes('NON_EXISTING_TRANSITIONS_IN_LIST')) {
+        message.error('At least one transition is required. Please add a transition before saving.');
+      } else {
+        message.error(errorMessage);
+      }
     }
   };
   
@@ -228,7 +250,7 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
                 filterOption={(input, option) =>
                   String(option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                 }
-                popupClassName="workflow-form-dropdown"
+                popupMatchSelectWidth={false}
                 dropdownStyle={{ minWidth: '400px' }}
               />
             </Form.Item>
@@ -269,7 +291,7 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
                 filterOption={(input, option) =>
                   String(option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                 }
-                popupClassName="workflow-form-dropdown"
+                popupMatchSelectWidth={false}
                 dropdownStyle={{ minWidth: '400px' }}
               />
             </Form.Item>

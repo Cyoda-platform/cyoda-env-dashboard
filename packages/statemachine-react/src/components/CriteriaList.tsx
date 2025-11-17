@@ -6,15 +6,13 @@
 
 import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Table, Button, Space, Tooltip, Modal, message } from 'antd';
+import { Table, Button, Space, Tooltip, App } from 'antd';
 import { PlusOutlined, CopyOutlined, DeleteOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { useCriteriaList, useDeleteCriteria, useCopyCriteria } from '../hooks/useStatemachine';
 import { useTableState } from '../hooks/useTableState';
 import { StateIndicator } from './StateIndicator';
 import type { PersistedType } from '../types';
-
-const { confirm } = Modal;
 
 interface CriteriaListProps {
   workflowId: string;
@@ -36,6 +34,7 @@ export const CriteriaList: React.FC<CriteriaListProps> = ({
   entityClassName,
 }) => {
   const navigate = useNavigate();
+  const { modal, message } = App.useApp();
 
   // Table state persistence
   const { tableState, handleTableChange } = useTableState({
@@ -97,7 +96,7 @@ export const CriteriaList: React.FC<CriteriaListProps> = ({
   };
   
   const handleDelete = (record: CriteriaRow) => {
-    confirm({
+    modal.confirm({
       title: 'Delete confirmation',
       content: 'Are you sure you want to delete this criteria?',
       okText: 'Delete',
@@ -112,8 +111,10 @@ export const CriteriaList: React.FC<CriteriaListProps> = ({
           });
           message.success('Criteria deleted successfully');
           refetch();
-        } catch (error) {
-          message.error('Failed to delete criteria');
+        } catch (error: any) {
+          console.error('Failed to delete criteria:', error);
+          const errorMessage = error?.response?.data?.message || error?.message || 'Failed to delete criteria';
+          message.error(errorMessage);
         }
       },
     });

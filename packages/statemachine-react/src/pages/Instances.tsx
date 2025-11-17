@@ -380,7 +380,7 @@ export const Instances: React.FC = () => {
                 showSearch
                 allowClear
                 style={{ width: '100%' }}
-                popupClassName="instances-page-dropdown"
+                popupMatchSelectWidth={false}
                 dropdownStyle={{ minWidth: '400px' }}
               />
             </Col>

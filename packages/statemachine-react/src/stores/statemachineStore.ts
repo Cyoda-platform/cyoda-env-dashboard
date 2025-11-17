@@ -135,9 +135,11 @@ export const useStatemachineStore = create<StatemachineState>()(
       },
       
       deleteWorkflow: async (workflowId) => {
-        return axios.delete(
-          `/platform-api/statemachine/persisted/workflows/${encodeURIComponent(workflowId)}`
-        );
+        const url = `/platform-api/statemachine/persisted/workflows/${encodeURIComponent(workflowId)}`;
+        console.log('[statemachineStore] deleteWorkflow URL:', url);
+        console.log('[statemachineStore] deleteWorkflow workflowId:', workflowId);
+        // Mute global error handler - we'll handle errors in the component
+        return axios.delete(url, { muteErrors: true } as any);
       },
       
       copyWorkflow: async (persistedType, workflowId) => {

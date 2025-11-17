@@ -525,25 +525,25 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
   const panLeft = useCallback(() => {
     if (!cyRef.current) return;
     const pan = cyRef.current.pan();
-    cyRef.current.pan({ x: pan.x + 50, y: pan.y });
+    cyRef.current.pan({ x: pan.x - 50, y: pan.y });
   }, []);
 
   const panRight = useCallback(() => {
     if (!cyRef.current) return;
     const pan = cyRef.current.pan();
-    cyRef.current.pan({ x: pan.x - 50, y: pan.y });
+    cyRef.current.pan({ x: pan.x + 50, y: pan.y });
   }, []);
 
   const panTop = useCallback(() => {
     if (!cyRef.current) return;
     const pan = cyRef.current.pan();
-    cyRef.current.pan({ x: pan.x, y: pan.y + 50 });
+    cyRef.current.pan({ x: pan.x, y: pan.y - 50 });
   }, []);
 
   const panBottom = useCallback(() => {
     if (!cyRef.current) return;
     const pan = cyRef.current.pan();
-    cyRef.current.pan({ x: pan.x, y: pan.y - 50 });
+    cyRef.current.pan({ x: pan.x, y: pan.y + 50 });
   }, []);
 
   // Toggle fullscreen

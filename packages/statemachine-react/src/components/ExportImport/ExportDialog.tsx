@@ -59,8 +59,8 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({
       <Space direction="vertical" size="large" style={{ width: '100%' }}>
         <div>
           <Text strong>Selected Workflows ({workflows.length}):</Text>
-          <div style={{ marginTop: 8, padding: 8, background: '#f5f5f5', borderRadius: 4 }}>
-            <Text type="secondary">{workflowNames || 'No workflows selected'}</Text>
+          <div style={{ marginTop: 8, padding: 12, background: '#1e293b', borderRadius: 4 }}>
+            <span style={{ color: '#14b8a6', fontSize: '14px' }}>{workflowNames || 'No workflows selected'}</span>
           </div>
         </div>
 
@@ -97,6 +97,11 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({
             description="ZIP format exports cannot be re-imported through the UI. Use JSON format if you plan to import the workflows later."
             type="warning"
             showIcon
+            style={{
+              backgroundColor: '#1e293b',
+              borderColor: '#f59e0b',
+              color: '#f5f5f5'
+            }}
           />
         )}
 

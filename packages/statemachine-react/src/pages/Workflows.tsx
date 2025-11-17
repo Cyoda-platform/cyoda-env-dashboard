@@ -260,8 +260,66 @@ export const Workflows: React.FC = () => {
 
           // Invalidate workflows list to refresh data
           invalidateWorkflowsList();
-        } catch (error) {
-          message.error('Failed to delete workflow');
+        } catch (error: any) {
+          console.error('Failed to delete workflow:', error);
+          console.error('Error response:', error?.response);
+          console.error('Error response data:', error?.response?.data);
+
+          // Extract error message from different possible locations in the response
+          const responseData = error?.response?.data;
+          let errorMessage = '';
+          let errorCode = '';
+
+          // Try to extract error code and message from various response formats
+          if (typeof responseData === 'string') {
+            errorMessage = responseData;
+          } else if (responseData) {
+            errorCode = responseData.code || responseData.errorCode || '';
+            // Check multiple possible fields for error message
+            errorMessage = responseData.detail || responseData.message || responseData.error || responseData.errorMessage || responseData.details || '';
+          }
+
+          // Fallback to error.message if we couldn't extract from response
+          if (!errorMessage) {
+            errorMessage = error?.message || '';
+          }
+
+          console.log('Extracted error code:', errorCode);
+          console.log('Extracted error message:', errorMessage);
+
+          // Check for specific error codes and provide user-friendly messages
+          if (errorCode === 'ILLEGAL_DELETE_TRANSITIONS_NOT_EMPTY' || errorMessage.includes('ILLEGAL_DELETE_TRANSITIONS_NOT_EMPTY') || errorMessage.includes('transitionIds')) {
+            modal.error({
+              title: 'Cannot Delete Workflow',
+              content: 'This workflow cannot be deleted because it has transitions. Please delete all transitions first, then try again.',
+              okText: 'OK',
+            });
+          } else if (errorCode === 'ILLEGAL_DELETE_STATES_NOT_EMPTY' || errorMessage.includes('ILLEGAL_DELETE_STATES_NOT_EMPTY') || errorMessage.includes('stateIds')) {
+            modal.error({
+              title: 'Cannot Delete Workflow',
+              content: 'This workflow cannot be deleted because it has states. Please delete all states first, then try again.',
+              okText: 'OK',
+            });
+          } else if (errorCode === 'ILLEGAL_DELETE_CRITERIA_NOT_EMPTY' || errorMessage.includes('ILLEGAL_DELETE_CRITERIA_NOT_EMPTY') || errorMessage.includes('criteriaIds')) {
+            modal.error({
+              title: 'Cannot Delete Workflow',
+              content: 'This workflow cannot be deleted because it has criteria. Please delete all criteria first, then try again.',
+              okText: 'OK',
+            });
+          } else if (errorCode === 'ILLEGAL_DELETE_PROCESSES_NOT_EMPTY' || errorMessage.includes('ILLEGAL_DELETE_PROCESSES_NOT_EMPTY') || errorMessage.includes('processIds')) {
+            modal.error({
+              title: 'Cannot Delete Workflow',
+              content: 'This workflow cannot be deleted because it has processes. Please delete all processes first, then try again.',
+              okText: 'OK',
+            });
+          } else {
+            // Generic error message
+            modal.error({
+              title: 'Error',
+              content: errorMessage || 'Failed to delete workflow',
+              okText: 'OK',
+            });
+          }
         }
       },
     });
