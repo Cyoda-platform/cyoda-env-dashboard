@@ -46,7 +46,7 @@ export const Transition: React.FC = () => {
   const [newStateDescription, setNewStateDescription] = useState('');
 
   // Queries
-  const { data: transition, isLoading: isLoadingTransition } = useTransition(
+  const { data: transition, isLoading: isLoadingTransition, refetch: refetchTransition } = useTransition(
     persistedType,
     workflowId,
     transitionId || '',
@@ -106,6 +106,50 @@ export const Transition: React.FC = () => {
       processId: process.id, // Keep original for reference
     }));
   }, [processesList]);
+
+  // Custom tag render for processes to show name instead of JSON
+  const processTagRender = (props: any) => {
+    const { value, closable, onClose } = props;
+    try {
+      const processIdObj = JSON.parse(value);
+      const process = processesList.find((p: any) => {
+        const pId = p.id?.persistedId || p.id?.runtimeId;
+        const selectedId = processIdObj?.persistedId || processIdObj?.runtimeId;
+        return pId === selectedId;
+      });
+
+      return (
+        <span
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            padding: '0 7px',
+            marginRight: '4px',
+            background: 'rgba(255, 255, 255, 0.08)',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            borderRadius: '2px',
+            color: '#fff',
+          }}
+        >
+          <span>{process?.name || value}</span>
+          {closable && (
+            <span
+              onClick={onClose}
+              style={{
+                marginLeft: '4px',
+                cursor: 'pointer',
+                fontSize: '12px',
+              }}
+            >
+              ×
+            </span>
+          )}
+        </span>
+      );
+    } catch (e) {
+      return value;
+    }
+  };
   
   // Initialize form when transition data loads
   useEffect(() => {
@@ -171,22 +215,46 @@ export const Transition: React.FC = () => {
           form: formData,
         });
 
+        // Extract transition ID from result
+        const transitionId = (result as any)?.Data?.id;
+        console.log('=== Transition created ===', { transitionId });
+
         // Create new state if needed (after transition is created)
-        if (isAddNewState && newStateName && result?.id) {
+        if (isAddNewState && newStateName && transitionId) {
           const newStateData = {
             name: newStateName,
             description: newStateDescription,
             entityClassName,
           };
 
-          await createStateMutation.mutateAsync({
+          const stateResult = await createStateMutation.mutateAsync({
             persistedType,
             workflowId,
-            transitionId: result.id,
+            transitionId,
             form: newStateData,
           });
 
-          await refetchStates();
+          console.log('=== Created new state ===', stateResult);
+          console.log('=== State ID ===', stateResult?.id || stateResult?.Data?.id);
+
+          // The postState API automatically updates the transition's endStateId on the backend
+          // Refresh states list and transition (to get updated endStateId)
+          const [, updatedTransitionResult] = await Promise.all([
+            refetchStates(),
+            refetchTransition(),
+          ]);
+
+          console.log('=== Refetched transition ===', updatedTransitionResult.data);
+
+          // Update form with the new endStateId from the backend
+          if (updatedTransitionResult.data) {
+            const newEndStateId = updatedTransitionResult.data.endStateId;
+            console.log('=== Updated endStateId ===', newEndStateId);
+            form.setFieldsValue({
+              endStateId: newEndStateId,
+            });
+          }
+
           setIsAddNewState(false);
           setNewStateName('');
           setNewStateDescription('');
@@ -223,14 +291,29 @@ export const Transition: React.FC = () => {
             entityClassName,
           };
 
-          await createStateMutation.mutateAsync({
+          const stateResult = await createStateMutation.mutateAsync({
             persistedType,
             workflowId,
             transitionId,
             form: newStateData,
           });
 
-          await refetchStates();
+          console.log('=== Created new state ===', stateResult);
+
+          // The postState API automatically updates the transition's endStateId on the backend
+          // Refresh states list and transition (to get updated endStateId)
+          const [, updatedTransitionResult] = await Promise.all([
+            refetchStates(),
+            refetchTransition(),
+          ]);
+
+          // Update form with the new endStateId from the backend
+          if (updatedTransitionResult.data) {
+            form.setFieldsValue({
+              endStateId: updatedTransitionResult.data.endStateId,
+            });
+          }
+
           setIsAddNewState(false);
           setNewStateName('');
           setNewStateDescription('');
@@ -533,6 +616,7 @@ export const Transition: React.FC = () => {
                   disabled={isRuntime}
                   loading={isLoadingProcesses}
                   options={processOptions}
+                  tagRender={processTagRender}
                   showSearch
                   filterOption={(input, option) =>
                     (option?.label ?? '').toLowerCase().includes(input.toLowerCase())

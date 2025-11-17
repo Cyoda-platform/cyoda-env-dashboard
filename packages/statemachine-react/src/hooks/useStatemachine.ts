@@ -213,7 +213,7 @@ export function useState(persistedType: PersistedType, workflowId: string, state
 export function useCreateState() {
   const queryClient = useQueryClient();
   const store = useStatemachineStore();
-  
+
   return useMutation({
     mutationFn: async ({
       persistedType,
@@ -230,7 +230,13 @@ export function useCreateState() {
       return response.data;
     },
     onSuccess: (_, variables) => {
+      // Invalidate states list
       queryClient.invalidateQueries({ queryKey: statemachineKeys.statesList(variables.persistedType, variables.workflowId) });
+      // Invalidate the transition that was used to create this state
+      // The backend automatically updates the transition's endStateId
+      queryClient.invalidateQueries({ queryKey: statemachineKeys.transition(variables.persistedType, variables.workflowId, variables.transitionId) });
+      // Also invalidate transitions list
+      queryClient.invalidateQueries({ queryKey: statemachineKeys.transitionsList(variables.persistedType, variables.workflowId) });
     },
   });
 }

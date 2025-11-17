@@ -170,16 +170,17 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
           `/workflow/${newWorkflow.id}?persistedType=persisted&entityClassName=${values.entityClassName}`
         );
       } else {
-        // For updates, merge form values with the original workflow data
-        // This preserves all server-managed fields
+        // For updates, only send fields that are allowed to be updated
+        // Do NOT send server-managed fields like transitionIds, stateIds, etc.
         const formData = {
-          ...(workflow as any), // Keep all original fields from server
+          '@bean': 'com.cyoda.core.model.stateMachine.dto.WorkflowDto',
+          id: workflowId,
           name: values.name,
           entityClassName: values.entityClassName,
           active: values.active,
+          persisted: (workflow as any)?.persisted ?? true,
           description: values.description,
           metaData: {
-            ...(workflow as any)?.metaData,
             documentLink: values.documentLink || '',
           },
           criteriaIds: values.criteriaIds || [],

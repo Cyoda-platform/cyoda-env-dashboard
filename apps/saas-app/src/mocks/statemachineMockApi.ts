@@ -489,9 +489,15 @@ function handleMockResponse(config: any, url: string, method?: string): Promise<
     });
   }
 
-  // POST /platform-api/statemachine/persisted/workflows/:id/states
-  if (method === 'post' && url.match(/\/platform-api\/statemachine\/(persisted|transient)\/workflows\/[\w-]+\/states$/)) {
-    console.log('🎯 POST state - config.data:', config.data);
+  // POST /platform-api/statemachine/persisted/workflows/:workflowId/transitions/:transitionId/states
+  // Note: This endpoint is used to create a new state linked to a transition
+  // The real Cyoda backend automatically updates the transition's endStateId
+  if (method === 'post' && url.match(/\/platform-api\/statemachine\/(persisted|transient)\/workflows\/[^/]+\/transitions\/[^/]+\/states$/)) {
+    console.log('🎯 POST state (via transition) - config.data:', config.data);
+
+    // Extract transitionId from URL
+    const transitionIdMatch = url.match(/\/transitions\/([^/]+)\/states$/);
+    const transitionId = transitionIdMatch ? decodeURIComponent(transitionIdMatch[1]) : null;
 
     // Parse data if it's a string
     let stateData = config.data;
@@ -509,7 +515,20 @@ function handleMockResponse(config: any, url: string, method?: string): Promise<
       creationDate: Date.now(),
     };
 
-    console.log('✅ Created state:', newState.name || newState.id, newState);
+    // Add to mockStates
+    mockStates.push(newState);
+
+    // Update the transition's endStateId (simulating real backend behavior)
+    const transition = mockTransitions.find(t => t.id === transitionId);
+    if (transition) {
+      transition.endStateId = newState.id;
+      console.log('✅ Updated transition endStateId:', transitionId, '→', newState.id);
+    }
+
+    saveMockData();
+
+    console.log('✅ Created state via transition:', newState.name || newState.id, 'for transition:', transitionId);
+
     return Promise.resolve({
       data: newState,
       status: 200,
