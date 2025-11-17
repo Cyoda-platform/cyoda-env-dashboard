@@ -103,13 +103,15 @@ export const useImportWorkflows = () => {
 
   return useMutation({
     mutationFn: async ({ data, needRewrite = true }: ImportWorkflowsParams) => {
-      console.log('[Import] Importing workflows with needRewrite:', needRewrite);
-      console.log('[Import] Import data:', data);
-      console.log('[Import] Workflows to import:', data.workflow);
-      console.log('[Import] Transitions to import:', data.transitions);
-      console.log('[Import] States to import:', data.states);
-      console.log('[Import] Criteria to import:', data.criterias);
-      console.log('[Import] Processes to import:', data.processes);
+      console.log('[Import] ========== IMPORT REQUEST ==========');
+      console.log('[Import] needRewrite:', needRewrite);
+      console.log('[Import] Workflows to import:', data.workflow?.length || 0);
+      console.log('[Import] Transitions to import:', data.transitions?.length || 0);
+      console.log('[Import] States to import:', data.states?.length || 0);
+      console.log('[Import] Criterias to import:', data.criterias?.length || 0);
+      console.log('[Import] Processes to import:', data.processes?.length || 0);
+      console.log('[Import] ProcessParams to import:', data.processParams?.length || 0);
+      console.log('[Import] =========================================');
 
       const response = await axios.post(
         `/platform-api/statemachine/import?needRewrite=${needRewrite}`,
