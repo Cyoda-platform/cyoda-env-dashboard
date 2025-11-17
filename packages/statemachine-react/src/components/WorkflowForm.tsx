@@ -170,15 +170,17 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
           `/workflow/${newWorkflow.id}?persistedType=persisted&entityClassName=${values.entityClassName}`
         );
       } else {
-        // For updates, only send fields that are allowed to be updated
-        // Do NOT send server-managed fields like transitionIds, stateIds, etc.
+        // For updates, include all fields from the original workflow (like Vue project does)
+        // This ensures backend receives all required fields including owner, creationDate, etc.
         const formData = {
+          // Start with all fields from the original workflow
+          ...workflow,
+          // Override with form values
           '@bean': 'com.cyoda.core.model.stateMachine.dto.WorkflowDto',
           id: workflowId,
           name: values.name,
           entityClassName: values.entityClassName,
           active: values.active,
-          persisted: (workflow as any)?.persisted ?? true,
           description: values.description,
           metaData: {
             documentLink: values.documentLink || '',

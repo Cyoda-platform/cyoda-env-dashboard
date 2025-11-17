@@ -192,19 +192,37 @@ export const Transition: React.FC = () => {
       const endProcessesIds = (values.processIds || []).map((p: string) => JSON.parse(p));
 
       // Build the form data
-      const formData: TransitionFormType = {
-        '@bean': 'com.cyoda.core.model.stateMachine.dto.TransitionDto',
-        name: values.name,
-        description: values.description,
-        active: values.active,
-        automated: values.automated,
-        startStateId: values.startStateId,
-        endStateId: finalEndStateId, // Always include endStateId
-        criteriaIds: values.criteriaIds || [],
-        endProcessesIds,
-        workflowId,
-        entityClassName,
-      };
+      // For updates, include all fields from the original transition (like Vue project does)
+      const formData: TransitionFormType = isNew
+        ? {
+            '@bean': 'com.cyoda.core.model.stateMachine.dto.TransitionDto',
+            name: values.name,
+            description: values.description,
+            active: values.active,
+            automated: values.automated,
+            startStateId: values.startStateId,
+            endStateId: finalEndStateId,
+            criteriaIds: values.criteriaIds || [],
+            endProcessesIds,
+            workflowId,
+            entityClassName,
+          }
+        : {
+            // For updates, include all fields from the original transition
+            ...transition,
+            '@bean': 'com.cyoda.core.model.stateMachine.dto.TransitionDto',
+            id: transitionId,
+            name: values.name,
+            description: values.description,
+            active: values.active,
+            automated: values.automated,
+            startStateId: values.startStateId,
+            endStateId: finalEndStateId,
+            criteriaIds: values.criteriaIds || [],
+            endProcessesIds,
+            workflowId,
+            entityClassName,
+          };
 
       console.log('=== Transition Form Data ===', formData);
 
@@ -238,22 +256,8 @@ export const Transition: React.FC = () => {
           console.log('=== State ID ===', stateResult?.id || stateResult?.Data?.id);
 
           // The postState API automatically updates the transition's endStateId on the backend
-          // Refresh states list and transition (to get updated endStateId)
-          const [, updatedTransitionResult] = await Promise.all([
-            refetchStates(),
-            refetchTransition(),
-          ]);
-
-          console.log('=== Refetched transition ===', updatedTransitionResult.data);
-
-          // Update form with the new endStateId from the backend
-          if (updatedTransitionResult.data) {
-            const newEndStateId = updatedTransitionResult.data.endStateId;
-            console.log('=== Updated endStateId ===', newEndStateId);
-            form.setFieldsValue({
-              endStateId: newEndStateId,
-            });
-          }
+          // Refresh states list only (don't refetch transition for new transitions to avoid 500 error)
+          await refetchStates();
 
           setIsAddNewState(false);
           setNewStateName('');

@@ -31,6 +31,11 @@ export interface WorkflowForm {
   criteriaIds?: string[];
   useDecisionTree?: boolean;
   decisionTrees?: any[];
+  // Additional fields from backend response (needed for updates)
+  owner?: string;
+  creationDate?: string | number;
+  // Allow any additional fields from backend
+  [key: string]: any;
 }
 
 // State Types
@@ -87,6 +92,15 @@ export interface TransitionForm {
   endProcessesIds?: string[];
   workflowId?: string;
   entityClassName?: string;
+  // Additional fields from backend response (needed for updates)
+  persisted?: boolean;
+  owner?: string;
+  creationDate?: string;
+  startStateName?: string;
+  endStateName?: string;
+  logActivity?: boolean;
+  // Allow any additional fields from backend
+  [key: string]: any;
 }
 
 // Criteria Types
