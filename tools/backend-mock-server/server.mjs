@@ -1498,58 +1498,222 @@ app.get('/platform-api/reporting/definitions', (req, res) => {
   ]);
 });
 
+// Mock data for statemachine
+const mockWorkflows = [
+  {
+    id: 'workflow-1',
+    name: 'default-tdb-workflow',
+    entityClassName: 'com.cyoda.tdb.model.treenode.TreeNodeEntity',
+    active: true,
+    persisted: true,
+    creationDate: Date.now() - 86400000 * 30
+  },
+  {
+    id: 'workflow-2',
+    name: 'default-workflow',
+    entityClassName: 'com.cyoda.core.model.blob.CyodaBlobEntity',
+    active: true,
+    persisted: true,
+    creationDate: Date.now() - 86400000 * 25
+  },
+  {
+    id: 'workflow-3',
+    name: 'default-workflow',
+    entityClassName: 'com.cyoda.plugins.iam.model.entity.LegalEntityExtKey',
+    active: true,
+    persisted: true,
+    creationDate: Date.now() - 86400000 * 20
+  },
+  {
+    id: 'workflow-4',
+    name: 'default-workflow',
+    entityClassName: 'net.cyoda.saas.model.LegalEntity',
+    active: true,
+    persisted: true,
+    creationDate: Date.now() - 86400000 * 15
+  },
+  {
+    id: 'workflow-5',
+    name: 'default-workflow',
+    entityClassName: 'net.cyoda.saas.model.TrinoSchemaDefinitionEntity',
+    active: true,
+    persisted: true,
+    creationDate: Date.now() - 86400000 * 10
+  },
+  {
+    id: 'workflow-6',
+    name: 'default-workflow',
+    entityClassName: 'net.cyoda.saas.model.TrinoViewDefinitionEntity',
+    active: true,
+    persisted: true,
+    creationDate: Date.now() - 86400000 * 5
+  }
+];
+
+const mockStates = [
+  // Workflow 1 states
+  { id: 'state-001', name: 'CREATED', workflowId: 'workflow-1', isInitial: true, isFinal: false },
+  { id: 'state-002', name: 'PROCESSING', workflowId: 'workflow-1', isInitial: false, isFinal: false },
+  { id: 'state-003', name: 'COMPLETED', workflowId: 'workflow-1', isInitial: false, isFinal: true },
+  // Workflow 2 states
+  { id: 'state-004', name: 'PENDING', workflowId: 'workflow-2', isInitial: true, isFinal: false },
+  { id: 'state-005', name: 'ACTIVE', workflowId: 'workflow-2', isInitial: false, isFinal: false },
+  { id: 'state-006', name: 'ARCHIVED', workflowId: 'workflow-2', isInitial: false, isFinal: true },
+];
+
+const mockTransitions = [
+  // Workflow 1 transitions
+  {
+    id: 'trans-001',
+    name: 'Start Processing',
+    startStateId: 'state-001',
+    endStateId: 'state-002',
+    startStateName: 'CREATED',
+    endStateName: 'PROCESSING',
+    automated: true,
+    active: true,
+    persisted: true,
+    workflowId: 'workflow-1',
+    criteriaIds: ['criteria-001'],
+    endProcessesIds: ['process-001'],
+  },
+  {
+    id: 'trans-002',
+    name: 'Complete',
+    startStateId: 'state-002',
+    endStateId: 'state-003',
+    startStateName: 'PROCESSING',
+    endStateName: 'COMPLETED',
+    automated: true,
+    active: true,
+    persisted: true,
+    workflowId: 'workflow-1',
+    criteriaIds: [],
+    endProcessesIds: ['process-002'],
+  },
+  // Workflow 2 transitions
+  {
+    id: 'trans-003',
+    name: 'Activate',
+    startStateId: 'state-004',
+    endStateId: 'state-005',
+    startStateName: 'PENDING',
+    endStateName: 'ACTIVE',
+    automated: false,
+    active: true,
+    persisted: true,
+    workflowId: 'workflow-2',
+    criteriaIds: ['criteria-002'],
+    endProcessesIds: [],
+  },
+  {
+    id: 'trans-004',
+    name: 'Archive',
+    startStateId: 'state-005',
+    endStateId: 'state-006',
+    startStateName: 'ACTIVE',
+    endStateName: 'ARCHIVED',
+    automated: false,
+    active: true,
+    persisted: true,
+    workflowId: 'workflow-2',
+    criteriaIds: [],
+    endProcessesIds: ['process-003'],
+  },
+];
+
+const mockCriteria = [
+  { id: 'criteria-001', name: 'Data Valid', description: 'Check if data is valid', entityClassName: 'com.cyoda.tdb.model.treenode.TreeNodeEntity' },
+  { id: 'criteria-002', name: 'User Verified', description: 'Check if user is verified', entityClassName: 'com.cyoda.core.model.blob.CyodaBlobEntity' },
+];
+
+const mockProcesses = [
+  { id: 'process-001', name: 'Initialize Processing', description: 'Initialize data processing', entityClassName: 'com.cyoda.tdb.model.treenode.TreeNodeEntity' },
+  { id: 'process-002', name: 'Send Notification', description: 'Send completion notification', entityClassName: 'com.cyoda.tdb.model.treenode.TreeNodeEntity' },
+  { id: 'process-003', name: 'Cleanup Resources', description: 'Clean up allocated resources', entityClassName: 'com.cyoda.core.model.blob.CyodaBlobEntity' },
+];
+
 // Workflows
 app.get('/platform-api/statemachine/workflows', (req, res) => {
-  res.json([
-    {
-      id: 'workflow-1',
-      name: 'default-tdb-workflow',
-      entityClassName: 'com.cyoda.tdb.model.treenode.TreeNodeEntity',
-      active: true,
-      persisted: true,
-      creationDate: Date.now() - 86400000 * 30
+  res.json(mockWorkflows);
+});
+
+// Export workflows
+app.get('/platform-api/statemachine/export', (req, res) => {
+  console.log('📤 Export request received');
+
+  // Parse includeIds from query string
+  const includeIds = req.query.includeIds;
+  const ids = Array.isArray(includeIds) ? includeIds : (includeIds ? [includeIds] : []);
+  console.log('   includeIds:', ids);
+
+  // Filter workflows by IDs
+  const workflowsToExport = ids.length > 0
+    ? mockWorkflows.filter(w => ids.includes(w.id))
+    : mockWorkflows;
+  console.log(`   Exporting ${workflowsToExport.length} workflows:`, workflowsToExport.map(w => w.name));
+
+  // Get related states and transitions
+  const workflowIds = workflowsToExport.map(w => w.id);
+  const statesToExport = mockStates.filter(s => workflowIds.includes(s.workflowId));
+  const transitionsToExport = mockTransitions.filter(t => workflowIds.includes(t.workflowId));
+
+  // Get related criteria and processes from transitions
+  const criteriaIds = new Set();
+  const processIds = new Set();
+
+  transitionsToExport.forEach(t => {
+    t.criteriaIds?.forEach(id => criteriaIds.add(id));
+    t.endProcessesIds?.forEach(id => processIds.add(id));
+  });
+
+  const criteriaToExport = mockCriteria.filter(c => criteriaIds.has(c.id));
+  const processesToExport = mockProcesses.filter(p => processIds.has(p.id));
+
+  console.log(`   Export summary:`);
+  console.log(`     - Workflows: ${workflowsToExport.length}`);
+  console.log(`     - States: ${statesToExport.length}`);
+  console.log(`     - Transitions: ${transitionsToExport.length}`);
+  console.log(`     - Criteria: ${criteriaToExport.length}`);
+  console.log(`     - Processes: ${processesToExport.length}`);
+
+  // Return in the expected format
+  const exportData = {
+    workflow: workflowsToExport,
+    state: statesToExport,
+    transition: transitionsToExport,
+    criteria: criteriaToExport,
+    process: processesToExport,
+  };
+
+  res.json(exportData);
+});
+
+// Import workflows
+app.post('/platform-api/statemachine/import', (req, res) => {
+  console.log('📥 Import request received');
+  const { needRewrite } = req.query;
+  const importData = req.body;
+
+  console.log('   needRewrite:', needRewrite);
+  console.log('   Workflows to import:', importData.workflow?.length || 0);
+  console.log('   States to import:', importData.state?.length || 0);
+  console.log('   Transitions to import:', importData.transition?.length || 0);
+  console.log('   Criteria to import:', importData.criteria?.length || 0);
+  console.log('   Processes to import:', importData.process?.length || 0);
+
+  // Mock import - just return success
+  res.json({
+    success: true,
+    imported: {
+      workflows: importData.workflow?.length || 0,
+      states: importData.state?.length || 0,
+      transitions: importData.transition?.length || 0,
+      criteria: importData.criteria?.length || 0,
+      processes: importData.process?.length || 0,
     },
-    {
-      id: 'workflow-2',
-      name: 'default-workflow',
-      entityClassName: 'com.cyoda.core.model.blob.CyodaBlobEntity',
-      active: true,
-      persisted: true,
-      creationDate: Date.now() - 86400000 * 25
-    },
-    {
-      id: 'workflow-3',
-      name: 'default-workflow',
-      entityClassName: 'com.cyoda.plugins.iam.model.entity.LegalEntityExtKey',
-      active: true,
-      persisted: true,
-      creationDate: Date.now() - 86400000 * 20
-    },
-    {
-      id: 'workflow-4',
-      name: 'default-workflow',
-      entityClassName: 'net.cyoda.saas.model.LegalEntity',
-      active: true,
-      persisted: true,
-      creationDate: Date.now() - 86400000 * 15
-    },
-    {
-      id: 'workflow-5',
-      name: 'default-workflow',
-      entityClassName: 'net.cyoda.saas.model.TrinoSchemaDefinitionEntity',
-      active: true,
-      persisted: true,
-      creationDate: Date.now() - 86400000 * 10
-    },
-    {
-      id: 'workflow-6',
-      name: 'default-workflow',
-      entityClassName: 'net.cyoda.saas.model.TrinoViewDefinitionEntity',
-      active: true,
-      persisted: true,
-      creationDate: Date.now() - 86400000 * 5
-    }
-  ]);
+    message: 'Import successful'
+  });
 });
 
 // Workflow enabled types (basic endpoint - returns objects with type info)

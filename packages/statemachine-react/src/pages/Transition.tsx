@@ -99,12 +99,15 @@ export const Transition: React.FC = () => {
   
   // Process options - serialize objects to JSON strings for Select
   const processOptions = useMemo(() => {
-    return processesList.map((process: any) => ({
+    console.log('[Transition] Processes list:', processesList);
+    const options = processesList.map((process: any) => ({
       label: process.name,
       value: JSON.stringify(process.id), // Serialize to string for Select
       description: process.description,
       processId: process.id, // Keep original for reference
     }));
+    console.log('[Transition] Process options:', options);
+    return options;
   }, [processesList]);
 
   // Custom tag render for processes to show name instead of JSON
@@ -190,6 +193,9 @@ export const Transition: React.FC = () => {
 
       // Convert JSON strings back to objects
       const endProcessesIds = (values.processIds || []).map((p: string) => JSON.parse(p));
+
+      console.log('[Transition] Form values.processIds:', values.processIds);
+      console.log('[Transition] Converted endProcessesIds:', endProcessesIds);
 
       // Build the form data
       // For updates, include all fields from the original transition (like Vue project does)
@@ -379,26 +385,46 @@ export const Transition: React.FC = () => {
 
   const handleProcessSubmitted = async (params: any) => {
     setIsProcessModalVisible(false);
-    await refetchProcesses();
+
+    console.log('[Transition] Process submitted with params:', params);
 
     if (params?.id) {
+      // Refetch processes to get the latest list including the newly created process
+      const { data: updatedProcessesList } = await refetchProcesses();
+
+      console.log('[Transition] Updated processes list:', updatedProcessesList);
+
       const currentProcessIds = form.getFieldValue('processIds') || [];
-      // Find the process object by ID
-      const process = processesList.find((p: any) => {
+
+      // Find the process object by ID in the updated list
+      const process = updatedProcessesList?.find((p: any) => {
         const pId = p.id?.persistedId || p.id?.runtimeId;
-        const paramId = typeof params.id === 'object' ? params.id.persistedId : params.id;
+        const paramId = typeof params.id === 'object' ? params.id.persistedId || params.id.runtimeId : params.id;
+        console.log('[Transition] Comparing process:', { pId, paramId });
         return pId === paramId;
       });
 
+      console.log('[Transition] Found process:', process);
+
       if (process?.id) {
         const processIdStr = JSON.stringify(process.id);
+        console.log('[Transition] Adding process to form:', processIdStr);
+
         // Check if not already added
         if (!currentProcessIds.includes(processIdStr)) {
           form.setFieldsValue({
             processIds: [...currentProcessIds, processIdStr],
           });
+          console.log('[Transition] Process added to form successfully');
+        } else {
+          console.log('[Transition] Process already in the list');
         }
+      } else {
+        console.warn('[Transition] Process not found in updated list');
       }
+    } else {
+      console.log('[Transition] No process ID in params, just refetching');
+      await refetchProcesses();
     }
   };
 

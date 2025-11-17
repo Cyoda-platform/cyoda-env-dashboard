@@ -136,20 +136,6 @@ export const TransitionsList: React.FC<TransitionsListProps> = ({
   };
   
   const handleDelete = (record: TransitionRow) => {
-    console.log('handleDelete called with record:', record);
-    console.log('transitions.length:', transitions.length);
-
-    // Check if this is the last transition
-    if (transitions.length === 1) {
-      modal.warning({
-        title: 'Cannot delete transition',
-        content: 'At least one transition is required. You cannot delete the last transition.',
-        okText: 'OK',
-      });
-      return;
-    }
-
-    console.log('Showing delete confirmation modal');
     modal.confirm({
       title: 'Delete confirmation',
       content: 'Are you sure you want to delete this transition?',
@@ -157,14 +143,12 @@ export const TransitionsList: React.FC<TransitionsListProps> = ({
       okType: 'danger',
       cancelText: 'Cancel',
       onOk: async () => {
-        console.log('Delete confirmed, calling API...');
         try {
           await deleteTransitionMutation.mutateAsync({
             persistedType,
             workflowId,
             transitionId: record.id,
           });
-          console.log('Transition deleted successfully');
           message.success('Transition deleted successfully');
 
           // Invalidate both transitions and workflow (replaces eventBus.$emit('workflow:reload'))

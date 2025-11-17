@@ -65,7 +65,18 @@ export const useExportWorkflows = () => {
       } else {
         // Export as JSON
         const ids = workflows.map((w) => `includeIds=${encodeURIComponent(w.id)}`);
+        console.log('[Export] Exporting workflows with IDs:', workflows.map(w => w.id));
         const { data } = await axios.get(`/platform-api/statemachine/export?${ids.join('&')}`);
+
+        console.log('[Export] ========== EXPORT RESPONSE ==========');
+        console.log('[Export] Response keys:', Object.keys(data));
+        console.log('[Export] Workflows:', data.workflow?.length || 0);
+        console.log('[Export] Transitions:', data.transitions?.length || 0);
+        console.log('[Export] States:', data.states?.length || 0);
+        console.log('[Export] Criterias:', data.criterias?.length || 0);
+        console.log('[Export] Processes:', data.processes?.length || 0);
+        console.log('[Export] ProcessParams:', data.processParams?.length || 0);
+        console.log('[Export] ==========================================');
 
         // Download the file
         const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -92,10 +103,20 @@ export const useImportWorkflows = () => {
 
   return useMutation({
     mutationFn: async ({ data, needRewrite = true }: ImportWorkflowsParams) => {
+      console.log('[Import] Importing workflows with needRewrite:', needRewrite);
+      console.log('[Import] Import data:', data);
+      console.log('[Import] Workflows to import:', data.workflow);
+      console.log('[Import] Transitions to import:', data.transitions);
+      console.log('[Import] States to import:', data.states);
+      console.log('[Import] Criteria to import:', data.criterias);
+      console.log('[Import] Processes to import:', data.processes);
+
       const response = await axios.post(
         `/platform-api/statemachine/import?needRewrite=${needRewrite}`,
         data
       );
+
+      console.log('[Import] Import response:', response.data);
       return response.data;
     },
     onSuccess: () => {

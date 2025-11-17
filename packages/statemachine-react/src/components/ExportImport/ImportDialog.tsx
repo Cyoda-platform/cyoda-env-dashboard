@@ -45,16 +45,26 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
       if (file) {
         try {
           const text = await readFileAsText(file);
+          console.log('[ImportDialog] File text:', text);
           const data = JSON.parse(text);
+          console.log('[ImportDialog] Parsed JSON data:', data);
+          console.log('[ImportDialog] Workflows:', data.workflow);
+          console.log('[ImportDialog] Transitions:', data.transitions);
+          console.log('[ImportDialog] States:', data.states);
+          console.log('[ImportDialog] Criterias:', data.criterias);
+          console.log('[ImportDialog] Processes:', data.processes);
 
           if (validateWorkflowData(data)) {
+            console.log('[ImportDialog] Validation passed, setting parsed data');
             setParsedData(data);
             setValidationError('');
           } else {
+            console.log('[ImportDialog] Validation failed');
             setParsedData(null);
             setValidationError('Invalid workflow data structure. Please check the file format.');
           }
         } catch (error) {
+          console.error('[ImportDialog] Parse error:', error);
           setParsedData(null);
           setValidationError('Failed to parse JSON file. Please ensure the file is valid JSON.');
         }

@@ -44,7 +44,7 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
   const isRuntime = persistedType === 'transient';
 
   // Queries
-  const { data: workflow, isLoading: isLoadingWorkflow } = useWorkflow(
+  const { data: workflow, isLoading: isLoadingWorkflow, refetch: refetchWorkflow } = useWorkflow(
     persistedType,
     workflowId || '',
     !isNew
@@ -173,14 +173,18 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
           `/workflow/${newWorkflow.id}?persistedType=persisted&entityClassName=${values.entityClassName}`
         );
       } else {
+        // For updates, refetch the latest workflow data first to get current transitionIds and stateIds
+        // This ensures we don't send stale data (e.g., deleted transitions)
+        const { data: latestWorkflow } = await refetchWorkflow();
+
         // For updates, include all fields from the original workflow (like Vue project does)
         // This ensures backend receives all required fields including owner, creationDate, etc.
-        // IMPORTANT: We must preserve transitionIds and stateIds from the original workflow
+        // IMPORTANT: We must preserve transitionIds and stateIds from the latest workflow data
         // Backend doesn't allow changing these fields directly - they are managed through
         // separate transition/state endpoints
         const formData = {
-          // Start with all fields from the original workflow
-          ...workflow,
+          // Start with all fields from the latest workflow
+          ...latestWorkflow,
           // Override with form values
           '@bean': 'com.cyoda.core.model.stateMachine.dto.WorkflowDto',
           id: workflowId,
@@ -193,11 +197,11 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
           },
           criteriaIds: values.criteriaIds || [],
           useDecisionTree: values.useDecisionTree || false,
-          decisionTrees: (workflow as any)?.decisionTrees || [],
-          // Preserve transitionIds and stateIds from original workflow
+          decisionTrees: (latestWorkflow as any)?.decisionTrees || [],
+          // Preserve transitionIds and stateIds from latest workflow
           // These are read-only fields managed by backend
-          transitionIds: (workflow as any)?.transitionIds || [],
-          stateIds: (workflow as any)?.stateIds || [],
+          transitionIds: (latestWorkflow as any)?.transitionIds || [],
+          stateIds: (latestWorkflow as any)?.stateIds || [],
         };
 
         console.log('[WorkflowForm] Saving workflow with data:', formData);
