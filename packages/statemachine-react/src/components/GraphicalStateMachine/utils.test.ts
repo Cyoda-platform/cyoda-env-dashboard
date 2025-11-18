@@ -1306,7 +1306,7 @@ describe('GraphicalStateMachine Utils', () => {
         expect(result).toHaveLength(2);
         expect(result[0].data.entityId).toBe('criteria-1');
         expect(result[1].data.entityId).toBe('criteria-2');
-        expect(consoleWarnSpy).toHaveBeenCalledWith("Couldn't find criteria criteria-missing");
+        expect(consoleWarnSpy).toHaveBeenCalledWith("Couldn't find criteria", "criteria-missing");
 
         consoleWarnSpy.mockRestore();
       });

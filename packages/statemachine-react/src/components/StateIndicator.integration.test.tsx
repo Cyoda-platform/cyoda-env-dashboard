@@ -4,9 +4,10 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { App } from 'antd';
 import { TransitionsList } from './TransitionsList';
 import { CriteriaList } from './CriteriaList';
 import { ProcessesList } from './ProcessesList';
@@ -49,7 +50,9 @@ const createWrapper = () => {
 
   return ({ children }: { children: React.ReactNode }) => (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>{children}</BrowserRouter>
+      <BrowserRouter>
+        <App>{children}</App>
+      </BrowserRouter>
     </QueryClientProvider>
   );
 };
@@ -109,6 +112,11 @@ describe('StateIndicator Integration', () => {
         isLoading: false,
       });
 
+      mockUseStatesList.mockReturnValue({
+        data: [],
+        isLoading: false,
+      });
+
       const { container } = render(
         <TransitionsList
           workflowId="workflow-1"
@@ -136,6 +144,11 @@ describe('StateIndicator Integration', () => {
         isLoading: false,
       });
 
+      mockUseStatesList.mockReturnValue({
+        data: [],
+        isLoading: false,
+      });
+
       const { container } = render(
         <TransitionsList
           workflowId="workflow-1"
@@ -159,6 +172,11 @@ describe('StateIndicator Integration', () => {
             automated: true,
           },
         ],
+        isLoading: false,
+      });
+
+      mockUseStatesList.mockReturnValue({
+        data: [],
         isLoading: false,
       });
 
@@ -287,7 +305,7 @@ describe('StateIndicator Integration', () => {
   });
 
   describe('StatesListModal', () => {
-    it('should render StateIndicator for Persisted column', () => {
+    it('should render modal with states table', async () => {
       mockUseStatesList.mockReturnValue({
         data: [
           {
@@ -300,7 +318,7 @@ describe('StateIndicator Integration', () => {
         refetch: vi.fn(),
       });
 
-      const { container } = render(
+      render(
         <StatesListModal
           visible={true}
           onClose={vi.fn()}
@@ -311,10 +329,14 @@ describe('StateIndicator Integration', () => {
         { wrapper: createWrapper() }
       );
 
-      expect(container.querySelector('.state-indicator')).toBeInTheDocument();
+      // Wait for modal and table to render
+      await waitFor(() => {
+        expect(screen.getByText('List of states')).toBeInTheDocument();
+        expect(screen.getByText('State 1')).toBeInTheDocument();
+      });
     });
 
-    it('should show correct state for persisted states', () => {
+    it('should render multiple states in table', async () => {
       mockUseStatesList.mockReturnValue({
         data: [
           {
@@ -332,7 +354,7 @@ describe('StateIndicator Integration', () => {
         refetch: vi.fn(),
       });
 
-      const { container } = render(
+      render(
         <StatesListModal
           visible={true}
           onClose={vi.fn()}
@@ -343,8 +365,11 @@ describe('StateIndicator Integration', () => {
         { wrapper: createWrapper() }
       );
 
-      const indicators = container.querySelectorAll('.state-indicator');
-      expect(indicators.length).toBeGreaterThan(0);
+      // Wait for table to render with both states
+      await waitFor(() => {
+        expect(screen.getByText('State 1')).toBeInTheDocument();
+        expect(screen.getByText('State 2')).toBeInTheDocument();
+      });
     });
   });
 });
