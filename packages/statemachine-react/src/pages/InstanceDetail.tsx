@@ -4,7 +4,7 @@
  * Migrated from: .old_project/packages/statemachine/src/views/InstancesDetailView.vue
  */
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { Tabs, Card, Spin, Typography, Space, Alert, Descriptions, Button, Switch, Divider } from 'antd';
 import type { TabsProps } from 'antd';
@@ -13,15 +13,17 @@ import {
   useWorkflow,
   useWorkflowEnabledTypes,
 } from '../hooks/useStatemachine';
-import { getEntityLoad } from '@cyoda/http-api-react/api/entities';
-import type { Entity } from '@cyoda/http-api-react/types';
+import { useEntityLoad } from '../hooks/useEntity';
+import type { Entity } from '@cyoda/http-api-react';
 import type { PersistedType } from '../types';
 import axios from 'axios';
-import { HelperDetailEntity } from '@cyoda/tableau-react/utils';
-import EntityDetailTree from '@cyoda/tableau-react/components/EntityDetailTree';
-import EntityTransitions from '@cyoda/tableau-react/components/EntityTransitions';
-import EntityAudit from '@cyoda/tableau-react/components/EntityAudit';
-import EntityDataLineage from '@cyoda/tableau-react/components/EntityDataLineage';
+import {
+  HelperDetailEntity,
+  EntityDetailTree,
+  EntityTransitions,
+  EntityAudit,
+  EntityDataLineage,
+} from '@cyoda/tableau-react';
 import './InstanceDetail.scss';
 
 const { Title, Text } = Typography;
@@ -44,30 +46,12 @@ export const InstanceDetail: React.FC = () => {
   );
   const { data: workflowEnabledTypes = [] } = useWorkflowEnabledTypes();
 
-  // Load entity data
-  const [entityData, setEntityData] = useState<Entity[] | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    const loadData = async () => {
-      if (!instanceId || !entityClassName) return;
-
-      setLoading(true);
-      try {
-        const { data } = await getEntityLoad(instanceId, entityClassName);
-        const filtered = HelperDetailEntity.filterData(data);
-        console.log('[InstanceDetail] Loaded entity data:', filtered);
-        setEntityData(filtered);
-      } catch (error) {
-        console.error('[InstanceDetail] Failed to load entity data:', error);
-        setEntityData(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadData();
-  }, [instanceId, entityClassName]);
+  // Load entity data using React Query
+  const {
+    data: entityData = null,
+    isLoading: loading,
+    error: entityLoadError
+  } = useEntityLoad(instanceId, entityClassName);
 
   // Determine if we should show JSON view
   const isShowDetailJson = () => {
@@ -172,7 +156,7 @@ export const InstanceDetail: React.FC = () => {
             <Tabs
               activeKey={activeTab}
               onChange={setActiveTab}
-              destroyInactiveTabPane={false}
+              destroyOnHidden={false}
               items={tabItems}
               className="instance-detail-tabs"
             />
@@ -364,7 +348,7 @@ const WorkflowView: React.FC<{
 }> = ({ workflowId, entityClassName, instanceId, persistedType, entityData }) => {
   // Extract state from entity data array
   const stateItem = Array.isArray(entityData)
-    ? entityData.find((item: any) => item.columnName === 'state')
+    ? entityData.find((item: any) => item.columnInfo?.columnName === 'state')
     : null;
   const currentState = stateItem?.value || 'Unknown';
 
