@@ -9,10 +9,7 @@
 }
 
 .range-condition .filter-builder-condition {
-  background: #f5f5f5;
-  padding: 16px;
-  border-radius: 4px;
-  border: 1px solid #d9d9d9;
+  /* Remove background and border to match old project */
 }
 
 .range-condition .builder-condition-row::after,

@@ -142,7 +142,7 @@ export const RangeCondition: React.FC<RangeConditionProps> = ({
   const hasRangeCondition = form.rangeCondition && form.rangeCondition['@bean'];
 
   return (
-    <div className="range-condition">
+    <div className="range-condition" data-testid="range-condition">
       <Row gutter={[16, 16]}>
         <Col span={24}>
           <Button
@@ -197,7 +197,7 @@ export const RangeCondition: React.FC<RangeConditionProps> = ({
                 condition={form.rangeCondition}
                 cols={colsRange}
                 showErrors={false}
-                disableRemove={false}
+                disableRemove={true}
                 disableColumn={true}
                 readOnly={disabled}
                 onRemove={handleConditionRemove}
