@@ -53,6 +53,10 @@ vi.mock('../hooks/useStatemachine', () => ({
   useProcesses: () => mockUseProcesses(),
   useCriteria: () => mockUseCriteria(),
   useCriteriaForWorkflow: () => mockUseCriteriaForWorkflow(),
+  useStatesList: () => ({
+    data: [],
+    isLoading: false,
+  }),
 }));
 
 // Mock the store

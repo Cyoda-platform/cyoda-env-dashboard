@@ -6,7 +6,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import React from 'react';
 import { Transition } from './Transition';
 
@@ -44,6 +44,10 @@ vi.mock('../hooks/useStatemachine', () => ({
   useCreateState: vi.fn(() => ({
     mutateAsync: mockCreateStateMutateAsync,
     isPending: false,
+  })),
+  useEntityParentClasses: vi.fn(() => ({
+    data: [],
+    isLoading: false,
   })),
   useCriteria: vi.fn(() => ({
     data: null,
@@ -94,7 +98,7 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
-const createWrapper = () => {
+const createWrapper = (transitionId = 'new', workflowId = 'workflow-1') => {
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: { retry: false },
@@ -102,13 +106,15 @@ const createWrapper = () => {
     },
   });
 
+  const initialUrl = `/transition/${transitionId}?workflowId=${workflowId}&persistedType=persisted&entityClassName=com.example.Entity`;
+
   return ({ children }: { children: React.ReactNode }) => (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
+      <MemoryRouter initialEntries={[initialUrl]}>
         <Routes>
-          <Route path="*" element={children} />
+          <Route path="/transition/:transitionId" element={children} />
         </Routes>
-      </BrowserRouter>
+      </MemoryRouter>
     </QueryClientProvider>
   );
 };
@@ -120,22 +126,21 @@ describe('Transition Page', () => {
 
   it('should render the transition form', () => {
     render(<Transition />, { wrapper: createWrapper() });
-    expect(screen.getByText('Transition Details')).toBeInTheDocument();
+    expect(screen.getByText('Create New Transition')).toBeInTheDocument();
   });
 
   it('should render form fields', () => {
     render(<Transition />, { wrapper: createWrapper() });
-    
+
     // Check for key form fields
     expect(screen.getByLabelText(/Name/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Description/i)).toBeInTheDocument();
   });
 
-  it('should render Active, Manual, and Automated toggles', () => {
+  it('should render Active and Automated toggles', () => {
     render(<Transition />, { wrapper: createWrapper() });
-    
+
     expect(screen.getByText('Active')).toBeInTheDocument();
-    expect(screen.getByText('Manual')).toBeInTheDocument();
     expect(screen.getByText('Automated')).toBeInTheDocument();
   });
 
@@ -172,12 +177,13 @@ describe('Transition Page', () => {
   it('should show new state creation form when "Create new State" is clicked', async () => {
     const user = userEvent.setup();
     render(<Transition />, { wrapper: createWrapper() });
-    
+
     const createStateButton = screen.getByText('Create new State');
     await user.click(createStateButton);
-    
+
     await waitFor(() => {
-      expect(screen.getByPlaceholderText(/Enter state name/i)).toBeInTheDocument();
+      expect(screen.getByText(/New state name/i)).toBeInTheDocument();
+      expect(screen.getByText('Discard and go back to selection')).toBeInTheDocument();
     });
   });
 
@@ -290,26 +296,27 @@ describe('Transition Page', () => {
     const user = userEvent.setup();
     mockCreateTransitionMutateAsync.mockResolvedValue({ id: 'trans-1' });
     mockCreateStateMutateAsync.mockResolvedValue({ id: 'state-1' });
-    
-    render(<Transition />, { wrapper: createWrapper() });
-    
+
+    const { container } = render(<Transition />, { wrapper: createWrapper() });
+
     // Click "Create new State"
     const createStateButton = screen.getByText('Create new State');
     await user.click(createStateButton);
-    
-    // Fill in new state details
+
+    // Wait for new state form to appear
     await waitFor(() => {
-      const stateNameInput = screen.getByPlaceholderText(/Enter state name/i);
-      expect(stateNameInput).toBeInTheDocument();
+      expect(screen.getByText(/New state name/i)).toBeInTheDocument();
     });
-    
-    const stateNameInput = screen.getByPlaceholderText(/Enter state name/i);
+
+    // Find inputs by their position in the form
+    const inputs = container.querySelectorAll('input[type="text"]');
+    const stateNameInput = inputs[2]; // Third input (after Name and Description)
     await user.type(stateNameInput, 'New State');
-    
-    // Fill in transition name
-    const nameInput = screen.getByLabelText(/Name/i);
+
+    // Fill in transition name (first input)
+    const nameInput = inputs[0];
     await user.type(nameInput, 'Test Transition');
-    
+
     // Submit the form
     const createButton = screen.getByText('Create');
     await user.click(createButton);

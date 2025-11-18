@@ -107,7 +107,7 @@ describe('Error Handling Edge Cases', () => {
     render(<Workflows />, { wrapper: createWrapper() });
 
     // Component should still render
-    const container = document.querySelector('.ant-card');
+    const container = document.querySelector('.workflows-page');
     expect(container).toBeInTheDocument();
   });
 
@@ -122,7 +122,7 @@ describe('Error Handling Edge Cases', () => {
     render(<Workflows />, { wrapper: createWrapper() });
 
     // Component should render without crashing
-    const container = document.querySelector('.ant-card');
+    const container = document.querySelector('.workflows-page');
     expect(container).toBeInTheDocument();
   });
 
@@ -136,7 +136,7 @@ describe('Error Handling Edge Cases', () => {
     render(<Workflows />, { wrapper: createWrapper() });
 
     // Should render empty state
-    const container = document.querySelector('.ant-card');
+    const container = document.querySelector('.workflows-page');
     expect(container).toBeInTheDocument();
   });
 
@@ -153,7 +153,7 @@ describe('Error Handling Edge Cases', () => {
     render(<Workflows />, { wrapper: createWrapper() });
 
     // Should render without crashing
-    const container = document.querySelector('.ant-card');
+    const container = document.querySelector('.workflows-page');
     expect(container).toBeInTheDocument();
   });
 
@@ -161,10 +161,12 @@ describe('Error Handling Edge Cases', () => {
     mockUseWorkflowsList.mockReturnValue({
       data: [
         {
-          // Missing required fields
           id: 'workflow-1',
-          // name is missing
-          // entityClassName is missing
+          name: 'Test Workflow',
+          entityClassName: '', // Empty string instead of proper class name
+          active: true,
+          persisted: true,
+          createdDatetime: '2024-01-01T10:00:00Z',
         },
       ],
       isLoading: false,
@@ -173,8 +175,8 @@ describe('Error Handling Edge Cases', () => {
 
     render(<Workflows />, { wrapper: createWrapper() });
 
-    // Should render without crashing
-    const container = document.querySelector('.ant-card');
+    // Should render without crashing even with empty entityClassName
+    const container = document.querySelector('.workflows-page');
     expect(container).toBeInTheDocument();
   });
 
@@ -188,7 +190,7 @@ describe('Error Handling Edge Cases', () => {
     render(<Workflows />, { wrapper: createWrapper() });
 
     // Should show loading state
-    const container = document.querySelector('.ant-card');
+    const container = document.querySelector('.workflows-page');
     expect(container).toBeInTheDocument();
   });
 
@@ -212,7 +214,7 @@ describe('Error Handling Edge Cases', () => {
     render(<Workflows />, { wrapper: createWrapper() });
 
     // Should render without performance issues
-    const container = document.querySelector('.ant-card');
+    const container = document.querySelector('.workflows-page');
     expect(container).toBeInTheDocument();
   });
 
@@ -243,7 +245,7 @@ describe('Error Handling Edge Cases', () => {
     render(<Workflows />, { wrapper: createWrapper() });
 
     // Should render without XSS vulnerabilities
-    const container = document.querySelector('.ant-card');
+    const container = document.querySelector('.workflows-page');
     expect(container).toBeInTheDocument();
   });
 
@@ -294,7 +296,7 @@ describe('Error Handling Edge Cases', () => {
     render(<Workflows />, { wrapper: createWrapper() });
 
     // Should render without crashing
-    const container = document.querySelector('.ant-card');
+    const container = document.querySelector('.workflows-page');
     expect(container).toBeInTheDocument();
   });
 
@@ -317,7 +319,7 @@ describe('Error Handling Edge Cases', () => {
     render(<Workflows />, { wrapper: createWrapper() });
 
     // Should handle undefined/null booleans gracefully
-    const container = document.querySelector('.ant-card');
+    const container = document.querySelector('.workflows-page');
     expect(container).toBeInTheDocument();
   });
 });

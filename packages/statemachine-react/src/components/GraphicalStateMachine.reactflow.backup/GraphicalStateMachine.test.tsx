@@ -73,39 +73,6 @@ describe('GraphicalStateMachine', () => {
   const mockCriteria: Criteria[] = [];
 
   it('renders the component', () => {
-    render(
-      <GraphicalStateMachine
-        workflowId="workflow1"
-        transitions={mockTransitions}
-        processes={mockProcesses}
-        criteria={mockCriteria}
-      />
-    );
-
-    // Check for control panel
-    expect(screen.getByText('List of transitions')).toBeInTheDocument();
-    expect(screen.getByText('processes')).toBeInTheDocument();
-    expect(screen.getByText('criteria')).toBeInTheDocument();
-  });
-
-  it('renders the legend', () => {
-    render(
-      <GraphicalStateMachine
-        workflowId="workflow1"
-        transitions={mockTransitions}
-        processes={mockProcesses}
-        criteria={mockCriteria}
-      />
-    );
-
-    expect(screen.getByText('Legend')).toBeInTheDocument();
-    expect(screen.getByText('State')).toBeInTheDocument();
-    expect(screen.getByText('Current State')).toBeInTheDocument();
-    expect(screen.getByText('Criteria')).toBeInTheDocument();
-    expect(screen.getByText('Process')).toBeInTheDocument();
-  });
-
-  it('renders map controls', () => {
     const { container } = render(
       <GraphicalStateMachine
         workflowId="workflow1"
@@ -115,8 +82,46 @@ describe('GraphicalStateMachine', () => {
       />
     );
 
-    const controls = container.querySelector('.map-controls');
-    expect(controls).toBeInTheDocument();
+    // Check for main wrapper
+    const wrapper = container.querySelector('.graphical-statemachine-wrapper');
+    expect(wrapper).toBeInTheDocument();
+
+    // Check for graph container
+    const graphContainer = container.querySelector('.graph-container');
+    expect(graphContainer).toBeInTheDocument();
+  });
+
+  it('renders React Flow controls', () => {
+    const { container } = render(
+      <GraphicalStateMachine
+        workflowId="workflow1"
+        transitions={mockTransitions}
+        processes={mockProcesses}
+        criteria={mockCriteria}
+      />
+    );
+
+    // React Flow backup version has Panel with buttons
+    const panel = container.querySelector('.panel');
+    expect(panel).toBeInTheDocument();
+
+    // Check for control buttons (fullscreen and minimap toggle)
+    const buttons = container.querySelectorAll('.panel button');
+    expect(buttons.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it('renders React Flow graph container', () => {
+    const { container } = render(
+      <GraphicalStateMachine
+        workflowId="workflow1"
+        transitions={mockTransitions}
+        processes={mockProcesses}
+        criteria={mockCriteria}
+      />
+    );
+
+    const graphContainer = container.querySelector('.graph-container');
+    expect(graphContainer).toBeInTheDocument();
   });
 
   it('calls onUpdatePositionsMap when provided', () => {

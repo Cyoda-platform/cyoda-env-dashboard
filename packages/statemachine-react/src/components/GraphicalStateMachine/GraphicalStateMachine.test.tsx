@@ -89,7 +89,7 @@ describe('GraphicalStateMachine', () => {
   });
 
   it('renders the legend', () => {
-    render(
+    const { container } = render(
       <GraphicalStateMachine
         workflowId="workflow1"
         transitions={mockTransitions}
@@ -98,10 +98,15 @@ describe('GraphicalStateMachine', () => {
       />
     );
 
-    expect(screen.getByText('Legend')).toBeInTheDocument();
+    // Check for legend container
+    const legend = container.querySelector('.map-legend');
+    expect(legend).toBeInTheDocument();
+
+    // Check for legend items
     expect(screen.getByText('State')).toBeInTheDocument();
-    expect(screen.getByText('Current State')).toBeInTheDocument();
-    expect(screen.getByText('Criteria')).toBeInTheDocument();
+    expect(screen.getByText('Automated Transition')).toBeInTheDocument();
+    expect(screen.getByText('Manual Transition')).toBeInTheDocument();
+    expect(screen.getByText('Transition with Criteria')).toBeInTheDocument();
     expect(screen.getByText('Process')).toBeInTheDocument();
   });
 
