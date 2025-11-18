@@ -59,22 +59,26 @@ vi.mock('../components/ExportImport', () => ({
   ),
 }));
 
-// Mock EntityTypeSwitch component
-vi.mock('@cyoda/ui-lib-react', () => ({
-  EntityTypeSwitch: ({ value, onChange, visible }: any) => (
-    visible ? (
-      <div data-testid="entity-type-switch">
-        <span>Entity Type: </span>
-        <button
-          data-testid="entity-type-toggle"
-          onClick={() => onChange(value === 'BUSINESS' ? 'PERSISTENCE' : 'BUSINESS')}
-        >
-          {value === 'BUSINESS' ? 'Business' : 'Technical'}
-        </button>
-      </div>
-    ) : null
-  ),
-}));
+// Mock EntityTypeSwitch component and other ui-lib-react exports
+vi.mock('@cyoda/ui-lib-react', async () => {
+  const actual = await vi.importActual('@cyoda/ui-lib-react');
+  return {
+    ...actual,
+    EntityTypeSwitch: ({ value, onChange, visible }: any) => (
+      visible ? (
+        <div data-testid="entity-type-switch">
+          <span>Entity Type: </span>
+          <button
+            data-testid="entity-type-toggle"
+            onClick={() => onChange(value === 'BUSINESS' ? 'PERSISTENCE' : 'BUSINESS')}
+          >
+            {value === 'BUSINESS' ? 'Business' : 'Technical'}
+          </button>
+        </div>
+      ) : null
+    ),
+  };
+});
 
 // Mock global UI settings store
 const mockSetEntityType = vi.fn();

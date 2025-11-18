@@ -56,15 +56,19 @@ vi.mock('../../hooks/useStatemachine', () => ({
 }));
 
 // Mock HelperDictionary
-vi.mock('@cyoda/ui-lib-react', () => ({
-  HelperDictionary: {
-    getLabel: (type: string, key: string) => key,
-    getOptions: () => [],
-  },
-  HelperFormat: {
-    date: (date: string) => new Date(date).toLocaleDateString(),
-  },
-}));
+vi.mock('@cyoda/ui-lib-react', async () => {
+  const actual = await vi.importActual('@cyoda/ui-lib-react');
+  return {
+    ...actual,
+    HelperDictionary: {
+      getLabel: (type: string, key: string) => key,
+      getOptions: () => [],
+    },
+    HelperFormat: {
+      date: (date: string) => new Date(date).toLocaleDateString(),
+    },
+  };
+});
 
 const createWrapper = () => {
   const queryClient = new QueryClient({

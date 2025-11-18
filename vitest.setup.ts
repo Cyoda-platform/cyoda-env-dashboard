@@ -96,3 +96,72 @@ global.ResizeObserver = class ResizeObserver {
   unobserve() {}
 } as any
 
+// Mock @cyoda/ui-lib-react - must be done at setup level to be available globally
+vi.mock('@cyoda/ui-lib-react', async () => {
+  // Import the actual module to get real implementations
+  const actual = await vi.importActual<typeof import('./packages/ui-lib-react/src/index')>('./packages/ui-lib-react/src/index')
+
+  return {
+    ...actual,
+    // Ensure HelperStorage is available
+    HelperStorage: actual.HelperStorage || class HelperStorage {
+      private prefix = 'cyoda_'
+
+      get<T = any>(key: string, defaultValue?: T): T | null {
+        try {
+          const item = localStorage.getItem(`${this.prefix}${key}`)
+          if (item === null) {
+            return defaultValue !== undefined ? defaultValue : null
+          }
+          return JSON.parse(item) as T
+        } catch (error) {
+          return defaultValue !== undefined ? defaultValue : null
+        }
+      }
+
+      set(key: string, value: any): void {
+        try {
+          localStorage.setItem(`${this.prefix}${key}`, JSON.stringify(value))
+        } catch (error) {
+          console.error(`Error writing to localStorage: ${key}`, error)
+        }
+      }
+
+      remove(key: string): void {
+        try {
+          localStorage.removeItem(`${this.prefix}${key}`)
+        } catch (error) {
+          console.error(`Error removing from localStorage: ${key}`, error)
+        }
+      }
+
+      clear(): void {
+        try {
+          const keys = Object.keys(localStorage)
+          keys.forEach(key => {
+            if (key.startsWith(this.prefix)) {
+              localStorage.removeItem(key)
+            }
+          })
+        } catch (error) {
+          console.error('Error clearing localStorage', error)
+        }
+      }
+
+      has(key: string): boolean {
+        return localStorage.getItem(`${this.prefix}${key}`) !== null
+      }
+    },
+    // Ensure HelperDictionary is available
+    HelperDictionary: actual.HelperDictionary || {
+      getLabel: (type: string, key: string) => key,
+      getOptions: () => [],
+    },
+    // Ensure HelperFormat is available
+    HelperFormat: actual.HelperFormat || {
+      toLowerCase: (str: string) => str?.toLowerCase() || '',
+      date: (date: string) => date ? new Date(date).toLocaleDateString() : '',
+    },
+  }
+})
+

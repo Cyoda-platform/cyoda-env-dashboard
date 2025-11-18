@@ -4,18 +4,22 @@ import { GraphicalStateMachine } from './GraphicalStateMachine';
 import type { Transition, Process, Criteria } from '../../types';
 
 // Mock GraphicalStateMachinePanel from ui-lib-react
-vi.mock('@cyoda/ui-lib-react', () => ({
-  GraphicalStateMachinePanel: ({ onResetPositions, ...props }: any) => (
-    <div data-testid="graphical-panel">
-      <button onClick={props.onToggleListOfTransitions}>List of transitions</button>
-      <button onClick={props.onToggleProcesses}>processes</button>
-      <button onClick={props.onToggleCriteria}>criteria</button>
-      <button onClick={props.onToggleTitles}>states</button>
-      <button onClick={props.onToggleEdgesTitles}>transitions titles</button>
-      <button onClick={onResetPositions}>Reset positions</button>
-    </div>
-  ),
-}));
+vi.mock('@cyoda/ui-lib-react', async () => {
+  const actual = await vi.importActual('@cyoda/ui-lib-react');
+  return {
+    ...actual,
+    GraphicalStateMachinePanel: ({ onResetPositions, ...props }: any) => (
+      <div data-testid="graphical-panel">
+        <button onClick={props.onToggleListOfTransitions}>List of transitions</button>
+        <button onClick={props.onToggleProcesses}>processes</button>
+        <button onClick={props.onToggleCriteria}>criteria</button>
+        <button onClick={props.onToggleTitles}>states</button>
+        <button onClick={props.onToggleEdgesTitles}>transitions titles</button>
+        <button onClick={onResetPositions}>Reset positions</button>
+      </div>
+    ),
+  };
+});
 
 // Mock Cytoscape
 vi.mock('cytoscape', () => ({
