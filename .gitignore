@@ -9,6 +9,7 @@ node_modules/
 # Testing
 coverage/
 *.log
+test-output.txt
 
 # Production
 dist/
