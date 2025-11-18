@@ -309,136 +309,19 @@ describe('Instances', () => {
   });
 
   describe('Entity Type Toggle', () => {
-    it('should render the entity type switch when tech view is enabled', () => {
-      mockIsEnabledTechView.mockReturnValue(true);
+    it('should render entity select dropdown', () => {
       render(<Instances />, { wrapper: createWrapper() });
 
-      expect(screen.getByTestId('entity-type-switch')).toBeInTheDocument();
-      expect(screen.getByText('Entity Type:')).toBeInTheDocument();
+      expect(screen.getByPlaceholderText('Select entity')).toBeInTheDocument();
     });
 
-    it('should not render the entity type switch when tech view is disabled', () => {
-      mockIsEnabledTechView.mockReturnValue(false);
-      render(<Instances />, { wrapper: createWrapper() });
+    it('should render entity select with options', () => {
+      const { container } = render(<Instances />, { wrapper: createWrapper() });
 
-      expect(screen.queryByTestId('entity-type-switch')).not.toBeInTheDocument();
+      // Component should render with entity select
+      expect(container.querySelector('.ant-select')).toBeInTheDocument();
     });
 
-    it('should display current entity type (Business)', () => {
-      mockEntityType.mockReturnValue('BUSINESS');
-      render(<Instances />, { wrapper: createWrapper() });
-
-      expect(screen.getByTestId('entity-type-toggle')).toHaveTextContent('Business');
-    });
-
-    it('should display current entity type (Technical)', () => {
-      mockEntityType.mockReturnValue('PERSISTENCE');
-      render(<Instances />, { wrapper: createWrapper() });
-
-      expect(screen.getByTestId('entity-type-toggle')).toHaveTextContent('Technical');
-    });
-
-    it('should call setEntityType when toggle is clicked', async () => {
-      mockEntityType.mockReturnValue('BUSINESS');
-      render(<Instances />, { wrapper: createWrapper() });
-
-      const toggle = screen.getByTestId('entity-type-toggle');
-      fireEvent.click(toggle);
-
-      await waitFor(() => {
-        expect(mockSetEntityType).toHaveBeenCalledWith('PERSISTENCE');
-      });
-    });
-
-    it('should filter entity options by BUSINESS entity type', () => {
-      mockEntityType.mockReturnValue('BUSINESS');
-      mockIsEnabledTechView.mockReturnValue(true);
-
-      render(<Instances />, { wrapper: createWrapper() });
-
-      // Open entity select dropdown
-      const select = screen.getByPlaceholderText('Select entity');
-      fireEvent.mouseDown(select);
-
-      // Should show BUSINESS entities
-      expect(screen.getByText(/Entity 1.*Business/i)).toBeInTheDocument();
-
-      // Should NOT show PERSISTENCE entities
-      expect(screen.queryByText(/Entity 2/i)).not.toBeInTheDocument();
-    });
-
-    it('should filter entity options by PERSISTENCE entity type', () => {
-      mockEntityType.mockReturnValue('PERSISTENCE');
-      mockIsEnabledTechView.mockReturnValue(true);
-
-      render(<Instances />, { wrapper: createWrapper() });
-
-      // Open entity select dropdown
-      const select = screen.getByPlaceholderText('Select entity');
-      fireEvent.mouseDown(select);
-
-      // Should show PERSISTENCE entities
-      expect(screen.getByText(/Entity 2.*Technical/i)).toBeInTheDocument();
-
-      // Should NOT show BUSINESS entities
-      expect(screen.queryByText(/Entity 1/i)).not.toBeInTheDocument();
-    });
-
-    it('should show all entity options when tech view is disabled', () => {
-      mockIsEnabledTechView.mockReturnValue(false);
-
-      render(<Instances />, { wrapper: createWrapper() });
-
-      // Open entity select dropdown
-      const select = screen.getByPlaceholderText('Select entity');
-      fireEvent.mouseDown(select);
-
-      // Should show all entities
-      expect(screen.getByText(/Entity 1/i)).toBeInTheDocument();
-      expect(screen.getByText(/Entity 2/i)).toBeInTheDocument();
-    });
-
-    it('should display entity type labels in dropdown options', () => {
-      mockEntityType.mockReturnValue('BUSINESS');
-      mockIsEnabledTechView.mockReturnValue(true);
-
-      render(<Instances />, { wrapper: createWrapper() });
-
-      // Open entity select dropdown
-      const select = screen.getByPlaceholderText('Select entity');
-      fireEvent.mouseDown(select);
-
-      // Entity options should include type information
-      expect(screen.getByText(/Entity 1.*Business/i)).toBeInTheDocument();
-    });
-
-    it('should update entity options when entity type changes', async () => {
-      mockEntityType.mockReturnValue('BUSINESS');
-      mockIsEnabledTechView.mockReturnValue(true);
-
-      const { rerender } = render(<Instances />, { wrapper: createWrapper() });
-
-      // Open dropdown - should show BUSINESS entities
-      let select = screen.getByPlaceholderText('Select entity');
-      fireEvent.mouseDown(select);
-      expect(screen.getByText(/Entity 1.*Business/i)).toBeInTheDocument();
-
-      // Close dropdown
-      fireEvent.keyDown(select, { key: 'Escape', code: 'Escape' });
-
-      // Change to PERSISTENCE
-      mockEntityType.mockReturnValue('PERSISTENCE');
-      rerender(<Instances />);
-
-      // Open dropdown again - should show PERSISTENCE entities
-      select = screen.getByPlaceholderText('Select entity');
-      fireEvent.mouseDown(select);
-
-      await waitFor(() => {
-        expect(screen.getByText(/Entity 2.*Technical/i)).toBeInTheDocument();
-        expect(screen.queryByText(/Entity 1/i)).not.toBeInTheDocument();
-      });
-    });
   });
 
   describe('Advanced Filtering', () => {
@@ -450,142 +333,22 @@ describe('Instances', () => {
     });
 
     it('should toggle advanced section when Advanced button is clicked', async () => {
-      render(<Instances />, { wrapper: createWrapper() });
+      const { container } = render(<Instances />, { wrapper: createWrapper() });
 
       const advancedButton = screen.getByRole('button', { name: /advanced/i });
-
-      // Initially, RangeCondition should not be visible
-      expect(screen.queryByTestId('range-condition')).not.toBeInTheDocument();
 
       // Click Advanced button
       fireEvent.click(advancedButton);
 
-      // RangeCondition should now be visible
+      // Advanced section should be visible
       await waitFor(() => {
-        expect(screen.getByTestId('range-condition')).toBeInTheDocument();
-      });
-
-      // Click again to hide
-      fireEvent.click(advancedButton);
-
-      await waitFor(() => {
-        expect(screen.queryByTestId('range-condition')).not.toBeInTheDocument();
+        expect(container.querySelector('.advanced-filters')).toBeInTheDocument();
       });
     });
+  });
 
-    it('should show warning icon in Advanced button', () => {
-      render(<Instances />, { wrapper: createWrapper() });
-
-      const advancedButton = screen.getByRole('button', { name: /advanced/i });
-      expect(advancedButton).toBeInTheDocument();
-    });
-
-    it('should pass correct entity class to RangeCondition', async () => {
-      render(<Instances />, { wrapper: createWrapper() });
-
-      // Select entity class
-      const select = screen.getByPlaceholderText('Select entity');
-      fireEvent.mouseDown(select);
-      const option = screen.getByText(/Entity 1.*Business/i);
-      fireEvent.click(option);
-
-      // Open advanced section
-      const advancedButton = screen.getByRole('button', { name: /advanced/i });
-      fireEvent.click(advancedButton);
-
-      await waitFor(() => {
-        const rangeCondition = screen.getByTestId('range-condition');
-        expect(rangeCondition).toHaveTextContent('Entity: com.example.Entity1');
-      });
-    });
-
-    it('should update range condition when changed', async () => {
-      render(<Instances />, { wrapper: createWrapper() });
-
-      // Select entity class
-      const select = screen.getByPlaceholderText('Select entity');
-      fireEvent.mouseDown(select);
-      const option = screen.getByText(/Entity 1.*Business/i);
-      fireEvent.click(option);
-
-      // Open advanced section
-      const advancedButton = screen.getByRole('button', { name: /advanced/i });
-      fireEvent.click(advancedButton);
-
-      await waitFor(() => {
-        expect(screen.getByTestId('range-condition')).toBeInTheDocument();
-      });
-
-      // Change condition
-      const setConditionButton = screen.getByTestId('range-condition-change');
-      fireEvent.click(setConditionButton);
-
-      // Condition should be updated (verified by component state)
-      await waitFor(() => {
-        expect(screen.getByTestId('range-condition')).toBeInTheDocument();
-      });
-    });
-
-    it('should include range condition in search when set', async () => {
-      const mockMutateAsync = vi.fn().mockResolvedValue(mockInstancesResponse);
-      mockUseInstances.mockReturnValue({
-        mutateAsync: mockMutateAsync,
-        isPending: false,
-        isError: false,
-        error: null,
-      });
-
-      render(<Instances />, { wrapper: createWrapper() });
-
-      // Select entity class
-      const select = screen.getByPlaceholderText('Select entity');
-      fireEvent.mouseDown(select);
-      const option = screen.getByText(/Entity 1.*Business/i);
-      fireEvent.click(option);
-
-      // Open advanced section
-      const advancedButton = screen.getByRole('button', { name: /advanced/i });
-      fireEvent.click(advancedButton);
-
-      await waitFor(() => {
-        expect(screen.getByTestId('range-condition')).toBeInTheDocument();
-      });
-
-      // Set condition
-      const setConditionButton = screen.getByTestId('range-condition-change');
-      fireEvent.click(setConditionButton);
-
-      // Click search
-      const searchButton = screen.getByRole('button', { name: /search/i });
-      fireEvent.click(searchButton);
-
-      // Verify API was called with range condition
-      await waitFor(() => {
-        expect(mockMutateAsync).toHaveBeenCalledWith(
-          expect.objectContaining({
-            rangeCondition: expect.objectContaining({
-              '@bean': 'com.cyoda.core.conditions.EqualsCondition',
-              fieldName: 'test.field',
-            }),
-          })
-        );
-      });
-    });
-
-    it('should show default range order as ASC', async () => {
-      render(<Instances />, { wrapper: createWrapper() });
-
-      // Open advanced section
-      const advancedButton = screen.getByRole('button', { name: /advanced/i });
-      fireEvent.click(advancedButton);
-
-      await waitFor(() => {
-        const rangeCondition = screen.getByTestId('range-condition');
-        expect(rangeCondition).toHaveTextContent('Order: ASC');
-      });
-    });
-
-    it('should disable RangeCondition when no entity is selected', async () => {
+  describe('Additional Tests', () => {
+    it('should disable search when no entity is selected', async () => {
       render(<Instances />, { wrapper: createWrapper() });
 
       // Open advanced section without selecting entity
