@@ -80,7 +80,7 @@ a:active {
 }
 
 // Global tab styling - Override Ant Design active tab background
-// Force all active tabs to use the same background as the header
+// Remove background from active tabs to match page background
 // Using multiple selectors with maximum specificity
 .ant-tabs-tab-active,
 .ant-tabs-tab.ant-tabs-tab-active,
@@ -97,10 +97,23 @@ div.ant-tabs-tab.ant-tabs-tab-active,
 [class*="css-"] .ant-tabs-tab.ant-tabs-tab-active,
 div[class*="ant-tabs-tab"][class*="ant-tabs-tab-active"],
 div[class*="css-"][class*="ant-tabs-tab-active"] {
-  background: linear-gradient(180deg, rgba(26, 35, 50, 1) 0%, rgba(22, 30, 43, 1) 100%) !important;
-  background-color: rgba(26, 35, 50, 1) !important;
-  border-color: rgba(255, 255, 255, 0.1) !important;
+  background: none !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border-color: transparent !important;
   border-bottom-color: transparent !important;
+}
+
+// All tabs (including non-active) should have no background
+.ant-tabs-tab,
+div.ant-tabs-tab,
+.ant-tabs-nav-list .ant-tabs-tab,
+.ant-tabs-tab[class*="css-"],
+[class*="css-"].ant-tabs-tab,
+div[class*="ant-tabs-tab"] {
+  background: none !important;
+  background-color: transparent !important;
+  background-image: none !important;
 }
 
 // Exception for workflow-form tabs - no background

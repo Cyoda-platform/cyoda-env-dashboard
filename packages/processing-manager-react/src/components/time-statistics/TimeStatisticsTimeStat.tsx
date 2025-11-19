@@ -252,6 +252,7 @@ export const TimeStatisticsTimeStat: React.FC = () => {
           pageSizeOptions: ['5', '10', '15', '20', '50'],
           showSizeChanger: true,
           defaultPageSize: 10,
+          showTotal: (total) => `Total ${total}`,
           position: ['bottomCenter'],
         }}
         components={{

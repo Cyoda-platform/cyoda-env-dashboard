@@ -157,6 +157,7 @@ export const ProcessingEventsEntitiesErrorListViewTable: React.FC<
           pageSizeOptions: ['5', '10', '15', '20', '50'],
           defaultPageSize: 10,
           showSizeChanger: true,
+          showTotal: (total) => `Total ${total}`,
           position: ['bottomCenter'],
         }}
         scroll={{ x: 'max-content' }}
