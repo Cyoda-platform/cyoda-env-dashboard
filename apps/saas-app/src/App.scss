@@ -344,6 +344,72 @@ div.ant-card.ant-card-borderless > .ant-card-body {
     }
   }
 
+  // Fixed columns - IMPORTANT: Override transparent background to prevent text overlap
+  .ant-table-tbody {
+    .ant-table-cell-fix-left,
+    .ant-table-cell-fix-left-last {
+      background: var(--refine-bg-elevated) !important; // Use same background as table container
+      z-index: 2 !important;
+
+      &::after {
+        box-shadow: inset 10px 0 8px -8px rgba(0, 0, 0, 0.5) !important;
+      }
+    }
+
+    .ant-table-cell-fix-right,
+    .ant-table-cell-fix-right-first {
+      background: var(--refine-bg-elevated) !important; // Use same background as table container
+      z-index: 2 !important;
+
+      &::before {
+        box-shadow: inset -10px 0 8px -8px rgba(0, 0, 0, 0.5) !important;
+      }
+    }
+
+    // Hover state for fixed columns
+    > tr:hover {
+      > .ant-table-cell-fix-left,
+      > .ant-table-cell-fix-left-last,
+      > .ant-table-cell-fix-right,
+      > .ant-table-cell-fix-right-first {
+        background: rgba(0, 212, 170, 0.05) !important; // Match hover color
+      }
+    }
+
+    // Selected row state for fixed columns
+    > tr.ant-table-row-selected {
+      > .ant-table-cell-fix-left,
+      > .ant-table-cell-fix-left-last,
+      > .ant-table-cell-fix-right,
+      > .ant-table-cell-fix-right-first {
+        background: rgba(0, 212, 170, 0.1) !important; // Match selected row color
+      }
+    }
+  }
+
+  // Fixed columns in header
+  .ant-table-thead {
+    .ant-table-cell-fix-left,
+    .ant-table-cell-fix-left-last {
+      background: var(--refine-bg-tertiary) !important; // Use theme header color
+      z-index: 3 !important;
+
+      &::after {
+        box-shadow: inset 10px 0 8px -8px rgba(0, 0, 0, 0.5) !important;
+      }
+    }
+
+    .ant-table-cell-fix-right,
+    .ant-table-cell-fix-right-first {
+      background: var(--refine-bg-tertiary) !important; // Use theme header color
+      z-index: 3 !important;
+
+      &::before {
+        box-shadow: inset -10px 0 8px -8px rgba(0, 0, 0, 0.5) !important;
+      }
+    }
+  }
+
   // Sider - Thin border
   .ant-layout-sider {
     border-right: 0.5px solid rgba(0, 212, 170, 0.15) !important;

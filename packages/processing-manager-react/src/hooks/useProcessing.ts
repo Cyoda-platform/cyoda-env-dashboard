@@ -278,10 +278,10 @@ export function usePollingInfo(params?: any) {
  */
 export function useProcessingQueueEvents(params?: ProcessingFilter) {
   const queryParams = {
+    ...params,
     queue: params?.queue || 'ALL',
     shard: params?.shard || 'ALL',
     eventStatus: params?.status || 'ALL',
-    ...params,
   };
 
   return useQuery({

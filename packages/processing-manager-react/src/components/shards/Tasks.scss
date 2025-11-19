@@ -1,5 +1,9 @@
+@use '../../../../ui-lib-react/src/styles/table-mixins' as table;
+
 // Tasks table styles
 .pm-tasks {
+  @include table.fixed-columns-background;
+
   .ant-card-body {
     padding: 24px;
   }

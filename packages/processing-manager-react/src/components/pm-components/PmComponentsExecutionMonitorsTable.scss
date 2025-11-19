@@ -3,5 +3,6 @@
 .pm-execution-monitors-table {
   @include table.table-container-wrapper;
   @include table.resizable-columns;
+  @include table.fixed-columns-background;
 }
 

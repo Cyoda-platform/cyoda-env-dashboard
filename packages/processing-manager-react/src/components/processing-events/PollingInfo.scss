@@ -3,5 +3,12 @@
 .polling-info {
   @include table.table-container-wrapper;
   @include table.resizable-columns;
+
+  // Prevent word breaking in table headers
+  .ant-table-thead > tr > th {
+    word-break: keep-all;
+    overflow-wrap: break-word;
+    white-space: normal;
+  }
 }
 

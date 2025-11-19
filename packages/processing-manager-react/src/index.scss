@@ -20,3 +20,28 @@ body {
   height: 100%;
 }
 
+// Global form label alignment - align all form labels to the left
+// This overrides Ant Design's default centered alignment for vertical forms
+.ant-form-item-label {
+  text-align: left !important;
+
+  > label {
+    justify-content: flex-start !important;
+    text-align: left !important;
+  }
+}
+
+// Override for vertical forms
+.ant-form-vertical .ant-form-item-label > label {
+  justify-content: flex-start !important;
+}
+
+// Override CSS-in-JS generated classes
+div[class*="ant-col"][class*="ant-form-item-label"] {
+  text-align: left !important;
+
+  > label {
+    justify-content: flex-start !important;
+  }
+}
+

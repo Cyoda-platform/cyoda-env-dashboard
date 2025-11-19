@@ -141,3 +141,65 @@
   }
 }
 
+// Mixin for fixed columns with background (prevents text overlap on scroll)
+@mixin fixed-columns-background {
+  // Use stronger selectors without :global to ensure they apply
+  .ant-table-wrapper {
+    // Fixed left columns in body - add solid background
+    .ant-table-tbody {
+      .ant-table-cell-fix-left,
+      .ant-table-cell-fix-left-last {
+        background: #141414 !important;
+        z-index: 2 !important;
+
+        &::after {
+          box-shadow: inset 10px 0 8px -8px rgba(0, 0, 0, 0.5) !important;
+        }
+      }
+
+      .ant-table-cell-fix-right,
+      .ant-table-cell-fix-right-first {
+        background: #141414 !important;
+        z-index: 2 !important;
+
+        &::before {
+          box-shadow: inset -10px 0 8px -8px rgba(0, 0, 0, 0.5) !important;
+        }
+      }
+    }
+
+    // Fixed columns in header
+    .ant-table-thead {
+      .ant-table-cell-fix-left,
+      .ant-table-cell-fix-left-last {
+        background: #243142 !important;
+        z-index: 3 !important;
+
+        &::after {
+          box-shadow: inset 10px 0 8px -8px rgba(0, 0, 0, 0.5) !important;
+        }
+      }
+
+      .ant-table-cell-fix-right,
+      .ant-table-cell-fix-right-first {
+        background: #243142 !important;
+        z-index: 3 !important;
+
+        &::before {
+          box-shadow: inset -10px 0 8px -8px rgba(0, 0, 0, 0.5) !important;
+        }
+      }
+    }
+
+    // Hover state for rows with fixed columns
+    .ant-table-tbody > tr:hover {
+      > .ant-table-cell-fix-left,
+      > .ant-table-cell-fix-left-last,
+      > .ant-table-cell-fix-right,
+      > .ant-table-cell-fix-right-first {
+        background: rgba(0, 212, 170, 0.1) !important;
+      }
+    }
+  }
+}
+

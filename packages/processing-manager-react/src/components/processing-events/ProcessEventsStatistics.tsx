@@ -38,9 +38,9 @@ export const ProcessEventsStatistics: React.FC = () => {
   const [processorFilter, setProcessorFilter] = useState<string | undefined>(undefined);
 
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>(() => {
-    const saved = storage.get('processEventsStats:columnWidths', {});
-    const defaultWidths = { queue: 300, shard: 300, class: 300, processor: 300, count: 100 };
-    return saved && Object.keys(saved).length > 0 ? saved : defaultWidths;
+    const defaultWidths = { queue: 300, shard: 80, class: 300, processor: 300, count: 100 };
+    // Always use default widths (ignore saved values for now)
+    return defaultWidths;
   });
 
   useEffect(() => {

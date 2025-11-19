@@ -3,6 +3,7 @@
 .pm-components-service-processes-view-ready {
   @include table.table-container-wrapper;
   @include table.resizable-columns;
+  @include table.fixed-columns-background;
 
   h4 {
     margin-bottom: 16px;

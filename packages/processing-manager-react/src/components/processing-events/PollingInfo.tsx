@@ -37,17 +37,17 @@ export const PollingInfo: React.FC = () => {
   const [processingFilter, setProcessingFilter] = useState<string | undefined>(undefined);
 
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>(() => {
-    const saved = storage.get('pollingInfo:columnWidths', {});
     const defaultWidths = {
-      shardId: 300,
-      queueType: 300,
-      processing: 130,
-      lastEmptyPollings: 300,
-      maxTimeout: 400,
-      lastDelayTime: 400,
-      lastPollingTime: 400,
+      shardId: 100,
+      queueType: 350,
+      processing: 140,
+      lastEmptyPollings: 200,
+      maxTimeout: 150,
+      lastDelayTime: 200,
+      lastPollingTime: 200,
     };
-    return saved && Object.keys(saved).length > 0 ? saved : defaultWidths;
+    // Always use default widths (ignore saved values for now)
+    return defaultWidths;
   });
 
   useEffect(() => {
@@ -201,11 +201,11 @@ export const PollingInfo: React.FC = () => {
             </Form.Item>
           </Col>
           <Col span={8}>
-            <Form.Item label="Entity Type">
+            <Form.Item label="Queue">
               <Select
                 value={queueTypeFilter}
                 onChange={setQueueTypeFilter}
-                placeholder="Select entity type"
+                placeholder="Select queue"
                 allowClear
                 showSearch
                 options={queueTypeOptions}
@@ -232,12 +232,13 @@ export const PollingInfo: React.FC = () => {
         rowKey={(record) => `${record.shardId}-${record.queueType}`}
         bordered
         loading={isLoading}
-        scroll={{ x: 2000 }}
+        scroll={{ x: 1340 }}
         pagination={{
           pageSizeOptions: ['5', '10', '15', '20', '50'],
           defaultPageSize: 10,
           showSizeChanger: true,
           position: ['bottomCenter'],
+          showTotal: (total) => `Total ${total}`,
         }}
         components={{
           header: {

@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Form, Select, DatePicker, Button, Table, Row, Col, Spin, Card } from 'antd';
+import { Form, Select, DatePicker, Button, Table, Row, Col, Spin } from 'antd';
 import { SyncOutlined } from '@ant-design/icons';
 import { Link, useParams } from 'react-router-dom';
 import { useProcessingQueueEvents, useSummary, useProcessingQueues } from '../../hooks';
@@ -58,23 +58,23 @@ export const ProcessingEventsView: React.FC = () => {
 
   // Column widths state
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>(() => {
-    const saved = storage.get('processingEventsView:columnWidths', {});
     const defaultWidths = {
-      createTime: 300,
-      doneTime: 300,
-      errorTime: 130,
-      queue: 300,
-      shard: 200,
-      status: 400,
-      timeUUID: 400,
-      entityClassName: 400,
-      entityId: 400,
-      hasErrors: 400,
-      errorEventTimeUUID: 400,
-      coreDataClassName: 400,
-      clientDataClassName: 400,
+      createTime: 160,
+      doneTime: 160,
+      errorTime: 100,
+      queue: 200,
+      shard: 80,
+      status: 120,
+      timeUUID: 200,
+      entityClassName: 200,
+      entityId: 150,
+      hasErrors: 100,
+      errorEventTimeUUID: 200,
+      coreDataClassName: 200,
+      clientDataClassName: 200,
     };
-    return saved && Object.keys(saved).length > 0 ? saved : defaultWidths;
+    // Always use default widths (ignore saved values for now)
+    return defaultWidths;
   });
 
   // Save column widths to localStorage
@@ -337,10 +337,9 @@ export const ProcessingEventsView: React.FC = () => {
 
   return (
     <div className="pm-processing-events-view">
-      <Card>
-        <Form layout="vertical" className="form-filter">
-          <h3>Filter</h3>
-          <Row gutter={20}>
+      <Form layout="vertical">
+        <h3>Filter</h3>
+        <Row gutter={20}>
             <Col span={6}>
               <Form.Item label="Queue">
                 <Select
@@ -420,9 +419,7 @@ export const ProcessingEventsView: React.FC = () => {
               </Form.Item>
             </Col>
           </Row>
-        </Form>
-      </Card>
-
+      </Form>
       <Table
         columns={columns}
         dataSource={tableData}
