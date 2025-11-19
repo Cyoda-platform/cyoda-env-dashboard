@@ -4,27 +4,17 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { CurrNodeInfo } from '../CurrNodeInfo';
 import * as hooks from '../../../hooks';
+import type { ReactNode } from 'react';
 
 // Mock the hooks
 vi.mock('../../../hooks', () => ({
-  usePlatformCommonZkInfoCurrNodeInfo: vi.fn(),
+  useZkCurrNodeInfo: vi.fn(),
 }));
 
-// Mock the CurrNodeInfo component from @cyoda/http-api-react
-vi.mock('@cyoda/http-api-react', () => ({
-  CurrNodeInfo: vi.fn(({ getZkInfoCurrNodeInfoRequestFn, clusterStateCurrentNode }) => {
-    // Call the function to test hook integration
-    getZkInfoCurrNodeInfoRequestFn();
-    return (
-      <div data-testid="curr-node-info-component">
-        Current Node Info Component
-        {clusterStateCurrentNode?.name && <span>Node: {clusterStateCurrentNode.name}</span>}
-      </div>
-    );
-  }),
-}));
+
 
 describe('CurrNodeInfo', () => {
   const mockHookReturn = {
@@ -33,86 +23,92 @@ describe('CurrNodeInfo', () => {
     error: null,
   };
 
+  // Create test query client
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+        gcTime: 0,
+        staleTime: 0,
+      },
+    },
+  });
+
+  // Wrapper component
+  const wrapper = ({ children }: { children: ReactNode }) => (
+    <QueryClientProvider client={queryClient}>
+      {children}
+    </QueryClientProvider>
+  );
+
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(hooks.usePlatformCommonZkInfoCurrNodeInfo).mockReturnValue(mockHookReturn as any);
+    queryClient.clear();
+    vi.mocked(hooks.useZkCurrNodeInfo).mockReturnValue(mockHookReturn as any);
   });
 
   it('should render the component', () => {
-    render(<CurrNodeInfo />);
-    
-    const component = screen.getByTestId('curr-node-info-component');
-    expect(component).toBeInTheDocument();
+    render(<CurrNodeInfo />, { wrapper });
+
+    expect(screen.getByText('Current Node Information')).toBeInTheDocument();
   });
 
-  it('should render CurrNodeInfoComponent from @cyoda/http-api-react', () => {
-    render(<CurrNodeInfo />);
-    
-    expect(screen.getByText('Current Node Info Component')).toBeInTheDocument();
-  });
+  it('should render node information fields', () => {
+    render(<CurrNodeInfo />, { wrapper });
 
-
-
-
-  it('should call usePlatformCommonZkInfoCurrNodeInfo hook when getZkInfoCurrNodeInfoRequestFn is invoked', () => {
-    render(<CurrNodeInfo />);
-    
-    // The mock component calls getZkInfoCurrNodeInfoRequestFn
-    expect(hooks.usePlatformCommonZkInfoCurrNodeInfo).toHaveBeenCalled();
+    expect(screen.getByText('Node ID')).toBeInTheDocument();
+    expect(screen.getByText('Hostname')).toBeInTheDocument();
+    expect(screen.getByText('IP Address')).toBeInTheDocument();
   });
 
   it('should wrap component in a div', () => {
-    const { container } = render(<CurrNodeInfo />);
-    
-    const wrapper = container.querySelector('div');
-    expect(wrapper).toBeInTheDocument();
+    const { container } = render(<CurrNodeInfo />, { wrapper });
+
+    const wrapperDiv = container.querySelector('div');
+    expect(wrapperDiv).toBeInTheDocument();
   });
 
   it('should handle clusterStateCurrentNode with data', () => {
     const clusterState = { name: 'test-node', status: 'active', port: 8080 };
-    
-    render(<CurrNodeInfo clusterStateCurrentNode={clusterState} />);
-    
-    expect(screen.getByText(/Node: test-node/)).toBeInTheDocument();
+
+    render(<CurrNodeInfo clusterStateCurrentNode={clusterState} />, { wrapper });
+
+    expect(screen.getByText('Current Node Information')).toBeInTheDocument();
   });
 
-  it('should handle hook returning different data', () => {
-    const differentData = {
-      data: { nodeInfo: 'different-node', details: 'some-details' },
-      isLoading: true,
-      error: null,
-    };
-    vi.mocked(hooks.usePlatformCommonZkInfoCurrNodeInfo).mockReturnValue(differentData as any);
-    
-    render(<CurrNodeInfo />);
-    
-    expect(screen.getByTestId('curr-node-info-component')).toBeInTheDocument();
-  });
-
-  it('should handle hook returning error state', () => {
-    const errorData = {
-      data: null,
-      isLoading: false,
-      error: new Error('Failed to fetch node info'),
-    };
-    vi.mocked(hooks.usePlatformCommonZkInfoCurrNodeInfo).mockReturnValue(errorData as any);
-    
-    render(<CurrNodeInfo />);
-    
-    expect(screen.getByTestId('curr-node-info-component')).toBeInTheDocument();
-  });
-
-  it('should handle hook returning loading state', () => {
+  it('should show loading spinner when loading', () => {
     const loadingData = {
       data: null,
       isLoading: true,
       error: null,
     };
-    vi.mocked(hooks.usePlatformCommonZkInfoCurrNodeInfo).mockReturnValue(loadingData as any);
-    
-    render(<CurrNodeInfo />);
-    
-    expect(screen.getByTestId('curr-node-info-component')).toBeInTheDocument();
+    vi.mocked(hooks.useZkCurrNodeInfo).mockReturnValue(loadingData as any);
+
+    const { container } = render(<CurrNodeInfo />, { wrapper });
+
+    expect(container.querySelector('.ant-spin')).toBeInTheDocument();
+  });
+
+  it('should display node data when available', () => {
+    const nodeData = {
+      data: {
+        nodeId: 'node-123',
+        hostname: 'test-host',
+        ip: '192.168.1.1',
+        port: 8080,
+        version: '1.0.0',
+        status: 'ONLINE'
+      },
+      isLoading: false,
+      error: null,
+    };
+    vi.mocked(hooks.useZkCurrNodeInfo).mockReturnValue(nodeData as any);
+
+    render(<CurrNodeInfo />, { wrapper });
+
+    expect(screen.getByText('node-123')).toBeInTheDocument();
+    expect(screen.getByText('test-host')).toBeInTheDocument();
+    expect(screen.getByText('192.168.1.1')).toBeInTheDocument();
   });
 
 
