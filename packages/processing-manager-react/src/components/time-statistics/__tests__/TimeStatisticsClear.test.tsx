@@ -68,12 +68,15 @@ describe('TimeStatisticsClear', () => {
       submittedAt: 0,
     } as any);
 
-    vi.mocked(useProcessingStore).mockReturnValue({
-      nodesProcessing: [
-        { baseUrl: 'http://node1.example.com' },
-        { baseUrl: 'http://node2.example.com' },
-      ],
-    } as any);
+    vi.mocked(useProcessingStore).mockImplementation((selector: any) => {
+      const state = {
+        nodesProcessing: [
+          { baseUrl: 'http://node1.example.com' },
+          { baseUrl: 'http://node2.example.com' },
+        ],
+      };
+      return selector ? selector(state) : state;
+    });
   });
 
   afterEach(() => {
