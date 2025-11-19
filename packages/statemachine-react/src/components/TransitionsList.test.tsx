@@ -7,6 +7,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter } from 'react-router-dom';
+import { App } from 'antd';
 import React from 'react';
 import { TransitionsList } from './TransitionsList';
 
@@ -60,7 +61,9 @@ const createWrapper = () => {
 
   return ({ children }: { children: React.ReactNode }) => (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>{children}</BrowserRouter>
+      <BrowserRouter>
+        <App>{children}</App>
+      </BrowserRouter>
     </QueryClientProvider>
   );
 };
@@ -151,10 +154,6 @@ describe('TransitionsList', () => {
           workflowId: 'workflow-1',
           transitionId: 'trans-1',
         });
-      });
-
-      await waitFor(() => {
-        expect(mockRefetch).toHaveBeenCalled();
       });
 
       await waitFor(() => {

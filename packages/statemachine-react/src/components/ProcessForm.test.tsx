@@ -2,8 +2,8 @@
  * Tests for ProcessForm component
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { render, screen, waitFor, cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
@@ -40,8 +40,10 @@ vi.mock('../hooks/useStatemachine', () => ({
   })),
 }));
 
+let queryClient: QueryClient;
+
 const createWrapper = () => {
-  const queryClient = new QueryClient({
+  queryClient = new QueryClient({
     defaultOptions: {
       queries: { retry: false },
       mutations: { retry: false },
@@ -56,6 +58,13 @@ const createWrapper = () => {
 describe('ProcessForm Component', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    cleanup();
+    if (queryClient) {
+      queryClient.clear();
+    }
   });
 
   it('should render the form in embedded mode', () => {
@@ -157,10 +166,12 @@ describe('ProcessForm Component', () => {
     );
 
     // Fill in the form
-    const nameInput = screen.getByLabelText(/Name/i);
+    const nameInput = screen.getByLabelText(/Name/i) as HTMLInputElement;
+    await user.clear(nameInput);
     await user.type(nameInput, 'Test Process');
 
-    const descriptionInput = screen.getByLabelText(/Description/i);
+    const descriptionInput = screen.getByLabelText(/Description/i) as HTMLTextAreaElement;
+    await user.clear(descriptionInput);
     await user.type(descriptionInput, 'Test Description');
 
     // Submit the form
@@ -187,7 +198,7 @@ describe('ProcessForm Component', () => {
     const user = userEvent.setup();
     const statemachineHooks = await import('../hooks/useStatemachine');
 
-    vi.mocked(statemachineHooks.useProcess).mockReturnValue({
+    vi.mocked(statemachineHooks.useProcess).mockReturnValueOnce({
       data: {
         id: 'process-1',
         name: 'Test Process',
@@ -202,7 +213,7 @@ describe('ProcessForm Component', () => {
 
     mockUpdateProcessMutateAsync.mockResolvedValue({ id: 'process-1' });
 
-    render(
+    const { unmount } = render(
       <ProcessForm
         processId="process-1"
         entityClassName="com.example.Order"
@@ -235,6 +246,8 @@ describe('ProcessForm Component', () => {
     await waitFor(() => {
       expect(mockOnSubmitted).toHaveBeenCalledWith({ id: 'process-1' });
     });
+
+    unmount();
   });
 
   it('should show processor input when template is enabled', async () => {
@@ -333,7 +346,8 @@ describe('ProcessForm Component', () => {
       { wrapper: createWrapper() }
     );
 
-    const nameInput = screen.getByLabelText(/Name/i);
+    const nameInput = screen.getByLabelText(/Name/i) as HTMLInputElement;
+    await user.clear(nameInput);
     await user.type(nameInput, 'Test Process');
 
     const createButton = screen.getByText('Create');

@@ -16,6 +16,7 @@ import {
   useUpdateWorkflow,
 } from '../hooks/useStatemachine';
 import { useQueryInvalidation } from '../hooks/useQueryInvalidation';
+import { useGlobalUiSettingsStore, HelperFeatureFlags } from '@cyoda/http-api-react';
 import type { PersistedType, WorkflowForm as WorkflowFormType } from '../types';
 import './WorkflowForm.scss';
 
@@ -42,6 +43,12 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
 
   const isNew = !workflowId || workflowId === 'new';
   const isRuntime = persistedType === 'transient';
+
+  // Global UI settings
+  const { entityType, isEnabledTechView } = useGlobalUiSettingsStore();
+
+  // Check if entity type filtering is enabled via feature flag
+  const hasEntityTypeInfo = HelperFeatureFlags.isUseModelsInfo();
 
   // Queries
   const { data: workflow, isLoading: isLoadingWorkflow, refetch: refetchWorkflow } = useWorkflow(
@@ -95,11 +102,19 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
     return map[type] || type;
   };
 
-  // Entity type options - NOT filtered by global entity type toggle
-  // The WorkflowForm shows ALL entities regardless of the global toggle
-  // This matches the Vue implementation behavior
+  // Entity type options - filtered by global entity type toggle when tech view is enabled
+  // When tech view is enabled and entity type info is available, filter by selected entity type
+  // When tech view is disabled, show all entities
   const entityOptions = useMemo(() => {
     return workflowEnabledTypes
+      .filter((type: any) => {
+        // If tech view is enabled and entity has type info, filter by entity type
+        if (isEnabledTechView && hasEntityTypeInfo && typeof type === 'object' && type.type) {
+          const matches = type.type === entityType;
+          return matches;
+        }
+        return true;
+      })
       .map((type: any) => {
         // Handle both string arrays and object arrays
         if (typeof type === 'string') {
@@ -129,7 +144,7 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
         };
       })
       .filter(Boolean); // Remove any null entries
-  }, [workflowEnabledTypes]);
+  }, [workflowEnabledTypes, isEnabledTechView, hasEntityTypeInfo, entityType]);
   
   // Criteria options
   const criteriaOptions = criteriaList.map((criteria: any) => ({

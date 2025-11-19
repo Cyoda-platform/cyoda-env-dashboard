@@ -32,16 +32,29 @@ vi.mock('../hooks/useStatemachine', () => ({
   })),
 }));
 
-// Mock global UI settings store
-const mockEntityType = vi.fn(() => 'BUSINESS');
-const mockIsEnabledTechView = vi.fn(() => true);
+// Mock global UI settings store and HelperFeatureFlags
+let mockEntityTypeValue = 'BUSINESS';
+let mockIsEnabledTechViewValue = true;
+const mockEntityType = vi.fn(() => mockEntityTypeValue);
+const mockIsEnabledTechView = vi.fn(() => mockIsEnabledTechViewValue);
 
-vi.mock('../stores/globalUiSettingsStore', () => ({
-  useGlobalUiSettingsStore: () => ({
-    entityType: mockEntityType(),
-    isEnabledTechView: mockIsEnabledTechView(),
-  }),
-}));
+vi.mock('@cyoda/http-api-react', async () => {
+  const actual = await vi.importActual('@cyoda/http-api-react');
+  return {
+    ...actual,
+    useGlobalUiSettingsStore: () => ({
+      get entityType() {
+        return mockEntityType();
+      },
+      get isEnabledTechView() {
+        return mockIsEnabledTechView();
+      },
+    }),
+    HelperFeatureFlags: {
+      isUseModelsInfo: () => true,
+    },
+  };
+});
 
 // Mock react-router-dom
 vi.mock('react-router-dom', async () => {
@@ -71,9 +84,9 @@ describe('WorkflowForm', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    // Reset mock functions
-    mockEntityType.mockReturnValue('BUSINESS');
-    mockIsEnabledTechView.mockReturnValue(true);
+    // Reset mock values
+    mockEntityTypeValue = 'BUSINESS';
+    mockIsEnabledTechViewValue = true;
 
     mockUseWorkflowEnabledTypes.mockReturnValue({
       data: [
@@ -97,8 +110,8 @@ describe('WorkflowForm', () => {
 
   describe('Entity Type Filtering', () => {
     it('should filter entity class options by BUSINESS type', () => {
-      mockEntityType.mockReturnValue('BUSINESS');
-      mockIsEnabledTechView.mockReturnValue(true);
+      mockEntityTypeValue = 'BUSINESS';
+      mockIsEnabledTechViewValue = true;
 
       render(<WorkflowForm workflowId="new" />, { wrapper: createWrapper() });
 
@@ -114,8 +127,8 @@ describe('WorkflowForm', () => {
     });
 
     it('should filter entity class options by PERSISTENCE type', () => {
-      mockEntityType.mockReturnValue('PERSISTENCE');
-      mockIsEnabledTechView.mockReturnValue(true);
+      mockEntityTypeValue = 'PERSISTENCE';
+      mockIsEnabledTechViewValue = true;
 
       render(<WorkflowForm workflowId="new" />, { wrapper: createWrapper() });
 
@@ -131,7 +144,7 @@ describe('WorkflowForm', () => {
     });
 
     it('should show all entity class options when tech view is disabled', () => {
-      mockIsEnabledTechView.mockReturnValue(false);
+      mockIsEnabledTechViewValue = false;
 
       render(<WorkflowForm workflowId="new" />, { wrapper: createWrapper() });
 

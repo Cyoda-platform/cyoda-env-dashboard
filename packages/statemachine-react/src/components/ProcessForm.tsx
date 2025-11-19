@@ -142,17 +142,31 @@ export const ProcessForm: React.FC<ProcessFormProps> = ({
     return [];
   }, [processorsList]);
 
+  // Track if form has been initialized to prevent loops
+  const formInitializedRef = React.useRef(false);
+  const lastProcessorRef = React.useRef<string | null>(null);
+
+  // Reset initialization flag on unmount
+  React.useEffect(() => {
+    return () => {
+      formInitializedRef.current = false;
+      lastProcessorRef.current = null;
+    };
+  }, []);
+
   // Watch for processor changes and update parameters
   const selectedProcessor = Form.useWatch('processorClassName', form);
 
   React.useEffect(() => {
-    if (selectedProcessor) {
+    if (selectedProcessor && selectedProcessor !== lastProcessorRef.current) {
       const newParams = getProcessorParameters(selectedProcessor);
       console.log('ProcessForm - Processor changed, updating parameters:', {
         processor: selectedProcessor,
         parameters: newParams,
         isNew,
       });
+
+      lastProcessorRef.current = selectedProcessor;
 
       // Only update parameters for new processes or when processor changes
       if (isNew || (process && process.processorClassName !== selectedProcessor)) {
@@ -163,7 +177,9 @@ export const ProcessForm: React.FC<ProcessFormProps> = ({
 
   // Initialize form when process data loads
   useEffect(() => {
-    if (process) {
+    if (process && !formInitializedRef.current) {
+      formInitializedRef.current = true;
+
       const formValues: any = {
         name: process.name,
         description: process.description || '',
@@ -183,8 +199,10 @@ export const ProcessForm: React.FC<ProcessFormProps> = ({
         });
       }
 
+      lastProcessorRef.current = process.processorClassName || null;
       form.setFieldsValue(formValues);
-    } else if (isNew) {
+    } else if (isNew && !formInitializedRef.current) {
+      formInitializedRef.current = true;
       form.setFieldsValue({
         syncProcess: false,
         newTransactionForAsync: false,

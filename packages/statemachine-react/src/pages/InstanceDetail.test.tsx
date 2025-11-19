@@ -146,6 +146,13 @@ const createWrapper = () => {
 describe('InstanceDetail', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+
+    // Reset useEntityLoad mock to return data
+    vi.mocked(useEntityLoad).mockReturnValue({
+      data: mockEntityData,
+      isLoading: false,
+      error: null,
+    } as any);
   });
 
   it('should render the component', () => {

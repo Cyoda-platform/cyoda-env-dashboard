@@ -95,6 +95,18 @@ export const CriteriaForm: React.FC<CriteriaFormProps> = ({
   const isNew = !criteriaId || criteriaId === 'new';
   const isRuntime = persistedType === 'transient';
 
+  // Track if form has been initialized to prevent loops
+  const formInitializedRef = React.useRef(false);
+  const colDefsLoadedRef = React.useRef(false);
+
+  // Reset initialization flags on unmount
+  React.useEffect(() => {
+    return () => {
+      formInitializedRef.current = false;
+      colDefsLoadedRef.current = false;
+    };
+  }, []);
+
   // Build cols for FilterBuilder from configDefinition (colDefs + aliasDefs)
   const cols = useMemo(() => {
     console.log('CriteriaForm - configDefinition:', configDefinition);
@@ -183,7 +195,9 @@ export const CriteriaForm: React.FC<CriteriaFormProps> = ({
 
   // Initialize form when criteria data loads
   useEffect(() => {
-    if (criteria) {
+    if (criteria && !formInitializedRef.current) {
+      formInitializedRef.current = true;
+
       const formValues: any = {
         name: criteria.name,
         description: criteria.description || '',
@@ -234,12 +248,14 @@ export const CriteriaForm: React.FC<CriteriaFormProps> = ({
   // Load colDefs from API when criteria is loaded
   // Extract field paths from condition and fetch column definitions
   useEffect(() => {
-    if (!criteria || !criteria.condition || !criteria.condition.conditions) {
+    if (!criteria || !criteria.condition || !criteria.condition.conditions || colDefsLoadedRef.current) {
       return;
     }
 
     const loadColDefs = async () => {
       try {
+        colDefsLoadedRef.current = true;
+
         // Get alias names to exclude from colPaths
         const aliasNames = (criteria.aliasDefs || []).map((el: any) => el.name);
 
