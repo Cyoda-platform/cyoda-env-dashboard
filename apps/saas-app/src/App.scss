@@ -748,8 +748,11 @@ div.ant-card.ant-card-borderless > .ant-card-body {
 // Date picker dropdown (calendar) styling - Dark theme
 .ant-picker-dropdown {
   .ant-picker-panel-container {
-    background: var(--refine-bg-secondary, #1E2A3A) !important;
+    background: #1E2A3A !important; // Solid opaque background
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   }
 
   .ant-picker-panel {
@@ -887,14 +890,18 @@ div.ant-card.ant-card-borderless > .ant-card-body {
 // Dropdown styling
 .ant-dropdown {
   .ant-dropdown-menu {
-    background: var(--refine-bg-elevated);
+    background: #1E2A3A !important; // Solid opaque background
     border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 
     .ant-dropdown-menu-item {
-      color: var(--refine-text-primary);
+      color: var(--refine-text-primary) !important;
+      background: transparent !important;
 
       &:hover {
-        background: rgba(0, 212, 170, 0.1);
+        background: rgba(0, 212, 170, 0.1) !important;
       }
     }
   }
@@ -902,19 +909,23 @@ div.ant-card.ant-card-borderless > .ant-card-body {
 
 // Select dropdown styling
 .ant-select-dropdown {
-  background: var(--refine-bg-elevated);
+  background: #1E2A3A !important; // Solid opaque background
   border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 
   .ant-select-item {
-    color: var(--refine-text-primary);
+    color: var(--refine-text-primary) !important;
+    background: transparent !important;
 
     &:hover {
-      background: rgba(0, 212, 170, 0.1);
+      background: rgba(0, 212, 170, 0.1) !important;
     }
 
     &.ant-select-item-option-selected {
-      background: rgba(0, 212, 170, 0.15);
-      color: var(--refine-primary);
+      background: rgba(0, 212, 170, 0.15) !important;
+      color: var(--refine-primary) !important;
     }
   }
 }
@@ -938,12 +949,15 @@ div.ant-card.ant-card-borderless > .ant-card-body {
 // Popover styling
 .ant-popover {
   .ant-popover-inner {
-    background: var(--refine-bg-elevated);
+    background: #1E2A3A !important; // Solid opaque background
     border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   }
 
   .ant-popover-inner-content {
-    color: var(--refine-text-primary);
+    color: var(--refine-text-primary) !important;
   }
 }
 

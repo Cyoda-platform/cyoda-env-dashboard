@@ -14,7 +14,7 @@ export const ProcessingEventsErrorView: React.FC = () => {
   const [tableData, setTableData] = useState<any[]>([]);
 
   const { refetch, isLoading } = useProcessingQueueEventsError(
-    { params: filterValues },
+    filterValues,
     {
       enabled: false,
       onSuccess: (data: any) => {

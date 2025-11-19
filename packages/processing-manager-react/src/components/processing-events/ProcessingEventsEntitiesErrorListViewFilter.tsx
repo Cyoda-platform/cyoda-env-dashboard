@@ -21,9 +21,11 @@ export const ProcessingEventsEntitiesErrorListViewFilter: React.FC<
   ProcessingEventsEntitiesErrorListViewFilterProps
 > = ({ onChange, isLoading = false }) => {
   const [form, setForm] = useState<FilterForm>({ type: 'ALL' });
-  const [entityClassOptions, setEntityClassOptions] = useState<string[]>([]);
+  const [entityClassOptions, setEntityClassOptions] = useState<string[]>(['ALL']);
 
-  const { data } = useEntitiesListPossible();
+  const { data, isLoading: isLoadingEntities } = useEntitiesListPossible(undefined, {
+    enabled: true,
+  });
 
   useEffect(() => {
     if (data?.data) {

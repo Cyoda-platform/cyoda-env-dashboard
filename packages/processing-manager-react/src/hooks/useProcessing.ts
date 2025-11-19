@@ -436,7 +436,7 @@ export function useTransactionsEntitiesList(params?: any) {
 /**
  * Load entities list possible
  */
-export function useEntitiesListPossible(params?: any) {
+export function useEntitiesListPossible(params?: any, options?: any) {
   return useQuery({
     queryKey: [...processingKeys.all, 'entities-list-possible', params],
     queryFn: async () => {
@@ -446,6 +446,7 @@ export function useEntitiesListPossible(params?: any) {
       );
       return data;
     },
+    ...options,
   });
 }
 
@@ -616,7 +617,7 @@ export function useProcessingQueues(params?: any) {
 /**
  * Load processing queue error events
  */
-export function useProcessingQueueEventsError(params: any) {
+export function useProcessingQueueEventsError(params: any, options?: any) {
   return useQuery({
     queryKey: [...processingKeys.all, 'queue-events-error', params],
     queryFn: async () => {
@@ -631,14 +632,15 @@ export function useProcessingQueueEventsError(params: any) {
       );
       return data;
     },
-    enabled: !!params.queue && !!params.shard,
+    enabled: options?.enabled !== undefined ? options.enabled : (!!params?.queue && !!params?.shard),
+    ...options,
   });
 }
 
 /**
  * Load processing queue entities error list
  */
-export function useProcessingQueueEntitiesErrorList(params?: any) {
+export function useProcessingQueueEntitiesErrorList(params?: any, options?: any) {
   return useQuery({
     queryKey: [...processingKeys.all, 'queue-entities-error-list', params],
     queryFn: async () => {
@@ -648,6 +650,7 @@ export function useProcessingQueueEntitiesErrorList(params?: any) {
       );
       return data;
     },
+    ...options,
   });
 }
 

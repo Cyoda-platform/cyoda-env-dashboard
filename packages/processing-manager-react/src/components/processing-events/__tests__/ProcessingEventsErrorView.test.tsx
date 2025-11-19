@@ -74,9 +74,9 @@ describe('ProcessingEventsErrorView', () => {
 
   it('should call useProcessingQueueEventsError with enabled: false initially', () => {
     render(<ProcessingEventsErrorView />);
-    
+
     expect(hooks.useProcessingQueueEventsError).toHaveBeenCalledWith(
-      { params: null },
+      null,
       expect.objectContaining({
         enabled: false,
       })

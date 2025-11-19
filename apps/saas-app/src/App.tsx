@@ -96,8 +96,8 @@ const theme = {
       cardHeight: 40,
     },
     Dropdown: {
-      // Match header gradient color
-      colorBgElevated: '#1a2332',
+      // Solid opaque background for dropdown menus
+      colorBgElevated: '#1E2A3A',
       colorText: '#E5E7EB',
       colorTextDescription: '#9CA3AF',
       controlItemBgHover: 'rgba(0, 212, 170, 0.1)',
@@ -127,6 +127,8 @@ const theme = {
       colorTextPlaceholder: '#9CA3AF',
       optionSelectedBg: 'rgba(0, 212, 170, 0.15)',
       optionActiveBg: 'rgba(0, 212, 170, 0.1)',
+      // Solid opaque background for select dropdown
+      colorBgElevated: '#1E2A3A',
     },
     Checkbox: {
       colorBgContainer: 'rgba(255, 255, 255, 0.05)',
