@@ -1,0 +1,98 @@
+/* CRITICAL FIX: Fixed columns background override */
+/* This file must be imported LAST to ensure maximum specificity */
+
+/* Fixed columns in table body - solid background to prevent text overlap */
+.ant-table.ant-table-bordered .ant-table-container .ant-table-content table tbody.ant-table-tbody > tr > td.ant-table-cell-fix-left,
+.ant-table.ant-table-bordered .ant-table-container .ant-table-content table tbody.ant-table-tbody > tr > td.ant-table-cell-fix-left-last,
+.ant-table-wrapper .ant-table-tbody > tr > td.ant-table-cell-fix-left,
+.ant-table-wrapper .ant-table-tbody > tr > td.ant-table-cell-fix-left-last,
+table.ant-table tbody.ant-table-tbody tr td.ant-table-cell-fix-left,
+table.ant-table tbody.ant-table-tbody tr td.ant-table-cell-fix-left-last {
+  background: #1E2A3A !important;
+  z-index: 2 !important;
+}
+
+.ant-table.ant-table-bordered .ant-table-container .ant-table-content table tbody.ant-table-tbody > tr > td.ant-table-cell-fix-right,
+.ant-table.ant-table-bordered .ant-table-container .ant-table-content table tbody.ant-table-tbody > tr > td.ant-table-cell-fix-right-first,
+.ant-table-wrapper .ant-table-tbody > tr > td.ant-table-cell-fix-right,
+.ant-table-wrapper .ant-table-tbody > tr > td.ant-table-cell-fix-right-first,
+table.ant-table tbody.ant-table-tbody tr td.ant-table-cell-fix-right,
+table.ant-table tbody.ant-table-tbody tr td.ant-table-cell-fix-right-first {
+  background: #1E2A3A !important;
+  z-index: 2 !important;
+}
+
+/* Hover state */
+.ant-table.ant-table-bordered .ant-table-container .ant-table-content table tbody.ant-table-tbody > tr:hover > td.ant-table-cell-fix-left,
+.ant-table.ant-table-bordered .ant-table-container .ant-table-content table tbody.ant-table-tbody > tr:hover > td.ant-table-cell-fix-left-last,
+.ant-table.ant-table-bordered .ant-table-container .ant-table-content table tbody.ant-table-tbody > tr:hover > td.ant-table-cell-fix-right,
+.ant-table.ant-table-bordered .ant-table-container .ant-table-content table tbody.ant-table-tbody > tr:hover > td.ant-table-cell-fix-right-first,
+.ant-table-wrapper .ant-table-tbody > tr:hover > td.ant-table-cell-fix-left,
+.ant-table-wrapper .ant-table-tbody > tr:hover > td.ant-table-cell-fix-left-last,
+.ant-table-wrapper .ant-table-tbody > tr:hover > td.ant-table-cell-fix-right,
+.ant-table-wrapper .ant-table-tbody > tr:hover > td.ant-table-cell-fix-right-first,
+table.ant-table tbody.ant-table-tbody tr:hover td.ant-table-cell-fix-left,
+table.ant-table tbody.ant-table-tbody tr:hover td.ant-table-cell-fix-left-last,
+table.ant-table tbody.ant-table-tbody tr:hover td.ant-table-cell-fix-right,
+table.ant-table tbody.ant-table-tbody tr:hover td.ant-table-cell-fix-right-first {
+  background: #1f3d3a !important; /* Solid color: base + 5% teal */
+}
+
+/* Selected row state */
+.ant-table.ant-table-bordered .ant-table-container .ant-table-content table tbody.ant-table-tbody > tr.ant-table-row-selected > td.ant-table-cell-fix-left,
+.ant-table.ant-table-bordered .ant-table-container .ant-table-content table tbody.ant-table-tbody > tr.ant-table-row-selected > td.ant-table-cell-fix-left-last,
+.ant-table.ant-table-bordered .ant-table-container .ant-table-content table tbody.ant-table-tbody > tr.ant-table-row-selected > td.ant-table-cell-fix-right,
+.ant-table.ant-table-bordered .ant-table-container .ant-table-content table tbody.ant-table-tbody > tr.ant-table-row-selected > td.ant-table-cell-fix-right-first,
+.ant-table-wrapper .ant-table-tbody > tr.ant-table-row-selected > td.ant-table-cell-fix-left,
+.ant-table-wrapper .ant-table-tbody > tr.ant-table-row-selected > td.ant-table-cell-fix-left-last,
+.ant-table-wrapper .ant-table-tbody > tr.ant-table-row-selected > td.ant-table-cell-fix-right,
+.ant-table-wrapper .ant-table-tbody > tr.ant-table-row-selected > td.ant-table-cell-fix-right-first,
+table.ant-table tbody.ant-table-tbody tr.ant-table-row-selected td.ant-table-cell-fix-left,
+table.ant-table tbody.ant-table-tbody tr.ant-table-row-selected td.ant-table-cell-fix-left-last,
+table.ant-table tbody.ant-table-tbody tr.ant-table-row-selected td.ant-table-cell-fix-right,
+table.ant-table tbody.ant-table-tbody tr.ant-table-row-selected td.ant-table-cell-fix-right-first {
+  background: #204a44 !important; /* Solid color: base + 10% teal */
+}
+
+/* Fixed columns in header */
+.ant-table.ant-table-bordered .ant-table-container .ant-table-content table thead.ant-table-thead > tr > th.ant-table-cell-fix-left,
+.ant-table.ant-table-bordered .ant-table-container .ant-table-content table thead.ant-table-thead > tr > th.ant-table-cell-fix-left-last,
+.ant-table-wrapper .ant-table-thead > tr > th.ant-table-cell-fix-left,
+.ant-table-wrapper .ant-table-thead > tr > th.ant-table-cell-fix-left-last,
+table.ant-table thead.ant-table-thead tr th.ant-table-cell-fix-left,
+table.ant-table thead.ant-table-thead tr th.ant-table-cell-fix-left-last {
+  background: #243142 !important;
+  z-index: 3 !important;
+}
+
+.ant-table.ant-table-bordered .ant-table-container .ant-table-content table thead.ant-table-thead > tr > th.ant-table-cell-fix-right,
+.ant-table.ant-table-bordered .ant-table-container .ant-table-content table thead.ant-table-thead > tr > th.ant-table-cell-fix-right-first,
+.ant-table-wrapper .ant-table-thead > tr > th.ant-table-cell-fix-right,
+.ant-table-wrapper .ant-table-thead > tr > th.ant-table-cell-fix-right-first,
+table.ant-table thead.ant-table-thead tr th.ant-table-cell-fix-right,
+table.ant-table thead.ant-table-thead tr th.ant-table-cell-fix-right-first {
+  background: #243142 !important;
+  z-index: 3 !important;
+}
+
+/* Shadows for visual separation */
+.ant-table-wrapper .ant-table-tbody .ant-table-cell-fix-left::after,
+.ant-table-wrapper .ant-table-tbody .ant-table-cell-fix-left-last::after {
+  box-shadow: inset 10px 0 8px -8px rgba(0, 0, 0, 0.5) !important;
+}
+
+.ant-table-wrapper .ant-table-tbody .ant-table-cell-fix-right::before,
+.ant-table-wrapper .ant-table-tbody .ant-table-cell-fix-right-first::before {
+  box-shadow: inset -10px 0 8px -8px rgba(0, 0, 0, 0.5) !important;
+}
+
+.ant-table-wrapper .ant-table-thead .ant-table-cell-fix-left::after,
+.ant-table-wrapper .ant-table-thead .ant-table-cell-fix-left-last::after {
+  box-shadow: inset 10px 0 8px -8px rgba(0, 0, 0, 0.5) !important;
+}
+
+.ant-table-wrapper .ant-table-thead .ant-table-cell-fix-right::before,
+.ant-table-wrapper .ant-table-thead .ant-table-cell-fix-right-first::before {
+  box-shadow: inset -10px 0 8px -8px rgba(0, 0, 0, 0.5) !important;
+}
+

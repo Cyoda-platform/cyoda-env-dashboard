@@ -1,5 +1,36 @@
 // Global styles for the SaaS app - Refine.dev Enterprise Theme
 
+// CRITICAL FIX: Fixed columns must have solid background to prevent text overlap
+.ant-table-tbody > tr > td.ant-table-cell-fix-left,
+.ant-table-tbody > tr > td.ant-table-cell-fix-left-last,
+.ant-table-tbody > tr > td.ant-table-cell-fix-right,
+.ant-table-tbody > tr > td.ant-table-cell-fix-right-first {
+  background: #1E2A3A !important;
+  z-index: 2 !important;
+}
+
+.ant-table-tbody > tr:hover > td.ant-table-cell-fix-left,
+.ant-table-tbody > tr:hover > td.ant-table-cell-fix-left-last,
+.ant-table-tbody > tr:hover > td.ant-table-cell-fix-right,
+.ant-table-tbody > tr:hover > td.ant-table-cell-fix-right-first {
+  background: rgba(0, 212, 170, 0.05) !important;
+}
+
+.ant-table-tbody > tr.ant-table-row-selected > td.ant-table-cell-fix-left,
+.ant-table-tbody > tr.ant-table-row-selected > td.ant-table-cell-fix-left-last,
+.ant-table-tbody > tr.ant-table-row-selected > td.ant-table-cell-fix-right,
+.ant-table-tbody > tr.ant-table-row-selected > td.ant-table-cell-fix-right-first {
+  background: rgba(0, 212, 170, 0.1) !important;
+}
+
+.ant-table-thead > tr > th.ant-table-cell-fix-left,
+.ant-table-thead > tr > th.ant-table-cell-fix-left-last,
+.ant-table-thead > tr > th.ant-table-cell-fix-right,
+.ant-table-thead > tr > th.ant-table-cell-fix-right-first {
+  background: #243142 !important;
+  z-index: 3 !important;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -292,14 +323,14 @@ div.ant-card.ant-card-borderless > .ant-card-body {
 
   // Table body
   .ant-table-tbody {
-    background: transparent !important;
+    background: var(--refine-bg-elevated) !important;
 
     > tr {
-      background: transparent !important;
+      background: var(--refine-bg-elevated) !important;
       transition: background var(--refine-transition-fast);
 
       > td {
-        background: transparent !important;
+        background: var(--refine-bg-elevated) !important;
         border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
         border-right: 1px solid rgba(255, 255, 255, 0.03) !important;
         color: var(--refine-text-primary) !important;
@@ -308,18 +339,18 @@ div.ant-card.ant-card-borderless > .ant-card-body {
       }
 
       &:hover {
-        background: rgba(0, 212, 170, 0.05) !important;
+        background: #1f3d3a !important; // Solid color: base + 5% teal
 
         > td {
-          background: transparent !important;
+          background: #1f3d3a !important;
         }
       }
 
       &.ant-table-row-selected {
-        background: rgba(0, 212, 170, 0.1) !important;
+        background: #204a44 !important; // Solid color: base + 10% teal
 
         > td {
-          background: transparent !important;
+          background: #204a44 !important;
         }
       }
     }
@@ -344,11 +375,10 @@ div.ant-card.ant-card-borderless > .ant-card-body {
     }
   }
 
-  // Fixed columns - IMPORTANT: Override transparent background to prevent text overlap
+  // Fixed columns - Add shadows and z-index
   .ant-table-tbody {
     .ant-table-cell-fix-left,
     .ant-table-cell-fix-left-last {
-      background: var(--refine-bg-elevated) !important; // Use same background as table container
       z-index: 2 !important;
 
       &::after {
@@ -358,31 +388,10 @@ div.ant-card.ant-card-borderless > .ant-card-body {
 
     .ant-table-cell-fix-right,
     .ant-table-cell-fix-right-first {
-      background: var(--refine-bg-elevated) !important; // Use same background as table container
       z-index: 2 !important;
 
       &::before {
         box-shadow: inset -10px 0 8px -8px rgba(0, 0, 0, 0.5) !important;
-      }
-    }
-
-    // Hover state for fixed columns
-    > tr:hover {
-      > .ant-table-cell-fix-left,
-      > .ant-table-cell-fix-left-last,
-      > .ant-table-cell-fix-right,
-      > .ant-table-cell-fix-right-first {
-        background: rgba(0, 212, 170, 0.05) !important; // Match hover color
-      }
-    }
-
-    // Selected row state for fixed columns
-    > tr.ant-table-row-selected {
-      > .ant-table-cell-fix-left,
-      > .ant-table-cell-fix-left-last,
-      > .ant-table-cell-fix-right,
-      > .ant-table-cell-fix-right-first {
-        background: rgba(0, 212, 170, 0.1) !important; // Match selected row color
       }
     }
   }
@@ -409,7 +418,21 @@ div.ant-card.ant-card-borderless > .ant-card-body {
       }
     }
   }
+}
 
+// CRITICAL: Override for hover and selected rows - must be outside .ant-table block for maximum specificity
+.ant-table-wrapper .ant-table-tbody > tr.ant-table-row-hover > td,
+.ant-table-wrapper .ant-table-tbody > tr:hover > td {
+  background: #1f3d3a !important; // Solid color: base + 5% teal
+}
+
+.ant-table-wrapper .ant-table-tbody > tr.ant-table-row-selected > td,
+.ant-table-wrapper .ant-table-tbody > tr[aria-selected="true"] > td {
+  background: #204a44 !important; // Solid color: base + 10% teal
+}
+
+// Global Table Styling - Additional rules
+.ant-table {
   // Sider - Thin border
   .ant-layout-sider {
     border-right: 0.5px solid rgba(0, 212, 170, 0.15) !important;

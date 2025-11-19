@@ -63,7 +63,7 @@ const theme = {
       headerColor: '#D1D5DB',
       headerSortActiveBg: '#2A3A4F',
       headerSortHoverBg: '#2A3A4F',
-      rowHoverBg: 'rgba(0, 212, 170, 0.1)',
+      rowHoverBg: '#1f3d3a', // Solid color: base + 5% teal (instead of transparent)
       bodySortBg: 'rgba(0, 212, 170, 0.03)',
     },
     Pagination: {
