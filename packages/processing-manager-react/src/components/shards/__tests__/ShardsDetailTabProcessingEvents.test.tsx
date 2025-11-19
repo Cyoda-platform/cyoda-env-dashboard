@@ -4,8 +4,10 @@
 
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import userEvent from '@testing-library/user-event';
 import ShardsDetailTabProcessingEvents from '../ShardsDetailTabProcessingEvents';
+import type { ReactNode } from 'react';
 
 // Mock the child components
 vi.mock('../../processing-events', () => ({
@@ -18,20 +20,32 @@ vi.mock('../../processing-events', () => ({
 }));
 
 describe('ShardsDetailTabProcessingEvents', () => {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: { retry: false, gcTime: 0, staleTime: 0 },
+    },
+  });
+
+  const wrapper = ({ children }: { children: ReactNode }) => (
+    <QueryClientProvider client={queryClient}>
+      {children}
+    </QueryClientProvider>
+  );
+
   it('should render the component', () => {
-    const { container } = render(<ShardsDetailTabProcessingEvents />);
-    
-    expect(container.querySelector('.ant-card')).toBeInTheDocument();
+    const { container } = render(<ShardsDetailTabProcessingEvents />, { wrapper });
+
+    expect(container.querySelector('.processing-events-tab')).toBeInTheDocument();
   });
 
   it('should render title', () => {
-    render(<ShardsDetailTabProcessingEvents />);
+    render(<ShardsDetailTabProcessingEvents />, { wrapper });
     
     expect(screen.getByText('Processing Events')).toBeInTheDocument();
   });
 
   it('should render all tab labels', () => {
-    const { container } = render(<ShardsDetailTabProcessingEvents />);
+    const { container } = render(<ShardsDetailTabProcessingEvents />, { wrapper });
 
     // Check that all tabs exist by counting them
     const tabs = container.querySelectorAll('.ant-tabs-tab');
@@ -46,14 +60,14 @@ describe('ShardsDetailTabProcessingEvents', () => {
   });
 
   it('should show Process Events Statistics tab content by default', () => {
-    render(<ShardsDetailTabProcessingEvents />);
+    render(<ShardsDetailTabProcessingEvents />, { wrapper });
 
     expect(screen.getByTestId('process-events-stats')).toBeInTheDocument();
   });
 
   it('should switch to Polling info tab when clicked', async () => {
     const user = userEvent.setup();
-    render(<ShardsDetailTabProcessingEvents />);
+    render(<ShardsDetailTabProcessingEvents />, { wrapper });
 
     const tab = screen.getByText('Polling info');
     await user.click(tab);
@@ -63,7 +77,7 @@ describe('ShardsDetailTabProcessingEvents', () => {
 
   it('should switch to Processing events view tab when clicked', async () => {
     const user = userEvent.setup();
-    render(<ShardsDetailTabProcessingEvents />);
+    render(<ShardsDetailTabProcessingEvents />, { wrapper });
 
     const tab = screen.getByText('Processing events view');
     await user.click(tab);
@@ -73,7 +87,7 @@ describe('ShardsDetailTabProcessingEvents', () => {
 
   it('should switch to Processing events error view tab when clicked', async () => {
     const user = userEvent.setup();
-    render(<ShardsDetailTabProcessingEvents />);
+    render(<ShardsDetailTabProcessingEvents />, { wrapper });
 
     const tab = screen.getByText('Processing events error view');
     await user.click(tab);
@@ -83,7 +97,7 @@ describe('ShardsDetailTabProcessingEvents', () => {
 
   it('should switch to Entities error list view tab when clicked', async () => {
     const user = userEvent.setup();
-    render(<ShardsDetailTabProcessingEvents />);
+    render(<ShardsDetailTabProcessingEvents />, { wrapper });
 
     const tab = screen.getByText('Entities error list view');
     await user.click(tab);
@@ -93,7 +107,7 @@ describe('ShardsDetailTabProcessingEvents', () => {
 
   it('should switch to SIFT logger conf view tab when clicked', async () => {
     const user = userEvent.setup();
-    render(<ShardsDetailTabProcessingEvents />);
+    render(<ShardsDetailTabProcessingEvents />, { wrapper });
 
     const tab = screen.getByText('SIFT logger conf view');
     await user.click(tab);
@@ -102,25 +116,25 @@ describe('ShardsDetailTabProcessingEvents', () => {
   });
 
   it('should render tabs component', () => {
-    const { container } = render(<ShardsDetailTabProcessingEvents />);
+    const { container } = render(<ShardsDetailTabProcessingEvents />, { wrapper });
     
     expect(container.querySelector('.ant-tabs')).toBeInTheDocument();
   });
 
   it('should have six tabs', () => {
-    const { container } = render(<ShardsDetailTabProcessingEvents />);
+    const { container } = render(<ShardsDetailTabProcessingEvents />, { wrapper });
     
     const tabs = container.querySelectorAll('.ant-tabs-tab');
     expect(tabs).toHaveLength(6);
   });
 
   it('should render without errors', () => {
-    expect(() => render(<ShardsDetailTabProcessingEvents />)).not.toThrow();
+    expect(() => render(<ShardsDetailTabProcessingEvents />, { wrapper })).not.toThrow();
   });
 
   it('should maintain active tab state', async () => {
     const user = userEvent.setup();
-    render(<ShardsDetailTabProcessingEvents />);
+    render(<ShardsDetailTabProcessingEvents />, { wrapper });
 
     // Click second tab
     await user.click(screen.getByText('Polling info'));
@@ -142,7 +156,7 @@ describe('ShardsDetailTabProcessingEvents', () => {
 
   it('should render implemented tabs with components', async () => {
     const user = userEvent.setup();
-    render(<ShardsDetailTabProcessingEvents />);
+    render(<ShardsDetailTabProcessingEvents />, { wrapper });
     
     // First tab (default)
     expect(screen.getByTestId('process-events-stats')).toBeInTheDocument();
@@ -158,7 +172,7 @@ describe('ShardsDetailTabProcessingEvents', () => {
 
   it('should render all implemented tabs with components', async () => {
     const user = userEvent.setup();
-    render(<ShardsDetailTabProcessingEvents />);
+    render(<ShardsDetailTabProcessingEvents />, { wrapper });
 
     // Fourth tab
     await user.click(screen.getByText('Processing events error view'));

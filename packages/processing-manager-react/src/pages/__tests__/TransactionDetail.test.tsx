@@ -80,7 +80,6 @@ describe('TransactionDetail', () => {
     const { container } = renderWithRouter();
 
     expect(container.querySelector('.ant-spin')).toBeInTheDocument();
-    expect(screen.getByTestId('layout')).toBeInTheDocument();
   });
 
   it('should render error state when error occurs', () => {

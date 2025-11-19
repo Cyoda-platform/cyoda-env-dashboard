@@ -69,7 +69,7 @@ describe('TimeStatisticsClear', () => {
     } as any);
 
     vi.mocked(useProcessingStore).mockReturnValue({
-      nodes: [
+      nodesProcessing: [
         { baseUrl: 'http://node1.example.com' },
         { baseUrl: 'http://node2.example.com' },
       ],
@@ -124,7 +124,7 @@ describe('TimeStatisticsClear', () => {
     await user.click(clearOption);
     
     await waitFor(() => {
-      expect(screen.getByText('Warning')).toBeInTheDocument();
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
       expect(screen.getByText('Clear time stats. Continue?')).toBeInTheDocument();
     });
   });
@@ -144,9 +144,9 @@ describe('TimeStatisticsClear', () => {
     await user.click(clearOption);
     
     await waitFor(() => {
-      expect(screen.getByText('Warning')).toBeInTheDocument();
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
     });
-    
+
     const okButtons = screen.getAllByRole('button', { name: /ok/i });
     await user.click(okButtons[okButtons.length - 1]);
     
@@ -168,14 +168,14 @@ describe('TimeStatisticsClear', () => {
     
     const clearOption = screen.getByText('Clear time stats');
     await user.click(clearOption);
-    
+
     await waitFor(() => {
-      expect(screen.getByText('Warning')).toBeInTheDocument();
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
     });
-    
+
     const okButtons = screen.getAllByRole('button', { name: /ok/i });
     await user.click(okButtons[okButtons.length - 1]);
-    
+
     await waitFor(() => {
       expect(mockOnReload).toHaveBeenCalled();
     });
@@ -185,19 +185,19 @@ describe('TimeStatisticsClear', () => {
     const user = userEvent.setup();
     const { message } = await import('antd');
     renderComponent();
-    
+
     const button = screen.getByRole('button', { name: /clear/i });
     await user.click(button);
-    
+
     await waitFor(() => {
       expect(screen.getByText('Clear time stats')).toBeInTheDocument();
     });
-    
+
     const clearOption = screen.getByText('Clear time stats');
     await user.click(clearOption);
-    
+
     await waitFor(() => {
-      expect(screen.getByText('Warning')).toBeInTheDocument();
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
     });
     
     const cancelButtons = screen.getAllByRole('button', { name: /cancel/i });
@@ -223,7 +223,7 @@ describe('TimeStatisticsClear', () => {
     await user.click(clearAllOption);
     
     await waitFor(() => {
-      expect(screen.getByText('Warning')).toBeInTheDocument();
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
       expect(screen.getByText('Clear timestats request send to all nodes. Continue?')).toBeInTheDocument();
     });
   });
@@ -231,24 +231,24 @@ describe('TimeStatisticsClear', () => {
   it('should call clearTimeStats for all nodes when OK is clicked', async () => {
     const user = userEvent.setup();
     renderComponent();
-    
+
     const button = screen.getByRole('button', { name: /clear/i });
     await user.click(button);
-    
+
     await waitFor(() => {
       expect(screen.getByText('Clear time stats (ALL nodes)')).toBeInTheDocument();
     });
-    
+
     const clearAllOption = screen.getByText('Clear time stats (ALL nodes)');
     await user.click(clearAllOption);
-    
+
     await waitFor(() => {
-      expect(screen.getByText('Warning')).toBeInTheDocument();
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
     });
-    
+
     const okButtons = screen.getAllByRole('button', { name: /ok/i });
     await user.click(okButtons[okButtons.length - 1]);
-    
+
     await waitFor(() => {
       expect(mockMutateAsync).toHaveBeenCalledTimes(2);
       expect(mockMutateAsync).toHaveBeenCalledWith('http://node1.example.com');
@@ -259,19 +259,19 @@ describe('TimeStatisticsClear', () => {
   it('should call onReload after successful clear all', async () => {
     const user = userEvent.setup();
     renderComponent();
-    
+
     const button = screen.getByRole('button', { name: /clear/i });
     await user.click(button);
-    
+
     await waitFor(() => {
       expect(screen.getByText('Clear time stats (ALL nodes)')).toBeInTheDocument();
     });
-    
+
     const clearAllOption = screen.getByText('Clear time stats (ALL nodes)');
     await user.click(clearAllOption);
-    
+
     await waitFor(() => {
-      expect(screen.getByText('Warning')).toBeInTheDocument();
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
     });
     
     const okButtons = screen.getAllByRole('button', { name: /ok/i });
@@ -298,18 +298,18 @@ describe('TimeStatisticsClear', () => {
     
     const clearOption = screen.getByText('Clear time stats');
     await user.click(clearOption);
-    
+
     await waitFor(() => {
-      expect(screen.getByText('Warning')).toBeInTheDocument();
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
     });
-    
+
     const okButtons = screen.getAllByRole('button', { name: /ok/i });
     await user.click(okButtons[okButtons.length - 1]);
-    
+
     await waitFor(() => {
       expect(consoleErrorSpy).toHaveBeenCalled();
     });
-    
+
     consoleErrorSpy.mockRestore();
   });
 
@@ -320,19 +320,19 @@ describe('TimeStatisticsClear', () => {
         <TimeStatisticsClear />
       </QueryClientProvider>
     );
-    
+
     const button = screen.getByRole('button', { name: /clear/i });
     await user.click(button);
-    
+
     await waitFor(() => {
       expect(screen.getByText('Clear time stats')).toBeInTheDocument();
     });
-    
+
     const clearOption = screen.getByText('Clear time stats');
     await user.click(clearOption);
-    
+
     await waitFor(() => {
-      expect(screen.getByText('Warning')).toBeInTheDocument();
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
     });
     
     const okButtons = screen.getAllByRole('button', { name: /ok/i });

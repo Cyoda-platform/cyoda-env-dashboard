@@ -13,6 +13,7 @@ vi.mock('../../../hooks/useProcessing', () => ({
   useProcessEventsStats: vi.fn(),
   useSummary: vi.fn(),
   useProcessingQueueEvents: vi.fn(),
+  useProcessingQueues: vi.fn(),
 }));
 
 const mockStatsData = [
@@ -37,7 +38,7 @@ const mockStatsData = [
 describe('ProcessEventsStatistics', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     vi.mocked(hooks.useProcessEventsStats).mockReturnValue({
       data: mockStatsData,
       isLoading: false,
@@ -53,6 +54,10 @@ describe('ProcessEventsStatistics', () => {
     } as any);
 
     vi.mocked(hooks.useProcessingQueueEvents).mockReturnValue({
+      data: ['queue1', 'queue2'],
+    } as any);
+
+    vi.mocked(hooks.useProcessingQueues).mockReturnValue({
       data: ['queue1', 'queue2'],
     } as any);
   });

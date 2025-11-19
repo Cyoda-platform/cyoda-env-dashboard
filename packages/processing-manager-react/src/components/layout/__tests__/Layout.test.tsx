@@ -105,7 +105,7 @@ describe('Layout', () => {
     ];
 
     // Set nodes in the store
-    useProcessingStore.setState({ nodes: mockNodes });
+    useProcessingStore.setState({ nodesProcessing: mockNodes });
 
     renderWithRouter(
       <Layout>

@@ -115,10 +115,10 @@ describe('TransitionStateMachineTable (state-machine)', () => {
     const link1 = screen.getByRole('link', { name: 'txn-abc' });
     const link2 = screen.getByRole('link', { name: 'txn-def' });
     const link3 = screen.getByRole('link', { name: 'txn-ghi' });
-    
-    expect(link1).toHaveAttribute('href', '/nodes/test-node/transaction/txn-abc');
-    expect(link2).toHaveAttribute('href', '/nodes/test-node/transaction/txn-def');
-    expect(link3).toHaveAttribute('href', '/nodes/test-node/transaction/txn-ghi');
+
+    expect(link1).toHaveAttribute('href', '/processing-ui/nodes/test-node/transaction/txn-abc');
+    expect(link2).toHaveAttribute('href', '/processing-ui/nodes/test-node/transaction/txn-def');
+    expect(link3).toHaveAttribute('href', '/processing-ui/nodes/test-node/transaction/txn-ghi');
   });
 
   it('should display current states', () => {
@@ -166,7 +166,7 @@ describe('TransitionStateMachineTable (state-machine)', () => {
     );
     
     const link = screen.getByRole('link', { name: 'txn-abc' });
-    expect(link).toHaveAttribute('href', '/nodes/another-node/transaction/txn-abc');
+    expect(link).toHaveAttribute('href', '/processing-ui/nodes/another-node/transaction/txn-abc');
   });
 
   it('should have pagination with correct options', () => {

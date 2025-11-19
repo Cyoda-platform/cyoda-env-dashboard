@@ -6,11 +6,10 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { LoadedOnlineNodes } from '../LoadedOnlineNodes';
-import * as hooks from '../../../hooks';
 import type { ReactNode } from 'react';
 
 // Mock the hooks
-vi.mock('../../../hooks', () => ({
+vi.mock('../../../hooks/usePlatformCommon', () => ({
   useZkOnlineNodes: vi.fn(),
 }));
 
@@ -39,25 +38,33 @@ describe('LoadedOnlineNodes', () => {
     </QueryClientProvider>
   );
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks();
     queryClient.clear();
+    const hooks = await import('../../../hooks/usePlatformCommon');
     vi.mocked(hooks.useZkOnlineNodes).mockReturnValue(mockHookReturn as any);
   });
 
-  it('should render the component', () => {
+  it('should render the component', async () => {
+    const hooks = await import('../../../hooks/usePlatformCommon');
+    vi.mocked(hooks.useZkOnlineNodes).mockReturnValue(mockHookReturn as any);
+
     const { container } = render(<LoadedOnlineNodes />, { wrapper });
 
     expect(container.querySelector('.loaded-online-nodes')).toBeInTheDocument();
   });
 
-  it('should render table when data is available', () => {
+  it('should render table when data is available', async () => {
+    const hooks = await import('../../../hooks/usePlatformCommon');
+    vi.mocked(hooks.useZkOnlineNodes).mockReturnValue(mockHookReturn as any);
+
     const { container } = render(<LoadedOnlineNodes />, { wrapper });
 
     expect(container.querySelector('.ant-table')).toBeInTheDocument();
   });
 
-  it('should show loading state', () => {
+  it('should show loading state', async () => {
+    const hooks = await import('../../../hooks/usePlatformCommon');
     const loadingData = {
       data: null,
       isLoading: true,
@@ -70,7 +77,8 @@ describe('LoadedOnlineNodes', () => {
     expect(container.querySelector('.ant-table')).toBeInTheDocument();
   });
 
-  it('should handle empty data', () => {
+  it('should handle empty data', async () => {
+    const hooks = await import('../../../hooks/usePlatformCommon');
     const emptyData = {
       data: null,
       isLoading: false,

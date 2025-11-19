@@ -6,11 +6,10 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { CurrNodeInfo } from '../CurrNodeInfo';
-import * as hooks from '../../../hooks';
 import type { ReactNode } from 'react';
 
 // Mock the hooks
-vi.mock('../../../hooks', () => ({
+vi.mock('../../../hooks/usePlatformCommon', () => ({
   useZkCurrNodeInfo: vi.fn(),
 }));
 
@@ -41,19 +40,26 @@ describe('CurrNodeInfo', () => {
     </QueryClientProvider>
   );
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks();
     queryClient.clear();
+    const hooks = await import('../../../hooks/usePlatformCommon');
     vi.mocked(hooks.useZkCurrNodeInfo).mockReturnValue(mockHookReturn as any);
   });
 
-  it('should render the component', () => {
+  it('should render the component', async () => {
+    const hooks = await import('../../../hooks/usePlatformCommon');
+    vi.mocked(hooks.useZkCurrNodeInfo).mockReturnValue(mockHookReturn as any);
+
     render(<CurrNodeInfo />, { wrapper });
 
     expect(screen.getByText('Current Node Information')).toBeInTheDocument();
   });
 
-  it('should render node information fields', () => {
+  it('should render node information fields', async () => {
+    const hooks = await import('../../../hooks/usePlatformCommon');
+    vi.mocked(hooks.useZkCurrNodeInfo).mockReturnValue(mockHookReturn as any);
+
     render(<CurrNodeInfo />, { wrapper });
 
     expect(screen.getByText('Node ID')).toBeInTheDocument();
@@ -61,14 +67,20 @@ describe('CurrNodeInfo', () => {
     expect(screen.getByText('IP Address')).toBeInTheDocument();
   });
 
-  it('should wrap component in a div', () => {
+  it('should wrap component in a div', async () => {
+    const hooks = await import('../../../hooks/usePlatformCommon');
+    vi.mocked(hooks.useZkCurrNodeInfo).mockReturnValue(mockHookReturn as any);
+
     const { container } = render(<CurrNodeInfo />, { wrapper });
 
     const wrapperDiv = container.querySelector('div');
     expect(wrapperDiv).toBeInTheDocument();
   });
 
-  it('should handle clusterStateCurrentNode with data', () => {
+  it('should handle clusterStateCurrentNode with data', async () => {
+    const hooks = await import('../../../hooks/usePlatformCommon');
+    vi.mocked(hooks.useZkCurrNodeInfo).mockReturnValue(mockHookReturn as any);
+
     const clusterState = { name: 'test-node', status: 'active', port: 8080 };
 
     render(<CurrNodeInfo clusterStateCurrentNode={clusterState} />, { wrapper });
@@ -76,7 +88,8 @@ describe('CurrNodeInfo', () => {
     expect(screen.getByText('Current Node Information')).toBeInTheDocument();
   });
 
-  it('should show loading spinner when loading', () => {
+  it('should show loading spinner when loading', async () => {
+    const hooks = await import('../../../hooks/usePlatformCommon');
     const loadingData = {
       data: null,
       isLoading: true,
@@ -89,7 +102,8 @@ describe('CurrNodeInfo', () => {
     expect(container.querySelector('.ant-spin')).toBeInTheDocument();
   });
 
-  it('should display node data when available', () => {
+  it('should display node data when available', async () => {
+    const hooks = await import('../../../hooks/usePlatformCommon');
     const nodeData = {
       data: {
         nodeId: 'node-123',

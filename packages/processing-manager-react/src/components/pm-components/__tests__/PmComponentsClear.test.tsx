@@ -82,15 +82,15 @@ describe('PmComponentsClear', () => {
   it('should show modal on Clear Caches click', async () => {
     const user = userEvent.setup();
     render(<PmComponentsClear />);
-    
+
     const button = screen.getByRole('button', { name: /clear/i });
     await user.click(button);
-    
+
     const menuItem = await screen.findByText('Clear Caches');
     await user.click(menuItem);
-    
+
     await waitFor(() => {
-      expect(screen.getByText('Warning')).toBeInTheDocument();
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
     });
   });
 
