@@ -4,8 +4,8 @@
  */
 
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { Form, InputNumber, Button, Table, Row, Col, Card } from 'antd';
-import { PlayCircleOutlined, StopOutlined } from '@ant-design/icons';
+import { Form, InputNumber, Button, Table, Row, Col, Space } from 'antd';
+import { PlayCircleOutlined, StopOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import { useExecTransactionsInfo } from '../../hooks';
 import type { ColumnsType } from 'antd/es/table';
 import type { ResizeCallbackData } from 'react-resizable';
@@ -143,28 +143,49 @@ export const TransactionsExecuting: React.FC = () => {
 
   return (
     <div className="pm-shards-detail-tab-transactions-executing">
-      <Card>
-        <Form layout="vertical" className="form">
-          <h3>Settings</h3>
-          <Row gutter={20}>
+      <Form layout="vertical" className="form">
+        <h3>Settings</h3>
+        <Row gutter={20}>
             <Col span={6}>
               <Form.Item label="Limit">
-                <InputNumber
-                  min={1}
-                  value={limit}
-                  onChange={(value) => setLimit(value || 100)}
-                  style={{ width: '100%' }}
-                />
+                <Space.Compact style={{ width: '100%' }}>
+                  <Button
+                    icon={<MinusOutlined />}
+                    onClick={() => setLimit(Math.max(1, limit - 1))}
+                  />
+                  <InputNumber
+                    min={1}
+                    value={limit}
+                    onChange={(value) => setLimit(value || 100)}
+                    style={{ width: '100%' }}
+                    controls={false}
+                  />
+                  <Button
+                    icon={<PlusOutlined />}
+                    onClick={() => setLimit(limit + 1)}
+                  />
+                </Space.Compact>
               </Form.Item>
             </Col>
             <Col span={6}>
               <Form.Item label="Update Interval (seconds)">
-                <InputNumber
-                  min={1}
-                  value={updateInterval}
-                  onChange={(value) => setUpdateInterval(value || 2)}
-                  style={{ width: '100%' }}
-                />
+                <Space.Compact style={{ width: '100%' }}>
+                  <Button
+                    icon={<MinusOutlined />}
+                    onClick={() => setUpdateInterval(Math.max(1, updateInterval - 1))}
+                  />
+                  <InputNumber
+                    min={1}
+                    value={updateInterval}
+                    onChange={(value) => setUpdateInterval(value || 2)}
+                    style={{ width: '100%' }}
+                    controls={false}
+                  />
+                  <Button
+                    icon={<PlusOutlined />}
+                    onClick={() => setUpdateInterval(updateInterval + 1)}
+                  />
+                </Space.Compact>
               </Form.Item>
             </Col>
             <Col span={6} className="wrap-button">
@@ -191,7 +212,6 @@ export const TransactionsExecuting: React.FC = () => {
             </Col>
           </Row>
         </Form>
-      </Card>
 
       <Table
         columns={columns}

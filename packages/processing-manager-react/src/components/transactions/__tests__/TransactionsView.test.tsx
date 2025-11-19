@@ -23,17 +23,9 @@ vi.mock('../TransactionsViewFilter', () => ({
 }));
 
 vi.mock('../TransactionsViewTable', () => ({
-  TransactionsViewTable: ({ isLoading, tableData }: any) => (
+  TransactionsViewTable: ({ isLoading, tableData, firstPage, lastPage, pageSize }: any) => (
     <div data-testid="transactions-view-table">
-      Table - Loading: {isLoading ? 'true' : 'false'}, Rows: {tableData.length}
-    </div>
-  ),
-}));
-
-vi.mock('../../common', () => ({
-  Pagination: ({ firstPage, lastPage, nextCursor, prevCursor }: any) => (
-    <div data-testid="pagination">
-      Pagination - First: {firstPage ? 'true' : 'false'}, Last: {lastPage ? 'true' : 'false'}
+      Table - Loading: {isLoading ? 'true' : 'false'}, Rows: {tableData.length}, First: {firstPage ? 'true' : 'false'}, Last: {lastPage ? 'true' : 'false'}, PageSize: {pageSize}
     </div>
   ),
 }));
@@ -72,10 +64,12 @@ describe('TransactionsView', () => {
     expect(screen.getByTestId('transactions-view-table')).toBeInTheDocument();
   });
 
-  it('should render pagination component', () => {
+  it('should pass pagination props to table', () => {
     render(<TransactionsView />);
-    
-    expect(screen.getByTestId('pagination')).toBeInTheDocument();
+
+    expect(screen.getByText(/First: false/)).toBeInTheDocument();
+    expect(screen.getByText(/Last: false/)).toBeInTheDocument();
+    expect(screen.getByText(/PageSize: 25/)).toBeInTheDocument();
   });
 
   it('should pass loading state to filter', () => {
@@ -153,24 +147,23 @@ describe('TransactionsView', () => {
 
   it('should use default pagination values', () => {
     render(<TransactionsView />);
-    
+
     // Component should render without errors
-    expect(screen.getByTestId('pagination')).toBeInTheDocument();
+    expect(screen.getByText(/PageSize: 25/)).toBeInTheDocument();
   });
 
   it('should handle data with rows', () => {
     render(<TransactionsView />);
-    
+
     expect(screen.getByTestId('transactions-view-table')).toBeInTheDocument();
     expect(screen.getByText(/Rows: 2/)).toBeInTheDocument();
   });
 
-  it('should render all three main sections', () => {
+  it('should render all main sections', () => {
     render(<TransactionsView />);
-    
+
     expect(screen.getByTestId('transactions-view-filter')).toBeInTheDocument();
     expect(screen.getByTestId('transactions-view-table')).toBeInTheDocument();
-    expect(screen.getByTestId('pagination')).toBeInTheDocument();
   });
 
   it('should handle undefined data properties', () => {

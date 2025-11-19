@@ -23,7 +23,7 @@ export const SiftLoggerConfView: React.FC = () => {
   });
   const [dataQueues, setDataQueues] = useState<TransferItem[]>([]);
 
-  const { data: siftLoggerData } = useSiftLogger();
+  const { data: siftLoggerData } = useSiftLogger({ node: name });
   const { mutate: updateSiftLogger, isLoading } = useUpdateSiftLogger({
     onSuccess: () => {
       message.success('Data was updated');

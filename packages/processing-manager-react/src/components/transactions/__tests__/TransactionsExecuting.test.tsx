@@ -132,12 +132,6 @@ describe('TransactionsExecuting', () => {
     expect(mockUseExecTransactionsInfo).toHaveBeenCalledWith({ limit: 100 });
   });
 
-  it('should render card component', () => {
-    const { container } = render(<TransactionsExecuting />);
-    
-    expect(container.querySelector('.ant-card')).toBeInTheDocument();
-  });
-
   it('should render form', () => {
     const { container } = render(<TransactionsExecuting />);
     

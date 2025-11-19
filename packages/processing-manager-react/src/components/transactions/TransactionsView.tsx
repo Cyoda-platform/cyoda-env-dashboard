@@ -6,7 +6,6 @@
 import React, { useState, useMemo } from 'react';
 import { TransactionsViewFilter } from './TransactionsViewFilter';
 import { TransactionsViewTable } from './TransactionsViewTable';
-import { Pagination } from '../common';
 import { useTransactions } from '../../hooks';
 
 interface PaginationForm {
@@ -53,20 +52,63 @@ export const TransactionsView: React.FC = () => {
     });
   };
 
-  const handlePaginationChange = (form: PaginationForm) => {
-    setPaginationForm(form);
+  const handlePageSizeChange = (size: number) => {
+    setPaginationForm((prev) => ({
+      ...prev,
+      pageSize: size,
+    }));
+  };
+
+  const handleFirst = () => {
+    setPaginationForm((prev) => ({
+      ...prev,
+      requestLast: false,
+      nextCursor: null,
+      prevCursor: null,
+    }));
+  };
+
+  const handlePrev = () => {
+    setPaginationForm((prev) => ({
+      ...prev,
+      prevCursor,
+      nextCursor: null,
+      requestLast: false,
+    }));
+  };
+
+  const handleNext = () => {
+    setPaginationForm((prev) => ({
+      ...prev,
+      nextCursor,
+      prevCursor: null,
+      requestLast: false,
+    }));
+  };
+
+  const handleLast = () => {
+    setPaginationForm((prev) => ({
+      ...prev,
+      requestLast: true,
+      nextCursor: null,
+      prevCursor: null,
+    }));
   };
 
   return (
     <div>
       <TransactionsViewFilter isLoading={isLoading} onChange={handleFilterChange} />
-      <TransactionsViewTable isLoading={isLoading} tableData={tableData} />
-      <Pagination
-        nextCursor={nextCursor}
-        prevCursor={prevCursor}
+      <TransactionsViewTable
+        isLoading={isLoading}
+        tableData={tableData}
+        pageSize={paginationForm.pageSize}
         firstPage={firstPage}
         lastPage={lastPage}
-        onChange={handlePaginationChange}
+        onPageSizeChange={handlePageSizeChange}
+        onFirst={handleFirst}
+        onPrev={handlePrev}
+        onNext={handleNext}
+        onLast={handleLast}
       />
     </div>
   );

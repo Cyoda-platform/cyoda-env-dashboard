@@ -4,7 +4,8 @@
  */
 
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
-import { Table, Spin } from 'antd';
+import { Table, Spin, Button, Select, Space } from 'antd';
+import { DoubleLeftOutlined, LeftOutlined, RightOutlined, DoubleRightOutlined } from '@ant-design/icons';
 import { Link, useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 import type { ColumnsType } from 'antd/es/table';
@@ -28,11 +29,27 @@ interface TransactionRow {
 interface TransactionsViewTableProps {
   tableData: TransactionRow[];
   isLoading?: boolean;
+  pageSize?: number;
+  firstPage?: boolean;
+  lastPage?: boolean;
+  onPageSizeChange?: (size: number) => void;
+  onNext?: () => void;
+  onPrev?: () => void;
+  onFirst?: () => void;
+  onLast?: () => void;
 }
 
 export const TransactionsViewTable: React.FC<TransactionsViewTableProps> = ({
   tableData,
   isLoading = false,
+  pageSize = 25,
+  firstPage = false,
+  lastPage = false,
+  onPageSizeChange,
+  onNext,
+  onPrev,
+  onFirst,
+  onLast,
 }) => {
   const { name } = useParams<{ name: string }>();
   const storage = useMemo(() => new HelperStorage(), []);
@@ -216,6 +233,8 @@ export const TransactionsViewTable: React.FC<TransactionsViewTableProps> = ({
     },
   ], [columnWidths, handleResize, name]);
 
+  const pagesOptions = [10, 25, 50, 100, 200, 500];
+
   return (
     <div className="pm-shards-detail-tab-transactions-view-table">
       <Spin spinning={isLoading}>
@@ -233,6 +252,40 @@ export const TransactionsViewTable: React.FC<TransactionsViewTableProps> = ({
           scroll={{ x: 1800 }}
           pagination={false}
         />
+        <div className="pagination-bar">
+          <Space>
+            {!firstPage && (
+              <>
+                <Button type="primary" onClick={onFirst} icon={<DoubleLeftOutlined />}>
+                  First
+                </Button>
+                <Button type="primary" onClick={onPrev} icon={<LeftOutlined />}>
+                  Prev
+                </Button>
+              </>
+            )}
+            {!lastPage && (
+              <>
+                <Button type="primary" onClick={onNext}>
+                  Next <RightOutlined />
+                </Button>
+                <Button type="primary" onClick={onLast}>
+                  Last <DoubleRightOutlined />
+                </Button>
+              </>
+            )}
+            <Select
+              className="page-size"
+              value={pageSize}
+              onChange={onPageSizeChange}
+              placeholder="Page Size"
+              options={pagesOptions.map((page) => ({
+                value: page,
+                label: `${page}/page`,
+              }))}
+            />
+          </Space>
+        </div>
       </Spin>
     </div>
   );

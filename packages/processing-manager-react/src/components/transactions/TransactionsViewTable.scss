@@ -21,5 +21,16 @@
       background: #fef0f0;
     }
   }
+
+  .pagination-bar {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .page-size {
+      min-width: 120px;
+    }
+  }
 }
 
