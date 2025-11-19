@@ -19,6 +19,7 @@ vi.mock('../../../hooks/useProcessing', () => ({
 const mockStatsData = [
   {
     key: {
+      queue: 'DISTRIBUTED_REPORT_1_PHASE',
       entityClass: 'TestEntity1',
       shard: '1',
       processor: { name: 'processor1' },
@@ -27,6 +28,7 @@ const mockStatsData = [
   },
   {
     key: {
+      queue: 'INDEX_CONFIGURATION',
       entityClass: 'TestEntity2',
       shard: '2',
       processor: { name: 'processor2' },
@@ -107,6 +109,22 @@ describe('ProcessEventsStatistics', () => {
   });
 
   it('should render table data', () => {
+    render(<ProcessEventsStatistics />);
+
+    const entity1 = screen.getAllByText('TestEntity1');
+    const entity2 = screen.getAllByText('TestEntity2');
+    expect(entity1.length).toBeGreaterThan(0);
+    expect(entity2.length).toBeGreaterThan(0);
+  });
+
+  it('should render queue names in Queue column', () => {
+    render(<ProcessEventsStatistics />);
+
+    expect(screen.getByText('DISTRIBUTED_REPORT_1_PHASE')).toBeInTheDocument();
+    expect(screen.getByText('INDEX_CONFIGURATION')).toBeInTheDocument();
+  });
+
+  it('should render entity class names in Class column', () => {
     render(<ProcessEventsStatistics />);
 
     const entity1 = screen.getAllByText('TestEntity1');

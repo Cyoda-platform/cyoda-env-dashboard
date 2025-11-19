@@ -100,9 +100,10 @@ export const mockProcessingEvents = Array.from({ length: 50 }, (_, i) => ({
 }));
 
 // Process Events Statistics (for /stats/process-events)
-// Component expects: array of { key: { entityClass, shard, processor }, count }
+// Component expects: array of { key: { queue, shard, entityClass, processor }, count }
 export const mockProcessEventsStats = Array.from({ length: 30 }, (_, i) => ({
   key: {
+    queue: ['DISTRIBUTED_REPORT_1_PHASE', 'DISTRIBUTED_REPORT_2_PHASE', 'INDEX_CONFIGURATION', 'TRANSACTION_EXEC_1_PHASE_VERSION_CHECK'][i % 4],
     entityClass: ['com.cyoda.Order', 'com.cyoda.Customer', 'com.cyoda.Product'][i % 3],
     shard: i % 10,
     processor: { type: ['EventProcessor', 'TransactionProcessor', 'BatchProcessor'][i % 3], id: i % 5 },

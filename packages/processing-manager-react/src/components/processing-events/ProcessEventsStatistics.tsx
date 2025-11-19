@@ -74,7 +74,7 @@ export const ProcessEventsStatistics: React.FC = () => {
     return statsData.map((el: any) => {
       const { key } = el;
       return {
-        queue: key.entityClass,
+        queue: key.queue,
         shard: Number(key.shard),
         class: key.entityClass,
         count: el.count,
