@@ -39,6 +39,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { axiosProcessing } from '@cyoda/http-api-react';
+import moment from 'moment';
 import { HelperUrl } from '../utils';
 import type {
   PmClusterStats,
@@ -621,7 +622,11 @@ export function useProcessingQueueEventsError(params: any) {
     queryFn: async () => {
       const { data } = await axiosProcessing.get(
         HelperUrl.getLinkToServer(
-          `/platform-processing/processing-queue/events/error.json?queue=${params.queue}&shard=${params.shard}&from=${params.from}&to=${params.to}&sort=${params.sort}&pageSize=9999999&pageNum=${params.pageNum}`
+          `/platform-processing/processing-queue/events/error.json?queue=${params.queue}&shard=${
+            params.shard
+          }&from=${moment(params.from).format('x') * 1000}&to=${
+            moment(params.to).format('x') * 1000
+          }&sort=${params.sort}&pageSize=9999999&pageNum=${params.pageNum}`
         )
       );
       return data;
@@ -747,18 +752,17 @@ export function useManualTransition() {
  *
  * @returns Query result with SIFT logger data
  */
-export function useSiftLogger() {
-  const { selectedNode } = useProcessingStore();
-
+export function useSiftLogger(params: any) {
   return useQuery({
-    queryKey: processingKeys.all.concat(['sift-logger', selectedNode]),
+    queryKey: processingKeys.all.concat(['sift-logger', params]),
     queryFn: async () => {
       const { data } = await axiosProcessing.get(
-        HelperUrl.getLinkToServer(`/platform-api/sift-logger/${selectedNode}`)
+        HelperUrl.getLinkToServer('/platform-processing/processing-queue/sift-logger.do'),
+        { params }
       );
       return data;
     },
-    enabled: !!selectedNode,
+    enabled: !!params,
   });
 }
 
@@ -774,10 +778,10 @@ export function useUpdateSiftLogger(options?: any) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ node, data }: { node?: string; data: any }) => {
-      const response = await axiosProcessing.put(
-        HelperUrl.getLinkToServer(`/platform-api/sift-logger/${node}`),
-        data
+    mutationFn: async (params: any) => {
+      const response = await axiosProcessing.post(
+        HelperUrl.getLinkToServer('/platform-processing/processing-queue/update-sift-logger.do'),
+        params
       );
       return response.data;
     },
@@ -798,13 +802,13 @@ export function useUpdateSiftLogger(options?: any) {
  */
 export function useClearTimeStats() {
   const queryClient = useQueryClient();
-  const { selectedNode } = useProcessingStore();
 
   return useMutation({
-    mutationFn: async () => {
-      const { data } = await axiosProcessing.delete(
-        HelperUrl.getLinkToServer(`/platform-api/stats/time/${selectedNode}`)
-      );
+    mutationFn: async (url?: string) => {
+      const targetUrl = url
+        ? `${url}/platform-processing/stats/clear-time-stats`
+        : HelperUrl.getLinkToServer('/platform-processing/stats/clear-time-stats');
+      const { data } = await axiosProcessing.put(targetUrl);
       return data;
     },
     onSuccess: () => {
@@ -822,12 +826,12 @@ export function useClearTimeStats() {
  */
 export function useDoClearAllCaches() {
   const queryClient = useQueryClient();
-  const { selectedNode } = useProcessingStore();
 
   return useMutation({
-    mutationFn: async () => {
-      const { data } = await axiosProcessing.post(
-        HelperUrl.getLinkToServer(`/platform-api/caches/clear/${selectedNode}`)
+    mutationFn: async (params: any) => {
+      const { data } = await axiosProcessing.get(
+        HelperUrl.getLinkToServer('/platform-processing/clear-all-caches.do'),
+        { params }
       );
       return data;
     },
@@ -846,12 +850,12 @@ export function useDoClearAllCaches() {
  */
 export function useDoHardResetConsistencyTime() {
   const queryClient = useQueryClient();
-  const { selectedNode } = useProcessingStore();
 
   return useMutation({
-    mutationFn: async () => {
-      const { data } = await axiosProcessing.post(
-        HelperUrl.getLinkToServer(`/platform-api/consistency/hard-reset/${selectedNode}`)
+    mutationFn: async (params: any) => {
+      const { data } = await axiosProcessing.get(
+        HelperUrl.getLinkToServer('/platform-processing/transactions/hard-reset-consistency-time.do'),
+        { params }
       );
       return data;
     },
@@ -998,9 +1002,9 @@ export function useStartRunnableComponent() {
 
   return useMutation({
     mutationFn: async (params: { id: string }) => {
-      const { data } = await axiosProcessing.post(
-        HelperUrl.getLinkToServer('/platform-processing/runnable-components/start.do'),
-        params
+      const { data } = await axiosProcessing.get(
+        HelperUrl.getLinkToServer('/platform-processing/start-runnable-component.do'),
+        { params }
       );
       return data;
     },
@@ -1018,9 +1022,9 @@ export function useStopRunnableComponent() {
 
   return useMutation({
     mutationFn: async (params: { id: string }) => {
-      const { data } = await axiosProcessing.post(
-        HelperUrl.getLinkToServer('/platform-processing/runnable-components/stop.do'),
-        params
+      const { data } = await axiosProcessing.get(
+        HelperUrl.getLinkToServer('/platform-processing/stop-runnable-component.do'),
+        { params }
       );
       return data;
     },
