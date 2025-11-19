@@ -231,8 +231,8 @@ describe('Helper Utilities', () => {
 
     it('should handle workflow lifecycle', () => {
       // New workflow (runtime)
-      const isRuntime = false;
-      const type = getPersistedType(isRuntime);
+      const isRuntimeFlag = false;
+      const type = getPersistedType(isRuntimeFlag);
       expect(type).toBe('runtime');
       expect(isRuntime(type)).toBe(true);
 

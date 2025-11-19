@@ -263,7 +263,8 @@ describe('statemachineStore', () => {
       const result = await store.deleteWorkflow('workflow-1');
 
       expect(axios.delete).toHaveBeenCalledWith(
-        '/platform-api/statemachine/persisted/workflows/workflow-1'
+        '/platform-api/statemachine/persisted/workflows/workflow-1',
+        { muteErrors: true }
       );
       expect(result).toEqual(mockResponse);
     });
@@ -276,7 +277,8 @@ describe('statemachineStore', () => {
       await store.deleteWorkflow('workflow/with/slashes');
 
       expect(axios.delete).toHaveBeenCalledWith(
-        '/platform-api/statemachine/persisted/workflows/workflow%2Fwith%2Fslashes'
+        '/platform-api/statemachine/persisted/workflows/workflow%2Fwith%2Fslashes',
+        { muteErrors: true }
       );
     });
   });

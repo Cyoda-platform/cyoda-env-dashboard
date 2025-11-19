@@ -24,6 +24,17 @@ vi.mock('axios', () => ({
         response: { use: vi.fn(), eject: vi.fn() },
       },
     })),
+    defaults: {
+      paramsSerializer: {},
+    },
+    get: vi.fn(),
+    post: vi.fn(),
+    put: vi.fn(),
+    delete: vi.fn(),
+    interceptors: {
+      request: { use: vi.fn(), eject: vi.fn() },
+      response: { use: vi.fn(), eject: vi.fn() },
+    },
   },
 }));
 
@@ -145,10 +156,10 @@ describe('Workflow Creation Integration', () => {
   });
 
   it('should render workflows page', () => {
-    const { container } = render(<Workflows />, { wrapper: createWrapper() });
+    render(<Workflows />, { wrapper: createWrapper() });
 
-    // Should render the page
-    expect(container.querySelector('.ant-card')).toBeInTheDocument();
+    // Should render the page with workflow data
+    expect(screen.getByText('Test Workflow')).toBeInTheDocument();
   });
 
   it('should display workflow details', () => {

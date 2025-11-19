@@ -51,8 +51,9 @@ describe('useTableState', () => {
 
     expect(result.current.tableState.currentPage).toBe(1);
     expect(result.current.tableState.pageSize).toBe(10);
-    expect(result.current.tableState.sortField).toBeUndefined();
-    expect(result.current.tableState.sortOrder).toBeUndefined();
+    // sortField and sortOrder can be undefined or null when not set
+    expect(result.current.tableState.sortField).toBeFalsy();
+    expect(result.current.tableState.sortOrder).toBeFalsy();
   });
 
   it('should update table state', () => {

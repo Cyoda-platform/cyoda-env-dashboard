@@ -109,8 +109,18 @@ describe('useQueryInvalidation', () => {
 
     result.current.invalidateGraphicalData('workflow-1');
 
+    // invalidateGraphicalData calls multiple invalidation functions
     expect(invalidateQueriesSpy).toHaveBeenCalledWith({
-      queryKey: ['graphical', 'workflow-1'],
+      queryKey: ['workflow', 'workflow-1'],
+    });
+    expect(invalidateQueriesSpy).toHaveBeenCalledWith({
+      queryKey: ['transitions', 'workflow-1'],
+    });
+    expect(invalidateQueriesSpy).toHaveBeenCalledWith({
+      queryKey: ['processes', 'workflow-1'],
+    });
+    expect(invalidateQueriesSpy).toHaveBeenCalledWith({
+      queryKey: ['criteria', 'workflow-1'],
     });
   });
 

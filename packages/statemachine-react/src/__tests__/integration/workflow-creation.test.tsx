@@ -64,6 +64,10 @@ vi.mock('../../hooks/useStatemachine', () => ({
     data: [],
     isLoading: false,
   }),
+  useStatesList: () => ({
+    data: [],
+    isLoading: false,
+  }),
 }));
 
 // Mock components
