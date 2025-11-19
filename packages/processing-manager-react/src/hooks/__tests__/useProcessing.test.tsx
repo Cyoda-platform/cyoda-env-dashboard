@@ -20,6 +20,14 @@ import {
   useGrafanaPanelsByUid,
   useForceMarkProcessed,
   useManualTransition,
+  useProcessingQueueEventsError,
+  useSiftLogger,
+  useUpdateSiftLogger,
+  useClearTimeStats,
+  useDoClearAllCaches,
+  useDoHardResetConsistencyTime,
+  useStartRunnableComponent,
+  useStopRunnableComponent,
   processingKeys,
 } from '../useProcessing';
 import { useProcessingStore } from '../../stores';
@@ -456,6 +464,200 @@ describe('useProcessing Hooks', () => {
       await waitFor(() => expect(result.current.isError).toBe(true));
 
       expect(result.current.error).toBeTruthy();
+    });
+  });
+
+  // ============================================================================
+  // Tests for Fixed Endpoints (8 endpoints fixed in migration)
+  // ============================================================================
+
+  describe('Fixed Endpoints', () => {
+    describe('useProcessingQueueEventsError', () => {
+      it('should use correct timestamp conversion with moment().format("x") * 1000', async () => {
+        const mockData = { events: [] };
+        const params = {
+          queue: 'test-queue',
+          shard: 'test-shard',
+          from: '2024-01-01',
+          to: '2024-01-31',
+          sort: 'asc',
+          pageNum: 1,
+        };
+
+        vi.mocked(axiosProcessing.get).mockResolvedValueOnce({ data: mockData });
+
+        const { result } = renderHook(
+          () => useProcessingQueueEventsError(params),
+          { wrapper: createWrapper(queryClient) }
+        );
+
+        await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+        expect(axiosProcessing.get).toHaveBeenCalled();
+        const callUrl = vi.mocked(axiosProcessing.get).mock.calls[0][0];
+
+        // Verify timestamp conversion: moment().format('x') * 1000
+        expect(callUrl).toContain('from=');
+        expect(callUrl).toContain('to=');
+        expect(callUrl).toContain('/platform-processing/processing-queue/events/error.json');
+      });
+    });
+
+    describe('useSiftLogger', () => {
+      it('should use correct URL for loading SIFT logger', async () => {
+        const mockData = { config: 'test' };
+        const params = { nodeId: 'test-node' };
+
+        vi.mocked(axiosProcessing.get).mockResolvedValueOnce({ data: mockData });
+
+        const { result } = renderHook(
+          () => useSiftLogger(params),
+          { wrapper: createWrapper(queryClient) }
+        );
+
+        await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+        expect(axiosProcessing.get).toHaveBeenCalledWith(
+          '/platform-processing/processing-queue/sift-logger.do',
+          { params }
+        );
+      });
+    });
+
+    describe('useUpdateSiftLogger', () => {
+      it('should use POST method and correct URL for updating SIFT logger', async () => {
+        const mockData = { success: true };
+        const params = { config: 'new-config' };
+
+        vi.mocked(axiosProcessing.post).mockResolvedValueOnce({ data: mockData });
+
+        const { result } = renderHook(
+          () => useUpdateSiftLogger(),
+          { wrapper: createWrapper(queryClient) }
+        );
+
+        result.current.mutate(params);
+
+        await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+        expect(axiosProcessing.post).toHaveBeenCalledWith(
+          '/platform-processing/processing-queue/update-sift-logger.do',
+          params
+        );
+      });
+    });
+
+    describe('useClearTimeStats', () => {
+      it('should use PUT method for clearing time stats', async () => {
+        const mockData = { success: true };
+
+        vi.mocked(axiosProcessing.put).mockResolvedValueOnce({ data: mockData });
+
+        const { result } = renderHook(
+          () => useClearTimeStats(),
+          { wrapper: createWrapper(queryClient) }
+        );
+
+        result.current.mutate();
+
+        await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+        expect(axiosProcessing.put).toHaveBeenCalledWith(
+          '/platform-processing/stats/clear-time-stats'
+        );
+      });
+    });
+
+    describe('useDoClearAllCaches', () => {
+      it('should use GET method for clearing all caches', async () => {
+        const mockData = { success: true };
+        const params = { nodeId: 'test-node' };
+
+        vi.mocked(axiosProcessing.get).mockResolvedValueOnce({ data: mockData });
+
+        const { result } = renderHook(
+          () => useDoClearAllCaches(),
+          { wrapper: createWrapper(queryClient) }
+        );
+
+        result.current.mutate(params);
+
+        await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+        expect(axiosProcessing.get).toHaveBeenCalledWith(
+          '/platform-processing/clear-all-caches.do',
+          { params }
+        );
+      });
+    });
+
+    describe('useDoHardResetConsistencyTime', () => {
+      it('should use GET method for hard reset consistency time', async () => {
+        const mockData = { success: true };
+        const params = { nodeId: 'test-node' };
+
+        vi.mocked(axiosProcessing.get).mockResolvedValueOnce({ data: mockData });
+
+        const { result } = renderHook(
+          () => useDoHardResetConsistencyTime(),
+          { wrapper: createWrapper(queryClient) }
+        );
+
+        result.current.mutate(params);
+
+        await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+        expect(axiosProcessing.get).toHaveBeenCalledWith(
+          '/platform-processing/transactions/hard-reset-consistency-time.do',
+          { params }
+        );
+      });
+    });
+
+    describe('useStartRunnableComponent', () => {
+      it('should use GET method for starting runnable component', async () => {
+        const mockData = { success: true };
+        const params = { id: 'component-123' };
+
+        vi.mocked(axiosProcessing.get).mockResolvedValueOnce({ data: mockData });
+
+        const { result } = renderHook(
+          () => useStartRunnableComponent(),
+          { wrapper: createWrapper(queryClient) }
+        );
+
+        result.current.mutate(params);
+
+        await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+        expect(axiosProcessing.get).toHaveBeenCalledWith(
+          '/platform-processing/start-runnable-component.do',
+          { params }
+        );
+      });
+    });
+
+    describe('useStopRunnableComponent', () => {
+      it('should use GET method for stopping runnable component', async () => {
+        const mockData = { success: true };
+        const params = { id: 'component-123' };
+
+        vi.mocked(axiosProcessing.get).mockResolvedValueOnce({ data: mockData });
+
+        const { result } = renderHook(
+          () => useStopRunnableComponent(),
+          { wrapper: createWrapper(queryClient) }
+        );
+
+        result.current.mutate(params);
+
+        await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+        expect(axiosProcessing.get).toHaveBeenCalledWith(
+          '/platform-processing/stop-runnable-component.do',
+          { params }
+        );
+      });
     });
   });
 });
