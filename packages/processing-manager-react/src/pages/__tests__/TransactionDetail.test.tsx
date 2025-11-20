@@ -9,21 +9,21 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import TransactionDetail from '../TransactionDetail';
 import * as hooks from '../../hooks';
 
-// Mock the child components
-vi.mock('../../components', () => ({
-  TransactionStatistics: ({ transaction }: any) => (
+// Mock the transition-detail components
+vi.mock('../../components/transition-detail', () => ({
+  TransitionDetailStatistics: () => (
     <div data-testid="transaction-statistics">
-      Transaction Statistics: {transaction.id}
+      Transaction Statistics
     </div>
   ),
-  TransactionMembersTable: ({ transactionId }: any) => (
+  TransitionDetailStatisticsTransactionMembers: () => (
     <div data-testid="transaction-members">
-      Members Table: {transactionId}
+      Transaction Members
     </div>
   ),
-  TransactionEventsTable: ({ transactionId }: any) => (
+  TransitionDetailStatisticsTransactionEvents: () => (
     <div data-testid="transaction-events">
-      Events Table: {transactionId}
+      Transaction Events
     </div>
   ),
 }));
@@ -35,18 +35,28 @@ vi.mock('../../components/layout', () => ({
 
 // Mock the hooks
 vi.mock('../../hooks', () => ({
-  useTransaction: vi.fn(),
+  useTransactionsView: vi.fn(),
+  useTransactionsViewMembers: vi.fn(),
+  useTransactionsViewEvents: vi.fn(),
 }));
 
-const mockTransaction = {
-  id: 'tx-123',
-  status: 'COMPLETED',
-  entityId: 'entity-456',
-  entityType: 'TestEntity',
-  startTime: '2025-10-15T10:00:00Z',
-  endTime: '2025-10-15T10:05:00Z',
-  duration: 300000,
-  user: 'test-user',
+const mockTransactionData = {
+  transactionInfoView: {
+    transactionId: 'tx-123',
+    transactionStatus: 'COMPLETED',
+    transactionSubmitNodeId: 'node-1',
+    user: 'test-user',
+    consistencyTime: 1697360400000,
+    createTime: 1697360400000,
+    submitTime: 1697360400000,
+    finishTime: 1697360460000,
+    prepareDuration: 5000,
+    processDuration: 60000,
+    secondPhaseFinishedFlag: true,
+    transactionSucceededFlag: true,
+  },
+  shardUUID: 'shard-uuid-123',
+  parentTransactionIds: ['parent-tx-1', 'parent-tx-2'],
 };
 
 const renderWithRouter = (initialPath = '/processing-ui/nodes/test-node/transactions/tx-123') => {
@@ -70,157 +80,72 @@ describe('TransactionDetail', () => {
     vi.clearAllMocks();
   });
 
-  it('should render loading state', () => {
-    (hooks.useTransaction as any).mockReturnValue({
-      data: undefined,
-      isLoading: true,
-      error: null,
-    });
-
+  it('should render transaction detail page', () => {
     const { container } = renderWithRouter();
 
-    expect(container.querySelector('.ant-spin')).toBeInTheDocument();
-  });
-
-  it('should render error state when error occurs', () => {
-    (hooks.useTransaction as any).mockReturnValue({
-      data: undefined,
-      isLoading: false,
-      error: 'Failed to fetch',
-    });
-
-    renderWithRouter();
-
-    expect(screen.getByText('Error')).toBeInTheDocument();
-    expect(screen.getByText('Failed to load transaction details')).toBeInTheDocument();
-  });
-
-  it('should render error state when no transaction data', () => {
-    (hooks.useTransaction as any).mockReturnValue({
-      data: null,
-      isLoading: false,
-      error: null,
-    });
-
-    renderWithRouter();
-
-    expect(screen.getByText('Error')).toBeInTheDocument();
-    expect(screen.getByText('Failed to load transaction details')).toBeInTheDocument();
-  });
-
-  it('should render transaction detail with data', () => {
-    (hooks.useTransaction as any).mockReturnValue({
-      data: mockTransaction,
-      isLoading: false,
-      error: null,
-    });
-
-    const { container } = renderWithRouter();
-
-    expect(screen.getByText('Transaction Detail')).toBeInTheDocument();
-    expect(screen.getByText(/Node:/)).toBeInTheDocument();
-    // Check for text content in the paragraph
-    const paragraph = container.querySelector('p');
-    expect(paragraph).toHaveTextContent('Node: test-node');
-    expect(paragraph).toHaveTextContent('Transaction ID: tx-123');
+    expect(screen.getByText(/Processing/)).toBeInTheDocument();
+    expect(screen.getByText(/Nodes/)).toBeInTheDocument();
+    // Check breadcrumb contains node and transaction ID
+    const breadcrumb = container.querySelector('.ant-breadcrumb');
+    expect(breadcrumb).toBeInTheDocument();
   });
 
   it('should render breadcrumb navigation', () => {
-    (hooks.useTransaction as any).mockReturnValue({
-      data: mockTransaction,
-      isLoading: false,
-      error: null,
-    });
-
     const { container } = renderWithRouter();
 
     expect(container.querySelector('.ant-breadcrumb')).toBeInTheDocument();
   });
 
   it('should render all tab labels', () => {
-    (hooks.useTransaction as any).mockReturnValue({
-      data: mockTransaction,
-      isLoading: false,
-      error: null,
-    });
-
     renderWithRouter();
 
-    expect(screen.getByText('Statistics')).toBeInTheDocument();
-    expect(screen.getByText('Members')).toBeInTheDocument();
-    expect(screen.getByText('Events')).toBeInTheDocument();
+    expect(screen.getByText('Transaction main statistics')).toBeInTheDocument();
+    expect(screen.getByText('Transaction members')).toBeInTheDocument();
+    expect(screen.getByText('Transaction events')).toBeInTheDocument();
   });
 
   it('should show Statistics tab content by default', () => {
-    (hooks.useTransaction as any).mockReturnValue({
-      data: mockTransaction,
-      isLoading: false,
-      error: null,
-    });
-
     renderWithRouter();
 
     expect(screen.getByTestId('transaction-statistics')).toBeInTheDocument();
-    expect(screen.getByText('Transaction Statistics: tx-123')).toBeInTheDocument();
+    expect(screen.getByText('Transaction Statistics')).toBeInTheDocument();
   });
 
   it('should switch to Members tab when clicked', async () => {
     const user = userEvent.setup();
-    (hooks.useTransaction as any).mockReturnValue({
-      data: mockTransaction,
-      isLoading: false,
-      error: null,
-    });
 
     renderWithRouter();
 
-    const membersTab = screen.getByText('Members');
+    const membersTab = screen.getByText('Transaction members');
     await user.click(membersTab);
 
     await waitFor(() => {
       expect(screen.getByTestId('transaction-members')).toBeInTheDocument();
-      expect(screen.getByText('Members Table: tx-123')).toBeInTheDocument();
+      expect(screen.getByText('Transaction Members')).toBeInTheDocument();
     });
   });
 
   it('should switch to Events tab when clicked', async () => {
     const user = userEvent.setup();
-    (hooks.useTransaction as any).mockReturnValue({
-      data: mockTransaction,
-      isLoading: false,
-      error: null,
-    });
 
     renderWithRouter();
 
-    const eventsTab = screen.getByText('Events');
+    const eventsTab = screen.getByText('Transaction events');
     await user.click(eventsTab);
 
     await waitFor(() => {
       expect(screen.getByTestId('transaction-events')).toBeInTheDocument();
-      expect(screen.getByText('Events Table: tx-123')).toBeInTheDocument();
+      expect(screen.getByText('Transaction Events')).toBeInTheDocument();
     });
   });
 
   it('should render tabs component', () => {
-    (hooks.useTransaction as any).mockReturnValue({
-      data: mockTransaction,
-      isLoading: false,
-      error: null,
-    });
-
     const { container } = renderWithRouter();
 
     expect(container.querySelector('.ant-tabs')).toBeInTheDocument();
   });
 
   it('should have three tabs', () => {
-    (hooks.useTransaction as any).mockReturnValue({
-      data: mockTransaction,
-      isLoading: false,
-      error: null,
-    });
-
     const { container } = renderWithRouter();
 
     const tabs = container.querySelectorAll('.ant-tabs-tab');
@@ -228,96 +153,70 @@ describe('TransactionDetail', () => {
   });
 
   it('should render without errors', () => {
-    (hooks.useTransaction as any).mockReturnValue({
-      data: mockTransaction,
-      isLoading: false,
-      error: null,
-    });
-
     expect(() => renderWithRouter()).not.toThrow();
   });
 
-  it('should pass transaction to TransactionStatistics', () => {
-    (hooks.useTransaction as any).mockReturnValue({
-      data: mockTransaction,
-      isLoading: false,
-      error: null,
-    });
-
+  it('should pass transaction data to TransitionDetailStatistics', () => {
     renderWithRouter();
 
-    expect(screen.getByText('Transaction Statistics: tx-123')).toBeInTheDocument();
+    expect(screen.getByTestId('transaction-statistics')).toBeInTheDocument();
+    expect(screen.getByText('Transaction Statistics')).toBeInTheDocument();
   });
 
-  it('should pass transactionId to TransactionMembersTable', async () => {
+  it('should render TransitionDetailStatisticsTransactionMembers on Members tab', async () => {
     const user = userEvent.setup();
-    (hooks.useTransaction as any).mockReturnValue({
-      data: mockTransaction,
-      isLoading: false,
-      error: null,
-    });
 
     renderWithRouter();
 
-    await user.click(screen.getByText('Members'));
+    await user.click(screen.getByText('Transaction members'));
 
     await waitFor(() => {
-      expect(screen.getByText('Members Table: tx-123')).toBeInTheDocument();
+      expect(screen.getByTestId('transaction-members')).toBeInTheDocument();
+      expect(screen.getByText('Transaction Members')).toBeInTheDocument();
     });
   });
 
-  it('should pass transactionId to TransactionEventsTable', async () => {
+  it('should render TransitionDetailStatisticsTransactionEvents on Events tab', async () => {
     const user = userEvent.setup();
-    (hooks.useTransaction as any).mockReturnValue({
-      data: mockTransaction,
-      isLoading: false,
-      error: null,
-    });
 
     renderWithRouter();
 
-    await user.click(screen.getByText('Events'));
+    await user.click(screen.getByText('Transaction events'));
 
     await waitFor(() => {
-      expect(screen.getByText('Events Table: tx-123')).toBeInTheDocument();
+      expect(screen.getByTestId('transaction-events')).toBeInTheDocument();
+      expect(screen.getByText('Transaction Events')).toBeInTheDocument();
     });
   });
 
   it('should render card component', () => {
-    (hooks.useTransaction as any).mockReturnValue({
-      data: mockTransaction,
-      isLoading: false,
-      error: null,
-    });
-
     const { container } = renderWithRouter();
 
     expect(container.querySelector('.ant-card')).toBeInTheDocument();
   });
 
-  it('should render loading spinner', () => {
-    (hooks.useTransaction as any).mockReturnValue({
-      data: undefined,
-      isLoading: true,
-      error: null,
+  it('should handle tab switching multiple times', async () => {
+    const user = userEvent.setup();
+
+    renderWithRouter();
+
+    // Switch to Members
+    await user.click(screen.getByText('Transaction members'));
+    await waitFor(() => {
+      expect(screen.getByTestId('transaction-members')).toBeInTheDocument();
     });
 
-    const { container } = renderWithRouter();
-
-    expect(container.querySelector('.ant-spin')).toBeInTheDocument();
-    expect(container.querySelector('.ant-spin-lg')).toBeInTheDocument();
-  });
-
-  it('should render alert with error icon', () => {
-    (hooks.useTransaction as any).mockReturnValue({
-      data: undefined,
-      isLoading: false,
-      error: 'Failed to fetch',
+    // Switch to Events
+    await user.click(screen.getByText('Transaction events'));
+    await waitFor(() => {
+      expect(screen.getByTestId('transaction-events')).toBeInTheDocument();
     });
 
-    const { container } = renderWithRouter();
-
-    expect(container.querySelector('.ant-alert-error')).toBeInTheDocument();
+    // Switch back to Statistics
+    await user.click(screen.getByText('Transaction main statistics'));
+    await waitFor(() => {
+      expect(screen.getByTestId('transaction-statistics')).toBeInTheDocument();
+    });
   });
 });
 

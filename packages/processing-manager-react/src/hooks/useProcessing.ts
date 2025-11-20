@@ -386,7 +386,7 @@ export function useTransaction(id: string) {
 /**
  * Load transaction members
  */
-export function useTransactionMembers(id: string, params?: any) {
+export function useTransactionMembers(id: string, params?: any, options?: any) {
   return useQuery({
     queryKey: processingKeys.transactionMembers(id, params),
     queryFn: async () => {
@@ -396,14 +396,15 @@ export function useTransactionMembers(id: string, params?: any) {
       );
       return data;
     },
-    enabled: !!id,
+    enabled: options?.enabled !== undefined ? options.enabled : !!id,
+    ...options,
   });
 }
 
 /**
  * Load transaction events
  */
-export function useTransactionEvents(id: string, params?: any) {
+export function useTransactionEvents(id: string, params?: any, options?: any) {
   return useQuery({
     queryKey: processingKeys.transactionEvents(id, params),
     queryFn: async () => {
@@ -413,7 +414,8 @@ export function useTransactionEvents(id: string, params?: any) {
       );
       return data;
     },
-    enabled: !!id,
+    enabled: options?.enabled !== undefined ? options.enabled : !!id,
+    ...options,
   });
 }
 
@@ -1103,32 +1105,32 @@ export function useTransactionsView(params?: { id?: string }) {
 /**
  * Get Transactions View Members (alias for useTransactionMembers)
  * Supports both signatures:
- * 1. useTransactionsViewMembers(id, params) - new signature
- * 2. useTransactionsViewMembers({ id, ...params }) - old signature for compatibility
+ * 1. useTransactionsViewMembers(id, params, options) - new signature
+ * 2. useTransactionsViewMembers({ id, ...params }, options) - old signature for compatibility
  */
-export function useTransactionsViewMembers(idOrParams: string | any, params?: any) {
+export function useTransactionsViewMembers(idOrParams: string | any, paramsOrOptions?: any, options?: any) {
   // Support both old and new signatures
   if (typeof idOrParams === 'string') {
-    return useTransactionMembers(idOrParams, params);
+    return useTransactionMembers(idOrParams, paramsOrOptions, options);
   } else {
     const { id, ...restParams } = idOrParams;
-    return useTransactionMembers(id, restParams);
+    return useTransactionMembers(id, restParams, paramsOrOptions);
   }
 }
 
 /**
  * Get Transactions View Events (alias for useTransactionEvents)
  * Supports both signatures:
- * 1. useTransactionsViewEvents(id, params) - new signature
- * 2. useTransactionsViewEvents({ id, ...params }) - old signature for compatibility
+ * 1. useTransactionsViewEvents(id, params, options) - new signature
+ * 2. useTransactionsViewEvents({ id, ...params }, options) - old signature for compatibility
  */
-export function useTransactionsViewEvents(idOrParams: string | any, params?: any) {
+export function useTransactionsViewEvents(idOrParams: string | any, paramsOrOptions?: any, options?: any) {
   // Support both old and new signatures
   if (typeof idOrParams === 'string') {
-    return useTransactionEvents(idOrParams, params);
+    return useTransactionEvents(idOrParams, paramsOrOptions, options);
   } else {
     const { id, ...restParams } = idOrParams;
-    return useTransactionEvents(id, restParams);
+    return useTransactionEvents(id, restParams, paramsOrOptions);
   }
 }
 
