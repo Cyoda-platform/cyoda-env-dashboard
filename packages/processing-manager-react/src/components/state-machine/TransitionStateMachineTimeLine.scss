@@ -1,0 +1,51 @@
+// TransitionStateMachineTimeLine Component Styles
+
+.timeline-card {
+  .ant-card-head {
+    min-height: auto;
+    padding: 12px 16px;
+  }
+
+  .ant-card-head-title {
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .ant-card-body {
+    padding: 16px;
+  }
+
+  .ant-timeline {
+    margin-top: 8px;
+  }
+
+  // Fix icon background
+  .ant-timeline-item-head {
+    background-color: transparent !important;
+  }
+
+  .timeline-item-content {
+    .timeline-state {
+      display: flex;
+      align-items: center;
+      margin-bottom: 4px;
+      font-size: 14px;
+      color: #fff;
+    }
+
+    .timeline-timestamp {
+      font-size: 12px;
+      color: #8b949e;
+    }
+  }
+
+  // Current state highlight
+  .ant-timeline-item:first-child {
+    .timeline-state {
+      strong {
+        color: #14b8a6;
+      }
+    }
+  }
+}
+

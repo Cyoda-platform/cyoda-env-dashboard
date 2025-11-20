@@ -10,8 +10,6 @@ import { ClearOutlined } from '@ant-design/icons';
 import { TransactionsExecuting, TransactionsView, TransactionsEntities } from '../transactions';
 import './ShardsDetailTabTransactions.scss';
 
-const { TabPane } = Tabs;
-
 export const ShardsDetailTabTransactions: React.FC = () => {
   const [activeKey, setActiveKey] = useState('1');
 
@@ -19,6 +17,24 @@ export const ShardsDetailTabTransactions: React.FC = () => {
     // TODO: Implement clear functionality
     console.log('Clear transactions');
   };
+
+  const tabItems = [
+    {
+      key: '1',
+      label: 'Executing transactions',
+      children: <TransactionsExecuting />,
+    },
+    {
+      key: '2',
+      label: 'Transactions view',
+      children: <TransactionsView />,
+    },
+    {
+      key: '3',
+      label: 'Entities list view',
+      children: <TransactionsEntities />,
+    },
+  ];
 
   return (
     <div className="transactions-tab">
@@ -28,17 +44,7 @@ export const ShardsDetailTabTransactions: React.FC = () => {
           Clear
         </Button>
       </div>
-      <Tabs activeKey={activeKey} onChange={setActiveKey}>
-        <TabPane tab="Executing transactions" key="1">
-          <TransactionsExecuting />
-        </TabPane>
-        <TabPane tab="Transactions view" key="2">
-          <TransactionsView />
-        </TabPane>
-        <TabPane tab="Entities list view" key="3">
-          <TransactionsEntities />
-        </TabPane>
-      </Tabs>
+      <Tabs activeKey={activeKey} onChange={setActiveKey} items={tabItems} />
     </div>
   );
 };

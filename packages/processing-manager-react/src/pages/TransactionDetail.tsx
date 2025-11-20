@@ -23,11 +23,9 @@ export default function TransactionDetail() {
 
   if (isLoading) {
     return (
-      
-        <div style={{ padding: '24px', textAlign: 'center' }}>
-          <Spin size="large" tip="Loading transaction details..." />
-        </div>
-      
+      <div style={{ padding: '24px', textAlign: 'center' }}>
+        <Spin size="large" />
+      </div>
     );
   }
 

@@ -28,8 +28,6 @@ import {
 } from '../components/shards';
 import './NodesDetail.scss';
 
-const { TabPane } = Tabs;
-
 const TAB_STORAGE_KEY = 'nodesDetailTab';
 
 export default function NodesDetail() {
@@ -67,43 +65,67 @@ export default function NodesDetail() {
     }
   };
 
+  const tabItems = [
+    {
+      key: '1',
+      label: 'Processing Manager',
+      children: activeKey === '1' ? <ShardsDetailTabProcessingManager /> : null,
+    },
+    {
+      key: '2',
+      label: 'Server Summary',
+      children: activeKey === '2' ? <ShardsDetailTabSummary /> : null,
+    },
+    {
+      key: '3',
+      label: 'Cassandra',
+      children: activeKey === '3' ? <ShardsDetailTabCassandra /> : null,
+    },
+    {
+      key: '4',
+      label: 'Processing Events',
+      children: activeKey === '4' ? <ShardsDetailTabProcessingEvents /> : null,
+    },
+    {
+      key: '5',
+      label: 'Time Statistics',
+      children: activeKey === '5' ? <ShardsDetailTabTimeStatistics /> : null,
+    },
+    {
+      key: '6',
+      label: 'Transactions',
+      children: activeKey === '6' ? <ShardsDetailTabTransactions /> : null,
+    },
+    {
+      key: '7',
+      label: 'PM components',
+      children: activeKey === '7' ? <ShardsDetailTabPmComponents /> : null,
+    },
+    {
+      key: '8',
+      label: 'Composite indexes',
+      children: activeKey === '8' ? <ShardsDetailTabCompositeIndexes /> : null,
+    },
+    {
+      key: '9',
+      label: 'Caches List',
+      children: activeKey === '9' ? <ShardsDetailTabCachesList /> : null,
+    },
+    {
+      key: '10',
+      label: 'Network info',
+      children: activeKey === '10' ? <ShardsDetailTabNetworkInfo /> : null,
+    },
+    {
+      key: '11',
+      label: 'ZooKeeper info',
+      children: activeKey === '11' ? <ShardsDetailTabZKInfo /> : null,
+    },
+  ];
+
   return (
     <div className="nodes-detail">
-      <Tabs activeKey={activeKey} onChange={handleTabChange}>
-          <TabPane tab="Processing Manager" key="1">
-            {activeKey === '1' && <ShardsDetailTabProcessingManager />}
-          </TabPane>
-          <TabPane tab="Server Summary" key="2">
-            {activeKey === '2' && <ShardsDetailTabSummary />}
-          </TabPane>
-          <TabPane tab="Cassandra" key="3">
-            {activeKey === '3' && <ShardsDetailTabCassandra />}
-          </TabPane>
-          <TabPane tab="Processing Events" key="4">
-            {activeKey === '4' && <ShardsDetailTabProcessingEvents />}
-          </TabPane>
-          <TabPane tab="Time Statistics" key="5">
-            {activeKey === '5' && <ShardsDetailTabTimeStatistics />}
-          </TabPane>
-          <TabPane tab="Transactions" key="6">
-            {activeKey === '6' && <ShardsDetailTabTransactions />}
-          </TabPane>
-          <TabPane tab="PM components" key="7">
-            {activeKey === '7' && <ShardsDetailTabPmComponents />}
-          </TabPane>
-          <TabPane tab="Composite indexes" key="8">
-            {activeKey === '8' && <ShardsDetailTabCompositeIndexes />}
-          </TabPane>
-          <TabPane tab="Caches List" key="9">
-            {activeKey === '9' && <ShardsDetailTabCachesList />}
-          </TabPane>
-          <TabPane tab="Network info" key="10">
-            {activeKey === '10' && <ShardsDetailTabNetworkInfo />}
-          </TabPane>
-          <TabPane tab="ZooKeeper info" key="11">
-            {activeKey === '11' && <ShardsDetailTabZKInfo />}
-          </TabPane>
-        </Tabs>
+      <Tabs activeKey={activeKey} onChange={handleTabChange} items={tabItems} />
     </div>
   );
 }

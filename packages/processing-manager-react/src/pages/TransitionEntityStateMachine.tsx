@@ -74,7 +74,7 @@ export default function TransitionEntityStateMachine() {
       <Spin spinning={isLoading}>
         <Row gutter={24}>
           <Col xs={24} sm={18}>
-            <Title level={2}>{title}</Title>
+            <Title level={4} style={{ marginBottom: 16 }}>{title}</Title>
             <TransitionStateMachineForm
               possibleTransitions={possibleTransitions}
               onUpdated={handleUpdated}

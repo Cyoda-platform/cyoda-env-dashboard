@@ -93,7 +93,7 @@ export default function TransitionVersions() {
         style={{ marginBottom: 16 }}
       />
 
-      <Title level={2}>
+      <Title level={3} style={{ marginBottom: 24 }}>
         Version columns of entity ({entityClassName}): {entityId}
       </Title>
 
@@ -114,7 +114,7 @@ export default function TransitionVersions() {
 
       {isLoading ? (
         <div style={{ textAlign: 'center', padding: '40px' }}>
-          <Spin size="large" tip="Loading versions..." />
+          <Spin size="large" />
         </div>
       ) : (
         <>

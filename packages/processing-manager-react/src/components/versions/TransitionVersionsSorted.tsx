@@ -31,6 +31,14 @@ export const TransitionVersionsSorted: React.FC<TransitionVersionsSortedProps> =
   const storage = useMemo(() => new HelperStorage(), []);
   const { name } = useParams<{ name: string }>();
 
+  // Add unique keys to rows
+  const rowsWithKeys = useMemo(() => {
+    return rows.map((row, index) => ({
+      ...row,
+      _uniqueKey: `${row.transactionId}-${row.colType}-${index}`,
+    }));
+  }, [rows]);
+
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>(() => {
     const saved = storage.get('transitionVersionsSorted:columnWidths', {});
     const defaultWidths = {
@@ -115,8 +123,8 @@ export const TransitionVersionsSorted: React.FC<TransitionVersionsSortedProps> =
     <Card title="Sorted by column's time view" className="transition-versions-sorted">
       <Table
         columns={columns}
-        dataSource={rows}
-        rowKey={(row, index) => `${row.transactionId}-${index}`}
+        dataSource={rowsWithKeys}
+        rowKey="_uniqueKey"
         components={{
           header: {
             cell: ResizableTitle,

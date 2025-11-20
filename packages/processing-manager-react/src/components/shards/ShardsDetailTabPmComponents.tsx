@@ -14,10 +14,31 @@ import {
 } from '../pm-components';
 import './ShardsDetailTabPmComponents.scss';
 
-const { TabPane } = Tabs;
-
 export default function ShardsDetailTabPmComponents() {
   const [activeTab, setActiveTab] = useState<string>('execution-queues');
+
+  const tabItems = [
+    {
+      key: 'execution-queues',
+      label: 'Execution Queues Info',
+      children: <PmComponentsExecutionQueuesInfo />,
+    },
+    {
+      key: 'execution-monitors',
+      label: 'Execution Monitors',
+      children: <PmComponentsExecutionMonitors />,
+    },
+    {
+      key: 'service-processes',
+      label: 'Service Processes View',
+      children: <PmComponentsServiceProcessesView />,
+    },
+    {
+      key: 'runnable-components',
+      label: 'Cyoda Runnable Components',
+      children: <PmComponentsCyodaRunnableComponents />,
+    },
+  ];
 
   return (
     <div className="pm-components-tab">
@@ -25,20 +46,7 @@ export default function ShardsDetailTabPmComponents() {
         <h3 className="pm-components-title">PM components</h3>
         <PmComponentsClear />
       </div>
-      <Tabs activeKey={activeTab} onChange={setActiveTab}>
-        <TabPane tab="Execution Queues Info" key="execution-queues">
-          <PmComponentsExecutionQueuesInfo />
-        </TabPane>
-        <TabPane tab="Execution Monitors" key="execution-monitors">
-          <PmComponentsExecutionMonitors />
-        </TabPane>
-        <TabPane tab="Service Processes View" key="service-processes">
-          <PmComponentsServiceProcessesView />
-        </TabPane>
-        <TabPane tab="Cyoda Runnable Components" key="runnable-components">
-          <PmComponentsCyodaRunnableComponents />
-        </TabPane>
-      </Tabs>
+      <Tabs activeKey={activeTab} onChange={setActiveTab} items={tabItems} />
     </div>
   );
 }

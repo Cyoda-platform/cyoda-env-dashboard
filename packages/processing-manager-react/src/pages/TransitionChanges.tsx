@@ -59,7 +59,7 @@ export default function TransitionChanges() {
         style={{ marginBottom: 16 }}
       />
 
-      <Title level={2}>
+      <Title level={3} style={{ marginBottom: 24 }}>
         Changes of entity ({entityClassName}): {entityId}
       </Title>
 

@@ -97,12 +97,20 @@ export const TransitionStateMachineTable: React.FC<TransitionStateMachineTablePr
     },
   ], [columnWidths, handleResize, name]);
 
+  // Add unique keys to data source
+  const dataSourceWithKeys = useMemo(() => {
+    return stateMachineEvents.map((event, index) => ({
+      ...event,
+      _uniqueKey: `${event.event.transactionId}-${index}`,
+    }));
+  }, [stateMachineEvents]);
+
   return (
     <Card className="transition-state-machine-table">
       <Table
         columns={columns}
-        dataSource={stateMachineEvents}
-        rowKey={(record, index) => `${record.event.transactionId}-${index}`}
+        dataSource={dataSourceWithKeys}
+        rowKey="_uniqueKey"
         pagination={{
           pageSizeOptions: ['5', '10', '15', '20', '50'],
           defaultPageSize: 10,

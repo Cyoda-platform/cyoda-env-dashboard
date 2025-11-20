@@ -68,8 +68,9 @@ export const MembersFilter = forwardRef<MembersFilterRef, MembersFilterProps>(
                   value={form.entityType}
                   onChange={(value) => handleFieldChange('entityType', value || '')}
                   options={entityClassOptions}
-                  popupClassName="members-filter-dropdown"
-                  dropdownStyle={{ minWidth: '400px' }}
+                  popupMatchSelectWidth={false}
+                  classNames={{ popup: 'members-filter-dropdown' }}
+                  styles={{ popup: { minWidth: '400px' } }}
                 />
               </Form.Item>
             </Col>
@@ -80,8 +81,9 @@ export const MembersFilter = forwardRef<MembersFilterRef, MembersFilterProps>(
                   onChange={(value) => handleFieldChange('actionType', value)}
                   options={actionTypeOptions.map((a) => ({ value: a, label: a }))}
                   placeholder="Action Type"
-                  popupClassName="members-filter-dropdown"
-                  dropdownStyle={{ minWidth: '400px' }}
+                  popupMatchSelectWidth={false}
+                  classNames={{ popup: 'members-filter-dropdown' }}
+                  styles={{ popup: { minWidth: '400px' } }}
                 />
               </Form.Item>
             </Col>

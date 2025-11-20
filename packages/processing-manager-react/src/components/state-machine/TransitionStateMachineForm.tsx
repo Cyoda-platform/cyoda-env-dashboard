@@ -46,7 +46,7 @@ export const TransitionStateMachineForm: React.FC<TransitionStateMachineFormProp
   };
 
   return (
-    <Card title="Form" className="transition-state-machine-form">
+    <Card title="Form" className="transition-state-machine-form" bordered={false}>
       <Form layout="inline">
         <Form.Item label="Try transition">
           <Select

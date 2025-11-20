@@ -5,34 +5,30 @@
 
 .transition-changes-table {
   @include table.table-container-wrapper;
-  
-  .ant-table {
-    font-size: 14px;
+
+  // Expanded row styling - simple background like EntityAudit
+  .ant-table-expanded-row {
+    background-color: #fafafa;
   }
-  
+
   .transition-link {
-    color: #1890ff;
+    color: #14b8a6;
     text-decoration: none;
-    
+    font-weight: 500;
+
     &:hover {
+      color: #0d9488;
       text-decoration: underline;
     }
   }
-  
-  .change-type {
-    font-weight: 500;
-    
-    &.added {
-      color: #52c41a;
-    }
-    
-    &.removed {
-      color: #ff4d4f;
-    }
-    
-    &.modified {
-      color: #faad14;
-    }
+
+  // Pre tag for JSON values
+  pre {
+    margin: 0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    max-height: 200px;
+    overflow-y: auto;
   }
 }
 

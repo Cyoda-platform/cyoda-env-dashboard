@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Card, Form, DatePicker, Select, Button, Row, Col } from 'antd';
+import { Form, DatePicker, Select, Button, Row, Col } from 'antd';
 import dayjs from 'dayjs';
 import { useTransactionStatuses } from '../../hooks';
 import './TransitionVersionsFilter.scss';
@@ -54,7 +54,8 @@ export const TransitionVersionsFilter: React.FC<TransitionVersionsFilterProps> =
   };
 
   return (
-    <Card title="Filter">
+    <div className="transition-versions-filter-wrapper" style={{ marginBottom: 24 }}>
+      <h4 style={{ marginBottom: 16, fontSize: 16, fontWeight: 600 }}>Filter</h4>
       <Form layout="vertical" className="transition-versions-filter">
         <Row gutter={20} className="wrap-row">
           <Col span={4}>
@@ -92,8 +93,9 @@ export const TransitionVersionsFilter: React.FC<TransitionVersionsFilterProps> =
                 onChange={(value) => handleFieldChange('actionTypeStr', value)}
                 placeholder="Action Type"
                 options={actionTypeOptions.map((type) => ({ value: type, label: type }))}
-                popupClassName="transition-versions-filter-dropdown"
-                dropdownStyle={{ minWidth: '300px' }}
+                popupMatchSelectWidth={false}
+                classNames={{ popup: 'transition-versions-filter-dropdown' }}
+                styles={{ popup: { minWidth: '300px' } }}
               />
             </Form.Item>
           </Col>
@@ -107,8 +109,9 @@ export const TransitionVersionsFilter: React.FC<TransitionVersionsFilterProps> =
                   { value: 'ASC', label: 'Asc' },
                   { value: 'DESC', label: 'Desc' },
                 ]}
-                popupClassName="transition-versions-filter-dropdown"
-                dropdownStyle={{ minWidth: '300px' }}
+                popupMatchSelectWidth={false}
+                classNames={{ popup: 'transition-versions-filter-dropdown' }}
+                styles={{ popup: { minWidth: '300px' } }}
               />
             </Form.Item>
           </Col>
@@ -119,7 +122,7 @@ export const TransitionVersionsFilter: React.FC<TransitionVersionsFilterProps> =
           </Col>
         </Row>
       </Form>
-    </Card>
+    </div>
   );
 };
 

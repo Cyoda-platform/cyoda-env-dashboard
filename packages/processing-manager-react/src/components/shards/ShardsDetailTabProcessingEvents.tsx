@@ -16,34 +16,46 @@ import {
 } from '../processing-events';
 import './ShardsDetailTabProcessingEvents.scss';
 
-const { TabPane } = Tabs;
-
 export const ShardsDetailTabProcessingEvents: React.FC = () => {
   const [activeKey, setActiveKey] = useState('1');
+
+  const tabItems = [
+    {
+      key: '1',
+      label: 'Process Events Statistics',
+      children: <ProcessEventsStatistics />,
+    },
+    {
+      key: '2',
+      label: 'Polling info',
+      children: <PollingInfo />,
+    },
+    {
+      key: '3',
+      label: 'Processing events view',
+      children: <ProcessingEventsView />,
+    },
+    {
+      key: '4',
+      label: 'Processing events error view',
+      children: <ProcessingEventsErrorView />,
+    },
+    {
+      key: '5',
+      label: 'Entities error list view',
+      children: <ProcessingEventsEntitiesErrorListView />,
+    },
+    {
+      key: '6',
+      label: 'SIFT logger conf view',
+      children: <SiftLoggerConfView />,
+    },
+  ];
 
   return (
     <div className="processing-events-tab">
       <h3 className="processing-events-title">Processing Events</h3>
-      <Tabs activeKey={activeKey} onChange={setActiveKey}>
-        <TabPane tab="Process Events Statistics" key="1">
-          <ProcessEventsStatistics />
-        </TabPane>
-        <TabPane tab="Polling info" key="2">
-          <PollingInfo />
-        </TabPane>
-        <TabPane tab="Processing events view" key="3">
-          <ProcessingEventsView />
-        </TabPane>
-        <TabPane tab="Processing events error view" key="4">
-          <ProcessingEventsErrorView />
-        </TabPane>
-        <TabPane tab="Entities error list view" key="5">
-          <ProcessingEventsEntitiesErrorListView />
-        </TabPane>
-        <TabPane tab="SIFT logger conf view" key="6">
-          <SiftLoggerConfView />
-        </TabPane>
-      </Tabs>
+      <Tabs activeKey={activeKey} onChange={setActiveKey} items={tabItems} />
     </div>
   );
 };

@@ -192,8 +192,9 @@ export const ProcessEventsStatistics: React.FC = () => {
                 allowClear
                 showSearch
                 options={shardOptions}
-                popupClassName="process-events-statistics-dropdown"
-                dropdownStyle={{ minWidth: '400px' }}
+                popupMatchSelectWidth={false}
+                classNames={{ popup: 'process-events-statistics-dropdown' }}
+                styles={{ popup: { minWidth: '400px' } }}
               />
             </Form.Item>
           </Col>
@@ -202,12 +203,13 @@ export const ProcessEventsStatistics: React.FC = () => {
               <Select
                 value={classFilter}
                 onChange={setClassFilter}
-                popupClassName="process-events-statistics-dropdown"
                 placeholder="Select class"
                 allowClear
                 showSearch
                 options={classOptions}
-                dropdownStyle={{ minWidth: '400px' }}
+                popupMatchSelectWidth={false}
+                classNames={{ popup: 'process-events-statistics-dropdown' }}
+                styles={{ popup: { minWidth: '400px' } }}
               />
             </Form.Item>
           </Col>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { Table } from 'antd'
+import { Table, Tag } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
+import { RightOutlined } from '@ant-design/icons'
 import { Link } from 'react-router-dom'
 import { axiosProcessing } from '@cyoda/http-api-react'
 import './TransitionChangesTable.scss'
@@ -87,23 +88,47 @@ export const TransitionChangesTable: React.FC<TransitionChangesTableProps> = ({
     return row ? row[field] : '-'
   }
 
+  // Render value (similar to EntityAudit)
+  const renderValue = (value: any) => {
+    if (value === null || value === undefined || value === '') {
+      return <Tag color="default">null</Tag>
+    }
+    if (typeof value === 'object') {
+      return <pre style={{ margin: 0, fontSize: '12px' }}>{JSON.stringify(value, null, 2)}</pre>
+    }
+    return String(value)
+  }
+
+  // Render operation tag
+  const renderOperation = (operation: string) => {
+    const colorMap: Record<string, string> = {
+      CREATE: 'green',
+      UPDATE: 'blue',
+      DELETE: 'red',
+    }
+    return <Tag color={colorMap[operation] || 'default'}>{operation}</Tag>
+  }
+
   const expandedRowRender = (record: TransitionChange) => {
     const columns: ColumnsType<ChangedFieldValue> = [
       {
-        title: 'Path',
+        title: 'PATH',
         dataIndex: 'columnPath',
         key: 'columnPath',
+        width: 200,
         render: (text) => text || '-'
       },
       {
-        title: 'Old value',
+        title: 'OLD VALUE',
         dataIndex: 'prevValue',
-        key: 'prevValue'
+        key: 'prevValue',
+        render: renderValue
       },
       {
-        title: 'New value',
+        title: 'NEW VALUE',
         dataIndex: 'currValue',
-        key: 'currValue'
+        key: 'currValue',
+        render: renderValue
       }
     ]
 
@@ -113,13 +138,15 @@ export const TransitionChangesTable: React.FC<TransitionChangesTableProps> = ({
         dataSource={record.changedFieldValues}
         pagination={false}
         rowKey={(row) => row.columnPath}
+        size="small"
+        bordered
       />
     )
   }
 
   const columns: ColumnsType<TransitionChange> = [
     {
-      title: 'Transaction Id',
+      title: 'TRANSACTION ID',
       dataIndex: 'transactionId',
       key: 'transactionId',
       width: 320,
@@ -131,36 +158,46 @@ export const TransitionChangesTable: React.FC<TransitionChangesTableProps> = ({
           ? `${basePath}/${nodeName}/transaction/${record.transactionId}`
           : `${basePath}/${type}/transaction/${record.transactionId}`;
         return (
-          <Link to={linkPath}>
+          <Link to={linkPath} className="transition-link">
             {text}
           </Link>
         )
       }
     },
     {
-      title: 'Time(uuid/date)',
+      title: 'TIME (UUID/DATE)',
       key: 'timeUid',
-      render: (_, record) => `${record.timeUUID} / ${record.creationDate}`
+      width: 300,
+      render: (_, record) => (
+        <span>
+          {record.timeUUID} / {record.creationDate}
+        </span>
+      )
     },
     {
-      title: 'State from',
+      title: 'STATE FROM',
       key: 'stateFrom',
-      render: (_, record) => getChangedFieldValuesByKey(record, 'state', 'prevValue')
+      width: 150,
+      render: (_, record) => renderValue(getChangedFieldValuesByKey(record, 'state', 'prevValue'))
     },
     {
-      title: 'State to',
+      title: 'STATE TO',
       key: 'stateTo',
-      render: (_, record) => getChangedFieldValuesByKey(record, 'state', 'currValue')
+      width: 150,
+      render: (_, record) => renderValue(getChangedFieldValuesByKey(record, 'state', 'currValue'))
     },
     {
-      title: 'User',
+      title: 'USER',
       dataIndex: 'user',
-      key: 'user'
+      key: 'user',
+      width: 120
     },
     {
-      title: 'Change Type',
+      title: 'CHANGE TYPE',
       dataIndex: 'operation',
-      key: 'operation'
+      key: 'operation',
+      width: 120,
+      render: renderOperation
     }
   ]
 
@@ -171,12 +208,30 @@ export const TransitionChangesTable: React.FC<TransitionChangesTableProps> = ({
           columns={columns}
           dataSource={tableData}
           loading={loading}
+          rowKey={(record) => record.transactionId}
           scroll={{ x: true, y: 400 }}
           expandable={{
             expandedRowRender,
-            rowExpandable: (record) => record.changedFieldValues && record.changedFieldValues.length > 0
+            rowExpandable: (record) => record.changedFieldValues && record.changedFieldValues.length > 0,
+            expandIcon: ({ expanded, onExpand, record }) => (
+              <RightOutlined
+                onClick={(e) => onExpand(record, e)}
+                rotate={expanded ? 90 : 0}
+                style={{
+                  cursor: 'pointer',
+                  transition: 'transform 0.2s',
+                  fontSize: '12px',
+                }}
+              />
+            ),
           }}
-          rowKey={(record) => record.transactionId}
+          pagination={{
+            pageSize: 10,
+            showSizeChanger: true,
+            showTotal: (total) => `Total ${total} changes`,
+          }}
+          bordered
+          size="small"
         />
       </div>
     </div>

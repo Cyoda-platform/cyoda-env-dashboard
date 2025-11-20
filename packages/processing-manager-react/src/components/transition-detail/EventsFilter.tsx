@@ -109,8 +109,9 @@ export const EventsFilter = forwardRef<EventsFilterRef, EventsFilterProps>(
                   value={form.status}
                   onChange={(value) => handleFieldChange('status', value || '')}
                   options={transactionStatusOptions}
-                  popupClassName="events-filter-dropdown"
-                  dropdownStyle={{ minWidth: '400px' }}
+                  popupMatchSelectWidth={false}
+                  classNames={{ popup: 'events-filter-dropdown' }}
+                  styles={{ popup: { minWidth: '400px' } }}
                 />
               </Form.Item>
             </Col>

@@ -77,8 +77,9 @@ export const ProcessingEventsErrorViewFilter: React.FC<ProcessingEventsErrorView
               value={form.queue}
               onChange={(value) => handleFieldChange('queue', value || 'ALL')}
               options={queueOptions.map((q) => ({ value: q, label: q }))}
-              popupClassName="processing-events-error-view-filter-dropdown"
-              dropdownStyle={{ minWidth: '400px' }}
+              popupMatchSelectWidth={false}
+              classNames={{ popup: 'processing-events-error-view-filter-dropdown' }}
+              styles={{ popup: { minWidth: '400px' } }}
             />
           </Form.Item>
         </Col>
@@ -90,8 +91,9 @@ export const ProcessingEventsErrorViewFilter: React.FC<ProcessingEventsErrorView
               value={form.shard}
               onChange={(value) => handleFieldChange('shard', value || 'ALL')}
               options={actualShardsOptions.map((s) => ({ value: s, label: s }))}
-              popupClassName="processing-events-error-view-filter-dropdown"
-              dropdownStyle={{ minWidth: '400px' }}
+              popupMatchSelectWidth={false}
+              classNames={{ popup: 'processing-events-error-view-filter-dropdown' }}
+              styles={{ popup: { minWidth: '400px' } }}
             />
           </Form.Item>
         </Col>
@@ -130,8 +132,9 @@ export const ProcessingEventsErrorViewFilter: React.FC<ProcessingEventsErrorView
               value={form.sort}
               onChange={(value) => handleFieldChange('sort', value)}
               options={listSortes.map((s) => ({ value: s, label: s }))}
-              popupClassName="processing-events-error-view-filter-dropdown"
-              dropdownStyle={{ minWidth: '400px' }}
+              popupMatchSelectWidth={false}
+              classNames={{ popup: 'processing-events-error-view-filter-dropdown' }}
+              styles={{ popup: { minWidth: '400px' } }}
             />
           </Form.Item>
         </Col>
