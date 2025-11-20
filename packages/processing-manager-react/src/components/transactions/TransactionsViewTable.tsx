@@ -136,7 +136,7 @@ export const TransactionsViewTable: React.FC<TransactionsViewTableProps> = ({
       fixed: 'left',
       sorter: (a, b) => a.id.localeCompare(b.id),
       render: (id: string) => (
-        <Link to={`/nodes/${name}/transaction/${id}`}>{id}</Link>
+        <Link to={`/processing-ui/nodes/${name}/transaction/${id}`}>{id}</Link>
       ),
       onHeaderCell: () => ({
         width: columnWidths.id,

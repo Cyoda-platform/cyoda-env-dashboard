@@ -1,7 +1,18 @@
 @use '../../../../ui-lib-react/src/styles/table-mixins' as table;
 
 .transition-detail-events-table {
-  @include table.table-container-wrapper;
-  @include table.resizable-columns;
+  margin-bottom: 24px;
+
+  .table-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  .ant-table-wrapper {
+    @include table.table-container-wrapper;
+    @include table.resizable-columns;
+  }
 }
 

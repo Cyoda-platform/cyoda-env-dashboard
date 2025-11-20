@@ -4,7 +4,7 @@
  */
 
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
-import { Card, Table, Spin } from 'antd';
+import { Table, Spin } from 'antd';
 import { Link, useParams } from 'react-router-dom';
 import type { ColumnsType } from 'antd/es/table';
 import type { ResizeCallbackData } from 'react-resizable';
@@ -246,7 +246,8 @@ export const EventsTable: React.FC<EventsTableProps> = ({ tableData, isLoading =
   ], [columnWidths, handleResize, name]);
 
   return (
-    <Card title="Transaction Events" className="transition-detail-events-table">
+    <div className="transition-detail-events-table">
+      <h3 className="table-title">Transaction Events</h3>
       <Spin spinning={isLoading}>
         <Table
           columns={columns}
@@ -260,9 +261,12 @@ export const EventsTable: React.FC<EventsTableProps> = ({ tableData, isLoading =
               cell: ResizableTitle,
             },
           }}
+          locale={{
+            emptyText: 'No transaction events found',
+          }}
         />
       </Spin>
-    </Card>
+    </div>
   );
 };
 

@@ -99,59 +99,56 @@ export default function TransactionStatistics({ transaction }: TransactionStatis
 
   return (
     <div>
-      <Row gutter={16} style={{ marginBottom: 24 }}>
+      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
         <Col xs={24} sm={12} md={6}>
-          <Card>
+          <Card bordered={true} style={{ height: '100%' }}>
             <Statistic
               title="Status"
-              value={transaction.status}
+              value={transaction.status || '0'}
               prefix={getStatusIcon(transaction.status)}
-              valueStyle={{ fontSize: '18px' }}
+              valueStyle={{ fontSize: '16px' }}
             />
-            <Tag color={getStatusColor(transaction.status)} style={{ marginTop: 8 }}>
-              {transaction.status}
-            </Tag>
           </Card>
         </Col>
 
         <Col xs={24} sm={12} md={6}>
-          <Card>
+          <Card bordered={true} style={{ height: '100%' }}>
             <Statistic
               title="Duration"
               value={formatDuration(transaction.duration)}
               prefix={<ClockCircleOutlined />}
-              valueStyle={{ fontSize: '18px' }}
+              valueStyle={{ fontSize: '16px' }}
             />
           </Card>
         </Col>
 
         <Col xs={24} sm={12} md={6}>
-          <Card>
+          <Card bordered={true} style={{ height: '100%' }}>
             <Statistic
               title="Start Time"
-              value={new Date(transaction.startTime).toLocaleString()}
-              valueStyle={{ fontSize: '14px' }}
+              value={transaction.startTime ? new Date(transaction.startTime).toLocaleString() : 'Invalid Date'}
+              valueStyle={{ fontSize: '13px' }}
             />
           </Card>
         </Col>
 
         <Col xs={24} sm={12} md={6}>
-          <Card>
+          <Card bordered={true} style={{ height: '100%' }}>
             <Statistic
               title="End Time"
               value={transaction.endTime ? new Date(transaction.endTime).toLocaleString() : 'In Progress'}
-              valueStyle={{ fontSize: '14px' }}
+              valueStyle={{ fontSize: '13px' }}
             />
           </Card>
         </Col>
       </Row>
 
-      <Card title="Transaction Details">
+      <Card title="Transaction Details" bordered={true}>
         <Descriptions bordered column={{ xs: 1, sm: 2, md: 2 }}>
           <Descriptions.Item label="Transaction ID">
             {transaction.id}
           </Descriptions.Item>
-          
+
           <Descriptions.Item label="Status">
             <Tag color={getStatusColor(transaction.status)}>
               {transaction.status}
@@ -171,7 +168,7 @@ export default function TransactionStatistics({ transaction }: TransactionStatis
           )}
 
           <Descriptions.Item label="Start Time">
-            {new Date(transaction.startTime).toLocaleString()}
+            {transaction.startTime ? new Date(transaction.startTime).toLocaleString() : '-'}
           </Descriptions.Item>
 
           <Descriptions.Item label="End Time">

@@ -1082,24 +1082,54 @@ export function usePlatformCommonZkInfoLoadedShardsDistribution() {
 }
 
 /**
- * Get Transactions View (alias for useTransactions)
+ * Get Transactions View - get single transaction details by ID
+ * Original Vue: transactionsView({ id })
+ * Endpoint: /platform-processing/transactions/view/${id}
  */
-export function useTransactionsView(params?: any) {
-  return useTransactions(params);
+export function useTransactionsView(params?: { id?: string }) {
+  const id = params?.id;
+  return useQuery({
+    queryKey: [...processingKeys.all, 'transactions-view', id],
+    queryFn: async () => {
+      const { data } = await axiosProcessing.get(
+        HelperUrl.getLinkToServer(`/platform-processing/transactions/view/${id}`)
+      );
+      return data;
+    },
+    enabled: !!id,
+  });
 }
 
 /**
  * Get Transactions View Members (alias for useTransactionMembers)
+ * Supports both signatures:
+ * 1. useTransactionsViewMembers(id, params) - new signature
+ * 2. useTransactionsViewMembers({ id, ...params }) - old signature for compatibility
  */
-export function useTransactionsViewMembers(id: string, params?: any) {
-  return useTransactionMembers(id, params);
+export function useTransactionsViewMembers(idOrParams: string | any, params?: any) {
+  // Support both old and new signatures
+  if (typeof idOrParams === 'string') {
+    return useTransactionMembers(idOrParams, params);
+  } else {
+    const { id, ...restParams } = idOrParams;
+    return useTransactionMembers(id, restParams);
+  }
 }
 
 /**
  * Get Transactions View Events (alias for useTransactionEvents)
+ * Supports both signatures:
+ * 1. useTransactionsViewEvents(id, params) - new signature
+ * 2. useTransactionsViewEvents({ id, ...params }) - old signature for compatibility
  */
-export function useTransactionsViewEvents(id: string, params?: any) {
-  return useTransactionEvents(id, params);
+export function useTransactionsViewEvents(idOrParams: string | any, params?: any) {
+  // Support both old and new signatures
+  if (typeof idOrParams === 'string') {
+    return useTransactionEvents(idOrParams, params);
+  } else {
+    const { id, ...restParams } = idOrParams;
+    return useTransactionEvents(id, restParams);
+  }
 }
 
 export default {

@@ -81,12 +81,24 @@ export default function TransactionMembersTable({ transactionId }: TransactionMe
     };
   }, []);
 
-  const { data, isLoading } = useTransactionMembers(transactionId, {
+  const { data: response, isLoading, error } = useTransactionMembers(transactionId, {
     entityType: filters.entityType,
     operation: filters.operation,
     pageNum: pagination.current,
     pageSize: pagination.pageSize,
   });
+
+  // Extract rows from response (API returns { rows: [], firstPage: boolean, lastPage: boolean })
+  const data = useMemo(() => {
+    if (!response) return [];
+    // If response is an array, use it directly
+    if (Array.isArray(response)) return response;
+    // If response has rows property, use that
+    if (response && typeof response === 'object' && 'rows' in response) {
+      return (response as any).rows || [];
+    }
+    return [];
+  }, [response]);
 
   const columns: ColumnsType<TransactionMember> = useMemo(() => [
     {
@@ -169,17 +181,19 @@ export default function TransactionMembersTable({ transactionId }: TransactionMe
     });
   };
 
-  const filteredData = data?.filter((member) => {
-    if (filters.search) {
-      const searchLower = filters.search.toLowerCase();
-      return (
-        member.entityId?.toLowerCase().includes(searchLower) ||
-        member.entityType?.toLowerCase().includes(searchLower) ||
-        member.operation?.toLowerCase().includes(searchLower)
-      );
-    }
-    return true;
-  });
+  const filteredData = useMemo(() => {
+    return data?.filter((member) => {
+      if (filters.search) {
+        const searchLower = filters.search.toLowerCase();
+        return (
+          member.entityId?.toLowerCase().includes(searchLower) ||
+          member.entityType?.toLowerCase().includes(searchLower) ||
+          member.operation?.toLowerCase().includes(searchLower)
+        );
+      }
+      return true;
+    });
+  }, [data, filters.search]);
 
   return (
     <div>
@@ -191,7 +205,7 @@ export default function TransactionMembersTable({ transactionId }: TransactionMe
           onSearch={(value) => setFilters({ ...filters, search: value })}
           onChange={(e) => setFilters({ ...filters, search: e.target.value })}
         />
-        
+
         <Select
           placeholder="Entity Type"
           allowClear
@@ -224,6 +238,9 @@ export default function TransactionMembersTable({ transactionId }: TransactionMe
           header: {
             cell: ResizableTitle,
           },
+        }}
+        locale={{
+          emptyText: 'No transaction members found',
         }}
         pagination={{
           ...pagination,

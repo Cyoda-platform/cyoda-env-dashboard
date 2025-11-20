@@ -4,13 +4,13 @@
  */
 
 import React, { useState, useRef, useMemo } from 'react';
-import { Card } from 'antd';
 import { useParams } from 'react-router-dom';
 import MembersFilter, { MembersFilterRef } from './MembersFilter';
 import MembersTable from './MembersTable';
 import { Pagination } from '../common';
 import { useTransactionsViewMembers } from '../../hooks';
 import dayjs from 'dayjs';
+import './TransitionDetailStatisticsTransactionMembers.scss';
 
 export const TransitionDetailStatisticsTransactionMembers: React.FC = () => {
   const { transactionId } = useParams<{ transactionId: string }>();
@@ -72,7 +72,7 @@ export const TransitionDetailStatisticsTransactionMembers: React.FC = () => {
     <div className="transaction-detail">
       <MembersFilter ref={membersFilterRef} isLoading={isLoading} onChange={handleFilterChange} />
       <MembersTable tableData={data.rows} isLoading={isLoading} />
-      <Card>
+      <div className="pagination-wrapper">
         <Pagination
           onChange={handlePaginationChange}
           nextCursor={nextCursor}
@@ -80,7 +80,7 @@ export const TransitionDetailStatisticsTransactionMembers: React.FC = () => {
           firstPage={data.firstPage}
           lastPage={data.lastPage}
         />
-      </Card>
+      </div>
     </div>
   );
 };

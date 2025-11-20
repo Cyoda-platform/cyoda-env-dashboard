@@ -4,7 +4,7 @@
  */
 
 import React, { useState, forwardRef, useImperativeHandle } from 'react';
-import { Card, Form, Select, Button, Row, Col } from 'antd';
+import { Form, Select, Button, Row, Col } from 'antd';
 import { useEntitiesListPossible } from '../../hooks';
 import './MembersFilter.scss';
 
@@ -57,11 +57,12 @@ export const MembersFilter = forwardRef<MembersFilterRef, MembersFilterProps>(
     };
 
     return (
-      <Card title="Filter">
+      <div className="members-filter-wrapper">
+        <h3 className="filter-title">Filter</h3>
         <Form layout="vertical" className="members-filter">
           <Row gutter={20} className="wrap-row">
             <Col span={5}>
-              <Form.Item label="Entity type">
+              <Form.Item label="ENTITY TYPE">
                 <Select
                   showSearch
                   allowClear
@@ -69,26 +70,22 @@ export const MembersFilter = forwardRef<MembersFilterRef, MembersFilterProps>(
                   onChange={(value) => handleFieldChange('entityType', value || '')}
                   options={entityClassOptions}
                   popupMatchSelectWidth={false}
-                  classNames={{ popup: 'members-filter-dropdown' }}
-                  styles={{ popup: { minWidth: '400px' } }}
                 />
               </Form.Item>
             </Col>
             <Col span={5}>
-              <Form.Item label="Action Type">
+              <Form.Item label="ACTION TYPE">
                 <Select
                   value={form.actionType}
                   onChange={(value) => handleFieldChange('actionType', value)}
                   options={actionTypeOptions.map((a) => ({ value: a, label: a }))}
                   placeholder="Action Type"
                   popupMatchSelectWidth={false}
-                  classNames={{ popup: 'members-filter-dropdown' }}
-                  styles={{ popup: { minWidth: '400px' } }}
                 />
               </Form.Item>
             </Col>
             <Col span={5}>
-              <Form.Item label="Version check result">
+              <Form.Item label="VERSION CHECK RESULT">
                 <Select
                   allowClear
                   value={form.versionCheckResult}
@@ -98,13 +95,12 @@ export const MembersFilter = forwardRef<MembersFilterRef, MembersFilterProps>(
                     { label: 'False', value: false },
                   ]}
                   placeholder="Please select"
-                  popupClassName="members-filter-dropdown"
-                  dropdownStyle={{ minWidth: '400px' }}
+                  popupMatchSelectWidth={false}
                 />
               </Form.Item>
             </Col>
             <Col span={5}>
-              <Form.Item label="Sort">
+              <Form.Item label="SORT">
                 <Select
                   value={form.sort}
                   onChange={(value) => handleFieldChange('sort', value)}
@@ -113,8 +109,7 @@ export const MembersFilter = forwardRef<MembersFilterRef, MembersFilterProps>(
                     { label: 'Desc', value: 'DESC' },
                   ]}
                   placeholder="Sort"
-                  popupClassName="members-filter-dropdown"
-                  dropdownStyle={{ minWidth: '400px' }}
+                  popupMatchSelectWidth={false}
                 />
               </Form.Item>
             </Col>
@@ -125,7 +120,7 @@ export const MembersFilter = forwardRef<MembersFilterRef, MembersFilterProps>(
             </Col>
           </Row>
         </Form>
-      </Card>
+      </div>
     );
   }
 );

@@ -4,12 +4,12 @@
  */
 
 import React, { useState, useRef, useMemo } from 'react';
-import { Card } from 'antd';
 import { useParams } from 'react-router-dom';
 import EventsFilter, { EventsFilterRef } from './EventsFilter';
 import EventsTable from './EventsTable';
 import { Pagination } from '../common';
 import { useTransactionsViewEvents } from '../../hooks';
+import './TransitionDetailStatisticsTransactionEvents.scss';
 
 export const TransitionDetailStatisticsTransactionEvents: React.FC = () => {
   const { transactionId } = useParams<{ transactionId: string }>();
@@ -67,7 +67,7 @@ export const TransitionDetailStatisticsTransactionEvents: React.FC = () => {
     <div className="transaction-events">
       <EventsFilter ref={eventsFilterRef} isLoading={isLoading} onChange={handleFilterChange} />
       <EventsTable tableData={data.rows} isLoading={isLoading} />
-      <Card>
+      <div className="pagination-wrapper">
         <Pagination
           onChange={handlePaginationChange}
           nextCursor={nextCursor}
@@ -75,7 +75,7 @@ export const TransitionDetailStatisticsTransactionEvents: React.FC = () => {
           firstPage={data.firstPage}
           lastPage={data.lastPage}
         />
-      </Card>
+      </div>
     </div>
   );
 };

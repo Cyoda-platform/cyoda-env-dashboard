@@ -1,9 +1,27 @@
 @use '../../../../ui-lib-react/src/styles/table-mixins' as table;
 
+.members-filter-wrapper {
+  margin-bottom: 24px;
+
+  .filter-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: rgba(255, 255, 255, 0.85);
+  }
+}
+
 .members-filter {
   .ant-form-item-label {
     margin-bottom: 0 !important;
     padding-bottom: 0 !important;
+
+    > label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      color: rgba(255, 255, 255, 0.65);
+    }
   }
 
   .wrap-row {
@@ -21,22 +39,5 @@
   }
 }
 
-// Dropdown styles for Select components
-:global(.members-filter-dropdown) {
-  .ant-select-item {
-    white-space: normal !important;
-    word-wrap: break-word !important;
-    word-break: break-word !important;
-    height: auto !important;
-    min-height: 32px !important;
-    padding: 5px 12px !important;
-    line-height: 1.5 !important;
-  }
 
-  .ant-select-item-option-content {
-    white-space: normal !important;
-    word-wrap: break-word !important;
-    word-break: break-word !important;
-  }
-}
 

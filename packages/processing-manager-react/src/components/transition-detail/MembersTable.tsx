@@ -4,7 +4,7 @@
  */
 
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
-import { Card, Table, Spin, Space } from 'antd';
+import { Table, Spin, Space } from 'antd';
 import { Link, useParams } from 'react-router-dom';
 import type { ColumnsType } from 'antd/es/table';
 import type { ResizeCallbackData } from 'react-resizable';
@@ -167,12 +167,13 @@ export const MembersTable: React.FC<MembersTableProps> = ({ tableData, isLoading
   ], [columnWidths, handleResize, name, convertTime]);
 
   return (
-    <Card title="Transaction members with version check results" className="transition-detail-members-table">
+    <div className="transition-detail-members-table">
+      <h3 className="table-title">Transaction members with version check results</h3>
       <Spin spinning={isLoading}>
         <Table
           columns={columns}
           dataSource={tableData}
-          rowKey={(record, index) => `${record.entityId}-${index}`}
+          rowKey={(record) => `${record.entityId}-${record.versionCheckTimeMillis}`}
           bordered
           pagination={false}
           scroll={{ x: 'max-content' }}
@@ -181,9 +182,12 @@ export const MembersTable: React.FC<MembersTableProps> = ({ tableData, isLoading
               cell: ResizableTitle,
             },
           }}
+          locale={{
+            emptyText: 'No transaction members found',
+          }}
         />
       </Spin>
-    </Card>
+    </div>
   );
 };
 

@@ -79,9 +79,21 @@ export default function TransactionEventsTable({ transactionId }: TransactionEve
     };
   }, []);
 
-  const { data, isLoading } = useTransactionEvents(transactionId, {
+  const { data: response, isLoading } = useTransactionEvents(transactionId, {
     eventType: filters.eventType,
   });
+
+  // Extract rows from response (API returns { rows: [], firstPage: boolean, lastPage: boolean })
+  const data = useMemo(() => {
+    if (!response) return [];
+    // If response is an array, use it directly
+    if (Array.isArray(response)) return response;
+    // If response has rows property, use that
+    if (response && typeof response === 'object' && 'rows' in response) {
+      return (response as any).rows || [];
+    }
+    return [];
+  }, [response]);
 
   const showEventDetails = (event: TransactionEvent) => {
     setSelectedEvent(event);
@@ -166,16 +178,18 @@ export default function TransactionEventsTable({ transactionId }: TransactionEve
     },
   ], [columnWidths, handleResize, showEventDetails]);
 
-  const filteredData = data?.filter((event) => {
-    if (filters.search) {
-      const searchLower = filters.search.toLowerCase();
-      return (
-        event.eventType?.toLowerCase().includes(searchLower) ||
-        event.error?.toLowerCase().includes(searchLower)
-      );
-    }
-    return true;
-  });
+  const filteredData = useMemo(() => {
+    return data?.filter((event) => {
+      if (filters.search) {
+        const searchLower = filters.search.toLowerCase();
+        return (
+          event.eventType?.toLowerCase().includes(searchLower) ||
+          event.error?.toLowerCase().includes(searchLower)
+        );
+      }
+      return true;
+    });
+  }, [data, filters.search]);
 
   return (
     <div>
@@ -210,6 +224,9 @@ export default function TransactionEventsTable({ transactionId }: TransactionEve
           header: {
             cell: ResizableTitle,
           },
+        }}
+        locale={{
+          emptyText: 'No transaction events found',
         }}
         pagination={{
           pageSize: 10,

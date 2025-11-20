@@ -3,46 +3,19 @@
  * Migrated from @cyoda/processing-manager/src/views/TransactionDetail.vue
  */
 
-import { Card, Typography, Tabs, Spin, Alert, Breadcrumb } from 'antd';
-import { HomeOutlined, DatabaseOutlined } from '@ant-design/icons';
+import { Card, Tabs, Breadcrumb } from 'antd';
+import { HomeOutlined } from '@ant-design/icons';
 
 import { useParams, useNavigate } from 'react-router-dom';
-import { useTransaction } from '../hooks';
 import {
-  TransactionStatistics,
-  TransactionMembersTable,
-  TransactionEventsTable,
-} from '../components';
-
-const { Title } = Typography;
+  TransitionDetailStatistics,
+  TransitionDetailStatisticsTransactionMembers,
+  TransitionDetailStatisticsTransactionEvents,
+} from '../components/transition-detail';
 
 export default function TransactionDetail() {
   const { name, transactionId } = useParams<{ name: string; transactionId: string }>();
   const navigate = useNavigate();
-  const { data: transaction, isLoading, error } = useTransaction(transactionId!);
-
-  if (isLoading) {
-    return (
-      <div style={{ padding: '24px', textAlign: 'center' }}>
-        <Spin size="large" />
-      </div>
-    );
-  }
-
-  if (error || !transaction) {
-    return (
-      
-        <div style={{ padding: '24px' }}>
-          <Alert
-            message="Error"
-            description="Failed to load transaction details"
-            type="error"
-            showIcon
-          />
-        </div>
-      
-    );
-  }
 
   const breadcrumbItems = [
     {
@@ -70,23 +43,18 @@ export default function TransactionDetail() {
   const tabItems = [
     {
       key: 'statistics',
-      label: (
-        <span>
-          <DatabaseOutlined />
-          Statistics
-        </span>
-      ),
-      children: <TransactionStatistics transaction={transaction} />,
+      label: 'Transaction main statistics',
+      children: <TransitionDetailStatistics />,
     },
     {
       key: 'members',
-      label: 'Members',
-      children: <TransactionMembersTable transactionId={transactionId!} />,
+      label: 'Transaction members',
+      children: <TransitionDetailStatisticsTransactionMembers />,
     },
     {
       key: 'events',
-      label: 'Events',
-      children: <TransactionEventsTable transactionId={transactionId!} />,
+      label: 'Transaction events',
+      children: <TransitionDetailStatisticsTransactionEvents />,
     },
   ];
 
@@ -99,15 +67,9 @@ export default function TransactionDetail() {
         />
 
         <Card variant="borderless">
-          <Title level={2}>Transaction Detail</Title>
-          <p style={{ color: '#666', marginBottom: 24 }}>
-            Node: <strong>{name}</strong> | Transaction ID: <strong>{transactionId}</strong>
-          </p>
-
           <Tabs
             defaultActiveKey="statistics"
             items={tabItems}
-            size="large"
           />
         </Card>
       </div>

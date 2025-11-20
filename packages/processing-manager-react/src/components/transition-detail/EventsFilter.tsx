@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
-import { Card, Form, Select, Button, Row, Col } from 'antd';
+import { Form, Select, Button, Row, Col } from 'antd';
 import {
   useEntitiesListPossible,
   useTransactionEventStatusesList,
@@ -72,37 +72,36 @@ export const EventsFilter = forwardRef<EventsFilterRef, EventsFilterProps>(
     };
 
     return (
-      <Card title="Filter">
+      <div className="events-filter-wrapper">
+        <h3 className="filter-title">Filter</h3>
         <Form layout="vertical" className="events-filter">
           <Row gutter={20} className="wrap-row">
             <Col span={12}>
-              <Form.Item label="Queue">
+              <Form.Item label="QUEUE">
                 <Select
                   showSearch
                   allowClear
                   value={form.queue}
                   onChange={(value) => handleFieldChange('queue', value || '')}
                   options={queueOptions.map((q) => ({ value: q, label: q }))}
-                  popupClassName="events-filter-dropdown"
-                  dropdownStyle={{ minWidth: '400px' }}
+                  popupMatchSelectWidth={false}
                 />
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item label="Entity class">
+              <Form.Item label="ENTITY CLASS">
                 <Select
                   showSearch
                   allowClear
                   value={form.entityClass}
                   onChange={(value) => handleFieldChange('entityClass', value || '')}
                   options={entityClassOptions}
-                  popupClassName="events-filter-dropdown"
-                  dropdownStyle={{ minWidth: '400px' }}
+                  popupMatchSelectWidth={false}
                 />
               </Form.Item>
             </Col>
             <Col span={6}>
-              <Form.Item label="Transaction Status">
+              <Form.Item label="TRANSACTION STATUS">
                 <Select
                   showSearch
                   allowClear
@@ -110,13 +109,11 @@ export const EventsFilter = forwardRef<EventsFilterRef, EventsFilterProps>(
                   onChange={(value) => handleFieldChange('status', value || '')}
                   options={transactionStatusOptions}
                   popupMatchSelectWidth={false}
-                  classNames={{ popup: 'events-filter-dropdown' }}
-                  styles={{ popup: { minWidth: '400px' } }}
                 />
               </Form.Item>
             </Col>
             <Col span={6}>
-              <Form.Item label="Has error">
+              <Form.Item label="HAS ERROR">
                 <Select
                   value={form.hasErrors}
                   onChange={(value) => handleFieldChange('hasErrors', value)}
@@ -129,7 +126,7 @@ export const EventsFilter = forwardRef<EventsFilterRef, EventsFilterProps>(
               </Form.Item>
             </Col>
             <Col span={6}>
-              <Form.Item label="Sort">
+              <Form.Item label="SORT">
                 <Select
                   value={form.sort}
                   onChange={(value) => handleFieldChange('sort', value)}
@@ -148,7 +145,7 @@ export const EventsFilter = forwardRef<EventsFilterRef, EventsFilterProps>(
             </Col>
           </Row>
         </Form>
-      </Card>
+      </div>
     );
   }
 );
