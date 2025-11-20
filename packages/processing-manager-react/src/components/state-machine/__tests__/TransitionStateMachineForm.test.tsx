@@ -55,14 +55,16 @@ describe('TransitionStateMachineForm (state-machine)', () => {
     expect(container).toBeInTheDocument();
   });
 
-  it('should render Card with title "Form"', () => {
-    render(
+  it('should render Card without title', () => {
+    const { container } = render(
       <BrowserRouter>
         <TransitionStateMachineForm possibleTransitions={[]} />
       </BrowserRouter>
     );
-    
-    expect(screen.getByText('Form')).toBeInTheDocument();
+
+    // Card should not have a title
+    const cardHeader = container.querySelector('.ant-card-head');
+    expect(cardHeader).not.toBeInTheDocument();
   });
 
   it('should have transition-state-machine-form class', () => {

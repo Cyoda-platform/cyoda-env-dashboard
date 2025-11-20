@@ -1,4 +1,14 @@
 .transition-state-machine-form {
+  // Remove border under card title
+  .ant-card-head {
+    border-bottom: none;
+    padding-bottom: 8px;
+  }
+
+  .ant-card-body {
+    padding-top: 8px;
+  }
+
   .ant-form .ant-input,
   .ant-form .ant-select {
     width: 300px !important;

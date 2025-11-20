@@ -29,9 +29,10 @@ describe('TransitionStateMachineTimeLine (state-machine)', () => {
   });
 
   it('should render Timeline component', () => {
-    const { container } = render(<TransitionStateMachineTimeLine entityVersions={[]} />);
-    const timeline = container.querySelector('.ant-timeline');
-    expect(timeline).toBeInTheDocument();
+    render(<TransitionStateMachineTimeLine entityVersions={mockEntityVersions} />);
+    // Check that timeline items are rendered
+    const timelineItems = document.querySelectorAll('.ant-timeline-item');
+    expect(timelineItems.length).toBeGreaterThan(0);
   });
 
   it('should display all entity states', () => {
@@ -51,17 +52,17 @@ describe('TransitionStateMachineTimeLine (state-machine)', () => {
   });
 
   it('should handle empty entityVersions array', () => {
-    const { container } = render(<TransitionStateMachineTimeLine entityVersions={[]} />);
-    
-    const timeline = container.querySelector('.ant-timeline');
-    expect(timeline).toBeInTheDocument();
+    render(<TransitionStateMachineTimeLine entityVersions={[]} />);
+
+    // Should show "No entity versions available" message
+    expect(screen.getByText('No entity versions available')).toBeInTheDocument();
   });
 
   it('should handle undefined entityVersions prop', () => {
-    const { container } = render(<TransitionStateMachineTimeLine entityVersions={[]} />);
-    
-    const timeline = container.querySelector('.ant-timeline');
-    expect(timeline).toBeInTheDocument();
+    render(<TransitionStateMachineTimeLine entityVersions={[]} />);
+
+    // Should show "No entity versions available" message
+    expect(screen.getByText('No entity versions available')).toBeInTheDocument();
   });
 
   it('should render correct number of timeline items', () => {
