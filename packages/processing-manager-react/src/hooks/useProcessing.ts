@@ -420,7 +420,7 @@ export function useTransactionEvents(id: string, params?: any) {
 /**
  * Load transactions entities list
  */
-export function useTransactionsEntitiesList(params?: any) {
+export function useTransactionsEntitiesList(params?: any, options?: any) {
   return useQuery({
     queryKey: [...processingKeys.all, 'transactions-entities-list', params],
     queryFn: async () => {
@@ -430,6 +430,7 @@ export function useTransactionsEntitiesList(params?: any) {
       );
       return data;
     },
+    ...options,
   });
 }
 
@@ -487,16 +488,23 @@ export function useTransactionEventStatusesList(params?: any) {
  * Load entity versions
  */
 export function useEntityVersions(params?: any) {
+  // Map React-friendly param names to API param names
+  const apiParams = params ? {
+    type: params.entityType || params.type,
+    id: params.entityId || params.id,
+    ...params,
+  } : undefined;
+
   return useQuery({
-    queryKey: processingKeys.entityVersions(params),
+    queryKey: processingKeys.entityVersions(apiParams),
     queryFn: async () => {
       const { data } = await axiosProcessing.get<EntityVersion[]>(
         HelperUrl.getLinkToServer('/platform-processing/transactions/view/entity-versions'),
-        { params }
+        { params: apiParams }
       );
       return data;
     },
-    enabled: !!params,
+    enabled: !!(apiParams?.type && apiParams?.id),
   });
 }
 
@@ -504,16 +512,23 @@ export function useEntityVersions(params?: any) {
  * Load entity changes
  */
 export function useEntityChanges(params?: any) {
+  // Map React-friendly param names to API param names
+  const apiParams = params ? {
+    type: params.entityType || params.type,
+    id: params.entityId || params.id,
+    ...params,
+  } : undefined;
+
   return useQuery({
-    queryKey: processingKeys.entityChanges(params),
+    queryKey: processingKeys.entityChanges(apiParams),
     queryFn: async () => {
       const { data } = await axiosProcessing.get<EntityChange[]>(
         HelperUrl.getLinkToServer('/platform-processing/transactions/view/entity-changes'),
-        { params }
+        { params: apiParams }
       );
       return data;
     },
-    enabled: !!params,
+    enabled: !!(apiParams?.type && apiParams?.id),
   });
 }
 
@@ -525,16 +540,23 @@ export function useEntityChanges(params?: any) {
  * Load entity state machine
  */
 export function useEntityStateMachine(params?: any) {
+  // Map React-friendly param names to API param names
+  const apiParams = params ? {
+    type: params.entityType || params.type,
+    id: params.entityId || params.id,
+    ...params,
+  } : undefined;
+
   return useQuery({
-    queryKey: processingKeys.entityStateMachine(params),
+    queryKey: processingKeys.entityStateMachine(apiParams),
     queryFn: async () => {
       const { data } = await axiosProcessing.get<EntityStateMachine>(
         HelperUrl.getLinkToServer('/platform-processing/transactions/view/entity-state-machine'),
-        { params }
+        { params: apiParams }
       );
       return data;
     },
-    enabled: !!params,
+    enabled: !!(apiParams?.type && apiParams?.id),
   });
 }
 

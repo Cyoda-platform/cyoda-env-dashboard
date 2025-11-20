@@ -132,7 +132,7 @@ export const TransitionVersionsAggregated: React.FC<TransitionVersionsAggregated
       width: columnWidths.transactionId,
       onHeaderCell: () => ({ width: columnWidths.transactionId, onResize: handleResize('transactionId') }),
       render: (transactionId: string) => (
-        <Link to={`/nodes/${name}/transaction/${transactionId}`}>{transactionId}</Link>
+        <Link to={`/processing-ui/nodes/${name}/transaction/${transactionId}`}>{transactionId}</Link>
       ),
     },
     {

@@ -6,22 +6,27 @@
 import React, { useState } from 'react';
 import TransactionsEntitiesFilter from './TransactionsEntitiesFilter';
 import TransactionsEntitiesTable from './TransactionsEntitiesTable';
-import { useTransactionsEntitiesList } from '../../hooks';
+import { axiosProcessing } from '@cyoda/http-api-react';
+import { HelperUrl } from '../../utils';
 
 export const TransactionsEntities: React.FC = () => {
-  const [filterValues, setFilterValues] = useState<any>(null);
   const [tableData, setTableData] = useState<any[]>([]);
-
-  const { refetch, isLoading } = useTransactionsEntitiesList(filterValues, {
-    enabled: false,
-    onSuccess: (data: any) => {
-      setTableData(data?.entities || []);
-    },
-  });
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleFilterChange = async (values: any) => {
-    setFilterValues(values);
-    await refetch();
+    try {
+      setIsLoading(true);
+      const { data } = await axiosProcessing.get(
+        HelperUrl.getLinkToServer('/platform-processing/transactions/entities-list'),
+        { params: values }
+      );
+      setTableData(data?.entities || []);
+    } catch (error) {
+      console.error('Failed to load transactions entities:', error);
+      setTableData([]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

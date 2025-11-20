@@ -134,13 +134,13 @@ export const TransactionsEntitiesTable: React.FC<TransactionsEntitiesTableProps>
         return (
           <Space size="middle">
             {versionsPath && (
-              <Link to={`/nodes/${name}/versions?${versionsPath}`}>Versions</Link>
+              <Link to={`/processing-ui/nodes/${name}/versions?${versionsPath}`}>Versions</Link>
             )}
             {changesPath && (
-              <Link to={`/nodes/${name}/changes?${changesPath}`}>Changes</Link>
+              <Link to={`/processing-ui/nodes/${name}/changes?${changesPath}`}>Changes</Link>
             )}
             {stateMachinePath && (
-              <Link to={`/nodes/${name}/entity-state-machine?${stateMachinePath}`}>
+              <Link to={`/processing-ui/nodes/${name}/entity-state-machine?${stateMachinePath}`}>
                 State Machine
               </Link>
             )}

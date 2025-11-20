@@ -20,19 +20,25 @@ export const TransitionStateMachineTimeLine: React.FC<TransitionStateMachineTime
 }) => {
   const activities = useMemo(() => {
     return entityVersions.map((el) => ({
-      content: el.state,
-      timestamp: el.date,
+      content: el.state || 'No state',
+      timestamp: el.date || '',
     }));
   }, [entityVersions]);
 
   return (
     <Card title="Time Line">
       <Timeline>
-        {activities.map((activity, index) => (
-          <Timeline.Item key={index} label={activity.timestamp}>
-            {activity.content}
-          </Timeline.Item>
-        ))}
+        {activities.length > 0 ? (
+          activities.map((activity, index) => (
+            <Timeline.Item key={index} label={activity.timestamp}>
+              {activity.content}
+            </Timeline.Item>
+          ))
+        ) : (
+          <div style={{ color: '#999', textAlign: 'center', padding: '20px' }}>
+            No entity versions available
+          </div>
+        )}
       </Timeline>
     </Card>
   );

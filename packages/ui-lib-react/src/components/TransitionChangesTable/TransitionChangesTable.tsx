@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Table } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import { Link } from 'react-router-dom'
+import { axiosProcessing } from '@cyoda/http-api-react'
 import './TransitionChangesTable.scss'
 
 export interface ChangedFieldValue {
@@ -30,12 +31,14 @@ export interface TransitionChangesTableProps {
   onFetchChanges?: (params: { type: string; id: string }) => Promise<TransitionChange[]>
   /** Base path for transaction links */
   basePath?: string
+  /** Node name for transaction links */
+  nodeName?: string
 }
 
 /**
  * TransitionChangesTable Component
  * Displays entity transition changes with expandable rows showing field changes
- * 
+ *
  * Migrated from Vue: .old_project/packages/cyoda-ui-lib/src/components-library/patterns/PmTransitionChanges/TransitionChangesTable.vue
  */
 export const TransitionChangesTable: React.FC<TransitionChangesTableProps> = ({
@@ -43,7 +46,8 @@ export const TransitionChangesTable: React.FC<TransitionChangesTableProps> = ({
   entityId = '',
   disableLink = false,
   onFetchChanges,
-  basePath = '/processing-ui/nodes'
+  basePath = '/processing-ui/nodes',
+  nodeName
 }) => {
   const [tableData, setTableData] = useState<TransitionChange[]>([])
   const [loading, setLoading] = useState(false)
@@ -53,12 +57,22 @@ export const TransitionChangesTable: React.FC<TransitionChangesTableProps> = ({
   }, [type, entityId])
 
   const loadData = async () => {
-    if (!onFetchChanges || !type || !entityId) return
+    if (!type || !entityId) return
 
     try {
       setLoading(true)
-      const data = await onFetchChanges({ type, id: entityId })
-      setTableData(data)
+
+      // Use custom fetch function if provided, otherwise use default API
+      if (onFetchChanges) {
+        const data = await onFetchChanges({ type, id: entityId })
+        setTableData(data)
+      } else {
+        const { data } = await axiosProcessing.get<TransitionChange[]>(
+          '/platform-processing/transactions/view/entity-changes',
+          { params: { type, id: entityId } }
+        )
+        setTableData(data)
+      }
     } finally {
       setLoading(false)
     }
@@ -113,8 +127,11 @@ export const TransitionChangesTable: React.FC<TransitionChangesTableProps> = ({
         if (disableLink) {
           return text
         }
+        const linkPath = nodeName
+          ? `${basePath}/${nodeName}/transaction/${record.transactionId}`
+          : `${basePath}/${type}/transaction/${record.transactionId}`;
         return (
-          <Link to={`${basePath}/${type}/transaction/${record.transactionId}`}>
+          <Link to={linkPath}>
             {text}
           </Link>
         )
