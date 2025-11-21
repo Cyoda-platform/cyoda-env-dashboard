@@ -126,21 +126,17 @@ export const LoadedOnlineNodes: React.FC<LoadedOnlineNodesProps> = ({
 
   // Render a table for each node type (DEFAULT, PROCESSING, TOOLBOX)
   const renderTable = (title: string, data: OnlineNode[] = []) => (
-    <div key={title} style={{ marginBottom: 24 }}>
+    <div key={title} className="loaded-online-nodes-table">
       <h4>{title}</h4>
       <Table
         columns={columns}
         dataSource={data}
         rowKey="id"
         bordered
+        size="small"
         loading={isLoading}
-        pagination={{
-          pageSizeOptions: ['5', '10', '15', '20', '50'],
-          defaultPageSize: 10,
-          showSizeChanger: true,
-          showTotal: (total) => `Total ${total}`,
-          position: ['bottomCenter'],
-        }}
+        pagination={false}
+        locale={{ emptyText: 'No Data' }}
         components={{
           header: {
             cell: ResizableTitle,
@@ -152,7 +148,7 @@ export const LoadedOnlineNodes: React.FC<LoadedOnlineNodesProps> = ({
 
   return (
     <div className="loaded-online-nodes">
-      <h3>Loaded Online Nodes</h3>
+      <h1 className="label main">Loaded Online Nodes</h1>
       {nodesData && typeof nodesData === 'object' && !Array.isArray(nodesData) ? (
         <>
           {renderTable('Default', (nodesData as any).DEFAULT)}

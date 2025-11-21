@@ -77,7 +77,7 @@ export const LoadedShardsDistribution: React.FC<LoadedShardsDistributionProps> =
 
   const columns: ColumnsType<TableDataRow> = useMemo(() => [
     {
-      title: 'Nodes ID',
+      title: 'Nodes Id',
       dataIndex: 'id',
       key: 'id',
       width: columnWidths.id,
@@ -85,40 +85,44 @@ export const LoadedShardsDistribution: React.FC<LoadedShardsDistributionProps> =
       onHeaderCell: () => ({ width: columnWidths.id, onResize: handleResize('id') }),
     },
     {
-      title: 'Shards By Nodes',
+      title: 'ShardsByNodes',
       dataIndex: 'shardsByNodes',
       key: 'shardsByNodes',
       width: columnWidths.shardsByNodes,
       onHeaderCell: () => ({ width: columnWidths.shardsByNodes, onResize: handleResize('shardsByNodes') }),
     },
+    {
+      title: 'Action',
+      key: 'action',
+      width: 80,
+      render: () => null, // Placeholder for action column
+    },
   ], [columnWidths, handleResize]);
 
   return (
     <div className="loaded-shards-distribution">
-      <h3>Loaded Shards Distribution</h3>
-      {shardsData && (shardsData as any).id && (
-        <Descriptions column={2} bordered style={{ marginBottom: 16 }}>
-          <Descriptions.Item label="ID">
-            {(shardsData as any).id || '-'}
-          </Descriptions.Item>
-          <Descriptions.Item label="Dispatcher Node ID">
-            {(shardsData as any).dispatcherNodeId || '-'}
-          </Descriptions.Item>
-        </Descriptions>
-      )}
+      <h1 className="label">Loaded Shards Distribution</h1>
+      <div className="wrap-box">
+        <div className="row-flex">
+          <div>
+            <strong>Id:</strong><br/>
+            {(shardsData as any)?.id || '-'}
+          </div>
+          <div>
+            <strong>Dispatcher Node Id:</strong><br/>
+            {(shardsData as any)?.dispatcherNodeId || '-'}
+          </div>
+        </div>
+      </div>
       <Table
         columns={columns}
         dataSource={tableData}
         rowKey="id"
         bordered
+        size="small"
         loading={isLoading}
-        pagination={{
-          pageSizeOptions: ['5', '10', '15', '20', '50'],
-          defaultPageSize: 10,
-          showSizeChanger: true,
-          showTotal: (total) => `Total ${total}`,
-          position: ['bottomCenter'],
-        }}
+        pagination={false}
+        locale={{ emptyText: 'No Data' }}
         components={{
           header: {
             cell: ResizableTitle,

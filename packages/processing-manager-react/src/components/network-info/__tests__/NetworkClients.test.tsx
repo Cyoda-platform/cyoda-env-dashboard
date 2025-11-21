@@ -63,16 +63,21 @@ describe('NetworkClients', () => {
     const { useNetworkClients } = await import('../../../hooks/usePlatformCommon');
     vi.mocked(useNetworkClients).mockReturnValue(mockHookReturn as any);
 
-    render(<NetworkClients />);
+    const { container } = render(<NetworkClients />);
 
-    expect(screen.getByText('Id')).toBeInTheDocument();
-    expect(screen.getByText('Client Type')).toBeInTheDocument();
-    expect(screen.getByText('Node Type')).toBeInTheDocument();
-    expect(screen.getByText('Host')).toBeInTheDocument();
-    expect(screen.getByText('Port')).toBeInTheDocument();
-    expect(screen.getByText('Type')).toBeInTheDocument();
-    expect(screen.getByText('Running')).toBeInTheDocument();
-    expect(screen.getByText('Connected')).toBeInTheDocument();
+    // Check for table headers using container query
+    const table = container.querySelector('table');
+    expect(table).toBeInTheDocument();
+
+    // Verify headers exist (all may appear multiple times due to resizable columns)
+    expect(screen.getAllByText('Id').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Client Type').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Node Type').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Host').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Port').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Type').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Running').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Connected').length).toBeGreaterThan(0);
   });
 
   it('should render table with client data', async () => {

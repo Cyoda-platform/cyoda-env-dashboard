@@ -3,5 +3,99 @@
 .loaded-online-nodes {
   @include table.table-container-wrapper;
   @include table.resizable-columns;
+
+  h1.label {
+    font-size: 18px;
+    margin-bottom: 10px;
+    padding-left: 0;
+
+    &.main {
+      font-size: 18px;
+    }
+  }
+
+  .loaded-online-nodes-table {
+    margin-bottom: 8px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    h4 {
+      margin-bottom: 4px;
+      margin-top: 0;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .ant-table {
+      margin-bottom: 0;
+    }
+
+    .ant-table-wrapper {
+      margin-bottom: 0;
+    }
+
+    // Reduce spacing in table
+    .ant-table-small {
+      .ant-table-thead > tr > th {
+        padding: 8px;
+      }
+      .ant-table-tbody > tr > td {
+        padding: 8px;
+      }
+    }
+
+    // Reduce height of empty tables
+    .ant-table-placeholder {
+      .ant-table-cell {
+        padding: 8px !important;
+      }
+    }
+
+    .ant-empty {
+      margin: 4px 0 !important;
+
+      .ant-empty-image {
+        height: 40px;
+        margin-bottom: 4px;
+      }
+
+      .ant-empty-description {
+        font-size: 12px;
+      }
+    }
+
+    // Reduce tbody height for empty tables
+    .ant-table-tbody {
+      min-height: auto;
+    }
+
+    // Make table container more compact
+    .ant-table-container {
+      min-height: auto;
+    }
+
+    // Limit height of empty table body
+    .ant-table-body {
+      min-height: auto;
+      max-height: 100px; // Limit height when empty, will expand with data
+    }
+
+    // Make the whole table more compact when empty
+    .ant-spin-nested-loading {
+      min-height: auto;
+
+      .ant-spin-container {
+        min-height: auto;
+      }
+    }
+
+    .warning {
+      font-size: 16px;
+      color: #ff6f6f;
+      cursor: pointer;
+    }
+  }
 }
 

@@ -9,6 +9,18 @@
     margin: 0 0 24px 0;
   }
 
+  // Compact spacing for sections
+  .ant-divider {
+    margin: 12px 0 !important;
+  }
+
+  // Reduce spacing in all sections
+  .curr-node-info,
+  .loaded-online-nodes,
+  .loaded-shards-distribution {
+    margin-bottom: 0;
+  }
+
   // Tabs styling (secondary level) - override parent styles
   > .ant-tabs {
     .ant-tabs-nav {

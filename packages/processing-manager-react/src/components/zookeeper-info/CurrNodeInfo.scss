@@ -1,0 +1,37 @@
+.curr-node-info {
+  h1.label {
+    font-size: 18px;
+    margin-bottom: 8px;
+    padding-left: 0;
+  }
+
+  .wrap-box {
+    margin-bottom: 0;
+  }
+
+  .title {
+    margin-bottom: 8px;
+  }
+
+  .row-flex {
+    display: flex;
+
+    div {
+      width: 25%;
+    }
+  }
+
+  .green {
+    color: #148751;
+    font-weight: bold;
+  }
+
+  .type-class {
+    text-transform: uppercase;
+    color: #595959;
+    font-size: 14px;
+    font-family: "Work Sans", sans-serif;
+    font-weight: 500;
+  }
+}
+
