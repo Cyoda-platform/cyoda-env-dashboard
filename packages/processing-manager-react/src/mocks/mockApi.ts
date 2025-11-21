@@ -33,6 +33,7 @@ import {
   mockZkCurrNodeInfo,
   mockZkOnlineNodes,
   mockZkShardsDistribution,
+  mockZkClusterState,
   mockServerSummary,
   TEST_NODE_NAME,
 } from './testNodeData';

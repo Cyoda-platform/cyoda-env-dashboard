@@ -5,24 +5,34 @@
  */
 
 import React from 'react';
-import { Divider } from 'antd';
+import { Divider, Spin } from 'antd';
 import { CurrNodeInfo, LoadedOnlineNodes, LoadedShardsDistribution } from '../zookeeper-info';
+import { useZkClusterState } from '../../hooks/usePlatformCommon';
 import './ShardsDetailTabZKInfo.scss';
 
 export const ShardsDetailTabZKInfo: React.FC = () => {
+  const { data: clusterState, isLoading } = useZkClusterState();
+
+  if (isLoading) {
+    return <Spin />;
+  }
+
   return (
     <div className="zk-info-tab">
       <h3 className="zk-info-title">ZooKeeper Info</h3>
 
-      <CurrNodeInfo />
+      <CurrNodeInfo clusterStateCurrentNode={(clusterState as any)?.currentNode} />
 
       <Divider style={{ margin: '12px 0' }} />
 
-      <LoadedOnlineNodes />
+      <LoadedOnlineNodes clusterStateClientNodes={(clusterState as any)?.clientNodes} />
 
       <Divider style={{ margin: '12px 0' }} />
 
-      <LoadedShardsDistribution />
+      <LoadedShardsDistribution
+        clusterStateShardsDistr={(clusterState as any)?.shardsDistrState}
+        clusterState={clusterState}
+      />
     </div>
   );
 };

@@ -705,6 +705,61 @@ export const mockNetworkInfo = {
   ],
 };
 
+// ZooKeeper Cluster State (for /platform-common/zk-info/cluster-state)
+export const mockZkClusterState = {
+  currentNode: {
+    id: '9c81f83da-bf5e-11f0-b46a-9ecb0f97992a',
+    type: 'PROCESSING',
+    baseUrl: 'http://10.233.75.58:8082/api',
+    host: '10.233.75.58',
+    notificationsPort: 10000,
+    processingNode: true,
+  },
+  clientNodes: {
+    DEFAULT: [],
+    PROCESSING: [
+      {
+        id: '9c81f83da-bf5e-11f0-b46a-9ecb0f97992a',
+        type: 'PROCESSING',
+        baseUrl: 'http://10.233.75.58:8082/api',
+        host: '10.233.75.58',
+        notificationsPort: 10000,
+        processingNode: true,
+      },
+    ],
+    TOOLBOX: [],
+  },
+  dispatcherNode: {
+    id: 'dispatcher-node-1',
+    type: 'DISPATCHER',
+    baseUrl: 'http://10.233.75.59:8082/api',
+    host: '10.233.75.59',
+    notificationsPort: 10001,
+    processingNode: false,
+  },
+  shardsDistrState: {
+    id: 'shards-distr-1',
+    dispatcherNodeId: 'dispatcher-node-1',
+    shardsByNodes: {
+      '9c81f83da-bf5e-11f0-b46a-9ecb0f97992a': [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+    },
+    nodesIds: ['9c81f83da-bf5e-11f0-b46a-9ecb0f97992a'],
+  },
+  shardsOwners: {
+    '0': '9c81f83da-bf5e-11f0-b46a-9ecb0f97992a',
+    '1': '9c81f83da-bf5e-11f0-b46a-9ecb0f97992a',
+    '2': '9c81f83da-bf5e-11f0-b46a-9ecb0f97992a',
+    '3': '9c81f83da-bf5e-11f0-b46a-9ecb0f97992a',
+    '4': '9c81f83da-bf5e-11f0-b46a-9ecb0f97992a',
+    '5': '9c81f83da-bf5e-11f0-b46a-9ecb0f97992a',
+    '6': '9c81f83da-bf5e-11f0-b46a-9ecb0f97992a',
+    '7': '9c81f83da-bf5e-11f0-b46a-9ecb0f97992a',
+    '8': '9c81f83da-bf5e-11f0-b46a-9ecb0f97992a',
+    '9': '9c81f83da-bf5e-11f0-b46a-9ecb0f97992a',
+  },
+  errorMsg: null,
+};
+
 // ZooKeeper Info
 export const mockZooKeeperInfo = {
   connected: true,
