@@ -1,6 +1,6 @@
 /**
  * Network Clients Component
- * Migrated from @cyoda/processing-manager/src/components/PmShardsDetailTab/PmShardsDetailTabNetworkInfo/PmNetworkClients.vue
+ * Migrated from @cyoda/http-api/src/components/NetworkClients/NetworkClients.vue
  */
 
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
@@ -12,12 +12,19 @@ import { ResizableTitle } from '../ResizableTitle';
 import { useNetworkClients } from '../../hooks/usePlatformCommon';
 import './NetworkClients.scss';
 
+interface Transport {
+  type: string;
+  running: boolean;
+  connected: boolean;
+}
+
 interface NetworkClient {
   id: string;
-  address: string;
+  clientType: string;
+  nodeType: string;
+  host: string;
   port: number;
-  connected: boolean;
-  lastSeen?: string;
+  transport: Transport;
 }
 
 export const NetworkClients: React.FC = () => {
@@ -28,11 +35,14 @@ export const NetworkClients: React.FC = () => {
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>(() => {
     const saved = storage.get('networkClients:columnWidths', {});
     const defaultWidths = {
-      id: 200,
-      address: 200,
-      port: 120,
-      connected: 150,
-      lastSeen: 200,
+      id: 250,
+      clientType: 150,
+      nodeType: 150,
+      host: 150,
+      port: 100,
+      transportType: 180,
+      transportRunning: 120,
+      transportConnected: 120,
     };
     return saved && Object.keys(saved).length > 0 ? saved : defaultWidths;
   });
@@ -73,7 +83,7 @@ export const NetworkClients: React.FC = () => {
 
   const columns: ColumnsType<NetworkClient> = useMemo(() => [
     {
-      title: 'Client ID',
+      title: 'Id',
       dataIndex: 'id',
       key: 'id',
       width: columnWidths.id,
@@ -84,14 +94,36 @@ export const NetworkClients: React.FC = () => {
       }),
     },
     {
-      title: 'Address',
-      dataIndex: 'address',
-      key: 'address',
-      width: columnWidths.address,
-      sorter: (a, b) => a.address.localeCompare(b.address),
+      title: 'Client Type',
+      dataIndex: 'clientType',
+      key: 'clientType',
+      width: columnWidths.clientType,
+      sorter: (a, b) => (a.clientType || '').localeCompare(b.clientType || ''),
       onHeaderCell: () => ({
-        width: columnWidths.address,
-        onResize: handleResize('address'),
+        width: columnWidths.clientType,
+        onResize: handleResize('clientType'),
+      }),
+    },
+    {
+      title: 'Node Type',
+      dataIndex: 'nodeType',
+      key: 'nodeType',
+      width: columnWidths.nodeType,
+      sorter: (a, b) => (a.nodeType || '').localeCompare(b.nodeType || ''),
+      onHeaderCell: () => ({
+        width: columnWidths.nodeType,
+        onResize: handleResize('nodeType'),
+      }),
+    },
+    {
+      title: 'Host',
+      dataIndex: 'host',
+      key: 'host',
+      width: columnWidths.host,
+      sorter: (a, b) => (a.host || '').localeCompare(b.host || ''),
+      onHeaderCell: () => ({
+        width: columnWidths.host,
+        onResize: handleResize('host'),
       }),
     },
     {
@@ -106,48 +138,54 @@ export const NetworkClients: React.FC = () => {
       }),
     },
     {
-      title: 'Status',
-      dataIndex: 'connected',
-      key: 'connected',
-      width: columnWidths.connected,
+      title: 'Type',
+      dataIndex: ['transport', 'type'],
+      key: 'transportType',
+      width: columnWidths.transportType,
+      sorter: (a, b) => (a.transport?.type || '').localeCompare(b.transport?.type || ''),
       onHeaderCell: () => ({
-        width: columnWidths.connected,
-        onResize: handleResize('connected'),
+        width: columnWidths.transportType,
+        onResize: handleResize('transportType'),
       }),
-      render: (connected: boolean) => (
-        <span style={{ color: connected ? '#52c41a' : '#ff4d4f' }}>
-          {connected ? 'Connected' : 'Disconnected'}
-        </span>
-      ),
     },
     {
-      title: 'Last Seen',
-      dataIndex: 'lastSeen',
-      key: 'lastSeen',
-      width: columnWidths.lastSeen,
+      title: 'Running',
+      dataIndex: ['transport', 'running'],
+      key: 'transportRunning',
+      width: columnWidths.transportRunning,
       onHeaderCell: () => ({
-        width: columnWidths.lastSeen,
-        onResize: handleResize('lastSeen'),
+        width: columnWidths.transportRunning,
+        onResize: handleResize('transportRunning'),
       }),
-      render: (date: string) => date || '-',
+      render: (running: boolean) => (running ? 'Yes' : 'No'),
+    },
+    {
+      title: 'Connected',
+      dataIndex: ['transport', 'connected'],
+      key: 'transportConnected',
+      width: columnWidths.transportConnected,
+      onHeaderCell: () => ({
+        width: columnWidths.transportConnected,
+        onResize: handleResize('transportConnected'),
+      }),
+      render: (connected: boolean) => (connected ? 'Yes' : 'No'),
     },
   ], [columnWidths, handleResize]);
 
   return (
     <div className="network-clients">
-      <h3>Network Clients</h3>
+      <div>
+        <h1 className="label">Clients</h1>
+      </div>
       <Table
         columns={columns}
         dataSource={Array.isArray(clientsData) ? clientsData : []}
         rowKey="id"
         bordered
+        size="small"
         loading={isLoading}
-        pagination={{
-          pageSizeOptions: ['5', '10', '15', '20', '50'],
-          defaultPageSize: 10,
-          showSizeChanger: true,
-          showTotal: (total) => `Total ${total}`,
-        }}
+        pagination={false}
+        scroll={{ x: 1200 }}
         components={{
           header: {
             cell: ResizableTitle,

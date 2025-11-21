@@ -3,5 +3,30 @@
 .network-clients {
   @include table.table-container-wrapper;
   @include table.resizable-columns;
+
+  .title {
+    margin-bottom: 10px;
+  }
+
+  h1.label {
+    font-size: 22px;
+    margin-bottom: 10px;
+    padding-left: 0;
+    color: #fff;
+  }
+
+  .row-flex {
+    display: flex;
+    justify-content: space-between;
+
+    span {
+      display: inline-block;
+      width: 100px;
+    }
+
+    div {
+      width: 50%;
+    }
+  }
 }
 

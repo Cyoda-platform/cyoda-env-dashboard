@@ -1,21 +1,21 @@
 /**
  * Shards Detail Tab - Network Info
  * Tab showing network information
- * Migrated from @cyoda/processing-manager/src/components/PmShardsDetailTab/PmShardsDetailTabNetworkInfo.vue
+ * Migrated from @cyoda/http-api/src/views/NetworkInfoView.vue
  */
 
 import React from 'react';
-import { Card } from 'antd';
 import { NetworkInfoServer, NetworkClients } from '../network-info';
+import './ShardsDetailTabNetworkInfo.scss';
 
 export const ShardsDetailTabNetworkInfo: React.FC = () => {
   return (
-    <Card>
-      <h3>Network Info</h3>
+    <div className="network-info-view">
+      <h1 className="heading h1">Network Info</h1>
       <NetworkInfoServer />
-      <hr style={{ margin: '24px 0' }} />
+      <hr />
       <NetworkClients />
-    </Card>
+    </div>
   );
 };
 

@@ -30,7 +30,7 @@ describe('ShardsDetailTabCachesList', () => {
   it('should render the component', () => {
     const { container } = render(<ShardsDetailTabCachesList />, { wrapper });
 
-    expect(container.querySelector('.ant-card')).toBeInTheDocument();
+    expect(container.querySelector('.shards-detail-tab-caches-list')).toBeInTheDocument();
   });
 
   it('should render title', () => {
@@ -45,11 +45,11 @@ describe('ShardsDetailTabCachesList', () => {
     expect(container.querySelector('.ant-table')).toBeInTheDocument();
   });
 
-  it('should render card component', () => {
+  it('should not render card component', () => {
     const { container } = render(<ShardsDetailTabCachesList />, { wrapper });
 
     const card = container.querySelector('.ant-card');
-    expect(card).toBeInTheDocument();
+    expect(card).not.toBeInTheDocument();
   });
 
   it('should render without errors', () => {

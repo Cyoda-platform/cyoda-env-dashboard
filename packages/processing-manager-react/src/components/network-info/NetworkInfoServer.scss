@@ -1,0 +1,47 @@
+.network-info-server {
+  h1.label {
+    font-size: 22px;
+    margin-bottom: 10px;
+    padding-left: 0;
+    color: #fff;
+  }
+
+  .wrap-box {
+    background-color: rgba(255, 255, 255, 0.05);
+    padding: 16px;
+    border-radius: 4px;
+  }
+
+  .title {
+    margin-bottom: 10px;
+  }
+
+  .row-flex {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+
+    > div {
+      flex: 1;
+      min-width: 0;
+
+      strong {
+        color: #fff;
+        font-weight: 600;
+      }
+    }
+  }
+
+  .green {
+    color: #14b8a6;
+    font-weight: bold;
+  }
+
+  .type-class {
+    text-transform: uppercase;
+    color: #9ca3af;
+    font-size: 14px;
+    font-weight: 500;
+  }
+}
+

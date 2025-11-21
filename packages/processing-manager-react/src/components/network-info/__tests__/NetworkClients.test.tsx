@@ -14,8 +14,30 @@ vi.mock('../../../hooks/usePlatformCommon', () => ({
 describe('NetworkClients', () => {
   const mockHookReturn = {
     data: [
-      { id: '1', address: '192.168.1.1', port: 8080, connected: true },
-      { id: '2', address: '192.168.1.2', port: 8081, connected: false },
+      {
+        id: '9c8183da-bf5e-11f0-b46a-9ecb0f97992a',
+        clientType: 'LocalClient',
+        nodeType: 'PROCESSING',
+        host: '10.233.75.58',
+        port: 10000,
+        transport: {
+          type: 'LocalClientTransport',
+          running: true,
+          connected: true,
+        },
+      },
+      {
+        id: '9c8183da-bf5e-11f0-b46a-9ecb0f97992b',
+        clientType: 'RemoteClient',
+        nodeType: 'PROCESSING',
+        host: '10.233.75.59',
+        port: 10001,
+        transport: {
+          type: 'RemoteClientTransport',
+          running: false,
+          connected: false,
+        },
+      },
     ],
     isLoading: false,
     error: null,
@@ -33,7 +55,24 @@ describe('NetworkClients', () => {
 
     render(<NetworkClients />);
 
+    expect(screen.getByText('Clients')).toBeInTheDocument();
     expect(screen.getByRole('table')).toBeInTheDocument();
+  });
+
+  it('should render table headers', async () => {
+    const { useNetworkClients } = await import('../../../hooks/usePlatformCommon');
+    vi.mocked(useNetworkClients).mockReturnValue(mockHookReturn as any);
+
+    render(<NetworkClients />);
+
+    expect(screen.getByText('Id')).toBeInTheDocument();
+    expect(screen.getByText('Client Type')).toBeInTheDocument();
+    expect(screen.getByText('Node Type')).toBeInTheDocument();
+    expect(screen.getByText('Host')).toBeInTheDocument();
+    expect(screen.getByText('Port')).toBeInTheDocument();
+    expect(screen.getByText('Type')).toBeInTheDocument();
+    expect(screen.getByText('Running')).toBeInTheDocument();
+    expect(screen.getByText('Connected')).toBeInTheDocument();
   });
 
   it('should render table with client data', async () => {
@@ -42,8 +81,26 @@ describe('NetworkClients', () => {
 
     render(<NetworkClients />);
 
-    expect(screen.getByText('192.168.1.1')).toBeInTheDocument();
-    expect(screen.getByText('192.168.1.2')).toBeInTheDocument();
+    expect(screen.getByText('9c8183da-bf5e-11f0-b46a-9ecb0f97992a')).toBeInTheDocument();
+    expect(screen.getByText('LocalClient')).toBeInTheDocument();
+    expect(screen.getByText('10.233.75.58')).toBeInTheDocument();
+    expect(screen.getByText('10000')).toBeInTheDocument();
+    expect(screen.getByText('LocalClientTransport')).toBeInTheDocument();
+  });
+
+  it('should render transport data correctly', async () => {
+    const { useNetworkClients } = await import('../../../hooks/usePlatformCommon');
+    vi.mocked(useNetworkClients).mockReturnValue(mockHookReturn as any);
+
+    render(<NetworkClients />);
+
+    const yesTexts = screen.getAllByText('Yes');
+    const noTexts = screen.getAllByText('No');
+
+    // First client: running=Yes, connected=Yes
+    // Second client: running=No, connected=No
+    expect(yesTexts.length).toBeGreaterThanOrEqual(2);
+    expect(noTexts.length).toBeGreaterThanOrEqual(2);
   });
 
   it('should call useNetworkClients hook', async () => {
