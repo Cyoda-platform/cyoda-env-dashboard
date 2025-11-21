@@ -5,16 +5,10 @@
  */
 
 import React from 'react';
-import { Card } from 'antd';
 import { CompositeIndexesWrapper } from '../composite-indexes';
 
 export const ShardsDetailTabCompositeIndexes: React.FC = () => {
-  return (
-    <Card>
-      <h3>Composite Indexes</h3>
-      <CompositeIndexesWrapper />
-    </Card>
-  );
+  return <CompositeIndexesWrapper />;
 };
 
 export default ShardsDetailTabCompositeIndexes;

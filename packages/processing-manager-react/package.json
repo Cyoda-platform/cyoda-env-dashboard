@@ -27,6 +27,7 @@
   "dependencies": {
     "@ant-design/icons": "^5.5.2",
     "@cyoda/http-api-react": "file:../http-api-react",
+    "@cyoda/tableau-react": "file:../tableau-react",
     "@cyoda/ui-lib-react": "file:../ui-lib-react",
     "@tanstack/react-query": "^5.62.11",
     "antd": "^5.22.6",

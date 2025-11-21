@@ -24,13 +24,13 @@ describe('ShardsDetailTabCompositeIndexes', () => {
   it('should render the component', () => {
     const { container } = render(<ShardsDetailTabCompositeIndexes />, { wrapper });
 
-    expect(container.querySelector('.ant-card')).toBeInTheDocument();
+    expect(container.querySelector('.composite-indexes-wrapper')).toBeInTheDocument();
   });
 
-  it('should render title', () => {
+  it('should render title from CompositeIndexesWrapper', () => {
     render(<ShardsDetailTabCompositeIndexes />, { wrapper });
 
-    expect(screen.getByText('Composite Indexes')).toBeInTheDocument();
+    expect(screen.getByText('Composite indexes')).toBeInTheDocument();
   });
 
   it('should render CompositeIndexesWrapper component', () => {
@@ -39,11 +39,11 @@ describe('ShardsDetailTabCompositeIndexes', () => {
     expect(container.querySelector('.composite-indexes-wrapper')).toBeInTheDocument();
   });
 
-  it('should render card component', () => {
+  it('should not render card component', () => {
     const { container } = render(<ShardsDetailTabCompositeIndexes />, { wrapper });
 
     const card = container.querySelector('.ant-card');
-    expect(card).toBeInTheDocument();
+    expect(card).not.toBeInTheDocument();
   });
 
   it('should render without errors', () => {

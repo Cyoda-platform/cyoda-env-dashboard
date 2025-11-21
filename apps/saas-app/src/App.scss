@@ -78,6 +78,25 @@ code {
   background: linear-gradient(135deg, var(--refine-primary-dark), var(--refine-accent-purple));
 }
 
+// Custom scrollbar for Ant Design Select dropdown (rc-virtual-list)
+.ant-select-dropdown {
+  // Override CSS variable for rc-virtual-list scrollbar
+  --rc-virtual-list-scrollbar-bg: rgba(20, 184, 166, 0.5);
+
+  .rc-virtual-list-scrollbar {
+    width: 8px !important;
+
+    &-thumb {
+      background: rgba(20, 184, 166, 0.5) !important;
+      border-radius: 4px !important;
+
+      &:hover {
+        background: rgba(20, 184, 166, 0.7) !important;
+      }
+    }
+  }
+}
+
 // Selection styling
 ::selection {
   background: var(--refine-primary);

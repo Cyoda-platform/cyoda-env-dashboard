@@ -4,19 +4,24 @@
  */
 
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
-import { Table, Form, Select, Input, Button, Space, Tag, Tooltip, Alert, message, Modal } from 'antd';
-import { PlusOutlined, SyncOutlined, DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { Table, Form, Select, Input, Button, Space, Tag, Tooltip, Alert, App } from 'antd';
+import { PlusOutlined, SyncOutlined, DeleteOutlined, ExclamationCircleOutlined, UploadOutlined, DownloadOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import type { ResizeCallbackData } from 'react-resizable';
 import { HelperStorage } from '@cyoda/http-api-react';
 import { ResizableTitle } from '../ResizableTitle';
 import moment from 'moment';
 import {
-  useEntityTypes,
   useCompositeIndexes,
   useReindexCompositeIndex,
   useDeleteCompositeIndex,
+  useCreateCompositeIndex,
+  useExportCompositeIndexes,
+  useImportCompositeIndexes,
 } from '../../hooks/usePlatformCommon';
+import { useEntitiesListPossible } from '../../hooks/useProcessing';
+import { CompositeIndexCreateDialog } from './CompositeIndexCreateDialog';
+import type { CompositeIndexFormData } from './CompositeIndexCreateDialog';
 import './CompositeIndexesWrapper.scss';
 
 interface CompositeIndex {
@@ -34,13 +39,17 @@ interface CompositeIndex {
 }
 
 export const CompositeIndexesWrapper: React.FC = () => {
+  const { message, modal } = App.useApp();
   const storage = useMemo(() => new HelperStorage(), []);
-  const [entityClass, setEntityClass] = useState<string | undefined>(undefined);
+  const [entityClass, setEntityClass] = useState<string | undefined>(() => {
+    return storage.get('compositeIndexes:entityClass', undefined);
+  });
   const [search, setSearch] = useState<string>('');
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
 
   // Fetch entity types for dropdown
-  const { data: entityTypes = [], isLoading: entityTypesLoading } = useEntityTypes();
+  const { data: entityTypes = [], isLoading: entityTypesLoading } = useEntitiesListPossible();
 
   // Fetch composite indexes for selected entity
   const { data: compositeIndexData, isLoading: indexesLoading, refetch } = useCompositeIndexes(entityClass);
@@ -48,6 +57,9 @@ export const CompositeIndexesWrapper: React.FC = () => {
   // Mutations
   const reindexMutation = useReindexCompositeIndex();
   const deleteMutation = useDeleteCompositeIndex();
+  const createMutation = useCreateCompositeIndex();
+  const exportMutation = useExportCompositeIndexes();
+  const importMutation = useImportCompositeIndexes();
 
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>(() => {
     const saved = storage.get('compositeIndexes:columnWidths', {});
@@ -95,7 +107,7 @@ export const CompositeIndexesWrapper: React.FC = () => {
 
   const filteredData = useMemo(() => {
     // Ensure compositeIndexData is always an array
-    const dataArray = Array.isArray(compositeIndexData) ? compositeIndexData : [];
+    const dataArray = Array.isArray(compositeIndexData) ? compositeIndexData : (compositeIndexData ? [compositeIndexData] : []);
 
     return dataArray.filter((item: CompositeIndex) => {
       if (!search) return true;
@@ -212,7 +224,7 @@ export const CompositeIndexesWrapper: React.FC = () => {
   };
 
   const handleDelete = (record: CompositeIndex) => {
-    Modal.confirm({
+    modal.confirm({
       title: 'Delete Composite Index',
       icon: <ExclamationCircleOutlined />,
       content: `Are you sure you want to delete "${record.indexName}"?`,
@@ -232,13 +244,78 @@ export const CompositeIndexesWrapper: React.FC = () => {
   };
 
   const handleCreateNew = () => {
-    message.info('Create new composite index dialog - To be implemented');
-    // TODO: Implement create new dialog
+    setCreateDialogOpen(true);
+  };
+
+  const handleCreateDialogCancel = () => {
+    setCreateDialogOpen(false);
+  };
+
+  const handleCreate = async (formData: CompositeIndexFormData) => {
+    try {
+      await createMutation.mutateAsync(formData);
+      message.success(`Created composite index: ${formData.name}`);
+      setCreateDialogOpen(false);
+      refetch();
+    } catch (error) {
+      message.error(`Failed to create composite index: ${error}`);
+    }
+  };
+
+  const handleExport = async () => {
+    try {
+      const ids = selectedRowKeys as string[];
+      const response = await exportMutation.mutateAsync(ids);
+
+      // Get entity class short name
+      const entityShortClassName = response.data.value[0].entityClass.split('.').pop();
+      const names = response.data.value.map((el: any) => el.name);
+      const namesTxt = names.join('_');
+
+      // Create and download file
+      const blob = new Blob([JSON.stringify(response, null, 2)], { type: 'application/json' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `export_composite_indexes_for_${entityShortClassName}_${namesTxt}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      message.success(`Exported ${ids.length} composite index(es)`);
+    } catch (error) {
+      message.error(`Failed to export composite indexes: ${error}`);
+    }
+  };
+
+  const handleImport = () => {
+    // Create file input
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = async (e: any) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      try {
+        const text = await file.text();
+        const data = JSON.parse(text);
+
+        await importMutation.mutateAsync(data);
+        message.success('Imported composite indexes successfully');
+        refetch();
+      } catch (error) {
+        message.error(`Failed to import composite indexes: ${error}`);
+      }
+    };
+    input.click();
   };
 
   const handleEntityChange = (value: string) => {
     setEntityClass(value);
     setSelectedRowKeys([]);
+    storage.set('compositeIndexes:entityClass', value);
   };
 
   const rowSelection = {
@@ -295,9 +372,26 @@ export const CompositeIndexesWrapper: React.FC = () => {
           >
             Create New
           </Button>
-          <Button disabled={selectedRowKeys.length === 0}>
-            Export/Import
-          </Button>
+          <Tooltip title="Export selected data">
+            <Button
+              icon={<UploadOutlined />}
+              disabled={selectedRowKeys.length === 0}
+              loading={exportMutation.isPending}
+              onClick={handleExport}
+            >
+              Export
+            </Button>
+          </Tooltip>
+          <Tooltip title="Import previously exported data">
+            <Button
+              type="default"
+              icon={<DownloadOutlined />}
+              loading={importMutation.isPending}
+              onClick={handleImport}
+            >
+              Import
+            </Button>
+          </Tooltip>
         </Space>
       </div>
 
@@ -323,6 +417,14 @@ export const CompositeIndexesWrapper: React.FC = () => {
             cell: ResizableTitle,
           },
         }}
+      />
+
+      <CompositeIndexCreateDialog
+        open={createDialogOpen}
+        entityClass={entityClass || ''}
+        onCancel={handleCreateDialogCancel}
+        onCreate={handleCreate}
+        loading={createMutation.isPending}
       />
     </div>
   );

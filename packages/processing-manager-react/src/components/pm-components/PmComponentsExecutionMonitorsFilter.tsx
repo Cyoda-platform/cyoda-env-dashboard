@@ -4,7 +4,8 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Form, Input, InputNumber, Button, Row, Col } from 'antd';
+import { Form, Input, InputNumber, Button, Row, Col, Space } from 'antd';
+import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import './PmComponentsExecutionMonitorsFilter.scss';
 
 interface FilterForm {
@@ -48,7 +49,7 @@ export const PmComponentsExecutionMonitorsFilter: React.FC<PmComponentsExecution
   return (
     <Form className="pm-components-execution-monitors-filter" layout="vertical">
       <h3>Filter</h3>
-      <Row gutter={20} className="wrap-row">
+      <Row gutter={20} className="wrap-row" align="bottom">
         <Col span={5}>
           <Form.Item label="Filter by name">
             <Input
@@ -61,19 +62,38 @@ export const PmComponentsExecutionMonitorsFilter: React.FC<PmComponentsExecution
         </Col>
         <Col span={5}>
           <Form.Item label="Update Interval (seconds)">
-            <InputNumber
-              min={1}
-              value={form.updateInterval}
-              onChange={handleIntervalChange}
-              placeholder="Update Interval"
-              style={{ width: '100%' }}
-            />
+            <Space.Compact style={{ width: '100%' }}>
+              <Button
+                icon={<MinusOutlined />}
+                onClick={() => {
+                  const newValue = Math.max(1, form.updateInterval - 1);
+                  setForm({ ...form, updateInterval: newValue });
+                }}
+              />
+              <InputNumber
+                min={1}
+                value={form.updateInterval}
+                onChange={handleIntervalChange}
+                placeholder="Update Interval"
+                style={{ width: '100%' }}
+                controls={false}
+              />
+              <Button
+                icon={<PlusOutlined />}
+                onClick={() => {
+                  const newValue = form.updateInterval + 1;
+                  setForm({ ...form, updateInterval: newValue });
+                }}
+              />
+            </Space.Compact>
           </Form.Item>
         </Col>
-        <Col span={4} className="action-item">
-          <Button type="primary" onClick={handleSubmit}>
-            Update
-          </Button>
+        <Col span={4}>
+          <Form.Item label=" ">
+            <Button type="primary" onClick={handleSubmit}>
+              Update
+            </Button>
+          </Form.Item>
         </Col>
       </Row>
     </Form>

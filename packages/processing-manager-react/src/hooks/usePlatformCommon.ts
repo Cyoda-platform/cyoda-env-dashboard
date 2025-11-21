@@ -13,6 +13,8 @@ import {
   postCompositeIndexesReindex,
   postCompositeIndexesCreate,
   postCompositeIndexesDelete,
+  postCompositeIndexesExportByIds,
+  postCompositeIndexesImport,
   getCachesList,
   getInvalidateCache,
   getCacheKeys,
@@ -89,7 +91,7 @@ export function useCompositeIndexes(entity?: string) {
       return Array.isArray(data) ? data : [];
     },
     enabled: !!entity,
-    initialData: [], // Provide initial empty array
+    // Don't use initialData to avoid caching empty array
   });
 }
 
@@ -132,11 +134,40 @@ export function useCreateCompositeIndex() {
  */
 export function useDeleteCompositeIndex() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async (indexId: string) => {
       const { data } = await postCompositeIndexesDelete(indexId);
       return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: platformCommonKeys.all });
+    },
+  });
+}
+
+/**
+ * Export composite indexes by IDs
+ */
+export function useExportCompositeIndexes() {
+  return useMutation({
+    mutationFn: async (ids: string[]) => {
+      const { data } = await postCompositeIndexesExportByIds(ids);
+      return data;
+    },
+  });
+}
+
+/**
+ * Import composite indexes
+ */
+export function useImportCompositeIndexes() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: any) => {
+      const { data: response } = await postCompositeIndexesImport(data);
+      return response;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: platformCommonKeys.all });
@@ -296,6 +327,8 @@ export default {
   useReindexCompositeIndex,
   useCreateCompositeIndex,
   useDeleteCompositeIndex,
+  useExportCompositeIndexes,
+  useImportCompositeIndexes,
 
   // Caches
   useCachesList,

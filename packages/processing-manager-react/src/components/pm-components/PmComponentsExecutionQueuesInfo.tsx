@@ -9,9 +9,10 @@ import type { ColumnsType } from 'antd/es/table';
 import type { ResizeCallbackData } from 'react-resizable';
 import { HelperStorage } from '@cyoda/http-api-react';
 import { ResizableTitle } from '../ResizableTitle';
+import { useProcessingQueues } from '../../hooks';
 import './PmComponentsExecutionQueuesInfo.scss';
 
-interface ExecutionQueue {
+interface ExecutionQueueRow {
   executorName: string;
   index: number;
   queueSize: number;
@@ -20,9 +21,21 @@ interface ExecutionQueue {
 
 export const PmComponentsExecutionQueuesInfo: React.FC = () => {
   const storage = useMemo(() => new HelperStorage(), []);
-  const tableData = useMemo<ExecutionQueue[]>(() => {
-    return [];
-  }, []);
+  const { data } = useProcessingQueues();
+
+  const tableData = useMemo<ExecutionQueueRow[]>(() => {
+    if (!data || !Array.isArray(data)) return [];
+
+    // Transform queue names into table rows
+    // Note: API returns array of queue names (strings)
+    // We create rows with queue name as executorName
+    return data.map((queueName, index) => ({
+      executorName: queueName,
+      index: index,
+      queueSize: 0, // API doesn't provide queue size
+      details: '', // API doesn't provide details
+    }));
+  }, [data]);
 
   // Column widths state
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>(() => {
