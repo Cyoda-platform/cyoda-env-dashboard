@@ -4,7 +4,8 @@
  */
 
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
-import { Table, Tag } from 'antd';
+import { Table, Popover } from 'antd';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import type { ResizeCallbackData } from 'react-resizable';
 import { HelperStorage } from '@cyoda/http-api-react';
@@ -14,11 +15,11 @@ import './LoadedOnlineNodes.scss';
 
 interface OnlineNode {
   id: string;
-  hostname: string;
-  ip: string;
-  port: number;
-  status: string;
-  lastHeartbeat?: string;
+  type: string;
+  baseUrl: string;
+  host: string;
+  notificationsPort: number;
+  processingNode: boolean;
 }
 
 interface LoadedOnlineNodesProps {
@@ -34,12 +35,13 @@ export const LoadedOnlineNodes: React.FC<LoadedOnlineNodesProps> = ({
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>(() => {
     const saved = storage.get('loadedOnlineNodes:columnWidths', {});
     const defaultWidths = {
-      id: 200,
-      hostname: 200,
-      ip: 150,
-      port: 100,
-      status: 120,
-      lastHeartbeat: 200,
+      id: 250,
+      type: 150,
+      baseUrl: 250,
+      host: 150,
+      notificationsPort: 150,
+      processingNode: 150,
+      action: 80,
     };
     return saved && Object.keys(saved).length > 0 ? saved : defaultWidths;
   });
@@ -70,59 +72,100 @@ export const LoadedOnlineNodes: React.FC<LoadedOnlineNodesProps> = ({
     };
   }, []);
 
+  // Helper function to get differences between loaded node and cluster state
+  const getDifferents = useCallback((row: OnlineNode) => {
+    const clusterNodes = clusterStateClientNodes[row.type] || [];
+    const rowClusterStateNode = clusterNodes.find((el: any) => el.id === row.id);
+
+    if (rowClusterStateNode) {
+      const data = Object.keys(row)
+        .map((key) => {
+          if (rowClusterStateNode[key] !== (row as any)[key]) {
+            return `${key}: ${rowClusterStateNode[key]}`;
+          }
+          return null;
+        })
+        .filter((el) => el != null);
+
+      if (data.length > 0) {
+        return data;
+      }
+      return false;
+    }
+    return "Error. This row was not found!";
+  }, [clusterStateClientNodes]);
+
   const columns: ColumnsType<OnlineNode> = useMemo(() => [
     {
-      title: 'ID',
+      title: 'Id',
       dataIndex: 'id',
       key: 'id',
       width: columnWidths.id,
-      sorter: (a, b) => a.id.localeCompare(b.id),
       onHeaderCell: () => ({ width: columnWidths.id, onResize: handleResize('id') }),
     },
     {
-      title: 'Hostname',
-      dataIndex: 'hostname',
-      key: 'hostname',
-      width: columnWidths.hostname,
-      sorter: (a, b) => a.hostname.localeCompare(b.hostname),
-      onHeaderCell: () => ({ width: columnWidths.hostname, onResize: handleResize('hostname') }),
+      title: 'Type',
+      dataIndex: 'type',
+      key: 'type',
+      width: columnWidths.type,
+      onHeaderCell: () => ({ width: columnWidths.type, onResize: handleResize('type') }),
     },
     {
-      title: 'IP Address',
-      dataIndex: 'ip',
-      key: 'ip',
-      width: columnWidths.ip,
-      sorter: (a, b) => a.ip.localeCompare(b.ip),
-      onHeaderCell: () => ({ width: columnWidths.ip, onResize: handleResize('ip') }),
+      title: 'BaseUrl',
+      dataIndex: 'baseUrl',
+      key: 'baseUrl',
+      width: columnWidths.baseUrl,
+      onHeaderCell: () => ({ width: columnWidths.baseUrl, onResize: handleResize('baseUrl') }),
     },
     {
-      title: 'Port',
-      dataIndex: 'port',
-      key: 'port',
-      width: columnWidths.port,
-      sorter: (a, b) => a.port - b.port,
-      onHeaderCell: () => ({ width: columnWidths.port, onResize: handleResize('port') }),
+      title: 'Host',
+      dataIndex: 'host',
+      key: 'host',
+      width: columnWidths.host,
+      onHeaderCell: () => ({ width: columnWidths.host, onResize: handleResize('host') }),
     },
     {
-      title: 'Status',
-      dataIndex: 'status',
-      key: 'status',
-      width: columnWidths.status,
-      onHeaderCell: () => ({ width: columnWidths.status, onResize: handleResize('status') }),
-      render: (status: string) => {
-        const color = status === 'ONLINE' ? 'green' : status === 'OFFLINE' ? 'red' : 'default';
-        return <Tag color={color}>{status || 'UNKNOWN'}</Tag>;
+      title: 'NotificationsPort',
+      dataIndex: 'notificationsPort',
+      key: 'notificationsPort',
+      width: columnWidths.notificationsPort,
+      onHeaderCell: () => ({ width: columnWidths.notificationsPort, onResize: handleResize('notificationsPort') }),
+    },
+    {
+      title: 'Processing Node',
+      dataIndex: 'processingNode',
+      key: 'processingNode',
+      width: columnWidths.processingNode,
+      onHeaderCell: () => ({ width: columnWidths.processingNode, onResize: handleResize('processingNode') }),
+      render: (value: boolean) => (value ? 'true' : 'false'),
+    },
+    {
+      title: 'Action',
+      key: 'action',
+      width: columnWidths.action,
+      onHeaderCell: () => ({ width: columnWidths.action, onResize: handleResize('action') }),
+      render: (_: any, record: OnlineNode) => {
+        const differents = getDifferents(record);
+        if (!differents) return null;
+
+        const content = typeof differents === 'string' ? (
+          <span>{differents}</span>
+        ) : (
+          <div>
+            {differents.map((str, idx) => (
+              <div key={idx}>{str}</div>
+            ))}
+          </div>
+        );
+
+        return (
+          <Popover content={content} title="Cluster state value" placement="topLeft" trigger="hover">
+            <ExclamationCircleOutlined className="warning" />
+          </Popover>
+        );
       },
     },
-    {
-      title: 'Last Heartbeat',
-      dataIndex: 'lastHeartbeat',
-      key: 'lastHeartbeat',
-      width: columnWidths.lastHeartbeat,
-      onHeaderCell: () => ({ width: columnWidths.lastHeartbeat, onResize: handleResize('lastHeartbeat') }),
-      render: (date: string) => date || '-',
-    },
-  ], [columnWidths, handleResize]);
+  ], [columnWidths, handleResize, getDifferents]);
 
   // Render a table for each node type (DEFAULT, PROCESSING, TOOLBOX)
   const renderTable = (title: string, data: OnlineNode[] = []) => (

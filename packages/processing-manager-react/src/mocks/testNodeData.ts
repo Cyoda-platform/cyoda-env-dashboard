@@ -439,22 +439,17 @@ export const mockZkCurrNodeInfo = {
 
 // ZooKeeper Online Nodes (for /platform-common/zk-info/loaded-online-nodes.json)
 export const mockZkOnlineNodes = {
-  DEFAULT: Array.from({ length: 3 }, (_, i) => ({
-    id: `node-${i}`,
-    hostname: `host-${i}.example.com`,
-    ip: `192.168.1.${i + 1}`,
-    port: 8080 + i,
-    status: 'ONLINE',
-    lastHeartbeat: new Date(Date.now() - i * 1000).toISOString(),
-  })),
-  PROCESSING: Array.from({ length: 2 }, (_, i) => ({
-    id: `processing-node-${i}`,
-    hostname: `processing-${i}.example.com`,
-    ip: `192.168.2.${i + 1}`,
-    port: 9080 + i,
-    status: 'ONLINE',
-    lastHeartbeat: new Date(Date.now() - i * 1000).toISOString(),
-  })),
+  DEFAULT: [],
+  PROCESSING: [
+    {
+      id: '9c81f83da-bf5e-11f0-b46a-9ecb0f97992a',
+      type: 'PROCESSING',
+      baseUrl: 'http://10.233.75.58:8082/api',
+      host: '10.233.75.58',
+      notificationsPort: 10000,
+      processingNode: true,
+    },
+  ],
   TOOLBOX: [],
 };
 
