@@ -5,7 +5,7 @@
  */
 
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
-import { Card, Table, Button, Tooltip, Alert, message } from 'antd';
+import { Table, Button, Tooltip, Alert, message } from 'antd';
 import { SyncOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import type { ResizeCallbackData } from 'react-resizable';
@@ -205,8 +205,8 @@ export const ShardsDetailTabCachesList: React.FC = () => {
   ], [columnWidths, handleResize]);
 
   return (
-    <Card className="shards-detail-tab-caches-list">
-      <h1 style={{ fontSize: '24px', marginBottom: 16 }}>Caches List</h1>
+    <div className="shards-detail-tab-caches-list" style={{ padding: '20px' }}>
+      <h1 style={{ fontSize: '20px', fontWeight: 600, marginBottom: 16 }}>Caches List</h1>
 
       <Table
         columns={columns}
@@ -235,7 +235,7 @@ export const ShardsDetailTabCachesList: React.FC = () => {
           },
         }}
       />
-    </Card>
+    </div>
   );
 };
 

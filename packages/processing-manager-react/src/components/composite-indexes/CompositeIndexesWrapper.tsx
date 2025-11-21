@@ -334,7 +334,7 @@ export const CompositeIndexesWrapper: React.FC = () => {
 
   return (
     <div className="composite-indexes-wrapper" style={{ padding: '20px' }}>
-      <h1 style={{ fontSize: '24px', marginBottom: 16 }}>Composite indexes</h1>
+      <h1 style={{ fontSize: '20px', fontWeight: 600, marginBottom: 16 }}>Composite indexes</h1>
 
       <Form layout="vertical" style={{ marginBottom: 16 }}>
         <Form.Item label="Entity">
