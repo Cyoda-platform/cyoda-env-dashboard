@@ -113,8 +113,8 @@ export const MapperParametersDialog = forwardRef<MapperParametersDialogRef, Mapp
           >
             <Select
               placeholder="Select parameter type"
-              popupClassName="mapper-parameters-dropdown"
-              dropdownStyle={{ minWidth: '400px' }}
+              classNames={{ popup: { root: 'mapper-parameters-dropdown' } }}
+              styles={{ popup: { root: { minWidth: '400px' } } }}
             >
               {PARAMETER_TYPES.map((type) => (
                 <Select.Option key={type} value={type}>

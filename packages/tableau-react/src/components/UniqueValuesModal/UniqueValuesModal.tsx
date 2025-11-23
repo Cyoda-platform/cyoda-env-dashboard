@@ -143,8 +143,8 @@ export const UniqueValuesModal: React.FC<UniqueValuesModalProps> = ({
               options={pageSizeOptions}
               style={{ width: 80 }}
               className="page-size-select"
-              popupClassName="unique-values-modal-dropdown"
-              dropdownStyle={{ minWidth: '100px' }}
+              classNames={{ popup: { root: 'unique-values-modal-dropdown' } }}
+              styles={{ popup: { root: { minWidth: '100px' } } }}
             />
           </div>
           <div className="footer-right">

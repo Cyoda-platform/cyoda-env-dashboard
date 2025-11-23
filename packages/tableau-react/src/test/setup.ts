@@ -15,6 +15,37 @@ afterEach(() => {
   cleanup();
 });
 
+// Suppress CSS parsing warnings and expected network errors from jsdom
+const originalConsoleError = console.error;
+const originalConsoleLog = console.log;
+
+console.error = (...args: any[]) => {
+  const message = typeof args[0] === 'string' ? args[0] : '';
+
+  // Suppress CSS parsing warnings
+  if (message.includes('Could not parse CSS stylesheet')) {
+    return;
+  }
+
+  // Suppress expected network errors in tests
+  if (message.includes('Network Error') || message.includes('API Error') || message.includes('Failed to load')) {
+    return;
+  }
+
+  originalConsoleError(...args);
+};
+
+console.log = (...args: any[]) => {
+  const message = typeof args[0] === 'string' ? args[0] : '';
+
+  // Suppress expected network errors in tests
+  if (message.includes('Network Error') || message.includes('API Error') || message.includes('Failed to load')) {
+    return;
+  }
+
+  originalConsoleLog(...args);
+};
+
 // Mock window.matchMedia for Ant Design
 Object.defineProperty(window, 'matchMedia', {
   writable: true,

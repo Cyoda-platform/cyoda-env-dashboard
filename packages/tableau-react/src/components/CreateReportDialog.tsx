@@ -247,8 +247,8 @@ const CreateReportDialog = forwardRef<CreateReportDialogRef, CreateReportDialogP
                       (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                     }
                     options={entityOptions}
-                    popupClassName="create-report-dialog-dropdown"
-                    dropdownStyle={{ minWidth: '400px' }}
+                    classNames={{ popup: { root: 'create-report-dialog-dropdown' } }}
+                    styles={{ popup: { root: { minWidth: '400px' } } }}
                   />
                 </Form.Item>
             </div>

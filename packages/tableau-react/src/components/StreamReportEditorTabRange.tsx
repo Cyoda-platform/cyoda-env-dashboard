@@ -118,8 +118,8 @@ const StreamReportEditorTabRange: React.FC<StreamReportEditorTabRangeProps> = ({
             filterOption={(input, option) =>
               (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
             }
-            popupClassName="stream-report-range-dropdown"
-            dropdownStyle={{ minWidth: '400px' }}
+            classNames={{ popup: { root: 'stream-report-range-dropdown' } }}
+            styles={{ popup: { root: { minWidth: '400px' } } }}
           />
         </Form.Item>
 
@@ -129,8 +129,8 @@ const StreamReportEditorTabRange: React.FC<StreamReportEditorTabRangeProps> = ({
             value={rangeCondition['@bean'] || undefined}
             onChange={handleOperationChange}
             options={CONDITION_TYPES}
-            popupClassName="stream-report-range-dropdown"
-            dropdownStyle={{ minWidth: '300px' }}
+            classNames={{ popup: { root: 'stream-report-range-dropdown' } }}
+            styles={{ popup: { root: { minWidth: '300px' } } }}
           />
         </Form.Item>
 
@@ -141,8 +141,8 @@ const StreamReportEditorTabRange: React.FC<StreamReportEditorTabRangeProps> = ({
             value={rangeCondition.value?.value ? [rangeCondition.value.value] : []}
             onChange={(values) => handleValueChange(values[0] || '')}
             style={{ width: '100%' }}
-            popupClassName="stream-report-range-dropdown"
-            dropdownStyle={{ minWidth: '300px' }}
+            classNames={{ popup: { root: 'stream-report-range-dropdown' } }}
+            styles={{ popup: { root: { minWidth: '300px' } } }}
           />
         </Form.Item>
 

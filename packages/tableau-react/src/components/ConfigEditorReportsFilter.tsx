@@ -93,8 +93,8 @@ const ConfigEditorReportsFilter: React.FC<ConfigEditorReportsFilterProps> = ({
                 filterOption={(input, option) =>
                   (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                 }
-                popupClassName="config-reports-filter-dropdown"
-                dropdownStyle={{ minWidth: '300px' }}
+                classNames={{ popup: { root: 'config-reports-filter-dropdown' } }}
+                styles={{ popup: { root: { minWidth: '300px' } } }}
               />
             </Form.Item>
           </Col>
@@ -111,8 +111,8 @@ const ConfigEditorReportsFilter: React.FC<ConfigEditorReportsFilterProps> = ({
                 filterOption={(input, option) =>
                   (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                 }
-                popupClassName="config-reports-filter-dropdown"
-                dropdownStyle={{ minWidth: '400px' }}
+                classNames={{ popup: { root: 'config-reports-filter-dropdown' } }}
+                styles={{ popup: { root: { minWidth: '400px' } } }}
               />
             </Form.Item>
           </Col>

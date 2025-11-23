@@ -4,11 +4,11 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { sqlSchemaApi } from './sqlSchemaApi';
-import axios from '../__mocks__/@cyoda/http-api-react';
+import { axios } from '@cyoda/http-api-react';
 
-// Mock axios
-vi.mock('../__mocks__/@cyoda/http-api-react', () => ({
-  default: {
+// Mock the @cyoda/http-api-react module
+vi.mock('@cyoda/http-api-react', () => ({
+  axios: {
     get: vi.fn(),
     post: vi.fn(),
     delete: vi.fn(),

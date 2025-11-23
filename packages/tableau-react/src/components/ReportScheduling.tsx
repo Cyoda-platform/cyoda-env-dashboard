@@ -86,8 +86,8 @@ export const ReportScheduling: React.FC<ReportSchedulingProps> = ({ visible, rep
             rules={[{ required: true, message: 'Please select frequency' }]}
           >
             <Select
-              popupClassName="report-scheduling-dropdown"
-              dropdownStyle={{ minWidth: '200px' }}
+              classNames={{ popup: { root: 'report-scheduling-dropdown' } }}
+              styles={{ popup: { root: { minWidth: '200px' } } }}
             >
               <Select.Option value="DAILY">Daily</Select.Option>
               <Select.Option value="WEEKLY">Weekly</Select.Option>
@@ -107,13 +107,13 @@ export const ReportScheduling: React.FC<ReportSchedulingProps> = ({ visible, rep
           <Form.Item noStyle shouldUpdate={(prevValues, currentValues) => prevValues.frequency !== currentValues.frequency}>
             {({ getFieldValue }) => {
               const frequency = getFieldValue('frequency');
-              
+
               if (frequency === 'WEEKLY') {
                 return (
                   <Form.Item label="Day of Week" name="dayOfWeek">
                     <Select
-                      popupClassName="report-scheduling-dropdown"
-                      dropdownStyle={{ minWidth: '200px' }}
+                      classNames={{ popup: { root: 'report-scheduling-dropdown' } }}
+                      styles={{ popup: { root: { minWidth: '200px' } } }}
                     >
                       <Select.Option value={1}>Monday</Select.Option>
                       <Select.Option value={2}>Tuesday</Select.Option>
@@ -131,8 +131,8 @@ export const ReportScheduling: React.FC<ReportSchedulingProps> = ({ visible, rep
                 return (
                   <Form.Item label="Day of Month" name="dayOfMonth">
                     <Select
-                      popupClassName="report-scheduling-dropdown"
-                      dropdownStyle={{ minWidth: '200px' }}
+                      classNames={{ popup: { root: 'report-scheduling-dropdown' } }}
+                      styles={{ popup: { root: { minWidth: '200px' } } }}
                     >
                       {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
                         <Select.Option key={day} value={day}>

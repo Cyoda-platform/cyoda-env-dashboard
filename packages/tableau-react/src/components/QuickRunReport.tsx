@@ -255,8 +255,8 @@ const QuickRunReport: React.FC<QuickRunReportProps> = ({
               label: config.name,
             }))}
             style={{ width: '100%' }}
-            popupClassName="quick-run-report-dropdown"
-            dropdownStyle={{ minWidth: '400px' }}
+            classNames={{ popup: { root: 'quick-run-report-dropdown' } }}
+            styles={{ popup: { root: { minWidth: '400px' } } }}
           />
         </div>
 
