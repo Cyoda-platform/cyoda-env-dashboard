@@ -171,9 +171,9 @@ describe('EventsTable', () => {
       </BrowserRouter>
     );
 
-    // Ant Design shows "No data" text when table is empty (appears in SVG title and description)
-    const noDataElements = screen.getAllByText(/no data/i);
-    expect(noDataElements.length).toBeGreaterThan(0);
+    // Component shows custom empty text "No transaction events found"
+    const emptyText = screen.getByText('No transaction events found');
+    expect(emptyText).toBeInTheDocument();
   });
 
   it('should render table with bordered prop', () => {

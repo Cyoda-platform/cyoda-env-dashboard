@@ -140,9 +140,8 @@ describe('TransactionMembersTable', () => {
 
     render(<TransactionMembersTable transactionId="txn-123" />);
 
-    // Ant Design Table shows "No data" for empty state
-    const emptyElements = screen.getAllByText(/No data/i);
-    expect(emptyElements.length).toBeGreaterThan(0);
+    // Ant Design Table shows custom empty text
+    expect(screen.getByText('No transaction members found')).toBeInTheDocument();
   });
 
   it('should call hook with correct transaction ID', () => {

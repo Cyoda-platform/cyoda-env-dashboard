@@ -240,11 +240,11 @@ describe('ProcessingEventsView', () => {
     expect(rows.length).toBe(0);
   });
 
-  it('should render Card wrapper', () => {
+  it('should render component wrapper', () => {
     const { container } = renderComponent();
-    
-    const card = container.querySelector('.ant-card');
-    expect(card).toBeInTheDocument();
+
+    const wrapper = container.querySelector('.pm-processing-events-view');
+    expect(wrapper).toBeInTheDocument();
   });
 
   it('should have allowClear on selects', () => {

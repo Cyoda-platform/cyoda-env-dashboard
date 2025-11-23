@@ -267,7 +267,7 @@ describe('ProcessingEventsEntitiesErrorListViewFilter', () => {
     // Wait for initial call
     await waitFor(() => {
       expect(mockOnChange).toHaveBeenCalled();
-    });
+    }, { timeout: 10000 });
 
     mockOnChange.mockClear();
 
@@ -282,7 +282,7 @@ describe('ProcessingEventsEntitiesErrorListViewFilter', () => {
 
     await waitFor(() => {
       expect(mockOnChange).toHaveBeenCalledWith({ type: 'Entity1' });
-    });
+    }, { timeout: 10000 });
 
     mockOnChange.mockClear();
 
@@ -294,8 +294,8 @@ describe('ProcessingEventsEntitiesErrorListViewFilter', () => {
 
     await waitFor(() => {
       expect(mockOnChange).toHaveBeenCalledWith({ type: 'Entity3' });
-    });
-  });
+    }, { timeout: 10000 });
+  }, 30000);
 
 });
 

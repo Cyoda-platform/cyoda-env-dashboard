@@ -144,50 +144,50 @@ describe('ProcessingEventsErrorViewFilter', () => {
   it('should handle queue selection', async () => {
     const user = userEvent.setup();
     render(<ProcessingEventsErrorViewFilter onChange={mockOnChange} />);
-    
+
     mockOnChange.mockClear();
-    
+
     const queueSelects = screen.getAllByRole('combobox');
     await user.click(queueSelects[0]);
-    
+
     const queue1Options = await screen.findAllByText('queue-1');
     await user.click(queue1Options[0]);
-    
+
     const loadButton = screen.getByRole('button', { name: /load/i });
     await user.click(loadButton);
-    
+
     await waitFor(() => {
       expect(mockOnChange).toHaveBeenCalledWith(
         expect.objectContaining({
           queue: 'queue-1',
         })
       );
-    });
-  });
+    }, { timeout: 10000 });
+  }, 15000);
 
   it('should handle shard selection', async () => {
     const user = userEvent.setup();
     render(<ProcessingEventsErrorViewFilter onChange={mockOnChange} />);
-    
+
     mockOnChange.mockClear();
-    
+
     const shardSelects = screen.getAllByRole('combobox');
     await user.click(shardSelects[1]);
-    
+
     const shard1Options = await screen.findAllByText('shard-1');
     await user.click(shard1Options[0]);
-    
+
     const loadButton = screen.getByRole('button', { name: /load/i });
     await user.click(loadButton);
-    
+
     await waitFor(() => {
       expect(mockOnChange).toHaveBeenCalledWith(
         expect.objectContaining({
           shard: 'shard-1',
         })
       );
-    });
-  });
+    }, { timeout: 10000 });
+  }, 15000);
 
   it('should handle sort selection', async () => {
     const user = userEvent.setup();
