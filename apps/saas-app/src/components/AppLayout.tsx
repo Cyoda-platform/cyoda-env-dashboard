@@ -3,7 +3,6 @@ import { Layout } from 'antd';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { AppHeader } from './AppHeader';
 import { LeftSideMenu } from './LeftSideMenu';
-import { MockApiToggle } from '@cyoda/processing-manager-react';
 import { HelperStorage } from '@cyoda/http-api-react/utils/storage';
 import { useAppStore } from '@cyoda/cyoda-sass-react';
 import './AppLayout.scss';
@@ -33,9 +32,6 @@ export const AppLayout: React.FC = () => {
     }
   }, [location.pathname, navigate]);
 
-  // Show MockApiToggle only on processing-ui pages
-  const showMockToggle = location.pathname.startsWith('/processing-ui');
-
   return (
     <Layout className="saas-app-layout">
       <AppHeader />
@@ -55,7 +51,6 @@ export const AppLayout: React.FC = () => {
           </Content>
         </Layout>
       </Layout>
-      {showMockToggle && <MockApiToggle />}
     </Layout>
   );
 };

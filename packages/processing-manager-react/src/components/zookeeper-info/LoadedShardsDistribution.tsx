@@ -94,7 +94,7 @@ export const LoadedShardsDistribution: React.FC<LoadedShardsDistributionProps> =
     {
       title: 'Action',
       key: 'action',
-      width: 80,
+      width: 150,
       render: () => null, // Placeholder for action column
     },
   ], [columnWidths, handleResize]);

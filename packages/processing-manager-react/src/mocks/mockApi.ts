@@ -335,7 +335,7 @@ function setupMockInterceptors(axios: AxiosInstance) {
 
       if (url.includes('/platform-common/zk-info/cluster-state')) {
         console.log('🧪 Returning mock ZK cluster state');
-        return { ...response, data: mockZooKeeperInfo.clusterState };
+        return { ...response, data: mockZkClusterState };
       }
 
       // Polling info
@@ -487,7 +487,7 @@ function setupMockInterceptorsForDefaultAxios(axiosInstance: AxiosInstance) {
 
       if (url.includes('/platform-common/zk-info/cluster-state')) {
         console.log('🧪 Returning mock ZK cluster state (default axios)');
-        return { ...response, data: mockZooKeeperInfo.clusterState };
+        return { ...response, data: mockZkClusterState };
       }
 
       // Entity types (for composite indexes dropdown)

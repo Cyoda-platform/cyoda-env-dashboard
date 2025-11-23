@@ -2,12 +2,20 @@
  * Tests for ShardsDetailTabZKInfo Component
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import userEvent from '@testing-library/user-event';
 import ShardsDetailTabZKInfo from '../ShardsDetailTabZKInfo';
 import type { ReactNode } from 'react';
+
+// Mock the hooks
+vi.mock('../../../hooks/usePlatformCommon', () => ({
+  useZkClusterState: vi.fn(),
+  useZkCurrNodeInfo: vi.fn(),
+  useZkOnlineNodes: vi.fn(),
+  useZkShardsDistribution: vi.fn(),
+}));
 
 describe('ShardsDetailTabZKInfo', () => {
   const queryClient = new QueryClient({
@@ -22,6 +30,47 @@ describe('ShardsDetailTabZKInfo', () => {
     </QueryClientProvider>
   );
 
+  const mockClusterState = {
+    currentNode: {
+      type: 'PROCESSING',
+      id: 'test-node-id',
+      baseUrl: 'http://localhost:8080/api',
+      host: 'localhost',
+      notificationsPort: 10000,
+      processingNode: true
+    },
+    clientNodes: {
+      DEFAULT: [],
+      PROCESSING: [],
+      TOOLBOX: []
+    },
+    shardsDistrState: {}
+  };
+
+  beforeEach(async () => {
+    const hooks = await import('../../../hooks/usePlatformCommon');
+    vi.mocked(hooks.useZkClusterState).mockReturnValue({
+      data: mockClusterState,
+      isLoading: false,
+      error: null,
+    } as any);
+    vi.mocked(hooks.useZkCurrNodeInfo).mockReturnValue({
+      data: mockClusterState.currentNode,
+      isLoading: false,
+      error: null,
+    } as any);
+    vi.mocked(hooks.useZkOnlineNodes).mockReturnValue({
+      data: mockClusterState.clientNodes,
+      isLoading: false,
+      error: null,
+    } as any);
+    vi.mocked(hooks.useZkShardsDistribution).mockReturnValue({
+      data: [],
+      isLoading: false,
+      error: null,
+    } as any);
+  });
+
   it('should render the component', () => {
     const { container } = render(<ShardsDetailTabZKInfo />, { wrapper });
 
@@ -34,75 +83,55 @@ describe('ShardsDetailTabZKInfo', () => {
     expect(screen.getByText('ZooKeeper Info')).toBeInTheDocument();
   });
 
-  it('should render all tab labels', () => {
+  it('should render all section labels', () => {
     render(<ShardsDetailTabZKInfo />, { wrapper });
 
-    expect(screen.getByText('Current Node Info')).toBeInTheDocument();
+    expect(screen.getByText('Node info')).toBeInTheDocument();
     expect(screen.getByText('Loaded Online Nodes')).toBeInTheDocument();
     expect(screen.getByText('Loaded Shards Distribution')).toBeInTheDocument();
   });
 
-  it('should show Current Node Info tab content by default', () => {
+  it('should render CurrNodeInfo component', () => {
     const { container } = render(<ShardsDetailTabZKInfo />, { wrapper });
 
-    // Check that tabs are rendered
-    expect(container.querySelector('.ant-tabs')).toBeInTheDocument();
+    expect(container.querySelector('.curr-node-info')).toBeInTheDocument();
   });
 
-  it('should switch to Loaded Online Nodes tab when clicked', async () => {
-    const user = userEvent.setup();
+  it('should render LoadedOnlineNodes component', () => {
     const { container } = render(<ShardsDetailTabZKInfo />, { wrapper });
 
-    const tab = screen.getByText('Loaded Online Nodes');
-    await user.click(tab);
-
-    // Check that tabs are still rendered
-    expect(container.querySelector('.ant-tabs')).toBeInTheDocument();
+    expect(container.querySelector('.loaded-online-nodes')).toBeInTheDocument();
   });
 
-  it('should switch to Loaded Shards Distribution tab when clicked', async () => {
-    const user = userEvent.setup();
+  it('should render LoadedShardsDistribution component', () => {
     const { container } = render(<ShardsDetailTabZKInfo />, { wrapper });
 
-    const tab = screen.getByText('Loaded Shards Distribution');
-    await user.click(tab);
-
-    // Check that tabs are still rendered
-    expect(container.querySelector('.ant-tabs')).toBeInTheDocument();
+    expect(container.querySelector('.loaded-shards-distribution')).toBeInTheDocument();
   });
 
-  it('should render tabs component', () => {
+  it('should render dividers between sections', () => {
     const { container } = render(<ShardsDetailTabZKInfo />, { wrapper });
-    
-    expect(container.querySelector('.ant-tabs')).toBeInTheDocument();
+
+    const dividers = container.querySelectorAll('.ant-divider');
+    expect(dividers.length).toBeGreaterThan(0);
   });
 
-  it('should have three tabs', () => {
+  it('should render all three sections', () => {
     const { container } = render(<ShardsDetailTabZKInfo />, { wrapper });
-    
-    const tabs = container.querySelectorAll('.ant-tabs-tab');
-    expect(tabs).toHaveLength(3);
+
+    expect(container.querySelector('.curr-node-info')).toBeInTheDocument();
+    expect(container.querySelector('.loaded-online-nodes')).toBeInTheDocument();
+    expect(container.querySelector('.loaded-shards-distribution')).toBeInTheDocument();
   });
 
   it('should render without errors', () => {
     expect(() => render(<ShardsDetailTabZKInfo />, { wrapper })).not.toThrow();
   });
 
-  it('should maintain active tab state', async () => {
-    const user = userEvent.setup();
-    const { container } = render(<ShardsDetailTabZKInfo />, { wrapper });
+  it('should display node type', () => {
+    render(<ShardsDetailTabZKInfo />, { wrapper });
 
-    // Click second tab
-    await user.click(screen.getByText('Loaded Online Nodes'));
-    expect(container.querySelector('.ant-tabs')).toBeInTheDocument();
-
-    // Click third tab
-    await user.click(screen.getByText('Loaded Shards Distribution'));
-    expect(container.querySelector('.ant-tabs')).toBeInTheDocument();
-
-    // Click first tab
-    await user.click(screen.getByText('Current Node Info'));
-    expect(container.querySelector('.ant-tabs')).toBeInTheDocument();
+    expect(screen.getByText('PROCESSING')).toBeInTheDocument();
   });
 });
 

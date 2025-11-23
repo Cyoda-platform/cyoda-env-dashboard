@@ -30,10 +30,20 @@ export const LoadedOnlineNodes: React.FC<LoadedOnlineNodesProps> = ({
   clusterStateClientNodes = {},
 }) => {
   const storage = useMemo(() => new HelperStorage(), []);
+  // Load data from getZkInfoLoadedOnlineNodes endpoint (main data source)
   const { data: nodesData, isLoading } = useZkOnlineNodes();
 
+  // Use loaded nodes data as primary source, fallback to clusterState if not available
+  const tableData = useMemo(() => {
+    if (nodesData && typeof nodesData === 'object' && !Array.isArray(nodesData)) {
+      return nodesData;
+    }
+    // Fallback to clusterStateClientNodes if loaded nodes not available
+    return clusterStateClientNodes;
+  }, [nodesData, clusterStateClientNodes]);
+
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>(() => {
-    const saved = storage.get('loadedOnlineNodes:columnWidths', {});
+    // Don't use saved widths - always use defaults to ensure Action column is wide enough
     const defaultWidths = {
       id: 250,
       type: 150,
@@ -41,9 +51,9 @@ export const LoadedOnlineNodes: React.FC<LoadedOnlineNodesProps> = ({
       host: 150,
       notificationsPort: 150,
       processingNode: 150,
-      action: 80,
+      action: 150,
     };
-    return saved && Object.keys(saved).length > 0 ? saved : defaultWidths;
+    return defaultWidths;
   });
 
   useEffect(() => {
@@ -73,8 +83,10 @@ export const LoadedOnlineNodes: React.FC<LoadedOnlineNodesProps> = ({
   }, []);
 
   // Helper function to get differences between loaded node and cluster state
-  const getDifferents = useCallback((row: OnlineNode) => {
-    const clusterNodes = clusterStateClientNodes[row.type] || [];
+  // This compares data from getZkInfoLoadedOnlineNodes with clusterState.clientNodes
+  const getDifferents = useCallback((row: OnlineNode, nodeType: string) => {
+    // Get cluster state nodes for this type
+    const clusterNodes = clusterStateClientNodes[nodeType] || [];
     const rowClusterStateNode = clusterNodes.find((el: any) => el.id === row.id);
 
     if (rowClusterStateNode) {
@@ -95,111 +107,114 @@ export const LoadedOnlineNodes: React.FC<LoadedOnlineNodesProps> = ({
     return "Error. This row was not found!";
   }, [clusterStateClientNodes]);
 
-  const columns: ColumnsType<OnlineNode> = useMemo(() => [
-    {
-      title: 'Id',
-      dataIndex: 'id',
-      key: 'id',
-      width: columnWidths.id,
-      onHeaderCell: () => ({ width: columnWidths.id, onResize: handleResize('id') }),
-    },
-    {
-      title: 'Type',
-      dataIndex: 'type',
-      key: 'type',
-      width: columnWidths.type,
-      onHeaderCell: () => ({ width: columnWidths.type, onResize: handleResize('type') }),
-    },
-    {
-      title: 'BaseUrl',
-      dataIndex: 'baseUrl',
-      key: 'baseUrl',
-      width: columnWidths.baseUrl,
-      onHeaderCell: () => ({ width: columnWidths.baseUrl, onResize: handleResize('baseUrl') }),
-    },
-    {
-      title: 'Host',
-      dataIndex: 'host',
-      key: 'host',
-      width: columnWidths.host,
-      onHeaderCell: () => ({ width: columnWidths.host, onResize: handleResize('host') }),
-    },
-    {
-      title: 'NotificationsPort',
-      dataIndex: 'notificationsPort',
-      key: 'notificationsPort',
-      width: columnWidths.notificationsPort,
-      onHeaderCell: () => ({ width: columnWidths.notificationsPort, onResize: handleResize('notificationsPort') }),
-    },
-    {
-      title: 'Processing Node',
-      dataIndex: 'processingNode',
-      key: 'processingNode',
-      width: columnWidths.processingNode,
-      onHeaderCell: () => ({ width: columnWidths.processingNode, onResize: handleResize('processingNode') }),
-      render: (value: boolean) => (value ? 'true' : 'false'),
-    },
-    {
-      title: 'Action',
-      key: 'action',
-      width: columnWidths.action,
-      onHeaderCell: () => ({ width: columnWidths.action, onResize: handleResize('action') }),
-      render: (_: any, record: OnlineNode) => {
-        const differents = getDifferents(record);
-        if (!differents) return null;
-
-        const content = typeof differents === 'string' ? (
-          <span>{differents}</span>
-        ) : (
-          <div>
-            {differents.map((str, idx) => (
-              <div key={idx}>{str}</div>
-            ))}
-          </div>
-        );
-
-        return (
-          <Popover content={content} title="Cluster state value" placement="topLeft" trigger="hover">
-            <ExclamationCircleOutlined className="warning" />
-          </Popover>
-        );
-      },
-    },
-  ], [columnWidths, handleResize, getDifferents]);
-
   // Render a table for each node type (DEFAULT, PROCESSING, TOOLBOX)
-  const renderTable = (title: string, data: OnlineNode[] = []) => (
-    <div key={title} className="loaded-online-nodes-table">
-      <h4>{title}</h4>
-      <Table
-        columns={columns}
-        dataSource={data}
-        rowKey="id"
-        bordered
-        size="small"
-        loading={isLoading}
-        pagination={false}
-        locale={{ emptyText: 'No Data' }}
-        components={{
-          header: {
-            cell: ResizableTitle,
-          },
-        }}
-      />
-    </div>
-  );
+  const renderTable = useCallback((title: string, nodeType: string, data: OnlineNode[] = []) => {
+    // Create columns with nodeType context for getDifferents
+    const columnsWithType: ColumnsType<OnlineNode> = [
+      {
+        title: 'Id',
+        dataIndex: 'id',
+        key: 'id',
+        width: columnWidths.id,
+        onHeaderCell: () => ({ width: columnWidths.id, onResize: handleResize('id') }),
+      },
+      {
+        title: 'Type',
+        dataIndex: 'type',
+        key: 'type',
+        width: columnWidths.type,
+        onHeaderCell: () => ({ width: columnWidths.type, onResize: handleResize('type') }),
+      },
+      {
+        title: 'BaseUrl',
+        dataIndex: 'baseUrl',
+        key: 'baseUrl',
+        width: columnWidths.baseUrl,
+        onHeaderCell: () => ({ width: columnWidths.baseUrl, onResize: handleResize('baseUrl') }),
+      },
+      {
+        title: 'Host',
+        dataIndex: 'host',
+        key: 'host',
+        width: columnWidths.host,
+        onHeaderCell: () => ({ width: columnWidths.host, onResize: handleResize('host') }),
+      },
+      {
+        title: 'NotificationsPort',
+        dataIndex: 'notificationsPort',
+        key: 'notificationsPort',
+        width: columnWidths.notificationsPort,
+        onHeaderCell: () => ({ width: columnWidths.notificationsPort, onResize: handleResize('notificationsPort') }),
+      },
+      {
+        title: 'Processing Node',
+        dataIndex: 'processingNode',
+        key: 'processingNode',
+        width: columnWidths.processingNode,
+        onHeaderCell: () => ({ width: columnWidths.processingNode, onResize: handleResize('processingNode') }),
+        render: (value: boolean) => (value ? 'true' : 'false'),
+      },
+      {
+        title: 'Action',
+        key: 'action',
+        width: columnWidths.action,
+        onHeaderCell: () => ({ width: columnWidths.action, onResize: handleResize('action') }),
+        render: (_: any, record: OnlineNode) => {
+          const differents = getDifferents(record, nodeType);
+          if (!differents) return null;
+
+          const content = typeof differents === 'string' ? (
+            <span>{differents}</span>
+          ) : (
+            <div>
+              {differents.map((str, idx) => (
+                <div key={idx}>{str}</div>
+              ))}
+            </div>
+          );
+
+          return (
+            <Popover content={content} title="Cluster state value" placement="topLeft" trigger="hover">
+              <ExclamationCircleOutlined className="warning" />
+            </Popover>
+          );
+        },
+      },
+    ];
+
+    return (
+      <div key={title} className="loaded-online-nodes-table">
+        <h4>{title}</h4>
+        <Table
+          columns={columnsWithType}
+          dataSource={data}
+          rowKey="id"
+          bordered
+          size="small"
+          loading={isLoading}
+          pagination={false}
+          locale={{ emptyText: 'No Data' }}
+          components={{
+            header: {
+              cell: ResizableTitle,
+            },
+          }}
+        />
+      </div>
+    );
+  }, [columnWidths, handleResize, getDifferents, isLoading]);
 
   return (
     <div className="loaded-online-nodes">
       <h1 className="label main">Loaded Online Nodes</h1>
-      {nodesData && typeof nodesData === 'object' && !Array.isArray(nodesData) ? (
+      {tableData && typeof tableData === 'object' && !Array.isArray(tableData) ? (
         <>
-          {renderTable('Default', (nodesData as any).DEFAULT)}
-          {renderTable('Processing', (nodesData as any).PROCESSING)}
-          {renderTable('Toolbox', (nodesData as any).TOOLBOX)}
+          {renderTable('Default', 'DEFAULT', (tableData as any).DEFAULT || [])}
+          {renderTable('Processing', 'PROCESSING', (tableData as any).PROCESSING || [])}
+          {renderTable('Toolbox', 'TOOLBOX', (tableData as any).TOOLBOX || [])}
         </>
       ) : (
-        renderTable('All Nodes', Array.isArray(nodesData) ? nodesData : [])
+        renderTable('All Nodes', 'DEFAULT', Array.isArray(tableData) ? tableData : [])
       )}
     </div>
   );
