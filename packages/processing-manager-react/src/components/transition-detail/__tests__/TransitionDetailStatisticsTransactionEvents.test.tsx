@@ -227,16 +227,16 @@ describe('TransitionDetailStatisticsTransactionEvents', () => {
     );
   });
 
-  it('should render Pagination inside a Card', () => {
+  it('should render Pagination component', () => {
     const { container } = render(
       <BrowserRouter>
         <TransitionDetailStatisticsTransactionEvents />
       </BrowserRouter>
     );
-    
-    // Find the card that contains pagination buttons
-    const cards = container.querySelectorAll('.ant-card');
-    expect(cards.length).toBeGreaterThan(0);
+
+    // Find the pagination wrapper
+    const paginationWrapper = container.querySelector('.pagination-wrapper');
+    expect(paginationWrapper).toBeInTheDocument();
   });
 });
 

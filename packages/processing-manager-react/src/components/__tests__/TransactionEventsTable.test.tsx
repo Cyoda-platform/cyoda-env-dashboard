@@ -153,8 +153,7 @@ describe('TransactionEventsTable', () => {
 
     render(<TransactionEventsTable transactionId="txn-123" />);
 
-    const emptyElements = screen.getAllByText(/No data/i);
-    expect(emptyElements.length).toBeGreaterThan(0);
+    expect(screen.getByText('No transaction events found')).toBeInTheDocument();
   });
 
   it('should call hook with correct transaction ID', () => {

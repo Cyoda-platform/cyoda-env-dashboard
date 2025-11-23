@@ -188,10 +188,9 @@ describe('MembersTable', () => {
         <MembersTable tableData={[]} />
       </BrowserRouter>
     );
-    
-    // Ant Design shows "No data" text when table is empty (appears in SVG title and description)
-    const noDataElements = screen.getAllByText(/no data/i);
-    expect(noDataElements.length).toBeGreaterThan(0);
+
+    // Table shows custom empty text
+    expect(screen.getByText('No transaction members found')).toBeInTheDocument();
   });
 
   it('should render table with bordered prop', () => {

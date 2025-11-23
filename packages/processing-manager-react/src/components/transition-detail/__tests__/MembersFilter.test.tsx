@@ -36,11 +36,11 @@ describe('MembersFilter', () => {
 
   it('should render all form fields', () => {
     render(<MembersFilter onChange={mockOnChange} />);
-    
-    expect(screen.getByText('Entity type')).toBeInTheDocument();
-    expect(screen.getByText('Action Type')).toBeInTheDocument();
-    expect(screen.getByText('Version check result')).toBeInTheDocument();
-    expect(screen.getByText('Sort')).toBeInTheDocument();
+
+    expect(screen.getByText('ENTITY TYPE')).toBeInTheDocument();
+    expect(screen.getByText('ACTION TYPE')).toBeInTheDocument();
+    expect(screen.getByText('VERSION CHECK RESULT')).toBeInTheDocument();
+    expect(screen.getByText('SORT')).toBeInTheDocument();
   });
 
   it('should render Load button', () => {
@@ -148,10 +148,10 @@ describe('MembersFilter', () => {
       data: null,
       isLoading: false,
     });
-    
+
     render(<MembersFilter onChange={mockOnChange} />);
-    
-    expect(screen.getByText('Entity type')).toBeInTheDocument();
+
+    expect(screen.getByText('ENTITY TYPE')).toBeInTheDocument();
   });
 
   it('should have showSearch on entity type select', () => {
@@ -203,11 +203,11 @@ describe('MembersFilter', () => {
     expect(ref.current?.form.sort).toBe('ASC');
   });
 
-  it('should render action type placeholder', () => {
+  it('should render action type label', () => {
     render(<MembersFilter onChange={mockOnChange} />);
-    
-    const placeholders = screen.getAllByText('Action Type');
-    expect(placeholders.length).toBeGreaterThan(0);
+
+    // Action Type field has label "ACTION TYPE" and default value "ALL", so placeholder is not visible
+    expect(screen.getByText('ACTION TYPE')).toBeInTheDocument();
   });
 
   it('should render version check result placeholder', () => {
@@ -216,11 +216,11 @@ describe('MembersFilter', () => {
     expect(screen.getByText('Please select')).toBeInTheDocument();
   });
 
-  it('should render sort placeholder', () => {
+  it('should render sort label', () => {
     render(<MembersFilter onChange={mockOnChange} />);
-    
-    const placeholders = screen.getAllByText('Sort');
-    expect(placeholders.length).toBeGreaterThan(0);
+
+    // Sort field has label "SORT" and default value "ASC", so placeholder is not visible
+    expect(screen.getByText('SORT')).toBeInTheDocument();
   });
 });
 

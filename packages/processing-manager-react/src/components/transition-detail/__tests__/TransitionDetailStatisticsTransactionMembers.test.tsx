@@ -210,16 +210,16 @@ describe('TransitionDetailStatisticsTransactionMembers', () => {
     );
   });
 
-  it('should render Pagination inside a Card', () => {
+  it('should render Pagination component', () => {
     const { container } = render(
       <BrowserRouter>
         <TransitionDetailStatisticsTransactionMembers />
       </BrowserRouter>
     );
-    
-    // Find the card that contains pagination buttons
-    const cards = container.querySelectorAll('.ant-card');
-    expect(cards.length).toBeGreaterThan(0);
+
+    // Find the pagination wrapper
+    const paginationWrapper = container.querySelector('.pagination-wrapper');
+    expect(paginationWrapper).toBeInTheDocument();
   });
 
   it('should calculate prevCursor from first row', () => {
@@ -267,12 +267,12 @@ describe('TransitionDetailStatisticsTransactionMembers', () => {
         <TransitionDetailStatisticsTransactionMembers />
       </BrowserRouter>
     );
-    
+
     const wrapper = container.querySelector('.transaction-detail');
     expect(wrapper).toBeInTheDocument();
-    
+
     // Should contain the filter, table, and pagination
-    expect(wrapper?.querySelector('.ant-card')).toBeInTheDocument();
+    expect(wrapper?.querySelector('.pagination-wrapper')).toBeInTheDocument();
   });
 });
 

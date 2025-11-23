@@ -57,12 +57,12 @@ describe('EventsFilter', () => {
 
   it('should render all form fields', () => {
     render(<EventsFilter onChange={mockOnChange} />);
-    
-    expect(screen.getByText('Queue')).toBeInTheDocument();
-    expect(screen.getByText('Entity class')).toBeInTheDocument();
-    expect(screen.getByText('Transaction Status')).toBeInTheDocument();
-    expect(screen.getByText('Has error')).toBeInTheDocument();
-    expect(screen.getByText('Sort')).toBeInTheDocument();
+
+    expect(screen.getByText('QUEUE')).toBeInTheDocument();
+    expect(screen.getByText('ENTITY CLASS')).toBeInTheDocument();
+    expect(screen.getByText('TRANSACTION STATUS')).toBeInTheDocument();
+    expect(screen.getByText('HAS ERROR')).toBeInTheDocument();
+    expect(screen.getByText('SORT')).toBeInTheDocument();
   });
 
   it('should render Load button', () => {
@@ -209,8 +209,8 @@ describe('EventsFilter', () => {
     } as any);
 
     render(<EventsFilter onChange={mockOnChange} />);
-    
-    expect(screen.getByText('Entity class')).toBeInTheDocument();
+
+    expect(screen.getByText('ENTITY CLASS')).toBeInTheDocument();
   });
 
   it('should handle empty statuses data', () => {
@@ -223,8 +223,8 @@ describe('EventsFilter', () => {
     } as any);
 
     render(<EventsFilter onChange={mockOnChange} />);
-    
-    expect(screen.getByText('Transaction Status')).toBeInTheDocument();
+
+    expect(screen.getByText('TRANSACTION STATUS')).toBeInTheDocument();
   });
 
   it('should handle empty queues data', () => {
@@ -237,8 +237,8 @@ describe('EventsFilter', () => {
     } as any);
 
     render(<EventsFilter onChange={mockOnChange} />);
-    
-    expect(screen.getByText('Queue')).toBeInTheDocument();
+
+    expect(screen.getByText('QUEUE')).toBeInTheDocument();
   });
 
   it('should have showSearch on queue select', () => {

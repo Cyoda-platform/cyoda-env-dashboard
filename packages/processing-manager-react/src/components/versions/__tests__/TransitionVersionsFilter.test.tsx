@@ -190,15 +190,15 @@ describe('TransitionVersionsFilter', () => {
     expect(filterForm).toBeInTheDocument();
   });
 
-  it('should render inside a Card', () => {
+  it('should render with filter wrapper', () => {
     const { container } = render(
       <BrowserRouter>
         <TransitionVersionsFilter />
       </BrowserRouter>
     );
 
-    const card = container.querySelector('.ant-card');
-    expect(card).toBeInTheDocument();
+    const wrapper = container.querySelector('.transition-versions-filter-wrapper');
+    expect(wrapper).toBeInTheDocument();
   });
 
   it('should call useTransactionStatuses hook', () => {

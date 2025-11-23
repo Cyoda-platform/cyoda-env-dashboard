@@ -24,7 +24,7 @@ describe('ShardsDetailTabNetworkInfo', () => {
   it('should render the component', () => {
     const { container } = render(<ShardsDetailTabNetworkInfo />, { wrapper });
 
-    expect(container.querySelector('.ant-card')).toBeInTheDocument();
+    expect(container.querySelector('.network-info-view')).toBeInTheDocument();
   });
 
   it('should render title', () => {
@@ -37,14 +37,14 @@ describe('ShardsDetailTabNetworkInfo', () => {
     const { container } = render(<ShardsDetailTabNetworkInfo />, { wrapper });
 
     // Check that the component renders (it contains NetworkInfoServer and NetworkClients)
-    expect(container.querySelector('.ant-card')).toBeInTheDocument();
+    expect(container.querySelector('.network-info-view')).toBeInTheDocument();
   });
 
-  it('should render card component', () => {
+  it('should render main wrapper', () => {
     const { container } = render(<ShardsDetailTabNetworkInfo />, { wrapper });
 
-    const card = container.querySelector('.ant-card');
-    expect(card).toBeInTheDocument();
+    const networkInfoWrapper = container.querySelector('.network-info-view');
+    expect(networkInfoWrapper).toBeInTheDocument();
   });
 
   it('should render without errors', () => {
