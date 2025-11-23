@@ -134,6 +134,98 @@ describe('CurrNodeInfo', () => {
     expect(screen.getByText('10000')).toBeInTheDocument();
   });
 
+  it('should display "Yes" when processingNode is true', async () => {
+    const hooks = await import('../../../hooks/usePlatformCommon');
+    const nodeData = {
+      data: {
+        type: 'PROCESSING',
+        id: 'node-123',
+        baseUrl: 'http://test-host:8080/api',
+        host: 'test-host',
+        notificationsPort: 10000,
+        processingNode: true
+      },
+      isLoading: false,
+      error: null,
+    };
+    vi.mocked(hooks.useZkCurrNodeInfo).mockReturnValue(nodeData as any);
+
+    render(<CurrNodeInfo />, { wrapper });
+
+    expect(screen.getByText('Yes')).toBeInTheDocument();
+  });
+
+  it('should display "No" when processingNode is false', async () => {
+    const hooks = await import('../../../hooks/usePlatformCommon');
+    const nodeData = {
+      data: {
+        type: 'DEFAULT',
+        id: 'node-456',
+        baseUrl: 'http://test-host:8080/api',
+        host: 'test-host',
+        notificationsPort: 10000,
+        processingNode: false
+      },
+      isLoading: false,
+      error: null,
+    };
+    vi.mocked(hooks.useZkCurrNodeInfo).mockReturnValue(nodeData as any);
+
+    render(<CurrNodeInfo />, { wrapper });
+
+    expect(screen.getByText('No')).toBeInTheDocument();
+  });
+
+  it('should display "-" for missing fields', async () => {
+    const hooks = await import('../../../hooks/usePlatformCommon');
+    const nodeData = {
+      data: {
+        // Missing all fields
+      },
+      isLoading: false,
+      error: null,
+    };
+    vi.mocked(hooks.useZkCurrNodeInfo).mockReturnValue(nodeData as any);
+
+    const { container } = render(<CurrNodeInfo />, { wrapper });
+
+    // Count all "-" characters in the component
+    const dashElements = container.querySelectorAll('.row-flex div');
+    let dashCount = 0;
+    dashElements.forEach(el => {
+      if (el.textContent?.includes('-') && !el.textContent?.includes('BaseUrl') && !el.textContent?.includes('Host')) {
+        dashCount++;
+      }
+    });
+
+    expect(dashCount).toBeGreaterThan(0);
+  });
+
+  it('should display "-" when processingNode is undefined', async () => {
+    const hooks = await import('../../../hooks/usePlatformCommon');
+    const nodeData = {
+      data: {
+        type: 'DEFAULT',
+        id: 'node-789',
+        baseUrl: 'http://test-host:8080/api',
+        host: 'test-host',
+        notificationsPort: 10000,
+        // processingNode is undefined
+      },
+      isLoading: false,
+      error: null,
+    };
+    vi.mocked(hooks.useZkCurrNodeInfo).mockReturnValue(nodeData as any);
+
+    const { container } = render(<CurrNodeInfo />, { wrapper });
+
+    // Find the Processing Node field and check it contains "-"
+    const processingNodeDiv = Array.from(container.querySelectorAll('.row-flex div')).find(
+      el => el.textContent?.includes('Processing Node:')
+    );
+    expect(processingNodeDiv?.textContent).toContain('-');
+  });
+
 
 });
 

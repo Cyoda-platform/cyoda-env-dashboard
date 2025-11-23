@@ -91,6 +91,147 @@ describe('LoadedOnlineNodes', () => {
     expect(container.querySelector('.ant-table')).toBeInTheDocument();
   });
 
+  it('should display node data in table', async () => {
+    const hooks = await import('../../../hooks/usePlatformCommon');
+    const nodeData = {
+      data: {
+        DEFAULT: [
+          {
+            id: 'node-123',
+            type: 'DEFAULT',
+            baseUrl: 'http://test-host:8080/api',
+            host: 'test-host',
+            notificationsPort: 10000,
+            processingNode: false
+          }
+        ],
+        PROCESSING: [],
+        TOOLBOX: []
+      },
+      isLoading: false,
+      error: null,
+    };
+    vi.mocked(hooks.useZkOnlineNodes).mockReturnValue(nodeData as any);
+
+    render(<LoadedOnlineNodes />, { wrapper });
+
+    expect(screen.getByText('node-123')).toBeInTheDocument();
+    expect(screen.getByText('DEFAULT')).toBeInTheDocument();
+    expect(screen.getByText('http://test-host:8080/api')).toBeInTheDocument();
+    expect(screen.getByText('test-host')).toBeInTheDocument();
+    expect(screen.getByText('10000')).toBeInTheDocument();
+  });
+
+  it('should show warning icon in Action column when there are differences', async () => {
+    const hooks = await import('../../../hooks/usePlatformCommon');
+    const nodeData = {
+      data: {
+        DEFAULT: [
+          {
+            id: 'node-123',
+            type: 'DEFAULT',
+            baseUrl: 'http://test-host:8080/api',
+            host: 'test-host',
+            notificationsPort: 10000,
+            processingNode: false
+          }
+        ],
+        PROCESSING: [],
+        TOOLBOX: []
+      },
+      isLoading: false,
+      error: null,
+    };
+    vi.mocked(hooks.useZkOnlineNodes).mockReturnValue(nodeData as any);
+
+    // Pass different cluster state to trigger warning
+    const clusterState = {
+      DEFAULT: [
+        {
+          id: 'node-123',
+          type: 'DEFAULT',
+          baseUrl: 'http://different-host:8080/api', // Different baseUrl
+          host: 'different-host',
+          notificationsPort: 10000,
+          processingNode: false
+        }
+      ],
+      PROCESSING: [],
+      TOOLBOX: []
+    };
+
+    const { container } = render(<LoadedOnlineNodes clusterStateClientNodes={clusterState} />, { wrapper });
+
+    // Check for warning icon
+    const warningIcon = container.querySelector('.anticon-exclamation-circle');
+    expect(warningIcon).toBeInTheDocument();
+  });
+
+  it('should not show warning icon when data matches cluster state', async () => {
+    const hooks = await import('../../../hooks/usePlatformCommon');
+    const nodeData = {
+      data: {
+        DEFAULT: [
+          {
+            id: 'node-123',
+            type: 'DEFAULT',
+            baseUrl: 'http://test-host:8080/api',
+            host: 'test-host',
+            notificationsPort: 10000,
+            processingNode: false
+          }
+        ],
+        PROCESSING: [],
+        TOOLBOX: []
+      },
+      isLoading: false,
+      error: null,
+    };
+    vi.mocked(hooks.useZkOnlineNodes).mockReturnValue(nodeData as any);
+
+    // Pass matching cluster state
+    const clusterState = {
+      DEFAULT: [
+        {
+          id: 'node-123',
+          type: 'DEFAULT',
+          baseUrl: 'http://test-host:8080/api',
+          host: 'test-host',
+          notificationsPort: 10000,
+          processingNode: false
+        }
+      ],
+      PROCESSING: [],
+      TOOLBOX: []
+    };
+
+    const { container } = render(<LoadedOnlineNodes clusterStateClientNodes={clusterState} />, { wrapper });
+
+    // Check that warning icon is NOT present
+    const warningIcon = container.querySelector('.anticon-exclamation-circle');
+    expect(warningIcon).not.toBeInTheDocument();
+  });
+
+  it('should display "No Data" when all node types are empty', async () => {
+    const hooks = await import('../../../hooks/usePlatformCommon');
+    const emptyNodeData = {
+      data: {
+        DEFAULT: [],
+        PROCESSING: [],
+        TOOLBOX: []
+      },
+      isLoading: false,
+      error: null,
+    };
+    vi.mocked(hooks.useZkOnlineNodes).mockReturnValue(emptyNodeData as any);
+
+    render(<LoadedOnlineNodes />, { wrapper });
+
+    // Component renders 3 tables (DEFAULT, PROCESSING, TOOLBOX), each showing "No Data"
+    const noDataElements = screen.getAllByText('No Data');
+    expect(noDataElements.length).toBe(3);
+  });
+
 
 });
 

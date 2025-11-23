@@ -93,6 +93,48 @@ describe('LoadedShardsDistribution', () => {
     expect(container.querySelector('.ant-table')).toBeInTheDocument();
   });
 
+  it('should display shard data in table', async () => {
+    const hooks = await import('../../../hooks/usePlatformCommon');
+    const shardData = {
+      data: {
+        nodesIds: ['node-123', 'node-456'],
+        shardsByNodes: {
+          'node-123': ['shard-1', 'shard-2'],
+          'node-456': ['shard-3']
+        }
+      },
+      isLoading: false,
+      error: null,
+    };
+    vi.mocked(hooks.useZkShardsDistribution).mockReturnValue(shardData as any);
+
+    render(<LoadedShardsDistribution />, { wrapper });
+
+    expect(screen.getByText('node-123')).toBeInTheDocument();
+    expect(screen.getByText('node-456')).toBeInTheDocument();
+    expect(screen.getByText('shard-1, shard-2')).toBeInTheDocument();
+    expect(screen.getByText('shard-3')).toBeInTheDocument();
+  });
+
+
+
+  it('should display "No Data" when shards data is empty', async () => {
+    const hooks = await import('../../../hooks/usePlatformCommon');
+    const emptyShardData = {
+      data: {
+        nodesIds: [],
+        shardsByNodes: {}
+      },
+      isLoading: false,
+      error: null,
+    };
+    vi.mocked(hooks.useZkShardsDistribution).mockReturnValue(emptyShardData as any);
+
+    render(<LoadedShardsDistribution />, { wrapper });
+
+    expect(screen.getByText('No Data')).toBeInTheDocument();
+  });
+
 
 });
 
