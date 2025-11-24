@@ -127,7 +127,7 @@ export default function GrafanaChart({
       <Card
         className="grafana-chart-card"
         style={{ marginBottom: 16 }}
-        bodyStyle={{ padding: '24px' }}
+        styles={{ body: { padding: '24px' } }}
       >
         <Empty
           description={
@@ -149,7 +149,7 @@ export default function GrafanaChart({
     <Card
       className="grafana-chart-card"
       style={{ marginBottom: 16 }}
-      bodyStyle={{ padding: '24px' }}
+      styles={{ body: { padding: '24px' } }}
     >
       {isEnabled && link && (
         <iframe

@@ -49,11 +49,9 @@ export const SummaryConsole: React.FC = () => {
 
   // Handle iframe load to apply dark theme styles
   const handleIframeLoad = () => {
-    console.log('SSH Console iframe loaded');
     try {
       const iframe = iframeRef.current;
       if (iframe && iframe.contentDocument) {
-        console.log('Iframe content accessible - applying dark theme styles');
         const iframeDoc = iframe.contentDocument;
         const style = iframeDoc.createElement('style');
         style.textContent = `
@@ -69,8 +67,7 @@ export const SummaryConsole: React.FC = () => {
       }
     } catch (error) {
       // Cross-origin iframe - cannot access content
-      console.log('Cannot apply styles to cross-origin iframe (CORS):', error.message);
-      console.log('SSH server must support bgcolor parameter in URL');
+      // SSH server must support bgcolor parameter in URL
     }
   };
 
@@ -81,8 +78,6 @@ export const SummaryConsole: React.FC = () => {
   }, [name]);
 
   const handleLaunchConsole = () => {
-    console.log('Launch Console clicked');
-
     // Load latest settings before launching console
     const currentSettings = loadSettings();
 
@@ -95,7 +90,6 @@ export const SummaryConsole: React.FC = () => {
   };
 
   const handleSettings = () => {
-    console.log('Settings clicked');
     // Load current settings into form
     const currentSettings = loadSettings();
     form.setFieldsValue(currentSettings);
@@ -212,9 +206,7 @@ export const SummaryConsole: React.FC = () => {
           // Try different formats: #bgcolor=XXX or ?bgcolor=XXX
           const baseUrl = import.meta.env.VITE_APP_BASE_URL || window.location.origin;
 
-          // Log the URL for debugging
           const sshUrl = `${baseUrl}:8888/?hostname=${currentSettings.hostname}&username=${currentSettings.username}&password=${btoa(currentSettings.password)}`;
-          console.log('SSH Console URL:', sshUrl);
 
           return (
             <div style={{
