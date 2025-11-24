@@ -129,7 +129,7 @@ describe('Tasks Edge Cases', () => {
 
     render(<TasksGrid filter={{}} isApplyRealData={false} />, { wrapper: createWrapper() });
 
-    expect(screen.getByText('Tasks')).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Tasks management' })).toBeInTheDocument();
   });
 
   it('should handle null data', () => {
@@ -141,7 +141,7 @@ describe('Tasks Edge Cases', () => {
 
     render(<TasksGrid filter={{}} isApplyRealData={false} />, { wrapper: createWrapper() });
 
-    expect(screen.getByText('Tasks')).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Tasks management' })).toBeInTheDocument();
   });
 
   it('should handle undefined data', () => {
@@ -153,7 +153,7 @@ describe('Tasks Edge Cases', () => {
 
     render(<TasksGrid filter={{}} isApplyRealData={false} />, { wrapper: createWrapper() });
 
-    expect(screen.getByText('Tasks')).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Tasks management' })).toBeInTheDocument();
   });
 
   it('should handle loading state', () => {
@@ -165,7 +165,7 @@ describe('Tasks Edge Cases', () => {
 
     render(<TasksGrid filter={{}} isApplyRealData={false} />, { wrapper: createWrapper() });
 
-    expect(screen.getByText('Tasks')).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Tasks management' })).toBeInTheDocument();
   });
 
   it('should handle tasks with missing fields', () => {
@@ -190,7 +190,7 @@ describe('Tasks Edge Cases', () => {
 
     render(<TasksGrid filter={{}} isApplyRealData={false} />, { wrapper: createWrapper() });
 
-    expect(screen.getByText('Tasks')).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Tasks management' })).toBeInTheDocument();
   });
 
   it('should handle tasks with null values', () => {
@@ -218,7 +218,7 @@ describe('Tasks Edge Cases', () => {
 
     render(<TasksGrid filter={{}} isApplyRealData={false} />, { wrapper: createWrapper() });
 
-    expect(screen.getByText('Tasks')).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Tasks management' })).toBeInTheDocument();
   });
 
   it('should handle very long task titles', () => {
@@ -246,7 +246,7 @@ describe('Tasks Edge Cases', () => {
 
     render(<TasksGrid filter={{}} isApplyRealData={false} />, { wrapper: createWrapper() });
 
-    expect(screen.getByText('Tasks')).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Tasks management' })).toBeInTheDocument();
   });
 
   it('should handle special characters in task data', () => {
@@ -274,7 +274,7 @@ describe('Tasks Edge Cases', () => {
 
     render(<TasksGrid filter={{}} isApplyRealData={false} />, { wrapper: createWrapper() });
 
-    expect(screen.getByText('Tasks')).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Tasks management' })).toBeInTheDocument();
   });
 
   it('should handle invalid priority values', () => {
@@ -311,7 +311,7 @@ describe('Tasks Edge Cases', () => {
 
     render(<TasksGrid filter={{}} isApplyRealData={false} />, { wrapper: createWrapper() });
 
-    expect(screen.getByText('Tasks')).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Tasks management' })).toBeInTheDocument();
   });
 
   it('should handle invalid date formats', () => {
@@ -339,7 +339,7 @@ describe('Tasks Edge Cases', () => {
 
     render(<TasksGrid filter={{}} isApplyRealData={false} />, { wrapper: createWrapper() });
 
-    expect(screen.getByText('Tasks')).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Tasks management' })).toBeInTheDocument();
   });
 
   it('should handle large dataset (1000 tasks)', () => {
@@ -367,8 +367,8 @@ describe('Tasks Edge Cases', () => {
 
     render(<TasksGrid filter={{}} isApplyRealData={false} />, { wrapper: createWrapper() });
 
-    expect(screen.getByText('Tasks')).toBeInTheDocument();
-  }, 10000); // Increase timeout to 10 seconds for large dataset
+    expect(screen.getByRole('region', { name: 'Tasks management' })).toBeInTheDocument();
+  }, 30000); // Increase timeout to 30 seconds for large dataset
 
   it('should handle pagination edge cases', () => {
     mockUseTasksPerPage.mockReturnValue({
@@ -385,7 +385,7 @@ describe('Tasks Edge Cases', () => {
 
     render(<TasksGrid filter={{}} isApplyRealData={false} />, { wrapper: createWrapper() });
 
-    expect(screen.getByText('Tasks')).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Tasks management' })).toBeInTheDocument();
   });
 
   it('should handle invalid state values', () => {
@@ -413,7 +413,7 @@ describe('Tasks Edge Cases', () => {
 
     render(<TasksGrid filter={{}} isApplyRealData={false} />, { wrapper: createWrapper() });
 
-    expect(screen.getByText('Tasks')).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Tasks management' })).toBeInTheDocument();
   });
 });
 

@@ -164,7 +164,8 @@ describe('TasksGrid', () => {
       { wrapper: createWrapper() }
     );
 
-    expect(screen.getByText('Tasks')).toBeInTheDocument();
+    // Check that the grid region is rendered
+    expect(screen.getByRole('region', { name: 'Tasks management' })).toBeInTheDocument();
   });
 
   it('should display all tasks in the table', () => {
@@ -223,8 +224,8 @@ describe('TasksGrid', () => {
       { wrapper: createWrapper() }
     );
 
-    // Ant Design Table shows loading spinner
-    expect(screen.getByText('Tasks')).toBeInTheDocument();
+    // Check that the grid region is rendered (loading state is handled by Ant Design Table internally)
+    expect(screen.getByRole('region', { name: 'Tasks management' })).toBeInTheDocument();
   });
 
   it('should handle empty data', () => {
@@ -239,7 +240,8 @@ describe('TasksGrid', () => {
       { wrapper: createWrapper() }
     );
 
-    expect(screen.getByText('Tasks')).toBeInTheDocument();
+    // Check that the grid region is rendered even with empty data
+    expect(screen.getByRole('region', { name: 'Tasks management' })).toBeInTheDocument();
   });
 
   it('should allow row selection', () => {
@@ -311,7 +313,7 @@ describe('TasksGrid', () => {
     );
 
     // Component should render
-    expect(screen.getByText('Tasks')).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Tasks management' })).toBeInTheDocument();
   });
 
   it('should handle page size change', () => {
