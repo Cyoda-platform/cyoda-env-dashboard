@@ -172,8 +172,9 @@ export const ProcessEventsStatistics: React.FC = () => {
                 placeholder="Select queue"
                 allowClear
                 showSearch
-                popupClassName="process-events-statistics-dropdown"
-                dropdownStyle={{ minWidth: '400px' }}
+                popupMatchSelectWidth={false}
+                classNames={{ popup: 'process-events-statistics-dropdown' }}
+                styles={{ popup: { minWidth: '400px' } }}
               >
                 {queueOptions.map((item: string) => (
                   <Select.Option key={item} value={item} style={{ whiteSpace: 'normal', height: 'auto' }}>

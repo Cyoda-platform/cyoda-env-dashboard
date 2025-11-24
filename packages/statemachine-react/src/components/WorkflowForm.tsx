@@ -270,10 +270,10 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
                   String(option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                 }
                 popupMatchSelectWidth={false}
-                dropdownStyle={{ minWidth: '400px' }}
+                styles={{ popup: { root: { minWidth: '400px' } } }}
               />
             </Form.Item>
-            
+
             <Form.Item
               label="Name"
               name="name"
@@ -281,14 +281,14 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
             >
               <Input disabled={isRuntime} />
             </Form.Item>
-            
+
             <Form.Item label="Description" name="description">
               <TextArea
                 disabled={isRuntime}
                 autoSize={{ minRows: 3, maxRows: 6 }}
               />
             </Form.Item>
-            
+
             <Form.Item
               label="Documentation Link"
               name="documentLink"
@@ -298,7 +298,7 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
             >
               <Input disabled={isRuntime} placeholder="https://..." />
             </Form.Item>
-            
+
             <Form.Item label="Criteria" name="criteriaIds">
               <Select
                 mode="multiple"
@@ -311,7 +311,7 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
                   String(option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                 }
                 popupMatchSelectWidth={false}
-                dropdownStyle={{ minWidth: '400px' }}
+                styles={{ popup: { root: { minWidth: '400px' } } }}
               />
             </Form.Item>
 

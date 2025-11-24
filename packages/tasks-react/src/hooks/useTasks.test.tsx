@@ -11,7 +11,7 @@ import { useTasksStore } from '../stores/tasksStore';
 
 // Mock axios
 vi.mock('@cyoda/http-api-react', () => ({
-  default: {
+  axios: {
     get: vi.fn(),
     put: vi.fn(),
   },
@@ -58,8 +58,8 @@ describe('useTasks hooks', () => {
         number: 0,
       };
 
-      const axios = await import('@cyoda/http-api-react');
-      vi.mocked(axios.default.get).mockResolvedValue({ data: mockResponse });
+      const { axios } = await import('@cyoda/http-api-react');
+      vi.mocked(axios.get).mockResolvedValue({ data: mockResponse });
 
       const { result } = renderHook(
         () =>
@@ -89,8 +89,8 @@ describe('useTasks hooks', () => {
         transitions: ['COMPLETE', 'CANCEL'],
       };
 
-      const axios = await import('@cyoda/http-api-react');
-      vi.mocked(axios.default.get).mockResolvedValue({ data: mockResponse });
+      const { axios } = await import('@cyoda/http-api-react');
+      vi.mocked(axios.get).mockResolvedValue({ data: mockResponse });
 
       const { result } = renderHook(() => useTask('task-1'), { wrapper });
 
@@ -116,8 +116,8 @@ describe('useTasks hooks', () => {
         state: 'COMPLETE',
       };
 
-      const axios = await import('@cyoda/http-api-react');
-      vi.mocked(axios.default.put).mockResolvedValue({ data: mockTask });
+      const { axios } = await import('@cyoda/http-api-react');
+      vi.mocked(axios.put).mockResolvedValue({ data: mockTask });
 
       const { result } = renderHook(() => useUpdateTask(), { wrapper });
 

@@ -2,9 +2,37 @@
  * Tests for TimeCpuUsage Component
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render } from '@testing-library/react';
 import TimeCpuUsage from '../TimeCpuUsage';
+
+// Mock react-chartjs-2
+vi.mock('react-chartjs-2', () => ({
+  Line: ({ data, options }: any) => (
+    <div data-testid="line-chart">
+      <div data-testid="chart-data">{JSON.stringify(data)}</div>
+      <div data-testid="chart-options">{JSON.stringify(options, (key, value) => typeof value === 'function' ? '__FUNCTION__' : value)}</div>
+    </div>
+  ),
+}));
+
+// Mock chart.js
+vi.mock('chart.js', () => ({
+  Chart: class Chart {
+    static register(...args: any[]) {}
+  },
+  CategoryScale: {},
+  LinearScale: {},
+  PointElement: {},
+  LineElement: {},
+  Title: {},
+  Tooltip: {},
+  Legend: {},
+  TimeScale: {},
+}));
+
+// Mock chartjs-adapter-date-fns
+vi.mock('chartjs-adapter-date-fns', () => ({}));
 
 const mockCpuData = [
   { t: 1609459200000, y: 25.5 },

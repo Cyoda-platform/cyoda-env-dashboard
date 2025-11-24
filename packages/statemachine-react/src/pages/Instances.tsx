@@ -398,7 +398,7 @@ export const Instances: React.FC = () => {
                 allowClear
                 style={{ width: '100%' }}
                 popupMatchSelectWidth={false}
-                dropdownStyle={{ minWidth: '400px' }}
+                styles={{ popup: { root: { minWidth: '400px' } } }}
               />
             </Col>
             <Col span={6}>

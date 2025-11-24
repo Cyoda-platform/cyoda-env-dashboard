@@ -21,25 +21,58 @@ vi.mock('../hooks/useTasks', () => ({
   })),
 }));
 
-// Mock HelperDictionary and HelperFormat
-vi.mock('@cyoda/ui-lib-react', () => ({
-  HelperDictionary: {
-    getLabel: (type: string, key: string) => {
-      const labels: Record<string, Record<string, string>> = {
-        priorities: {
-          '1': 'Low',
-          '5': 'Medium',
-          '10': 'High',
-        },
-      };
-      return labels[type]?.[key] || key;
+// Mock HelperDictionary, HelperFormat, and HelperStorage
+vi.mock('@cyoda/ui-lib-react', () => {
+  // Mock HelperStorage class
+  class MockHelperStorage {
+    private storage: Map<string, any> = new Map();
+    private prefix = 'cyoda_';
+
+    get(key: string, defaultValue?: any): any {
+      const fullKey = `${this.prefix}${key}`;
+      return this.storage.has(fullKey) ? this.storage.get(fullKey) : defaultValue;
+    }
+
+    set(key: string, value: any): void {
+      const fullKey = `${this.prefix}${key}`;
+      this.storage.set(fullKey, value);
+    }
+
+    remove(key: string): void {
+      const fullKey = `${this.prefix}${key}`;
+      this.storage.delete(fullKey);
+    }
+
+    clear(): void {
+      this.storage.clear();
+    }
+
+    has(key: string): boolean {
+      const fullKey = `${this.prefix}${key}`;
+      return this.storage.has(fullKey);
+    }
+  }
+
+  return {
+    HelperDictionary: {
+      getLabel: (type: string, key: string) => {
+        const labels: Record<string, Record<string, string>> = {
+          priorities: {
+            '1': 'Low',
+            '5': 'Medium',
+            '10': 'High',
+          },
+        };
+        return labels[type]?.[key] || key;
+      },
     },
-  },
-  HelperFormat: {
-    toLowerCase: (str: string) => str.toLowerCase(),
-    date: (date: string) => new Date(date).toLocaleDateString(),
-  },
-}));
+    HelperFormat: {
+      toLowerCase: (str: string) => str.toLowerCase(),
+      date: (date: string) => new Date(date).toLocaleDateString(),
+    },
+    HelperStorage: MockHelperStorage,
+  };
+});
 
 // Mock BulkUpdateForm
 vi.mock('./BulkUpdateForm', () => ({

@@ -7,7 +7,7 @@ exports[`TaskDetailSkeleton > Snapshot > should match snapshot 1`] = `
   role="status"
 >
   <div
-    class="ant-card ant-card-bordered css-dev-only-do-not-override-1odpy5d"
+    class="ant-card ant-card-bordered css-dev-only-do-not-override-ac2jek"
   >
     <div
       class="ant-card-head"
@@ -19,13 +19,13 @@ exports[`TaskDetailSkeleton > Snapshot > should match snapshot 1`] = `
           class="ant-card-head-title"
         >
           <div
-            class="ant-space css-dev-only-do-not-override-1odpy5d ant-space-horizontal ant-space-align-center ant-space-gap-row-small ant-space-gap-col-small"
+            class="ant-space css-dev-only-do-not-override-ac2jek ant-space-horizontal ant-space-align-center ant-space-gap-row-small ant-space-gap-col-small"
           >
             <div
               class="ant-space-item"
             >
               <div
-                class="ant-skeleton ant-skeleton-element ant-skeleton-active css-dev-only-do-not-override-1odpy5d"
+                class="ant-skeleton ant-skeleton-element ant-skeleton-active css-dev-only-do-not-override-ac2jek"
               >
                 <span
                   class="ant-skeleton-button ant-skeleton-button-sm"
@@ -37,7 +37,7 @@ exports[`TaskDetailSkeleton > Snapshot > should match snapshot 1`] = `
               class="ant-space-item"
             >
               <div
-                class="ant-skeleton ant-skeleton-element ant-skeleton-active css-dev-only-do-not-override-1odpy5d"
+                class="ant-skeleton ant-skeleton-element ant-skeleton-active css-dev-only-do-not-override-ac2jek"
               >
                 <span
                   class="ant-skeleton-input ant-skeleton-input-sm"
@@ -51,13 +51,13 @@ exports[`TaskDetailSkeleton > Snapshot > should match snapshot 1`] = `
           class="ant-card-extra"
         >
           <div
-            class="ant-space css-dev-only-do-not-override-1odpy5d ant-space-horizontal ant-space-align-center ant-space-gap-row-small ant-space-gap-col-small"
+            class="ant-space css-dev-only-do-not-override-ac2jek ant-space-horizontal ant-space-align-center ant-space-gap-row-small ant-space-gap-col-small"
           >
             <div
               class="ant-space-item"
             >
               <div
-                class="ant-skeleton ant-skeleton-element ant-skeleton-active css-dev-only-do-not-override-1odpy5d"
+                class="ant-skeleton ant-skeleton-element ant-skeleton-active css-dev-only-do-not-override-ac2jek"
               >
                 <span
                   class="ant-skeleton-button ant-skeleton-button-sm"
@@ -73,15 +73,15 @@ exports[`TaskDetailSkeleton > Snapshot > should match snapshot 1`] = `
       class="ant-card-body"
     >
       <div
-        class="ant-row css-dev-only-do-not-override-1odpy5d"
+        class="ant-row css-dev-only-do-not-override-ac2jek"
         style="margin-left: -12px; margin-right: -12px;"
       >
         <div
-          class="ant-col ant-col-16 css-dev-only-do-not-override-1odpy5d"
+          class="ant-col ant-col-16 css-dev-only-do-not-override-ac2jek"
           style="padding-left: 12px; padding-right: 24px;"
         >
           <div
-            class="ant-skeleton ant-skeleton-active css-dev-only-do-not-override-1odpy5d"
+            class="ant-skeleton ant-skeleton-active css-dev-only-do-not-override-ac2jek"
           >
             <div
               class="ant-skeleton-content"
@@ -108,11 +108,11 @@ exports[`TaskDetailSkeleton > Snapshot > should match snapshot 1`] = `
           </div>
         </div>
         <div
-          class="ant-col ant-col-8 css-dev-only-do-not-override-1odpy5d"
+          class="ant-col ant-col-8 css-dev-only-do-not-override-ac2jek"
           style="padding-left: 12px; padding-right: 12px;"
         >
           <div
-            class="ant-skeleton ant-skeleton-active css-dev-only-do-not-override-1odpy5d"
+            class="ant-skeleton ant-skeleton-active css-dev-only-do-not-override-ac2jek"
           >
             <div
               class="ant-skeleton-content"

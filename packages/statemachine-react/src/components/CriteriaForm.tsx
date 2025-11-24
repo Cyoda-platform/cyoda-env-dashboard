@@ -490,8 +490,8 @@ export const CriteriaForm: React.FC<CriteriaFormProps> = ({
           filterOption={(input, option) =>
             (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
           }
-          popupClassName="criteria-form-dropdown"
-          dropdownStyle={{ minWidth: '400px' }}
+          classNames={{ popup: { root: 'criteria-form-dropdown' } }}
+          styles={{ popup: { root: { minWidth: '400px' } } }}
         />
       </Form.Item>
 
@@ -521,7 +521,7 @@ export const CriteriaForm: React.FC<CriteriaFormProps> = ({
                       value: val,
                     }))}
                     popupMatchSelectWidth={false}
-                    dropdownStyle={{ minWidth: '300px' }}
+                    styles={{ popup: { root: { minWidth: '300px' } } }}
                   />
                 </Form.Item>
               );

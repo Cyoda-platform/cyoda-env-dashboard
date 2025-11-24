@@ -767,7 +767,7 @@ export const Transition: React.FC = () => {
         onCancel={() => setIsCriteriaModalVisible(false)}
         footer={null}
         width="90%"
-        destroyOnClose
+        destroyOnHidden
       >
         {isCriteriaModalVisible && (
           <CriteriaForm
@@ -787,7 +787,7 @@ export const Transition: React.FC = () => {
         onCancel={() => setIsProcessModalVisible(false)}
         footer={null}
         width="90%"
-        destroyOnClose
+        destroyOnHidden
       >
         {isProcessModalVisible && (
           <ProcessForm

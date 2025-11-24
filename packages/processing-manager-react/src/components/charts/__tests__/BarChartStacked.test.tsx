@@ -2,9 +2,32 @@
  * Tests for BarChartStacked Component
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render } from '@testing-library/react';
 import BarChartStacked from '../BarChartStacked';
+
+// Mock react-chartjs-2
+vi.mock('react-chartjs-2', () => ({
+  Bar: ({ data, options }: any) => (
+    <div data-testid="bar-chart">
+      <div data-testid="chart-data">{JSON.stringify(data)}</div>
+      <div data-testid="chart-options">{JSON.stringify(options, (key, value) => typeof value === 'function' ? '__FUNCTION__' : value)}</div>
+    </div>
+  ),
+}));
+
+// Mock chart.js
+vi.mock('chart.js', () => ({
+  Chart: class Chart {
+    static register(...args: any[]) {}
+  },
+  CategoryScale: {},
+  LinearScale: {},
+  BarElement: {},
+  Title: {},
+  Tooltip: {},
+  Legend: {},
+}));
 
 const mockResources = [
   { name: 'Resource 1', size: 100, available: 50 },

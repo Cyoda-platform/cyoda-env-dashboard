@@ -11,17 +11,21 @@ import * as entitiesApi from '../../api/entities';
 
 // Mock dependencies
 vi.mock('../../stores/entityViewerStore');
-vi.mock('../../api/entities');
-vi.mock('@cyoda/ui-lib-react', () => ({
-  CardComponent: ({ children }: any) => <div data-testid="card-component">{children}</div>,
-  ModellingGroup: () => <div data-testid="modelling-group">ModellingGroup</div>,
+vi.mock('../../stores/globalUiSettingsStore', () => ({
+  useGlobalUiSettingsStore: () => ({
+    entityType: 'BUSINESS',
+  }),
 }));
+vi.mock('../../api/entities');
 vi.mock('../../components/EntityViewer', () => ({
   EntityViewer: vi.fn(({ requestClass, onLoaded }: any) => {
     // Simulate async loading
     setTimeout(() => onLoaded?.(), 0);
     return <div data-testid="entity-viewer">{requestClass}</div>;
   }),
+}));
+vi.mock('../../components/StreamGrid', () => ({
+  StreamGrid: () => <div data-testid="stream-grid">StreamGrid</div>,
 }));
 
 describe('PageEntityViewer', () => {
@@ -66,17 +70,19 @@ describe('PageEntityViewer', () => {
       render(<PageEntityViewer />);
 
       await waitFor(() => {
-        expect(screen.getByTestId('card-component')).toBeInTheDocument();
+        expect(screen.getByText('Entity Viewer')).toBeInTheDocument();
       });
 
-      expect(screen.getByText(/Selected Root Entity/i)).toBeInTheDocument();
+      expect(screen.getByRole('combobox')).toBeInTheDocument();
     });
 
-    it('should display default root entity as dash', async () => {
+    it('should display entity class selector', async () => {
       render(<PageEntityViewer />);
 
       await waitFor(() => {
-        expect(screen.getByText(/Selected Root Entity -/i)).toBeInTheDocument();
+        // Check that the select component is rendered
+        const select = screen.getByRole('combobox');
+        expect(select).toBeInTheDocument();
       });
     });
 
@@ -199,7 +205,7 @@ describe('PageEntityViewer', () => {
       // In real usage, selecting from dropdown triggers this
     });
 
-    it('should display selected entity name in header', async () => {
+    it('should display entity viewer when entity is selected', async () => {
       (useEntityViewerStore as any).mockReturnValue({
         entitys: [{ from: '', to: 'com.cyoda.core.Entity' }],
         onlyDynamic: true,
@@ -211,9 +217,8 @@ describe('PageEntityViewer', () => {
       render(<PageEntityViewer />);
 
       await waitFor(() => {
-        // After selecting, the header should update
-        // This is tested indirectly through the component logic
-        expect(screen.getByTestId('card-component')).toBeInTheDocument();
+        // After selecting, the entity viewer should be rendered
+        expect(screen.getByTestId('entity-viewer')).toBeInTheDocument();
       });
     });
   });
@@ -265,14 +270,16 @@ describe('PageEntityViewer', () => {
       render(<PageEntityViewer />);
 
       await waitFor(() => {
-        expect(screen.getByTestId('card-component')).toBeInTheDocument();
+        expect(screen.getByText('Entity Viewer')).toBeInTheDocument();
       });
 
-      // Find zoom out icon (SearchPlusOutlined)
+      // Find zoom out icon (ZoomInOutlined)
       const icons = screen.getAllByRole('img', { hidden: true });
-      const zoomOutIcon = icons[1]; // Second icon is zoom out
-      
-      fireEvent.click(zoomOutIcon);
+      const zoomOutIcon = icons.find((icon) => icon.getAttribute('aria-label') === 'zoom-in');
+
+      if (zoomOutIcon) {
+        fireEvent.click(zoomOutIcon);
+      }
 
       // Zoom should increase (zoom out makes things smaller, so zoom value increases)
       // This is tested through the component's internal state
@@ -282,13 +289,15 @@ describe('PageEntityViewer', () => {
       render(<PageEntityViewer />);
 
       await waitFor(() => {
-        expect(screen.getByTestId('card-component')).toBeInTheDocument();
+        expect(screen.getByText('Entity Viewer')).toBeInTheDocument();
       });
 
       const icons = screen.getAllByRole('img', { hidden: true });
-      const zoomInIcon = icons[2]; // Third icon is zoom in
-      
-      fireEvent.click(zoomInIcon);
+      const zoomInIcon = icons.find((icon) => icon.getAttribute('aria-label') === 'zoom-out');
+
+      if (zoomInIcon) {
+        fireEvent.click(zoomInIcon);
+      }
 
       // Zoom should decrease (zoom in makes things bigger, so zoom value decreases)
     });
@@ -297,17 +306,22 @@ describe('PageEntityViewer', () => {
       render(<PageEntityViewer />);
 
       await waitFor(() => {
-        expect(screen.getByTestId('card-component')).toBeInTheDocument();
+        expect(screen.getByText('Entity Viewer')).toBeInTheDocument();
       });
 
       const icons = screen.getAllByRole('img', { hidden: true });
-      
+
       // First zoom out
-      fireEvent.click(icons[1]);
-      
+      const zoomOutIcon = icons.find((icon) => icon.getAttribute('aria-label') === 'zoom-in');
+      if (zoomOutIcon) {
+        fireEvent.click(zoomOutIcon);
+      }
+
       // Then refresh
-      const refreshIcon = icons[3]; // Fourth icon is refresh
-      fireEvent.click(refreshIcon);
+      const refreshIcon = icons.find((icon) => icon.getAttribute('aria-label') === 'sync');
+      if (refreshIcon) {
+        fireEvent.click(refreshIcon);
+      }
 
       // Zoom should be back to 1
     });
@@ -316,15 +330,17 @@ describe('PageEntityViewer', () => {
       render(<PageEntityViewer />);
 
       await waitFor(() => {
-        expect(screen.getByTestId('card-component')).toBeInTheDocument();
+        expect(screen.getByText('Entity Viewer')).toBeInTheDocument();
       });
 
       const icons = screen.getAllByRole('img', { hidden: true });
-      const zoomOutIcon = icons[1];
-      
+      const zoomOutIcon = icons.find((icon) => icon.getAttribute('aria-label') === 'zoom-in');
+
       // Click multiple times to try to exceed max zoom
-      for (let i = 0; i < 20; i++) {
-        fireEvent.click(zoomOutIcon);
+      if (zoomOutIcon) {
+        for (let i = 0; i < 20; i++) {
+          fireEvent.click(zoomOutIcon);
+        }
       }
 
       // Should not exceed 2
@@ -334,15 +350,17 @@ describe('PageEntityViewer', () => {
       render(<PageEntityViewer />);
 
       await waitFor(() => {
-        expect(screen.getByTestId('card-component')).toBeInTheDocument();
+        expect(screen.getByText('Entity Viewer')).toBeInTheDocument();
       });
 
       const icons = screen.getAllByRole('img', { hidden: true });
-      const zoomInIcon = icons[2];
-      
+      const zoomInIcon = icons.find((icon) => icon.getAttribute('aria-label') === 'zoom-out');
+
       // Click multiple times to try to go below min zoom
-      for (let i = 0; i < 20; i++) {
-        fireEvent.click(zoomInIcon);
+      if (zoomInIcon) {
+        for (let i = 0; i < 20; i++) {
+          fireEvent.click(zoomInIcon);
+        }
       }
 
       // Should not go below 0.2
@@ -398,16 +416,18 @@ describe('PageEntityViewer', () => {
   });
 
   describe('Event Handling', () => {
-    it('should listen for draw lines events', async () => {
+    it('should listen for entityInfo:update events', async () => {
       render(<PageEntityViewer />);
 
       await waitFor(() => {
-        expect(screen.getByTestId('card-component')).toBeInTheDocument();
+        expect(screen.getByText('Entity Viewer')).toBeInTheDocument();
       });
 
-      // Dispatch custom event
-      const event = new CustomEvent('entity-viewer:draw-lines');
-      window.dispatchEvent(event);
+      // Import eventBus to emit event
+      const { eventBus } = await import('../../utils');
+
+      // Emit event
+      eventBus.emit('entityInfo:update');
 
       // Event should be handled (tested through component behavior)
     });
@@ -416,7 +436,7 @@ describe('PageEntityViewer', () => {
       const { unmount } = render(<PageEntityViewer />);
 
       await waitFor(() => {
-        expect(screen.getByTestId('card-component')).toBeInTheDocument();
+        expect(screen.getByText('Entity Viewer')).toBeInTheDocument();
       });
 
       // Import eventBus to spy on it

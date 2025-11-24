@@ -50,50 +50,78 @@ vi.mock('../../hooks/useTasks', () => ({
   })),
 }));
 
-// Mock HelperDictionary and HelperStorage
-vi.mock('@cyoda/ui-lib-react', () => ({
-  HelperDictionary: {
-    getLabel: (type: string, key: string) => {
-      const labels: Record<string, Record<string, string>> = {
-        priorities: {
-          '1': 'Low',
-          '5': 'Medium',
-          '10': 'High',
-        },
-        statuses: {
-          'OPEN': 'Open',
-          'CLOSED': 'Closed',
-          'IN_PROGRESS': 'In Progress',
-        },
-      };
-      return labels[type]?.[key] || key;
+// Mock HelperDictionary, HelperStorage, and HelperFormat
+vi.mock('@cyoda/ui-lib-react', () => {
+  // Mock HelperStorage class
+  class MockHelperStorage {
+    private storage: Map<string, any> = new Map();
+    private prefix = 'cyoda_';
+
+    get(key: string, defaultValue?: any): any {
+      const fullKey = `${this.prefix}${key}`;
+      return this.storage.has(fullKey) ? this.storage.get(fullKey) : defaultValue;
+    }
+
+    set(key: string, value: any): void {
+      const fullKey = `${this.prefix}${key}`;
+      this.storage.set(fullKey, value);
+    }
+
+    remove(key: string): void {
+      const fullKey = `${this.prefix}${key}`;
+      this.storage.delete(fullKey);
+    }
+
+    clear(): void {
+      this.storage.clear();
+    }
+
+    has(key: string): boolean {
+      const fullKey = `${this.prefix}${key}`;
+      return this.storage.has(fullKey);
+    }
+  }
+
+  return {
+    HelperDictionary: {
+      getLabel: (type: string, key: string) => {
+        const labels: Record<string, Record<string, string>> = {
+          priorities: {
+            '1': 'Low',
+            '5': 'Medium',
+            '10': 'High',
+          },
+          statuses: {
+            'OPEN': 'Open',
+            'CLOSED': 'Closed',
+            'IN_PROGRESS': 'In Progress',
+          },
+        };
+        return labels[type]?.[key] || key;
+      },
+      getOptions: (type: string) => {
+        const options: Record<string, Array<{ value: string; label: string }>> = {
+          priorities: [
+            { value: '1', label: 'Low' },
+            { value: '5', label: 'Medium' },
+            { value: '10', label: 'High' },
+          ],
+          statuses: [
+            { value: 'OPEN', label: 'Open' },
+            { value: 'CLOSED', label: 'Closed' },
+            { value: 'IN_PROGRESS', label: 'In Progress' },
+          ],
+        };
+        return options[type] || [];
+      },
     },
-    getOptions: (type: string) => {
-      const options: Record<string, Array<{ value: string; label: string }>> = {
-        priorities: [
-          { value: '1', label: 'Low' },
-          { value: '5', label: 'Medium' },
-          { value: '10', label: 'High' },
-        ],
-        statuses: [
-          { value: 'OPEN', label: 'Open' },
-          { value: 'CLOSED', label: 'Closed' },
-          { value: 'IN_PROGRESS', label: 'In Progress' },
-        ],
-      };
-      return options[type] || [];
+    HelperStorage: MockHelperStorage,
+    HelperFormat: {
+      toLowerCase: (str: string) => str.toLowerCase(),
+      date: (date: string) => new Date(date).toLocaleDateString(),
     },
-  },
-  HelperStorage: {
-    get: vi.fn(() => null),
-    set: vi.fn(),
-    remove: vi.fn(),
-  },
-  HelperFormat: {
-    toLowerCase: (str: string) => str.toLowerCase(),
-    date: (date: string) => new Date(date).toLocaleDateString(),
-  },
-}));
+  };
+});
 
 // Mock BulkUpdateForm
 vi.mock('../../components/BulkUpdateForm', () => ({

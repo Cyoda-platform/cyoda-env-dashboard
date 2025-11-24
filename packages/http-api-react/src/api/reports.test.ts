@@ -76,25 +76,25 @@ describe('Reports API', () => {
   });
 
   describe('getReportStats', () => {
-    it('should call GET /platform-api/report/{reportId}/stats', async () => {
+    it('should call GET /platform-api/reporting/report/{reportId}/stats', async () => {
       const mockResponse = { data: { totalRows: 1000, totalGroups: 5 } };
       vi.mocked(axios.get).mockResolvedValue(mockResponse);
 
       const result = await reportsApi.getReportStats('report-123');
 
-      expect(axios.get).toHaveBeenCalledWith('platform-api/report/report-123/stats?full=false');
+      expect(axios.get).toHaveBeenCalledWith('platform-api/reporting/report/report-123/stats?full=false');
       expect(result).toEqual(mockResponse);
     });
   });
 
   describe('getReportConfig', () => {
-    it('should call GET /platform-api/report/{reportId}/config', async () => {
+    it('should call GET /platform-api/reporting/report/{reportId}/config', async () => {
       const mockResponse = { data: { name: 'Test Report', fields: [] } };
       vi.mocked(axios.get).mockResolvedValue(mockResponse);
 
       const result = await reportsApi.getReportConfig('report-123');
 
-      expect(axios.get).toHaveBeenCalledWith('platform-api/report/report-123/config');
+      expect(axios.get).toHaveBeenCalledWith('platform-api/reporting/report/report-123/config');
       expect(result).toEqual(mockResponse);
     });
   });

@@ -182,8 +182,8 @@ export const RangeCondition: React.FC<RangeConditionProps> = ({
                 onChange={handleRangeOrderChange}
                 style={{ width: 100 }}
                 disabled={disabled}
-                popupClassName="range-condition-dropdown"
-                dropdownStyle={{ minWidth: '150px' }}
+                classNames={{ popup: { root: 'range-condition-dropdown' } }}
+                styles={{ popup: { root: { minWidth: '150px' } } }}
               >
                 <Select.Option value="ASC">ASC</Select.Option>
                 <Select.Option value="DESC">DESC</Select.Option>
