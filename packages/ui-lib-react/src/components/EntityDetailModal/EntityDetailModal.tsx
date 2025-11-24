@@ -195,7 +195,10 @@ const EntityDetailModal: React.FC<EntityDetailModalProps> = ({
           Close
         </Button>,
       ]}
-      destroyOnClose
+      afterClose={() => {
+        setActiveTab('details');
+        setEntity(null);
+      }}
     >
       <Spin spinning={loading}>
         <Tabs

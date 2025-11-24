@@ -7,11 +7,11 @@ import type { ConfigEditorStreamGridRef } from './ConfigEditorStreamGrid'
 
 // Mock EntityDetailModal
 vi.mock('../EntityDetailModal/EntityDetailModal', () => ({
-  default: ({ visible, entityClass, entityId, onClose }: any) =>
+  default: ({ visible, selectedRow, configDefinition, onClose }: any) =>
     visible ? (
       <div data-testid="entity-detail-modal">
-        <div>Entity Class: {entityClass}</div>
-        <div>Entity ID: {entityId}</div>
+        <div>Entity Class: {configDefinition?.entityClass}</div>
+        <div>Entity ID: {selectedRow?.id}</div>
         <button onClick={onClose}>Close Entity Modal</button>
       </div>
     ) : null,
@@ -203,10 +203,10 @@ describe('ConfigEditorStreamGrid - Entity Detail Modal Integration', () => {
     rows: [
       {
         id: 'row-1',
-        columnsValues: [
-          { name: 'id', value: 'entity-1' },
-          { name: 'name', value: 'Test Entity 1' },
-        ],
+        columnsValues: {
+          id: 'entity-1',
+          name: 'Test Entity 1',
+        },
       },
     ],
     totalCount: 1,
@@ -345,8 +345,10 @@ describe('ConfigEditorStreamGrid - Entity Detail Modal Integration', () => {
     })
 
     await waitFor(() => {
-      expect(screen.getByText('ID')).toBeInTheDocument()
-      expect(screen.getByText('Name')).toBeInTheDocument()
+      // Column headers use col.name, not col.label
+      // Ant Design Table may render headers multiple times (for fixed columns)
+      expect(screen.getAllByText('id').length).toBeGreaterThan(0)
+      expect(screen.getAllByText('name').length).toBeGreaterThan(0)
     })
   })
 

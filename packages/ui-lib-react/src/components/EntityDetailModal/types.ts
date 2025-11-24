@@ -7,6 +7,7 @@ export interface ConfigDefinition {
   description?: string;
   groupingVersion?: string;
   requestClass?: string;
+  entityClass?: string;
   columns?: Array<{
     name: string;
     [key: string]: any;

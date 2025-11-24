@@ -104,7 +104,8 @@ describe('ExportImportResult', () => {
       fireEvent.click(syncButton)
 
       await waitFor(() => {
-        expect(screen.getByText('Confirm!')).toBeInTheDocument()
+        // Multiple "Confirm!" elements may exist (modal title and confirm button)
+        expect(screen.getAllByText('Confirm!').length).toBeGreaterThan(0)
       })
     }
   })

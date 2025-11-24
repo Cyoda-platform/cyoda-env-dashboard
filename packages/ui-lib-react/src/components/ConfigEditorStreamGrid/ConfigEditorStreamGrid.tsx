@@ -39,6 +39,7 @@ export interface ConfigEditorStreamGridRef {
   configDefinitionRequest: ConfigDefinitionRequest
   onlyUniq: boolean
   loadPage: () => Promise<void>
+  open: (id: string) => void
 }
 
 /**
@@ -197,7 +198,11 @@ export const ConfigEditorStreamGrid = forwardRef<ConfigEditorStreamGridRef, Conf
     setDefinitionId,
     configDefinitionRequest,
     onlyUniq,
-    loadPage
+    loadPage,
+    open: (id: string) => {
+      setDefinitionId(id)
+      setDialogVisible(true)
+    }
   }))
 
   const handlePageSizeChange = (value: number) => {

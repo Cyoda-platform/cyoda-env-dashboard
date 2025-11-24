@@ -34,6 +34,9 @@ export const StateMachineConsistency: React.FC<StateMachineConsistencyProps> = (
         setData(result)
         dialogRef.current?.setDialogVisible(true)
       }
+    } catch (error) {
+      console.error('Failed to check consistency:', error)
+      // Error is logged but not re-thrown to prevent unhandled rejection
     } finally {
       setIsLoading(false)
     }
