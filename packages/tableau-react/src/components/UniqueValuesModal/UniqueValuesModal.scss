@@ -4,33 +4,33 @@
 
 .unique-values-modal {
   .ant-modal-content {
-    background-color: #1f2937;
-    color: #e5e7eb;
+    background-color: var(--refine-bg-secondary, #1E2A3A);
+    color: var(--refine-text-primary, #F9FAFB);
   }
 
   .ant-modal-header {
     padding: 16px 24px;
-    border-bottom: 1px solid #374151;
-    background-color: #1f2937;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background-color: var(--refine-bg-secondary, #1E2A3A);
 
     .ant-modal-title {
-      color: #e5e7eb;
+      color: var(--refine-text-primary, #F9FAFB);
       font-size: 16px;
       font-weight: 500;
     }
   }
 
   .ant-modal-close {
-    color: #9ca3af;
+    color: var(--refine-text-tertiary, #9CA3AF);
 
     &:hover {
-      color: #e5e7eb;
+      color: var(--refine-text-primary, #F9FAFB);
     }
   }
 
   .ant-modal-body {
     padding: 0;
-    background-color: #1f2937;
+    background-color: var(--refine-bg-secondary, #1E2A3A);
   }
 
   .unique-values-content {
@@ -43,7 +43,7 @@
       align-items: center;
       justify-content: center;
       min-height: 200px;
-      color: #6b7280;
+      color: var(--refine-text-muted, #6B7280);
       font-size: 14px;
     }
 
@@ -51,22 +51,22 @@
       background-color: transparent;
 
       .ant-table-thead > tr > th {
-        background-color: #374151;
-        color: #e5e7eb;
+        background-color: var(--refine-bg-tertiary, #243142);
+        color: var(--refine-text-primary, #F9FAFB);
         font-weight: 600;
-        border-bottom: 1px solid #4b5563;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       }
 
       .ant-table-tbody > tr {
-        background-color: #1f2937;
+        background-color: var(--refine-bg-secondary, #1E2A3A);
 
         > td {
-          color: #e5e7eb;
-          border-bottom: 1px solid #374151;
+          color: var(--refine-text-primary, #F9FAFB);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         &:hover > td {
-          background-color: #374151 !important;
+          background-color: var(--refine-bg-tertiary, #243142) !important;
         }
       }
     }
@@ -74,8 +74,8 @@
 
   .unique-values-footer {
     padding: 16px 24px;
-    border-top: 1px solid #374151;
-    background-color: #111827;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    background-color: var(--refine-bg-secondary, #1E2A3A);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -84,7 +84,7 @@
       flex: 1;
 
       .page-info {
-        color: #9ca3af;
+        color: var(--refine-text-tertiary, #9CA3AF);
         font-size: 14px;
       }
     }
@@ -97,20 +97,20 @@
       margin: 0 16px;
 
       .page-size-label {
-        color: #9ca3af;
+        color: var(--refine-text-tertiary, #9CA3AF);
         font-size: 14px;
       }
 
       .page-size-select {
         .ant-select-selector {
           border-radius: 4px;
-          background-color: #374151;
-          border-color: #4b5563;
-          color: #e5e7eb;
+          background-color: var(--refine-bg-tertiary, #243142);
+          border-color: rgba(255, 255, 255, 0.2);
+          color: var(--refine-text-primary, #F9FAFB);
         }
 
         &:hover .ant-select-selector {
-          border-color: #00D4AA;
+          border-color: var(--refine-primary, #00D4AA);
         }
       }
     }
@@ -125,20 +125,20 @@
       }
 
       .ant-btn {
-        background-color: #374151;
-        border-color: #4b5563;
-        color: #e5e7eb;
+        background-color: var(--refine-bg-tertiary, #243142);
+        border-color: rgba(255, 255, 255, 0.2);
+        color: var(--refine-text-primary, #F9FAFB);
 
         &:hover:not(:disabled) {
-          background-color: #4b5563;
-          border-color: #00D4AA;
-          color: #00D4AA;
+          background-color: rgba(0, 212, 170, 0.15);
+          border-color: var(--refine-primary, #00D4AA);
+          color: var(--refine-primary, #00D4AA);
         }
 
         &:disabled {
-          background-color: #1f2937;
-          border-color: #374151;
-          color: #6b7280;
+          background-color: var(--refine-bg-secondary, #1E2A3A);
+          border-color: rgba(255, 255, 255, 0.1);
+          color: var(--refine-text-muted, #6B7280);
         }
       }
     }

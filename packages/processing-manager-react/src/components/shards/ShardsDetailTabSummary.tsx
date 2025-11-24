@@ -7,7 +7,9 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Row, Col } from 'antd';
 import { GrafanaChart, GrafanaChartResetButton } from '../grafana';
+import { SummaryPower, SummaryConsole, SummaryIpAddresses } from '../summary';
 import { useProcessingStore } from '../../stores/processingStore';
+import './ShardsDetailTabSummary.scss';
 
 export default function ShardsDetailTabSummary() {
   const params = useParams<{ name: string }>();
@@ -29,38 +31,39 @@ export default function ShardsDetailTabSummary() {
   }, [nodes, params.name]);
 
   return (
-    <Row gutter={16}>
-      <Col sm={18}>
-        <GrafanaChartResetButton />
-        <GrafanaChart
-          dashboardName="Linux"
-          panelName="CPU basic"
-          node={node}
-          port={port}
-          job={job}
-        />
-        <GrafanaChart
-          dashboardName="Linux"
-          panelName="Disk IOps Completed"
-          node={node}
-          port={port}
-          job={job}
-        />
-        <GrafanaChart
-          dashboardName="Linux"
-          panelName="Network Traffic by Packets"
-          node={node}
-          port={port}
-          job={job}
-        />
-      </Col>
-      <Col sm={6}>
-        {/* TODO: Add summary components when implemented */}
-        {/* <ShardsDetailTabSummaryPower /> */}
-        {/* <ShardsDetailTabSummarySsh /> */}
-        {/* <ShardsDetailTabSummaryIp /> */}
-      </Col>
-    </Row>
+    <div className="shards-detail-tab-summary">
+      <Row gutter={16}>
+        <Col sm={18} className="summary-charts-column">
+          <GrafanaChart
+            dashboardName="Linux"
+            panelName="CPU basic"
+            node={node}
+            port={port}
+            job={job}
+          />
+          <GrafanaChart
+            dashboardName="Linux"
+            panelName="Disk IOps Completed"
+            node={node}
+            port={port}
+            job={job}
+          />
+          <GrafanaChart
+            dashboardName="Linux"
+            panelName="Network Traffic by Packets"
+            node={node}
+            port={port}
+            job={job}
+          />
+        </Col>
+        <Col sm={6} className="summary-controls-column">
+          <GrafanaChartResetButton />
+          <SummaryPower />
+          <SummaryConsole />
+          <SummaryIpAddresses />
+        </Col>
+      </Row>
+    </div>
   );
 }
 

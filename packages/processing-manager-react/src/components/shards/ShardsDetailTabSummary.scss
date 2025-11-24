@@ -1,0 +1,20 @@
+/**
+ * Shards Detail Tab Summary Styles
+ */
+
+.shards-detail-tab-summary {
+  .summary-charts-column {
+    // Add top margin to first chart to align with Power card (after Reset button)
+    .ant-card:first-child {
+      margin-top: 47px; // Height of Reset button (32px) + margin-bottom (15px)
+    }
+  }
+
+  .summary-controls-column {
+    // Ensure Reset button spacing
+    .actions {
+      margin-bottom: 15px;
+    }
+  }
+}
+

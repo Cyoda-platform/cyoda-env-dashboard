@@ -22,6 +22,13 @@ vi.mock('../../grafana', () => ({
   GrafanaChartResetButton: () => <button data-testid="reset-button">Reset</button>,
 }));
 
+// Mock the Summary components
+vi.mock('../../summary', () => ({
+  SummaryPower: () => <div data-testid="summary-power">Power</div>,
+  SummaryConsole: () => <div data-testid="summary-console">Console</div>,
+  SummaryIpAddresses: () => <div data-testid="summary-ip">IP Addresses</div>,
+}));
+
 const renderWithRouter = (
   component: React.ReactElement,
   initialRoute = '/processing-ui/nodes/test-node',
@@ -177,6 +184,24 @@ describe('ShardsDetailTabSummary', () => {
 
     const nodes = screen.getAllByTestId('node');
     expect(nodes[0]).toHaveTextContent('grafana');
+  });
+
+  it('should render SummaryPower component', () => {
+    renderWithRouter(<ShardsDetailTabSummary />);
+
+    expect(screen.getByTestId('summary-power')).toBeInTheDocument();
+  });
+
+  it('should render SummaryConsole component', () => {
+    renderWithRouter(<ShardsDetailTabSummary />);
+
+    expect(screen.getByTestId('summary-console')).toBeInTheDocument();
+  });
+
+  it('should render SummaryIpAddresses component', () => {
+    renderWithRouter(<ShardsDetailTabSummary />);
+
+    expect(screen.getByTestId('summary-ip')).toBeInTheDocument();
   });
 });
 

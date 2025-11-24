@@ -1,0 +1,54 @@
+/**
+ * Summary IP Addresses Styles
+ */
+
+.summary-ip-card {
+  .ant-card-head {
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+    .ant-card-head-title {
+      padding: 0;
+    }
+  }
+
+  .ant-card-body {
+    padding: 16px 20px;
+  }
+}
+
+.ip-addresses-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .copy-icon {
+    cursor: pointer !important;
+    opacity: 0.7;
+    transition: all 0.3s;
+    font-size: 16px;
+    color: var(--refine-primary, #00D4AA);
+    padding: 4px;
+
+    &:hover {
+      opacity: 1;
+      transform: scale(1.1);
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
+  }
+}
+

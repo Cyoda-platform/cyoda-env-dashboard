@@ -20,6 +20,9 @@ export { Node } from './node';
 // Shards Components
 export { ShardsDetailTabSummary, ShardsDetailTabCassandra, ShardsDetailTabPmComponents } from './shards';
 
+// Summary Components
+export { SummaryPower, SummaryConsole, SummaryIpAddresses } from './summary';
+
 // Layout Components
 export { Layout, Sidebar, Header, Footer, LiveUpdateToggle, ProxyModeToggle } from './layout';
 

@@ -1,0 +1,76 @@
+/**
+ * Summary Console Styles
+ */
+
+.summary-console-card {
+  .ant-card-head {
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+    .ant-card-head-title {
+      padding: 0;
+    }
+  }
+
+  .ant-card-body {
+    padding: 16px 20px;
+  }
+
+  .console-launch-button {
+    padding: 0 !important;
+    height: auto !important;
+    font-size: 14px;
+    color: var(--refine-primary, #00D4AA) !important;
+    cursor: pointer;
+
+    &:hover {
+      color: var(--refine-primary, #00D4AA) !important;
+      opacity: 0.8;
+    }
+
+    .anticon {
+      margin-right: 8px;
+    }
+  }
+
+  .settings-icon {
+    cursor: pointer;
+    transition: opacity 0.3s;
+
+    &:hover {
+      opacity: 0.7;
+    }
+  }
+}
+
+// SSH Console Modal styles
+.ssh-console-modal {
+  .ant-modal-content {
+    background-color: var(--refine-bg-secondary, #1E2A3A);
+    color: var(--refine-text-primary, #F9FAFB);
+  }
+
+  .ant-modal-header {
+    background-color: var(--refine-bg-secondary, #1E2A3A);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+    .ant-modal-title {
+      color: var(--refine-text-primary, #F9FAFB);
+    }
+  }
+
+  .ant-modal-body {
+    background-color: var(--refine-bg-secondary, #1E2A3A);
+    padding: 0;
+  }
+
+  .ant-modal-footer {
+    background-color: var(--refine-bg-secondary, #1E2A3A);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  iframe {
+    background-color: #000;
+  }
+}
+

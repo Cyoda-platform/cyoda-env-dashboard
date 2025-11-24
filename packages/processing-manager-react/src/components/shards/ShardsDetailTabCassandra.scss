@@ -1,0 +1,33 @@
+/**
+ * Shards Detail Tab Cassandra Styles
+ */
+
+.shards-detail-tab-cassandra {
+  .cassandra-charts-column {
+    // Add top margin to first chart to align with Service card (after Reset button)
+    .ant-card:first-child {
+      margin-top: 47px; // Height of Reset button (32px) + margin-bottom (15px)
+    }
+  }
+
+  .cassandra-controls-column {
+    // Ensure Reset button and Service card spacing
+    .actions {
+      margin-bottom: 15px;
+    }
+
+    // Service card styles
+    .ant-card {
+      .ant-card-head {
+        padding: 16px 20px;
+        border-bottom: none !important;
+      }
+
+      .ant-card-body {
+        padding: 0 20px 16px 20px;
+        min-height: 20px;
+      }
+    }
+  }
+}
+

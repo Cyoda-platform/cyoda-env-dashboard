@@ -8,6 +8,7 @@ import { useParams } from 'react-router-dom';
 import { Row, Col, Card, Tag } from 'antd';
 import { GrafanaChart, GrafanaChartResetButton } from '../grafana';
 import { useProcessingStore } from '../../stores/processingStore';
+import './ShardsDetailTabCassandra.scss';
 
 function CassandraService() {
   const params = useParams<{ name: string }>();
@@ -65,42 +66,44 @@ export default function ShardsDetailTabCassandra() {
   }, [nodes, params.name]);
 
   return (
-    <Row gutter={16}>
-      <Col sm={18}>
-        <GrafanaChartResetButton />
-        <GrafanaChart
-          dashboardName="Cassandra"
-          panelName="Writes / sec $instance"
-          job={job}
-          node={node}
-          port="7070"
-        />
-        <GrafanaChart
-          dashboardName="Cassandra"
-          panelName="Reads / sec $instance"
-          job={job}
-          node={node}
-          port="7070"
-        />
-        <GrafanaChart
-          dashboardName="Cassandra"
-          panelName="Avg write latency $instance"
-          job={job}
-          node={node}
-          port="7070"
-        />
-        <GrafanaChart
-          dashboardName="Cassandra"
-          panelName="Avg read latency $instance"
-          job={job}
-          node={node}
-          port="7070"
-        />
-      </Col>
-      <Col sm={6}>
-        <CassandraService />
-      </Col>
-    </Row>
+    <div className="shards-detail-tab-cassandra">
+      <Row gutter={16}>
+        <Col sm={18} className="cassandra-charts-column">
+          <GrafanaChart
+            dashboardName="Cassandra"
+            panelName="Writes / sec $instance"
+            job={job}
+            node={node}
+            port="7070"
+          />
+          <GrafanaChart
+            dashboardName="Cassandra"
+            panelName="Reads / sec $instance"
+            job={job}
+            node={node}
+            port="7070"
+          />
+          <GrafanaChart
+            dashboardName="Cassandra"
+            panelName="Avg write latency $instance"
+            job={job}
+            node={node}
+            port="7070"
+          />
+          <GrafanaChart
+            dashboardName="Cassandra"
+            panelName="Avg read latency $instance"
+            job={job}
+            node={node}
+            port="7070"
+          />
+        </Col>
+        <Col sm={6} className="cassandra-controls-column">
+          <GrafanaChartResetButton />
+          <CassandraService />
+        </Col>
+      </Row>
+    </div>
   );
 }
 
