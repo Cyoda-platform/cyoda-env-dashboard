@@ -4,7 +4,7 @@
 
 .summary-console-card {
   .ant-card-head {
-    padding: 16px 20px;
+    padding: 20px 24px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 
     .ant-card-head-title {
@@ -13,7 +13,7 @@
   }
 
   .ant-card-body {
-    padding: 16px 20px;
+    padding: 20px 24px;
   }
 
   .console-launch-button {
@@ -46,31 +46,164 @@
 // SSH Console Modal styles
 .ssh-console-modal {
   .ant-modal-content {
-    background-color: var(--refine-bg-secondary, #1E2A3A);
-    color: var(--refine-text-primary, #F9FAFB);
+    background-color: var(--refine-bg-primary, #1A2332) !important;
+    color: var(--refine-text-primary, #F9FAFB) !important;
   }
 
   .ant-modal-header {
-    background-color: var(--refine-bg-secondary, #1E2A3A);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background-color: var(--refine-bg-secondary, #1E2A3A) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
 
     .ant-modal-title {
-      color: var(--refine-text-primary, #F9FAFB);
+      color: var(--refine-text-primary, #F9FAFB) !important;
     }
   }
 
   .ant-modal-body {
-    background-color: var(--refine-bg-secondary, #1E2A3A);
-    padding: 0;
+    background-color: var(--refine-bg-primary, #1A2332) !important;
+    padding: 0 !important;
+    min-height: 700px !important;
+    overflow: hidden !important;
+
+    > div {
+      background-color: var(--refine-bg-primary, #1A2332) !important;
+    }
   }
 
   .ant-modal-footer {
-    background-color: var(--refine-bg-secondary, #1E2A3A);
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    background-color: var(--refine-bg-secondary, #1E2A3A) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+
+    .ant-btn {
+      background-color: var(--refine-bg-tertiary, #243142) !important;
+      border-color: rgba(255, 255, 255, 0.2) !important;
+      color: var(--refine-text-primary, #F9FAFB) !important;
+
+      &:hover {
+        background-color: var(--refine-primary, #00D4AA) !important;
+        border-color: var(--refine-primary, #00D4AA) !important;
+        color: var(--refine-bg-primary, #1A2332) !important;
+      }
+    }
+  }
+
+  .ant-modal-close {
+    color: var(--refine-text-primary, #F9FAFB) !important;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1) !important;
+    }
   }
 
   iframe {
-    background-color: #000;
+    background-color: var(--refine-bg-primary, #1A2332) !important;
+    display: block !important;
+
+    // Optional: Apply dark theme filter (uncomment if needed)
+    // filter: invert(1) hue-rotate(180deg);
+  }
+}
+
+// SSH Settings Modal styles
+.ssh-settings-modal {
+  .ant-modal-content {
+    background-color: var(--refine-bg-secondary, #1E2A3A) !important;
+    color: var(--refine-text-primary, #F9FAFB) !important;
+  }
+
+  .ant-modal-header {
+    background-color: var(--refine-bg-secondary, #1E2A3A) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+
+    .ant-modal-title {
+      color: var(--refine-text-primary, #F9FAFB) !important;
+    }
+  }
+
+  .ant-modal-body {
+    background-color: var(--refine-bg-secondary, #1E2A3A) !important;
+  }
+
+  .ant-modal-footer {
+    background-color: var(--refine-bg-secondary, #1E2A3A) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+
+    .ant-btn {
+      background-color: var(--refine-bg-tertiary, #243142) !important;
+      border-color: rgba(255, 255, 255, 0.2) !important;
+      color: var(--refine-text-primary, #F9FAFB) !important;
+
+      &:hover {
+        background-color: var(--refine-primary, #00D4AA) !important;
+        border-color: var(--refine-primary, #00D4AA) !important;
+        color: var(--refine-bg-primary, #1A2332) !important;
+      }
+
+      &.ant-btn-primary {
+        background-color: var(--refine-primary, #00D4AA) !important;
+        border-color: var(--refine-primary, #00D4AA) !important;
+        color: var(--refine-bg-primary, #1A2332) !important;
+
+        &:hover {
+          opacity: 0.8;
+        }
+      }
+    }
+  }
+
+  .ant-modal-close {
+    color: var(--refine-text-primary, #F9FAFB) !important;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1) !important;
+    }
+  }
+
+  .ant-form-item-label > label {
+    color: var(--refine-text-primary, #F9FAFB) !important;
+  }
+
+  .ant-input,
+  .ant-input-password,
+  .ant-input-affix-wrapper {
+    background-color: var(--refine-bg-tertiary, #243142) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+    color: var(--refine-text-primary, #F9FAFB) !important;
+
+    &:hover,
+    &:focus,
+    &.ant-input-affix-wrapper-focused {
+      border-color: var(--refine-primary, #00D4AA) !important;
+      background-color: var(--refine-bg-tertiary, #243142) !important;
+      box-shadow: none !important;
+    }
+
+    &::placeholder {
+      color: rgba(249, 250, 251, 0.4) !important;
+    }
+
+    input {
+      background-color: transparent !important;
+      color: var(--refine-text-primary, #F9FAFB) !important;
+
+      &::placeholder {
+        color: rgba(249, 250, 251, 0.4) !important;
+      }
+    }
+  }
+
+  .ant-input-password-icon {
+    color: var(--refine-text-primary, #F9FAFB) !important;
+
+    &:hover {
+      color: var(--refine-primary, #00D4AA) !important;
+    }
+  }
+
+  .ant-input-suffix {
+    .anticon {
+      color: var(--refine-text-primary, #F9FAFB) !important;
+    }
   }
 }
 

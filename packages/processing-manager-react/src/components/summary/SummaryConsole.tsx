@@ -22,6 +22,7 @@ export const SummaryConsole: React.FC = () => {
   const [settingsVisible, setSettingsVisible] = useState(false);
   const [consoleVisible, setConsoleVisible] = useState(false);
   const [form] = Form.useForm();
+  const iframeRef = React.useRef<HTMLIFrameElement>(null);
 
   // Load settings from localStorage
   const loadSettings = (): SshSettings => {
@@ -46,12 +47,48 @@ export const SummaryConsole: React.FC = () => {
 
   const [sshSettings, setSshSettings] = useState<SshSettings>(loadSettings());
 
+  // Handle iframe load to apply dark theme styles
+  const handleIframeLoad = () => {
+    console.log('SSH Console iframe loaded');
+    try {
+      const iframe = iframeRef.current;
+      if (iframe && iframe.contentDocument) {
+        console.log('Iframe content accessible - applying dark theme styles');
+        const iframeDoc = iframe.contentDocument;
+        const style = iframeDoc.createElement('style');
+        style.textContent = `
+          body {
+            background-color: #1A2332 !important;
+            color: #F9FAFB !important;
+          }
+          * {
+            background-color: #1A2332 !important;
+          }
+        `;
+        iframeDoc.head.appendChild(style);
+      }
+    } catch (error) {
+      // Cross-origin iframe - cannot access content
+      console.log('Cannot apply styles to cross-origin iframe (CORS):', error.message);
+      console.log('SSH server must support bgcolor parameter in URL');
+    }
+  };
+
+  // Sync settings with localStorage when name changes
+  useEffect(() => {
+    const currentSettings = loadSettings();
+    setSshSettings(currentSettings);
+  }, [name]);
+
   const handleLaunchConsole = () => {
     console.log('Launch Console clicked');
 
+    // Load latest settings before launching console
+    const currentSettings = loadSettings();
+
     // Build SSH console URL
     const baseUrl = import.meta.env.VITE_APP_BASE_URL || window.location.origin;
-    const link = `${baseUrl}:8888/?hostname=${sshSettings.hostname}&username=${sshSettings.username}&password=${btoa(sshSettings.password)}`;
+    const link = `${baseUrl}:8888/?hostname=${currentSettings.hostname}&username=${currentSettings.username}&password=${btoa(currentSettings.password)}`;
 
     // Open console in modal with iframe
     setConsoleVisible(true);
@@ -59,7 +96,9 @@ export const SummaryConsole: React.FC = () => {
 
   const handleSettings = () => {
     console.log('Settings clicked');
-    form.setFieldsValue(sshSettings);
+    // Load current settings into form
+    const currentSettings = loadSettings();
+    form.setFieldsValue(currentSettings);
     setSettingsVisible(true);
   };
 
@@ -122,6 +161,7 @@ export const SummaryConsole: React.FC = () => {
         onCancel={() => setSettingsVisible(false)}
         okText="Save"
         cancelText="Close"
+        className="ssh-settings-modal"
       >
         <Form
           form={form}
@@ -166,15 +206,37 @@ export const SummaryConsole: React.FC = () => {
         style={{ top: 20 }}
         className="ssh-console-modal"
       >
-        {consoleVisible && (
-          <iframe
-            title="SSH Console"
-            src={`${import.meta.env.VITE_APP_BASE_URL || window.location.origin}:8888/?hostname=${sshSettings.hostname}&username=${sshSettings.username}&password=${btoa(sshSettings.password)}`}
-            width="100%"
-            height="700px"
-            style={{ border: 'none' }}
-          />
-        )}
+        {consoleVisible && (() => {
+          const currentSettings = loadSettings();
+          // Add dark theme parameters for webssh
+          // Try different formats: #bgcolor=XXX or ?bgcolor=XXX
+          const baseUrl = import.meta.env.VITE_APP_BASE_URL || window.location.origin;
+
+          // Log the URL for debugging
+          const sshUrl = `${baseUrl}:8888/?hostname=${currentSettings.hostname}&username=${currentSettings.username}&password=${btoa(currentSettings.password)}`;
+          console.log('SSH Console URL:', sshUrl);
+
+          return (
+            <div style={{
+              backgroundColor: '#1A2332',
+              padding: 0,
+              minHeight: '700px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              <iframe
+                ref={iframeRef}
+                title="SSH Console"
+                src={sshUrl}
+                width="100%"
+                height="700px"
+                style={{ border: 'none', display: 'block', backgroundColor: '#1A2332' }}
+                onLoad={handleIframeLoad}
+              />
+            </div>
+          );
+        })()}
       </Modal>
     </>
   );

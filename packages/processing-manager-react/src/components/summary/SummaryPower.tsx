@@ -6,28 +6,33 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Tag } from 'antd';
 import { useParams } from 'react-router-dom';
-import { useProcessingStore } from '../../stores';
+import { useProcessingStore, useGrafanaStore } from '../../stores';
 import './SummaryPower.scss';
 
 export const SummaryPower: React.FC = () => {
   const { name } = useParams<{ name: string }>();
   const [up, setUp] = useState<boolean | null>(null);
   const nodes = useProcessingStore((state) => state.nodesProcessing);
+  const loadUp = useGrafanaStore((state) => state.loadUp);
 
   useEffect(() => {
     const loadServiceStatus = async () => {
       if (nodes && nodes.length > 0) {
         const node = nodes.find((el: any) => el.hostname === name);
         if (node?.grafana) {
-          // TODO: Implement loadUp from grafana store
-          // For now, set to null (unknown)
-          setUp(null);
+          try {
+            const status = await loadUp(node.grafana);
+            setUp(status);
+          } catch (error) {
+            console.error('Failed to load power status:', error);
+            setUp(null);
+          }
         }
       }
     };
 
     loadServiceStatus();
-  }, [nodes, name]);
+  }, [nodes, name, loadUp]);
 
   const getStatusTag = () => {
     if (up === null) {

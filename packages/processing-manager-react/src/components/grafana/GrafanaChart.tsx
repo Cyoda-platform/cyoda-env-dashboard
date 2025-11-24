@@ -7,6 +7,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Card, Empty } from 'antd';
 import { useParams } from 'react-router-dom';
 import { useGrafanaDashboardByName, useGrafanaPanelsByUid } from '../../hooks';
+import './GrafanaChart.scss';
 
 interface GrafanaChartProps {
   node?: string;
@@ -123,7 +124,11 @@ export default function GrafanaChart({
 
   if (!node) {
     return (
-      <Card style={{ marginBottom: 16 }}>
+      <Card
+        className="grafana-chart-card"
+        style={{ marginBottom: 16 }}
+        bodyStyle={{ padding: '24px' }}
+      >
         <Empty
           description={
             <div>
@@ -141,7 +146,11 @@ export default function GrafanaChart({
   }
 
   return (
-    <Card style={{ marginBottom: 16 }}>
+    <Card
+      className="grafana-chart-card"
+      style={{ marginBottom: 16 }}
+      bodyStyle={{ padding: '24px' }}
+    >
       {isEnabled && link && (
         <iframe
           src={link}

@@ -8,26 +8,39 @@ import { useParams } from 'react-router-dom';
 import { Row, Col, Card, Tag } from 'antd';
 import { GrafanaChart, GrafanaChartResetButton } from '../grafana';
 import { useProcessingStore } from '../../stores/processingStore';
+import { useGrafanaStore } from '../../stores/grafanaStore';
 import './ShardsDetailTabCassandra.scss';
 
 function CassandraService() {
   const params = useParams<{ name: string }>();
   const nodes = useProcessingStore((state) => state.nodesProcessing);
+  const loadUp = useGrafanaStore((state) => state.loadUp);
   const [up, setUp] = useState<boolean | null>(null);
 
   useEffect(() => {
-    // TODO: Implement Grafana loadUp API call
-    // For now, show unknown status
-    if (nodes && nodes.length > 0) {
-      const node = nodes.find((el: any) => el.hostname === params.name);
-      if (node?.grafana) {
-        // Placeholder for Grafana API call
-        // const modifiedGrafana = { ...node.grafana, instance: node.grafana.instance.replace(':9100', ':7070'), job: 'cassandra' };
-        // const upStatus = await loadUp(modifiedGrafana);
-        // setUp(upStatus);
+    const loadServiceStatus = async () => {
+      if (nodes && nodes.length > 0) {
+        const node = nodes.find((el: any) => el.hostname === params.name);
+        if (node?.grafana) {
+          try {
+            // Modify grafana config for Cassandra (port 7070, job 'cassandra')
+            const modifiedGrafana = {
+              ...node.grafana,
+              instance: node.grafana.instance.replace(':9100', ':7070'),
+              job: 'cassandra'
+            };
+            const status = await loadUp(modifiedGrafana);
+            setUp(status);
+          } catch (error) {
+            console.error('Failed to load Cassandra service status:', error);
+            setUp(null);
+          }
+        }
       }
-    }
-  }, [nodes, params.name]);
+    };
+
+    loadServiceStatus();
+  }, [nodes, params.name, loadUp]);
 
   const getStatusTag = () => {
     if (up === null) {
