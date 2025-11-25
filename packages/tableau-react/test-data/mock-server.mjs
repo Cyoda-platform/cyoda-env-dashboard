@@ -1451,8 +1451,9 @@ app.post('/platform-api/pre', (req, res) => {
 
   console.log(`Found ${entities.length} entities for ${entityClass}`);
 
-  // Generate a report ID
+  // Generate a report ID and grouping version
   const reportId = `REPORT-${Date.now()}`;
+  const groupingVersion = '1'; // Default grouping version
 
   // Store the running report
   if (!global.runningReports) {
@@ -1467,6 +1468,7 @@ app.post('/platform-api/pre', (req, res) => {
     createTime: new Date().toISOString(),
     entityClass: entityClass,
     totalRows: entities.length,
+    groupingVersion: groupingVersion,
   };
 
   console.log(`✓ Started report: ${reportId} for config ${gridConfig}`);
@@ -1490,8 +1492,17 @@ app.post('/platform-api/pre', (req, res) => {
     }
   }, 2000);
 
+  // Return response matching the old project structure
   res.json({
-    content: reportId,
+    content: {
+      reportId: reportId,
+      groupingVersion: groupingVersion,
+    },
+    _links: {
+      '/report/{id}/{grouping_version}/status': {
+        href: `/platform-api/reporting/report/${reportId}/${groupingVersion}/status`,
+      },
+    },
     message: 'Report execution started'
   });
 });
@@ -1506,6 +1517,50 @@ app.get('/platform-api/reporting/status/:reportId', (req, res) => {
   }
 
   res.json(report);
+});
+
+// Cancel report (DELETE method with groupingVersion)
+app.delete('/platform-api/reporting/report/:reportId/:groupingVersion', (req, res) => {
+  const { reportId } = req.params;
+  const report = global.runningReports?.[reportId];
+
+  if (!report) {
+    return res.status(404).json({ error: 'Report not found' });
+  }
+
+  if (report.status === 'COMPLETED' || report.status === 'CANCELLED') {
+    return res.status(400).json({ error: 'Report is already finished' });
+  }
+
+  // Cancel the report
+  report.status = 'CANCELLED';
+  report.finishTime = new Date().toISOString();
+
+  console.log(`✓ Cancelled report: ${reportId}`);
+
+  res.json({ success: true, reportId });
+});
+
+// Cancel report (POST method fallback)
+app.post('/platform-api/reporting/report/:reportId/cancel', (req, res) => {
+  const { reportId } = req.params;
+  const report = global.runningReports?.[reportId];
+
+  if (!report) {
+    return res.status(404).json({ error: 'Report not found' });
+  }
+
+  if (report.status === 'COMPLETED' || report.status === 'CANCELLED') {
+    return res.status(400).json({ error: 'Report is already finished' });
+  }
+
+  // Cancel the report
+  report.status = 'CANCELLED';
+  report.finishTime = new Date().toISOString();
+
+  console.log(`✓ Cancelled report: ${reportId}`);
+
+  res.json({ success: true, reportId });
 });
 
 // Get report results (for completed reports)

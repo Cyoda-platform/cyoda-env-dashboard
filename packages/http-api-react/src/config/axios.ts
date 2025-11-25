@@ -18,6 +18,10 @@ const instance: AxiosInstance = axios.create({
   headers: {
     'X-Requested-With': 'XMLHttpRequest',
   },
+  // Treat 303 as success - Cyoda backend returns 303 with response body
+  validateStatus: (status) => (status >= 200 && status < 300) || status === 303,
+  // Don't follow redirects - we want to handle 303 responses directly
+  maxRedirects: 0,
 });
 
 /**
@@ -133,6 +137,10 @@ export const axiosPlatform: AxiosInstance = axios.create({
   headers: {
     'X-Requested-With': 'XMLHttpRequest',
   },
+  // Treat 303 as success - Cyoda backend returns 303 with response body
+  validateStatus: (status) => (status >= 200 && status < 300) || status === 303,
+  // Don't follow redirects - we want to handle 303 responses directly
+  maxRedirects: 0,
 });
 
 axiosPlatform.interceptors.request.use((config: InternalAxiosRequestConfig) => {

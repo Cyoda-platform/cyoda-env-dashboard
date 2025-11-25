@@ -58,12 +58,13 @@ export function useReportHistory(
  */
 export function useReportStatus(
   reportId: string,
+  groupingVersion?: string,
   options?: Omit<UseQueryOptions<IReportStatus>, 'queryKey' | 'queryFn'>
 ) {
   return useQuery({
-    queryKey: ['reports', reportId, 'status'],
+    queryKey: ['reports', reportId, groupingVersion, 'status'],
     queryFn: async () => {
-      const response = await reportsApi.getReportStatus(reportId);
+      const response = await reportsApi.getReportStatus(reportId, groupingVersion);
       return response.data;
     },
     enabled: !!reportId,
@@ -81,12 +82,13 @@ export function useReportStatus(
  */
 export function useReportStats(
   reportId: string,
+  groupingVersion?: string,
   options?: Omit<UseQueryOptions<IReportStats>, 'queryKey' | 'queryFn'>
 ) {
   return useQuery({
-    queryKey: ['reports', reportId, 'stats'],
+    queryKey: ['reports', reportId, groupingVersion, 'stats'],
     queryFn: async () => {
-      const response = await reportsApi.getReportStats(reportId);
+      const response = await reportsApi.getReportStats(reportId, groupingVersion);
       return response.data;
     },
     enabled: !!reportId,

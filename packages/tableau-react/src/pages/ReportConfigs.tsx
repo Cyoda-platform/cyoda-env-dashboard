@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useRef, useMemo, useCallback, useEffect } from 'react';
-import { Table, Button, Tooltip, Modal, message, Space, Divider, Upload } from 'antd';
+import { Table, Button, Tooltip, Space, Divider, Upload, App } from 'antd';
 import {
   PlusOutlined,
   EditOutlined,
@@ -20,7 +20,7 @@ import type { ColumnsType } from 'antd/es/table';
 import type { ResizeCallbackData } from 'react-resizable';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { axios, useGlobalUiSettingsStore, getReportingFetchTypes } from '@cyoda/http-api-react';
+import { axios, useGlobalUiSettingsStore, getReportingFetchTypes, useReportStatus, runReportFromPredefinedConfig } from '@cyoda/http-api-react';
 import moment from 'moment';
 import { exportReportsByIds, importReports, createReportDefinition } from '@cyoda/http-api-react';
 import CreateReportDialog, { type CreateReportDialogRef, type CreateReportFormData } from '../components/CreateReportDialog';
@@ -68,11 +68,56 @@ interface FilterForm {
   time_custom?: Date | null;
 }
 
+/**
+ * Component to track report status and update running reports list
+ */
+const ReportStatusTracker: React.FC<{
+  reportId: string;
+  groupingVersion?: string;
+  configName: string;
+  onStatusChange: (reportId: string, status: string) => void;
+}> = ({ reportId, groupingVersion, configName, onStatusChange }) => {
+  const { notification } = App.useApp();
+
+  const { data: statusData } = useReportStatus(reportId, groupingVersion, {
+    enabled: !!reportId,
+  });
+
+  const prevStatusRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!statusData?.content?.status) return;
+
+    const currentStatus = statusData.content.status;
+
+    // Only notify and update if status actually changed
+    if (prevStatusRef.current && prevStatusRef.current !== currentStatus) {
+      if (currentStatus === 'SUCCESSFUL') {
+        notification.success({
+          message: 'Success',
+          description: `Report ${configName} has completed`,
+        });
+      } else if (currentStatus === 'FAILED') {
+        notification.error({
+          message: 'Error',
+          description: `Report ${configName} has failed`,
+        });
+      }
+    }
+
+    prevStatusRef.current = currentStatus;
+    onStatusChange(reportId, currentStatus);
+  }, [statusData, reportId, configName, onStatusChange, notification]);
+
+  return null;
+};
+
 const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const storage = useMemo(() => new HelperStorage(), []);
   const { entityType } = useGlobalUiSettingsStore();
+  const { message, modal } = App.useApp();
 
   const createDialogRef = useRef<CreateReportDialogRef>(null);
   const cloneDialogRef = useRef<CloneReportDialogRef>(null);
@@ -87,8 +132,8 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
 
   // Column widths state - load from localStorage
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>(() => {
-    const saved = storage.get('reportConfigs:columnWidths', {});
-    const defaultWidths = {
+    const saved = storage.get('reportConfigs:columnWidths', {}) as Record<string, number> | null;
+    const defaultWidths: Record<string, number> = {
       name: 200,
       description: 250,
       entityClassNameLabel: 180,
@@ -97,7 +142,7 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
       action: 180,
     };
     // Check if saved has any keys, if not use defaults
-    return Object.keys(saved).length > 0 ? saved : defaultWidths;
+    return (saved && Object.keys(saved).length > 0) ? saved : defaultWidths;
   });
 
   // Sort state - load from localStorage
@@ -356,15 +401,18 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
   // Run report mutation
   const runReportMutation = useMutation({
     mutationFn: async (configId: string) => {
-      const { data } = await axios.post(`/platform-api/reporting/pre?gridConfig=${encodeURIComponent(configId)}`);
+      const { data } = await runReportFromPredefinedConfig(configId);
       return data;
     },
     onSuccess: (data, configId) => {
       message.success('Report execution started');
       // Add to running reports
+      // data.content is an object with reportId and groupingVersion
+      const reportId = data.content?.reportId || data.content;
+      const groupingVersion = data.content?.groupingVersion;
       setRunningReports((prev) => [
         ...prev,
-        { configName: configId, reportId: data.content, status: 'RUNNING' },
+        { configName: configId, reportId, groupingVersion, status: 'RUNNING' },
       ]);
       queryClient.invalidateQueries({ queryKey: ['reports', 'history'] });
     },
@@ -375,10 +423,16 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
 
   // Cancel report mutation
   const cancelReportMutation = useMutation({
-    mutationFn: async (reportId: string) => {
-      await axios.post(`/platform-api/reporting/report/${encodeURIComponent(reportId)}/cancel`);
+    mutationFn: async ({ reportId, groupingVersion }: { reportId: string; groupingVersion?: string }) => {
+      // Use DELETE method with groupingVersion as in the old project
+      if (groupingVersion) {
+        await axios.delete(`/platform-api/reporting/report/${encodeURIComponent(reportId)}/${groupingVersion}`);
+      } else {
+        // Fallback to POST if no groupingVersion
+        await axios.post(`/platform-api/reporting/report/${encodeURIComponent(reportId)}/cancel`);
+      }
     },
-    onSuccess: (_, reportId) => {
+    onSuccess: (_, { reportId }) => {
       message.success('Report cancelled');
       // Remove from running reports
       setRunningReports((prev) => prev.filter((r) => r.reportId !== reportId));
@@ -388,6 +442,26 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
       message.error(error.message || 'Failed to cancel report');
     },
   });
+
+  // Handle status change from ReportStatusTracker
+  const handleStatusChange = useCallback((reportId: string, status: string) => {
+    setRunningReports((prev) => {
+      // If status is not RUNNING, remove from running reports
+      if (status !== 'RUNNING' && status !== 'STARTED') {
+        return prev.filter((r) => r.reportId !== reportId);
+      }
+
+      // Update status if report exists
+      const existingIndex = prev.findIndex((r) => r.reportId === reportId);
+      if (existingIndex >= 0) {
+        const updated = [...prev];
+        updated[existingIndex] = { ...updated[existingIndex], status };
+        return updated;
+      }
+
+      return prev;
+    });
+  }, []);
 
   // Handlers
   const handleCreateReport = useCallback((formData: CreateReportFormData) => {
@@ -399,7 +473,7 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
   }, [cloneReportMutation]);
 
   const handleDeleteReport = useCallback((row: ReportConfigRow) => {
-    Modal.confirm({
+    modal.confirm({
       title: 'Confirm',
       content: 'Do you really want to delete this record?',
       onOk: async () => {
@@ -407,7 +481,7 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
           await deleteReportMutation.mutateAsync({ reportId: row.id });
         } catch (error: any) {
           if (error.message?.includes('Cannot delete config')) {
-            Modal.confirm({
+            modal.confirm({
               title: 'Warning',
               content: `${error.response?.data?.detail || error.message} Do you want delete with reports?`,
               onOk: async () => {
@@ -418,7 +492,7 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
         }
       },
     });
-  }, [deleteReportMutation]);
+  }, [deleteReportMutation, modal]);
 
   const handleRunReport = useCallback((row: ReportConfigRow) => {
     runReportMutation.mutate(row.id);
@@ -427,14 +501,18 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
   const handleCancelReport = useCallback((row: ReportConfigRow) => {
     if (!row.reportId) return;
 
-    Modal.confirm({
+    // Find groupingVersion from runningReports
+    const runningReport = runningReports.find((r) => r.reportId === row.reportId);
+    const groupingVersion = runningReport?.groupingVersion || row.groupingVersion;
+
+    modal.confirm({
       title: 'Cancel Report',
       content: 'Are you sure you want to cancel this running report?',
       onOk: () => {
-        cancelReportMutation.mutate(row.reportId!);
+        cancelReportMutation.mutate({ reportId: row.reportId!, groupingVersion });
       },
     });
-  }, [cancelReportMutation]);
+  }, [cancelReportMutation, modal, runningReports]);
 
   const handleEditReport = useCallback((row: ReportConfigRow) => {
     navigate(`/tableau/report-editor/${encodeURIComponent(row.id)}`);
@@ -683,7 +761,8 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
 }, [columnWidths, sortField, sortOrder, handleResize, handleEditReport, handleCloneClick, handleRunReport, handleCancelReport, handleDeleteReport]);
 
   return (
-    <div className="report-configs">
+    <App>
+      <div className="report-configs">
       <div className="flex-buttons">
         <Space>
           <Button
@@ -785,7 +864,19 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
 
       <CreateReportDialog ref={createDialogRef} onConfirm={handleCreateReport} />
       <CloneReportDialog ref={cloneDialogRef} onConfirm={handleCloneReport} />
-    </div>
+
+      {/* Report status trackers - one for each running report */}
+      {runningReports.map((report) => (
+        <ReportStatusTracker
+          key={report.reportId}
+          reportId={report.reportId}
+          groupingVersion={report.groupingVersion}
+          configName={report.configName}
+          onStatusChange={handleStatusChange}
+        />
+      ))}
+      </div>
+    </App>
   );
 };
 

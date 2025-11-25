@@ -43,9 +43,15 @@ const stringifyOpts = {
 export const reportUrls = {
   REPORT_HISTORY: (username = currentUserName()) =>
     `platform-api/history?username=${encodeURIComponent(username)}&fields=id,configName,reportFailed,finishTime`,
-  REPORT_STATUS: (reportId: string) => `platform-api/report/${reportId}/status`,
+  REPORT_STATUS: (reportId: string, groupingVersion?: string) =>
+    groupingVersion
+      ? `platform-api/reporting/report/${reportId}/${groupingVersion}/status`
+      : `platform-api/report/${reportId}/status`,
   REPORT_CONFIG: (reportId: string) => `platform-api/reporting/report/${reportId}/config`,
-  REPORT_STATISTICS: (reportId: string) => `platform-api/reporting/report/${reportId}/stats?full=false`,
+  REPORT_STATISTICS: (reportId: string, groupingVersion?: string) =>
+    groupingVersion
+      ? `platform-api/reporting/report/${reportId}/${groupingVersion}/stats?full=false`
+      : `platform-api/reporting/report/${reportId}/stats?full=false`,
   REPORT_GROUPS: (reportId: string) => `platform-api/report/${reportId}/groups`,
   REPORT_GROUP: (reportId: string, groupId: string) => `platform-api/report/${reportId}/groups/${groupId}`,
   RUN_REPORT_FROM_PREDEFINED_CONFIG: (gridConfig: string) => `/platform-api/reporting/pre?gridConfig=${gridConfig}`,
@@ -83,15 +89,15 @@ export function getHistory(args: IGetHistoryArgs) {
 /**
  * Get report status
  */
-export function getReportStatus(reportId: string) {
-  return axios.get<IReportStatus>(reportUrls.REPORT_STATUS(reportId));
+export function getReportStatus(reportId: string, groupingVersion?: string) {
+  return axios.get<IReportStatus>(reportUrls.REPORT_STATUS(reportId, groupingVersion));
 }
 
 /**
  * Get report statistics
  */
-export function getReportStats(reportId: string) {
-  return axios.get<IReportStats>(reportUrls.REPORT_STATISTICS(reportId));
+export function getReportStats(reportId: string, groupingVersion?: string) {
+  return axios.get<IReportStats>(reportUrls.REPORT_STATISTICS(reportId, groupingVersion));
 }
 
 /**
