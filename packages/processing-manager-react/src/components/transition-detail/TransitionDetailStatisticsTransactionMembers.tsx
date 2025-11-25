@@ -12,8 +12,13 @@ import { useTransactionsViewMembers } from '../../hooks';
 import dayjs from 'dayjs';
 import './TransitionDetailStatisticsTransactionMembers.scss';
 
-export const TransitionDetailStatisticsTransactionMembers: React.FC = () => {
-  const { transactionId } = useParams<{ transactionId: string }>();
+interface TransitionDetailStatisticsTransactionMembersProps {
+  transactionIdProp?: string;
+}
+
+export const TransitionDetailStatisticsTransactionMembers: React.FC<TransitionDetailStatisticsTransactionMembersProps> = ({ transactionIdProp }) => {
+  const { transactionId: transactionIdFromParams } = useParams<{ transactionId: string }>();
+  const transactionId = transactionIdProp || transactionIdFromParams;
   const membersFilterRef = useRef<MembersFilterRef>(null);
   const [paginationForm, setPaginationForm] = useState({
     pageSize: 10,

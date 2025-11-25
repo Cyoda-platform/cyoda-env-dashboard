@@ -11,8 +11,13 @@ import { Pagination } from '../common';
 import { useTransactionsViewEvents } from '../../hooks';
 import './TransitionDetailStatisticsTransactionEvents.scss';
 
-export const TransitionDetailStatisticsTransactionEvents: React.FC = () => {
-  const { transactionId } = useParams<{ transactionId: string }>();
+interface TransitionDetailStatisticsTransactionEventsProps {
+  transactionIdProp?: string;
+}
+
+export const TransitionDetailStatisticsTransactionEvents: React.FC<TransitionDetailStatisticsTransactionEventsProps> = ({ transactionIdProp }) => {
+  const { transactionId: transactionIdFromParams } = useParams<{ transactionId: string }>();
+  const transactionId = transactionIdProp || transactionIdFromParams;
   const eventsFilterRef = useRef<EventsFilterRef>(null);
   const [paginationForm, setPaginationForm] = useState({
     pageSize: 10,

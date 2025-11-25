@@ -27,8 +27,13 @@ const formatBoolean = (value: boolean | null | undefined) => {
   return value ? 'Yes' : 'No';
 };
 
-export const TransitionDetailStatistics: React.FC = () => {
-  const { transactionId } = useParams<{ transactionId: string }>();
+interface TransitionDetailStatisticsProps {
+  transactionIdProp?: string;
+}
+
+export const TransitionDetailStatistics: React.FC<TransitionDetailStatisticsProps> = ({ transactionIdProp }) => {
+  const { transactionId: transactionIdFromParams } = useParams<{ transactionId: string }>();
+  const transactionId = transactionIdProp || transactionIdFromParams;
   const [transactionInfoView, setTransactionInfoView] = useState<any>({});
   const [shardUUID, setShardUUID] = useState<string>('');
   const [parentTransactionIds, setParentTransactionIds] = useState<string[]>([]);

@@ -6,12 +6,13 @@
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
 import { Table, Spin, Button, Select, Space } from 'antd';
 import { DoubleLeftOutlined, LeftOutlined, RightOutlined, DoubleRightOutlined } from '@ant-design/icons';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 import type { ColumnsType } from 'antd/es/table';
 import type { ResizeCallbackData } from 'react-resizable';
 import { HelperStorage } from '@cyoda/http-api-react';
 import { ResizableTitle } from '../ResizableTitle';
+import { TransactionDetailModal } from './TransactionDetailModal';
 import './TransactionsViewTable.scss';
 
 interface TransactionRow {
@@ -53,6 +54,10 @@ export const TransactionsViewTable: React.FC<TransactionsViewTableProps> = ({
 }) => {
   const { name } = useParams<{ name: string }>();
   const storage = useMemo(() => new HelperStorage(), []);
+
+  // Modal state
+  const [selectedTransactionId, setSelectedTransactionId] = useState<string | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
 
   // Column widths state
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>(() => {
@@ -105,6 +110,17 @@ export const TransactionsViewTable: React.FC<TransactionsViewTableProps> = ({
     };
   }, []);
 
+  // Handle transaction click
+  const handleTransactionClick = useCallback((transactionId: string) => {
+    setSelectedTransactionId(transactionId);
+    setModalVisible(true);
+  }, []);
+
+  const handleModalClose = useCallback(() => {
+    setModalVisible(false);
+    setSelectedTransactionId(null);
+  }, []);
+
   const getRowClassName = (record: TransactionRow): string => {
     if (!record.finishTime) return '';
 
@@ -136,7 +152,12 @@ export const TransactionsViewTable: React.FC<TransactionsViewTableProps> = ({
       fixed: 'left',
       sorter: (a, b) => a.id.localeCompare(b.id),
       render: (id: string) => (
-        <Link to={`/processing-ui/nodes/${name}/transaction/${id}`}>{id}</Link>
+        <a
+          onClick={() => handleTransactionClick(id)}
+          style={{ cursor: 'pointer', color: '#1890ff' }}
+        >
+          {id}
+        </a>
       ),
       onHeaderCell: () => ({
         width: columnWidths.id,
@@ -231,7 +252,7 @@ export const TransactionsViewTable: React.FC<TransactionsViewTableProps> = ({
         onResize: handleResize('transactionSubmitNodeId'),
       }),
     },
-  ], [columnWidths, handleResize, name]);
+  ], [columnWidths, handleResize, handleTransactionClick]);
 
   const pagesOptions = [10, 25, 50, 100, 200, 500];
 
@@ -287,6 +308,13 @@ export const TransactionsViewTable: React.FC<TransactionsViewTableProps> = ({
           </Space>
         </div>
       </Spin>
+
+      {/* Transaction Detail Modal */}
+      <TransactionDetailModal
+        transactionId={selectedTransactionId}
+        visible={modalVisible}
+        onClose={handleModalClose}
+      />
     </div>
   );
 };
