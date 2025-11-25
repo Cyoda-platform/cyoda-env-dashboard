@@ -4,7 +4,7 @@
  * Migrated from: CyodaModellingItem.vue
  */
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Checkbox, Tooltip } from 'antd';
 import { EyeOutlined, CaretDownOutlined, CaretRightOutlined, LinkOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { ModellingGroupClass } from './ModellingGroupClass';
@@ -55,6 +55,9 @@ export const ModellingItem: React.FC<ModellingItemProps> = ({
   const [relatedPathsInner, setRelatedPathsInner] = useState<RelatedPath[]>([]);
   const [formValues, setFormValues] = useState<string[]>([]);
   const [uniqueValuesVisible, setUniqueValuesVisible] = useState(false);
+
+  // Track previous value of isOpenAllSelected to detect changes
+  const prevIsOpenAllSelectedRef = useRef<boolean>(isOpenAllSelected);
 
   const { searchResult, addSearchPath, removeSearchPath } = useModellingStore();
   const { addEntity } = useEntityViewerStore();
@@ -213,12 +216,21 @@ export const ModellingItem: React.FC<ModellingItemProps> = ({
   }, [isShowJoin, joinItem, onlyRange]);
 
   // Handle "Open all selected" toggle
+  // Only run when isOpenAllSelected actually changes, not when getChecked changes
   useEffect(() => {
-    if (isOpenAllSelected && getChecked) {
-      setIsShowGroupClass(true);
-    }
-    if (!isOpenAllSelected && getChecked) {
-      setIsShowGroupClass(false);
+    // Only run if isOpenAllSelected actually changed
+    if (prevIsOpenAllSelectedRef.current !== isOpenAllSelected) {
+      prevIsOpenAllSelectedRef.current = isOpenAllSelected;
+
+      if (isOpenAllSelected && getChecked) {
+        // Open the item if it's checked
+        setIsShowGroupClass(true);
+        setIsShowJoin(true);
+      } else if (!isOpenAllSelected && getChecked) {
+        // Close the item if it's checked
+        setIsShowGroupClass(false);
+        setIsShowJoin(false);
+      }
     }
   }, [isOpenAllSelected, getChecked]);
 
