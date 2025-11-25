@@ -186,11 +186,18 @@ export function useCachesList() {
   return useQuery({
     queryKey: platformCommonKeys.caches(),
     queryFn: async () => {
-      const { data } = await getCachesList();
-      // Ensure data is always an array
-      return Array.isArray(data) ? data : [];
+      console.log('useCachesList: Fetching caches list...');
+      try {
+        const { data } = await getCachesList();
+        console.log('useCachesList: Received data:', data);
+        // Ensure data is always an array
+        return Array.isArray(data) ? data : [];
+      } catch (error) {
+        console.error('useCachesList: Error fetching caches list:', error);
+        throw error;
+      }
     },
-    initialData: [], // Provide initial empty array
+    placeholderData: [], // Use placeholder instead of initialData to ensure query runs
   });
 }
 
@@ -207,7 +214,7 @@ export function useCacheKeys(cacheType?: string) {
       return Array.isArray(data) ? data : [];
     },
     enabled: !!cacheType,
-    initialData: [], // Provide initial empty array
+    placeholderData: [], // Use placeholder instead of initialData
   });
 }
 

@@ -4,15 +4,12 @@
  * Migrated from @cyoda/processing-manager/src/components/PmShardsDetailTab/PmShardsDetailTabCachesList.vue
  */
 
-import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Table, Button, Tooltip, Alert, message } from 'antd';
-import { SyncOutlined } from '@ant-design/icons';
+import { SyncOutlined, RightOutlined, DownOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
-import type { ResizeCallbackData } from 'react-resizable';
-import { HelperStorage } from '@cyoda/http-api-react';
-import { ResizableTitle } from '../ResizableTitle';
 import moment from 'moment';
-import { useCachesList, useCacheKeys, useInvalidateCache } from '../../hooks/usePlatformCommon';
+import { useCachesList, useInvalidateCache } from '../../hooks/usePlatformCommon';
 import './ShardsDetailTabCachesList.scss';
 
 interface CacheKey {
@@ -33,55 +30,26 @@ interface CacheItemWithKeys extends CacheItem {
 }
 
 export const ShardsDetailTabCachesList: React.FC = () => {
-  const storage = useMemo(() => new HelperStorage(), []);
+  console.log('ShardsDetailTabCachesList: Component mounted');
+
   const [expandedRowKeys, setExpandedRowKeys] = useState<React.Key[]>([]);
   const [cacheKeysData, setCacheKeysData] = useState<Record<string, string[]>>({});
   const [loadingKeys, setLoadingKeys] = useState<Record<string, boolean>>({});
 
   // Fetch caches list
-  const { data: cachesData = [], isLoading: cachesLoading, refetch } = useCachesList();
+  const { data: cachesData = [], isLoading: cachesLoading, error: cachesError, refetch } = useCachesList();
+
+  console.log('ShardsDetailTabCachesList: cachesData =', cachesData, 'isLoading =', cachesLoading, 'error =', cachesError);
 
   // Invalidate cache mutation
   const invalidateMutation = useInvalidateCache();
 
-  const [columnWidths, setColumnWidths] = useState<Record<string, number>>(() => {
-    const saved = storage.get('cachesList:columnWidths', {});
-    const defaultWidths = {
-      cache: 300,
-      cacheServiceClass: 300,
-      size: 150,
-      lastInvalidateAllTime: 200,
-      lastInvalidateKeyTime: 200,
-      actions: 100,
-    };
-    return saved && Object.keys(saved).length > 0 ? saved : defaultWidths;
-  });
-
+  // Log errors for debugging
   useEffect(() => {
-    if (Object.keys(columnWidths).length > 0) {
-      storage.set('cachesList:columnWidths', columnWidths);
+    if (cachesError) {
+      console.error('Error fetching caches list:', cachesError);
     }
-  }, [columnWidths, storage]);
-
-  const handleResize = useCallback((key: string) => {
-    return (_: React.SyntheticEvent, { size }: ResizeCallbackData) => {
-      setColumnWidths((prev) => {
-        const oldWidth = prev[key];
-        const newWidth = size.width;
-        const delta = newWidth - oldWidth;
-        const otherKeys = Object.keys(prev).filter(k => k !== key && k !== 'actions');
-        if (otherKeys.length === 0) return { ...prev, [key]: newWidth };
-        const totalOtherWidth = otherKeys.reduce((sum, k) => sum + prev[k], 0);
-        const newWidths = { ...prev, [key]: newWidth };
-        otherKeys.forEach(k => {
-          const proportion = prev[k] / totalOtherWidth;
-          const adjustment = delta * proportion;
-          newWidths[k] = Math.max(50, prev[k] - adjustment);
-        });
-        return newWidths;
-      });
-    };
-  }, []);
+  }, [cachesError]);
 
   const handleInvalidate = async (record: CacheItem) => {
     try {
@@ -100,9 +68,11 @@ export const ShardsDetailTabCachesList: React.FC = () => {
       try {
         const response = await fetch(`/platform-common/cache-info/cache-keys?cacheType=${encodeURIComponent(record.cache)}`);
         const data = await response.json();
-        setCacheKeysData({ ...cacheKeysData, [record.cache]: data });
+        // data should be an array of strings
+        setCacheKeysData({ ...cacheKeysData, [record.cache]: Array.isArray(data) ? data : [] });
       } catch (error) {
         message.error(`Failed to load cache keys: ${error}`);
+        setCacheKeysData({ ...cacheKeysData, [record.cache]: [] });
       } finally {
         setLoadingKeys({ ...loadingKeys, [record.cache]: false });
       }
@@ -110,7 +80,10 @@ export const ShardsDetailTabCachesList: React.FC = () => {
   };
 
   const expandedRowRender = (record: CacheItem) => {
-    const keys = cacheKeysData[record.cache] || [];
+    const keys = cacheKeysData[record.cache];
+    if (!keys || !Array.isArray(keys)) {
+      return <div style={{ padding: '16px' }}>No keys available</div>;
+    }
     const cacheKeys: CacheKey[] = keys.map((key: string) => ({ key }));
 
     const keysColumns: ColumnsType<CacheKey> = [
@@ -135,38 +108,34 @@ export const ShardsDetailTabCachesList: React.FC = () => {
     );
   };
 
-  const columns: ColumnsType<CacheItem> = useMemo(() => [
+  const columns: ColumnsType<CacheItem> = useMemo(() => {
+    console.log('COLUMNS VERSION: v4 - no scroll, balanced widths');
+    return [
     {
       title: 'Cache',
       dataIndex: 'cache',
       key: 'cache',
-      width: columnWidths.cache,
       sorter: (a, b) => a.cache.localeCompare(b.cache),
-      onHeaderCell: () => ({ width: columnWidths.cache, onResize: handleResize('cache') }),
     },
     {
       title: 'Cache Service Class',
       dataIndex: 'cacheServiceClass',
       key: 'cacheServiceClass',
-      width: columnWidths.cacheServiceClass,
       sorter: (a, b) => a.cacheServiceClass.localeCompare(b.cacheServiceClass),
-      onHeaderCell: () => ({ width: columnWidths.cacheServiceClass, onResize: handleResize('cacheServiceClass') }),
     },
     {
       title: 'Size',
       dataIndex: 'size',
       key: 'size',
-      width: columnWidths.size,
+      width: 80,
       sorter: (a, b) => a.size - b.size,
-      onHeaderCell: () => ({ width: columnWidths.size, onResize: handleResize('size') }),
       render: (size: number) => size?.toLocaleString() || 0,
     },
     {
       title: 'Last Invalidate All Time',
       dataIndex: 'lastInvalidateAllTime',
       key: 'lastInvalidateAllTime',
-      width: columnWidths.lastInvalidateAllTime,
-      onHeaderCell: () => ({ width: columnWidths.lastInvalidateAllTime, onResize: handleResize('lastInvalidateAllTime') }),
+      width: 160,
       render: (date: string) => (date ? moment(date).format('YYYY-MM-DD HH:mm:ss') : '-'),
       sorter: (a, b) => {
         const aDate = a.lastInvalidateAllTime ? moment(a.lastInvalidateAllTime).valueOf() : 0;
@@ -178,8 +147,7 @@ export const ShardsDetailTabCachesList: React.FC = () => {
       title: 'Last Invalidate Key Time',
       dataIndex: 'lastInvalidateKeyTime',
       key: 'lastInvalidateKeyTime',
-      width: columnWidths.lastInvalidateKeyTime,
-      onHeaderCell: () => ({ width: columnWidths.lastInvalidateKeyTime, onResize: handleResize('lastInvalidateKeyTime') }),
+      width: 160,
       render: (date: string) => (date ? moment(date).format('YYYY-MM-DD HH:mm:ss') : '-'),
       sorter: (a, b) => {
         const aDate = a.lastInvalidateKeyTime ? moment(a.lastInvalidateKeyTime).valueOf() : 0;
@@ -190,36 +158,61 @@ export const ShardsDetailTabCachesList: React.FC = () => {
     {
       title: 'Actions',
       key: 'actions',
-      fixed: 'right',
-      width: columnWidths.actions,
+      width: 90,
+      align: 'center',
       render: (_, record) => (
         <Tooltip title="Invalidate">
           <Button
             type="primary"
+            size="small"
             icon={<SyncOutlined />}
             onClick={() => handleInvalidate(record)}
           />
         </Tooltip>
       ),
     },
-  ], [columnWidths, handleResize]);
+  ];
+  }, []);
 
   return (
     <div className="shards-detail-tab-caches-list" style={{ padding: '20px' }}>
       <h1 style={{ fontSize: '20px', fontWeight: 600, marginBottom: 16 }}>Caches List</h1>
 
+      {cachesError && (
+        <Alert
+          message="Error Loading Caches"
+          description={`Failed to load caches list: ${cachesError instanceof Error ? cachesError.message : 'Unknown error'}`}
+          type="error"
+          showIcon
+          style={{ marginBottom: 16 }}
+          action={
+            <Button size="small" onClick={() => refetch()}>
+              Retry
+            </Button>
+          }
+        />
+      )}
+
       <Table
+        key="caches-table-v2"
         columns={columns}
         dataSource={cachesData}
         rowKey="cache"
         bordered
         size="small"
+        tableLayout="fixed"
         loading={cachesLoading || invalidateMutation.isPending}
         expandable={{
           expandedRowRender,
           expandedRowKeys,
           onExpandedRowsChange: (keys) => setExpandedRowKeys(keys),
           onExpand: handleExpand,
+          expandIcon: ({ expanded, onExpand, record }) =>
+            expanded ? (
+              <DownOutlined onClick={(e) => onExpand(record, e)} style={{ cursor: 'pointer' }} />
+            ) : (
+              <RightOutlined onClick={(e) => onExpand(record, e)} style={{ cursor: 'pointer' }} />
+            ),
         }}
         pagination={{
           pageSizeOptions: ['5', '10', '15', '20', '50'],
@@ -227,12 +220,6 @@ export const ShardsDetailTabCachesList: React.FC = () => {
           showSizeChanger: true,
           showTotal: (total) => `Total ${total}`,
           position: ['bottomCenter'],
-        }}
-        scroll={{ x: 1200 }}
-        components={{
-          header: {
-            cell: ResizableTitle,
-          },
         }}
       />
     </div>

@@ -2,5 +2,5 @@
  * Caches Components
  */
 
-export { default as CachesListWrapper } from './CachesListWrapper';
+// CachesListWrapper removed - ShardsDetailTabCachesList is used instead
 

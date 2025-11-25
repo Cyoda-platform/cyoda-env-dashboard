@@ -80,6 +80,23 @@ export default defineConfig({
           });
         },
       },
+      // Proxy all /platform-common requests to real Cyoda backend server
+      '/platform-common': {
+        target: 'https://cyoda-develop.kube3.cyoda.org/api',
+        changeOrigin: true,
+        secure: false,
+        configure: (proxy, options) => {
+          proxy.on('error', (err, req, res) => {
+            console.log('Proxy error:', err.message);
+          });
+          proxy.on('proxyReq', (proxyReq, req, res) => {
+            console.log('Proxying:', req.method, req.url, '→', options.target + req.url);
+          });
+          proxy.on('proxyRes', (proxyRes, req, res) => {
+            console.log('Response:', proxyRes.statusCode, req.method, req.url);
+          });
+        },
+      },
       // Proxy all /api requests to real Cyoda backend server
       // CONNECTED TO REAL CYODA INSTANCE: cyoda-develop.kube3.cyoda.org
       '/api': {
