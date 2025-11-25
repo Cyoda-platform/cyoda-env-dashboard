@@ -9,6 +9,7 @@ import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { Tabs, Card, Spin, Typography, Space, Alert, Descriptions, Button, Switch, Divider } from 'antd';
 import type { TabsProps } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   useWorkflow,
   useWorkflowEnabledTypes,
@@ -32,7 +33,9 @@ export const InstanceDetail: React.FC = () => {
   const { instanceId } = useParams<{ instanceId: string }>();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState('details');
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const entityClassName = searchParams.get('entityClassName') || '';
   const currentWorkflowId = searchParams.get('currentWorkflowId') || '';
@@ -80,6 +83,12 @@ export const InstanceDetail: React.FC = () => {
             entityClassName={entityClassName}
             entityData={entityData}
             currentWorkflowId={currentWorkflowId}
+            onTransitionChange={() => {
+              // Invalidate entity data cache to reload
+              queryClient.invalidateQueries({ queryKey: ['entity-load', instanceId, entityClassName] });
+              // Trigger refresh for other tabs
+              setRefreshTrigger(prev => prev + 1);
+            }}
           />
         ),
       },
@@ -88,6 +97,7 @@ export const InstanceDetail: React.FC = () => {
         label: 'Audit',
         children: (
           <AuditView
+            key={refreshTrigger}
             entityClassName={entityClassName}
             instanceId={instanceId!}
           />
@@ -98,6 +108,7 @@ export const InstanceDetail: React.FC = () => {
         label: 'Data Lineage',
         children: (
           <DataLineageView
+            key={refreshTrigger}
             entityClassName={entityClassName}
             instanceId={instanceId!}
           />
@@ -123,7 +134,7 @@ export const InstanceDetail: React.FC = () => {
     }
 
     return items;
-  }, [instanceId, entityClassName, entityData, currentWorkflowId, persistedType, workflowEnabledTypes]);
+  }, [instanceId, entityClassName, entityData, currentWorkflowId, persistedType, workflowEnabledTypes, refreshTrigger]);
 
   return (
     <div className="instance-detail-page">
@@ -175,7 +186,8 @@ const DetailView: React.FC<{
   entityClassName: string;
   entityData: Entity[] | null;
   currentWorkflowId?: string;
-}> = ({ instanceId, entityClassName, entityData, currentWorkflowId }) => {
+  onTransitionChange?: () => void;
+}> = ({ instanceId, entityClassName, entityData, currentWorkflowId, onTransitionChange }) => {
   const [showEmptyFields, setShowEmptyFields] = useState(true);
 
   if (!entityData || entityData.length === 0) {
@@ -250,10 +262,7 @@ const DetailView: React.FC<{
           <EntityTransitions
             entityId={instanceId}
             entityClass={entityClassName}
-            onTransitionChange={() => {
-              // Reload will be handled by parent component
-              window.location.reload();
-            }}
+            onTransitionChange={onTransitionChange}
           />
           <Divider />
         </>

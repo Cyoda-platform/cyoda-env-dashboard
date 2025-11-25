@@ -37,6 +37,7 @@ const EntityDetailModal: React.FC<EntityDetailModalProps> = ({
   const [loading, setLoading] = useState(false);
   const [entity, setEntity] = useState<Entity[]>([]);
   const [showEmptyFields, setShowEmptyFields] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   // Get stored settings from reports store
   const { getStoredSettings } = useReportsStore();
@@ -196,6 +197,8 @@ const EntityDetailModal: React.FC<EntityDetailModalProps> = ({
                 onTransitionChange={() => {
                   // Reload entity data after transition change
                   loadEntity();
+                  // Trigger refresh for Data lineage tab
+                  setRefreshTrigger(prev => prev + 1);
                 }}
               />
               <Divider />
@@ -232,6 +235,7 @@ const EntityDetailModal: React.FC<EntityDetailModalProps> = ({
         <div className="entity-detail-tab">
           {visible && getEntityId() && getEntityClass() && (
             <EntityDataLineage
+              key={refreshTrigger}
               entityClass={getEntityClass()}
               entityId={getEntityId()!}
             />
@@ -246,6 +250,7 @@ const EntityDetailModal: React.FC<EntityDetailModalProps> = ({
         <div className="entity-detail-tab">
           {visible && getEntityId() && getEntityClass() && (
             <EntityAudit
+              key={refreshTrigger}
               entityClass={getEntityClass()}
               entityId={getEntityId()!}
             />
