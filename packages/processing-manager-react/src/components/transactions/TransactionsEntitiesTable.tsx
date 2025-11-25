@@ -5,11 +5,12 @@
 
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
 import { Table, Space, Spin } from 'antd';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import type { ColumnsType } from 'antd/es/table';
 import type { ResizeCallbackData } from 'react-resizable';
 import { HelperStorage } from '@cyoda/http-api-react';
 import { ResizableTitle } from '../ResizableTitle';
+import { EntityVersionsModal, EntityChangesModal, EntityStateMachineModal } from './';
 import './TransactionsEntitiesTable.scss';
 
 interface EntityRow {
@@ -30,6 +31,12 @@ export const TransactionsEntitiesTable: React.FC<TransactionsEntitiesTableProps>
 }) => {
   const { name } = useParams<{ name: string }>();
   const storage = useMemo(() => new HelperStorage(), []);
+
+  // Modal states
+  const [versionsModalVisible, setVersionsModalVisible] = useState(false);
+  const [changesModalVisible, setChangesModalVisible] = useState(false);
+  const [stateMachineModalVisible, setStateMachineModalVisible] = useState(false);
+  const [selectedEntity, setSelectedEntity] = useState<{ entityId: string; entityType: string } | null>(null);
 
   // Column widths state
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>(() => {
@@ -86,6 +93,41 @@ export const TransactionsEntitiesTable: React.FC<TransactionsEntitiesTableProps>
     return '';
   };
 
+  const parseQueryParams = (queryString: string): { entityId: string; type: string } => {
+    const params = new URLSearchParams(queryString);
+    return {
+      entityId: params.get('entityId') || '',
+      type: params.get('type') || '',
+    };
+  };
+
+  const handleVersionsClick = (record: EntityRow) => {
+    const versionsPath = createLink('versions', record.actions);
+    if (versionsPath) {
+      const params = parseQueryParams(versionsPath);
+      setSelectedEntity(params);
+      setVersionsModalVisible(true);
+    }
+  };
+
+  const handleChangesClick = (record: EntityRow) => {
+    const changesPath = createLink('changes', record.actions);
+    if (changesPath) {
+      const params = parseQueryParams(changesPath);
+      setSelectedEntity(params);
+      setChangesModalVisible(true);
+    }
+  };
+
+  const handleStateMachineClick = (record: EntityRow) => {
+    const stateMachinePath = createLink('state-machine', record.actions);
+    if (stateMachinePath) {
+      const params = parseQueryParams(stateMachinePath);
+      setSelectedEntity(params);
+      setStateMachineModalVisible(true);
+    }
+  };
+
   const columns: ColumnsType<EntityRow> = useMemo(() => [
     {
       title: 'Create Date',
@@ -134,15 +176,19 @@ export const TransactionsEntitiesTable: React.FC<TransactionsEntitiesTableProps>
         return (
           <Space size="middle">
             {versionsPath && (
-              <Link to={`/processing-ui/nodes/${name}/versions?${versionsPath}`}>Versions</Link>
+              <a onClick={() => handleVersionsClick(record)} style={{ cursor: 'pointer' }}>
+                Versions
+              </a>
             )}
             {changesPath && (
-              <Link to={`/processing-ui/nodes/${name}/changes?${changesPath}`}>Changes</Link>
+              <a onClick={() => handleChangesClick(record)} style={{ cursor: 'pointer' }}>
+                Changes
+              </a>
             )}
             {stateMachinePath && (
-              <Link to={`/processing-ui/nodes/${name}/entity-state-machine?${stateMachinePath}`}>
+              <a onClick={() => handleStateMachineClick(record)} style={{ cursor: 'pointer' }}>
                 State Machine
-              </Link>
+              </a>
             )}
           </Space>
         );
@@ -152,32 +198,58 @@ export const TransactionsEntitiesTable: React.FC<TransactionsEntitiesTableProps>
         onResize: handleResize('actions'),
       }),
     },
-  ], [columnWidths, handleResize, name, createLink]);
+  ], [columnWidths, handleResize, handleVersionsClick, handleChangesClick, handleStateMachineClick]);
 
   return (
-    <div className="transactions-entities-table">
-      <Spin spinning={isLoading}>
-        <Table
-          columns={columns}
-          dataSource={tableData}
-          rowKey="entityId"
-          bordered
-          components={{
-            header: {
-              cell: ResizableTitle,
-            },
-          }}
-          pagination={{
-            pageSizeOptions: ['5', '10', '15', '20', '50'],
-            defaultPageSize: 10,
-            showSizeChanger: true,
-            showTotal: (total) => `Total ${total}`,
-            position: ['bottomCenter'],
-          }}
-          scroll={{ x: 'max-content' }}
-        />
-      </Spin>
-    </div>
+    <>
+      <div className="transactions-entities-table">
+        <Spin spinning={isLoading}>
+          <Table
+            columns={columns}
+            dataSource={tableData}
+            rowKey="entityId"
+            bordered
+            components={{
+              header: {
+                cell: ResizableTitle,
+              },
+            }}
+            pagination={{
+              pageSizeOptions: ['5', '10', '15', '20', '50'],
+              defaultPageSize: 10,
+              showSizeChanger: true,
+              showTotal: (total) => `Total ${total}`,
+              position: ['bottomCenter'],
+            }}
+            scroll={{ x: 'max-content' }}
+          />
+        </Spin>
+      </div>
+
+      {selectedEntity && (
+        <>
+          <EntityVersionsModal
+            visible={versionsModalVisible}
+            onClose={() => setVersionsModalVisible(false)}
+            entityId={selectedEntity.entityId}
+            entityType={selectedEntity.type}
+          />
+          <EntityChangesModal
+            visible={changesModalVisible}
+            onClose={() => setChangesModalVisible(false)}
+            entityId={selectedEntity.entityId}
+            entityType={selectedEntity.type}
+            nodeName={name}
+          />
+          <EntityStateMachineModal
+            visible={stateMachineModalVisible}
+            onClose={() => setStateMachineModalVisible(false)}
+            entityId={selectedEntity.entityId}
+            entityType={selectedEntity.type}
+          />
+        </>
+      )}
+    </>
   );
 };
 

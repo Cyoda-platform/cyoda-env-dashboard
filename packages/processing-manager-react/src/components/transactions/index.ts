@@ -11,4 +11,7 @@ export { default as TransactionsEntitiesFilter } from './TransactionsEntitiesFil
 export { default as TransactionsEntitiesTable } from './TransactionsEntitiesTable';
 export { default as TransactionsClear } from './TransactionsClear';
 export { default as TransactionDetailModal } from './TransactionDetailModal';
+export { default as EntityVersionsModal } from './EntityVersionsModal';
+export { default as EntityChangesModal } from './EntityChangesModal';
+export { default as EntityStateMachineModal } from './EntityStateMachineModal';
 

@@ -1,0 +1,13 @@
+.entity-changes-modal {
+  .ant-modal-body {
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+    padding-right: 8px;
+  }
+
+  .entity-changes-content {
+    padding: 16px 0;
+    padding-right: 16px;
+  }
+}
+
