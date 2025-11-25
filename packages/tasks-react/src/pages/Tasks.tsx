@@ -4,64 +4,24 @@
  * Migrated from: .old_project/packages/tasks/src/views/tasks/index/Tasks.vue
  */
 
-import React, { useState, useCallback } from 'react';
-import { Button } from 'antd';
-import { CloseOutlined, ApiOutlined } from '@ant-design/icons';
-import { TasksFilter } from '../components/TasksFilter';
-import { TasksGrid } from '../components/TasksGrid';
-import { useTasksState } from '../hooks/useTasks';
-import type { TaskFilterType } from '../types';
+import React from 'react';
+import { Alert } from 'antd';
+import { InfoCircleOutlined } from '@ant-design/icons';
 import './Tasks.scss';
 
 export const Tasks: React.FC = () => {
-  const { isApplyRealData, setIsApplyRealData } = useTasksState();
-  const [filter, setFilter] = useState<TaskFilterType>({});
-
-  const handleChangeFilter = useCallback((filterValue: TaskFilterType) => {
-    console.log('📝 Tasks page received filter:', filterValue);
-    setFilter(filterValue);
-  }, []);
-
-  const toggleApplyRealData = useCallback(() => {
-    setIsApplyRealData(!isApplyRealData);
-  }, [isApplyRealData, setIsApplyRealData]);
-
   return (
     <div className="tasks-page">
       <h1 className="page-title">Tasks</h1>
 
-      <div className="tasks-actions">
-        <div>
-          <h2>Filters</h2>
-        </div>
-        <div>
-          {isApplyRealData ? (
-            <Button
-              type="default"
-              danger
-              icon={<CloseOutlined />}
-              onClick={toggleApplyRealData}
-              aria-label="Unsubscribe from live data updates"
-              aria-pressed="true"
-            >
-              Unsubscribe to live data
-            </Button>
-          ) : (
-            <Button
-              type="primary"
-              icon={<ApiOutlined />}
-              onClick={toggleApplyRealData}
-              aria-label="Subscribe to live data updates"
-              aria-pressed="false"
-            >
-              Subscribe to live data
-            </Button>
-          )}
-        </div>
-      </div>
-
-      <TasksFilter onChangeFilter={handleChangeFilter} />
-      <TasksGrid isApplyRealData={isApplyRealData} filter={filter} />
+      <Alert
+        message="Feature Not Available"
+        description="This feature is currently under development and not yet available. Please check back later."
+        type="info"
+        icon={<InfoCircleOutlined />}
+        showIcon
+        style={{ marginTop: 24 }}
+      />
     </div>
   );
 };
