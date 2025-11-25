@@ -176,8 +176,71 @@ describe('TrinoEditTable', () => {
         allFields={allFields}
       />
     );
-    
+
     expect(screen.getByText('Field Name')).toBeInTheDocument();
+  });
+
+  it('should render nested table when field has arrayFields and flatten is true', () => {
+    const tableWithArrayFields: SqlTable = {
+      ...mockTable,
+      fields: [
+        {
+          fieldName: 'array_field',
+          fieldType: 'array',
+          isArray: true,
+          flatten: true,
+          fieldCategory: 'DATA',
+          arrayFields: [
+            {
+              fieldName: 'nested_field_1',
+              fieldType: 'varchar',
+              fieldCategory: 'DATA',
+            },
+            {
+              fieldName: 'nested_field_2',
+              fieldType: 'integer',
+              fieldCategory: 'DATA',
+            },
+          ],
+        },
+      ],
+    };
+
+    const { container } = render(<TrinoEditTable table={tableWithArrayFields} />);
+
+    // Check that expand-row is rendered
+    expect(container.querySelector('.expand-row')).toBeTruthy();
+
+    // Check that nested table headers are rendered
+    const headers = screen.getAllByText('Field Name');
+    expect(headers.length).toBeGreaterThan(1); // Main table + nested table
+  });
+
+  it('should not render nested table when flatten is false', () => {
+    const tableWithArrayNoFlatten: SqlTable = {
+      ...mockTable,
+      fields: [
+        {
+          fieldName: 'array_field',
+          fieldType: 'array',
+          isArray: true,
+          flatten: false,
+          fieldCategory: 'DATA',
+          arrayFields: [
+            {
+              fieldName: 'nested_field',
+              fieldType: 'varchar',
+              fieldCategory: 'DATA',
+            },
+          ],
+        },
+      ],
+    };
+
+    const { container } = render(<TrinoEditTable table={tableWithArrayNoFlatten} />);
+
+    // Check that expand-row is NOT rendered
+    expect(container.querySelector('.expand-row')).toBeFalsy();
   });
 });
 

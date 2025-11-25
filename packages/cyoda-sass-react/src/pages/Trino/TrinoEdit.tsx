@@ -10,7 +10,7 @@ import {
   Badge,
   message,
 } from 'antd';
-import { TableOutlined, EyeOutlined, SaveOutlined } from '@ant-design/icons';
+import { TableOutlined, EyeOutlined, SaveOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useSchema, useSaveSchema } from '../../hooks/useSqlSchema';
 import { validateSchemaName, validateTableName, toLowerCaseField } from '../../utils/validation';
 import { countHiddenTables } from '../../utils/helpers';
@@ -272,12 +272,16 @@ const TrinoEdit: React.FC = () => {
                   activeKey={activeTab}
                   onChange={setActiveTab}
                   tabPosition="left"
-                  items={filteredTables.map((table, index) => {
+                  items={filteredTables.map((table, filteredIndex) => {
+                    // Find the real index in schemaData.tables
+                    const realIndex = schemaData.tables.findIndex(
+                      (t) => t.metadataClassId === table.metadataClassId
+                    );
                     const allFields = getAllFields(table.fields);
                     const hiddenFieldsCount = allFields.filter((f) => f.hidden).length;
 
                     return {
-                      key: String(index),
+                      key: String(filteredIndex),
                       label: (
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                           <span>{table.tableName}</span>
@@ -287,27 +291,63 @@ const TrinoEdit: React.FC = () => {
                         </div>
                       ),
                       children: (
-                        <div key={index}>
-                          <div style={{ marginBottom: 16, display: 'flex', gap: 8 }}>
-                            <Badge count={hiddenFieldsCount} showZero={false}>
+                        <div key={filteredIndex}>
+                          {/* Table Name */}
+                          <Form.Item
+                            label="Table Name"
+                            validateStatus={validateTableName(table.tableName, schemaData.tables) ? 'error' : ''}
+                            help={validateTableName(table.tableName, schemaData.tables)}
+                          >
+                            <div className="trino-edit-inner-box">
+                              <Input
+                                value={table.tableName}
+                                onChange={(e) => {
+                                  const value = e.target.value.toLowerCase();
+                                  setSchemaData((prev) => {
+                                    const newTables = [...prev.tables];
+                                    newTables[realIndex] = { ...newTables[realIndex], tableName: value };
+                                    return { ...prev, tables: newTables };
+                                  });
+                                }}
+                                style={{ flex: 1 }}
+                              />
                               <Button
-                                icon={<EyeOutlined />}
+                                danger
+                                icon={<DeleteOutlined />}
                                 onClick={() => {
-                                  setCurrentTableIndex(index);
-                                  hiddenFieldsPopUpRef.current?.open(allFields);
+                                  setSchemaData((prev) => {
+                                    const newTables = [...prev.tables];
+                                    newTables[realIndex] = { ...newTables[realIndex], hidden: true };
+                                    return { ...prev, tables: newTables };
+                                  });
                                 }}
                               />
-                            </Badge>
-                          </div>
+                              <Badge count={hiddenFieldsCount} showZero={false}>
+                                <Button
+                                  icon={<EyeOutlined />}
+                                  onClick={() => {
+                                    setCurrentTableIndex(realIndex);
+                                    hiddenFieldsPopUpRef.current?.open(allFields);
+                                  }}
+                                />
+                              </Badge>
+                            </div>
+                          </Form.Item>
+
+                          {/* Uniformed Path */}
+                          <Form.Item label="Uniformed Path">
+                            <Input value={table.uniformedPath} disabled readOnly />
+                          </Form.Item>
+
                           <TrinoEditTable
                             table={table}
                             fieldsName="fields"
-                            basePropPath={`tables.${index}`}
+                            basePropPath={`tables.${realIndex}`}
                             allFields={allFields}
                             onFieldsChange={(newFields) => {
                               setSchemaData((prev) => {
                                 const newTables = [...prev.tables];
-                                newTables[index] = { ...newTables[index], fields: newFields };
+                                newTables[realIndex] = { ...newTables[realIndex], fields: newFields };
                                 return { ...prev, tables: newTables };
                               });
                             }}

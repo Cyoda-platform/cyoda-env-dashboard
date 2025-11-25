@@ -22,6 +22,7 @@ interface ModellingGroupProps {
   parentColDef?: any;
   onlyView?: boolean;
   disablePreview?: boolean;
+  className?: string;
 }
 
 export const ModellingGroup: React.FC<ModellingGroupProps> = ({
@@ -37,9 +38,10 @@ export const ModellingGroup: React.FC<ModellingGroupProps> = ({
   parentColDef = {},
   onlyView = false,
   disablePreview = false,
+  className = '',
 }) => {
   return (
-    <ul className="modelling-group">
+    <ul className={`modelling-group ${className}`}>
       {reportInfoRows.map((reportInfoRow) => (
         <li key={reportInfoRow.columnPath}>
           <ModellingItem

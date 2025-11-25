@@ -133,7 +133,7 @@ const SortableRow: React.FC<SortableRowProps> = ({
       {isExistArray && field.flatten && field.arrayFields && (
         <div className="expand-row">
           <TrinoEditTable
-            table={{ ...table, fields: field.arrayFields } as SqlTable}
+            table={{ ...field, arrayFields: field.arrayFields } as any}
             fieldsName="arrayFields"
             basePropPath={`${getPropPath(index)}.arrayFields`}
             allFields={allFields}

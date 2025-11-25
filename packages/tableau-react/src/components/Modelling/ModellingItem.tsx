@@ -430,22 +430,21 @@ export const ModellingItem: React.FC<ModellingItemProps> = ({
 
       {/* Join group */}
       {isJoinAvailable && isShowJoin && (
-        <div className="inner-group">
-          <ModellingGroup
-            reportInfoRows={reportingInfoRows}
-            relatedPaths={relatedPathsInner}
-            requestClass={joinItem!.targetEntityClass}
-            checked={checked}
-            limit={limit}
-            search={search}
-            isCondenseThePaths={isCondenseThePaths}
-            isOpenAllSelected={isOpenAllSelected}
-            onlyRange={onlyRange}
-            onlyView={onlyView}
-            disablePreview={disablePreview}
-            parentColDef={joinItem && label}
-          />
-        </div>
+        <ModellingGroup
+          className="inner-group"
+          reportInfoRows={reportingInfoRows}
+          relatedPaths={relatedPathsInner}
+          requestClass={joinItem!.targetEntityClass}
+          checked={checked}
+          limit={limit}
+          search={search}
+          isCondenseThePaths={isCondenseThePaths}
+          isOpenAllSelected={isOpenAllSelected}
+          onlyRange={onlyRange}
+          onlyView={onlyView}
+          disablePreview={disablePreview}
+          parentColDef={joinItem && label}
+        />
       )}
 
       {/* Unique Values Modal */}

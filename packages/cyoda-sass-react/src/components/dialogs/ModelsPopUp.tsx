@@ -29,6 +29,7 @@ const ModelsPopUp = forwardRef<ModelsPopUpRef, ModelsPopUpProps>(
     const [tableData, setTableData] = useState<EntityModelWithLoading[]>([]);
     const isInitRef = useRef(false);
     const isAutomaticAddRef = useRef(false);
+    const isInitializingSelectionRef = useRef(false);
 
     // Fetch entity models
     const { data: entityModels = [], isLoading } = useEntityModels();
@@ -49,8 +50,13 @@ const ModelsPopUp = forwardRef<ModelsPopUpRef, ModelsPopUpProps>(
     // Auto-select rows based on existing tables
     useEffect(() => {
       if (tableData.length > 0) {
+        isInitializingSelectionRef.current = true;
         const allIds = [...new Set(tables.map((el) => el.metadataClassId))];
         setSelectedRowKeys(allIds);
+        // Reset the flag after a short delay to allow the selection to complete
+        setTimeout(() => {
+          isInitializingSelectionRef.current = false;
+        }, 100);
       }
     }, [tableData, tables]);
 
@@ -86,6 +92,12 @@ const ModelsPopUp = forwardRef<ModelsPopUpRef, ModelsPopUpProps>(
     // Handle selection change
     const handleSelectionChange = async (newSelectedRowKeys: React.Key[]) => {
       const newKeys = newSelectedRowKeys as string[];
+
+      // Skip warning during automatic initialization
+      if (isInitializingSelectionRef.current) {
+        setSelectedRowKeys(newKeys);
+        return;
+      }
 
       // If deselecting
       if (newKeys.length < selectedRowKeys.length) {
