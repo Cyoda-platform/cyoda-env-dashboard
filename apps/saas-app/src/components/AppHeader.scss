@@ -49,6 +49,8 @@
         display: block;
         transition: opacity var(--refine-transition-base);
         margin: 0;
+        position: relative;
+        top: -6px; // Shift logo up to center it vertically
 
         &:hover {
           opacity: 0.85;
