@@ -7,7 +7,8 @@
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { Tabs, Button, Spin, Alert, App } from 'antd';
+import { Tabs, Button, Dropdown, Spin, Alert, App } from 'antd';
+import type { MenuProps } from 'antd';
 import { ArrowLeftOutlined, SaveOutlined, PlayCircleOutlined, StopOutlined } from '@ant-design/icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { axios } from '@cyoda/http-api-react';
@@ -178,7 +179,7 @@ const ReportEditor: React.FC = () => {
     }
   }, [configDefinition, updateReportMutation]);
 
-  const handleUpdateAndRun = useCallback(() => {
+  const handleUpdateAndRun = useCallback((showResult: boolean = false) => {
     setShowErrors(false);
 
     // Create a deep copy to avoid mutating the original
@@ -191,11 +192,17 @@ const ReportEditor: React.FC = () => {
 
     if (validate) {
       runReportMutation.mutate(copyConfigDefinition);
+
+      // If showResult is true, we could navigate to results page after a delay
+      if (showResult) {
+        // This would be implemented when we have the results page ready
+        message.info('Report is running. Results will be shown when complete.');
+      }
     } else {
       message.error('Report contains errors. Please check the configuration.');
       setShowErrors(true);
     }
-  }, [configDefinition, runReportMutation]);
+  }, [configDefinition, runReportMutation, message]);
 
   const handleCancel = useCallback(() => {
     cancelReportMutation.mutate();
@@ -204,6 +211,15 @@ const ReportEditor: React.FC = () => {
   const handleConfigChange = useCallback((newConfig: Partial<ReportDefinition>) => {
     setConfigDefinition((prev) => ({ ...prev, ...newConfig }));
   }, []);
+
+  // Dropdown menu items for "Update and Run" button
+  const runMenuItems: MenuProps['items'] = [
+    {
+      key: 'run-show',
+      label: 'Run and show Result',
+      onClick: () => handleUpdateAndRun(true),
+    },
+  ];
 
   // Check for duplicate alias names
   const hasDuplicateAliases = useMemo(() => {
@@ -348,14 +364,15 @@ const ReportEditor: React.FC = () => {
         )}
 
         {configDefinition.singletonReport && (
-          <Button
+          <Dropdown.Button
             type="primary"
             icon={<PlayCircleOutlined />}
             loading={runReportMutation.isPending || !!runningReportId}
-            onClick={handleUpdateAndRun}
+            onClick={() => handleUpdateAndRun(false)}
+            menu={{ items: runMenuItems }}
           >
             Update and Run
-          </Button>
+          </Dropdown.Button>
         )}
 
         {runningReportId && reportExecutionTime > 1 && (

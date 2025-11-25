@@ -263,16 +263,15 @@ const QuickRunReport: React.FC<QuickRunReportProps> = ({
         <div className="actions">
           {!isRunningReport ? (
             <Tooltip title="Run configuration">
-              <Dropdown menu={{ items: menuItems }} trigger={['click']}>
-                <Button
-                  type="primary"
-                  icon={<PlayCircleOutlined />}
-                  disabled={!selectedConfig}
-                  onClick={() => handleRunReport(false)}
-                >
-                  Run
-                </Button>
-              </Dropdown>
+              <Dropdown.Button
+                type="primary"
+                icon={<PlayCircleOutlined />}
+                disabled={!selectedConfig}
+                onClick={() => handleRunReport(false)}
+                menu={{ items: menuItems }}
+              >
+                Run
+              </Dropdown.Button>
             </Tooltip>
           ) : null}
 
