@@ -1,15 +1,22 @@
 .entity-transitions {
-  margin-bottom: 20px;
+  margin-bottom: 0;
 
   h4 {
     font-weight: bold;
     font-size: 16px;
-    margin-bottom: 15px;
+    margin-bottom: 8px;
+  }
+
+  p {
+    margin-bottom: 0;
   }
 
   .ant-form-inline {
+    margin-bottom: 0;
+
     .ant-form-item {
       margin-right: 16px;
+      margin-bottom: 0;
     }
   }
 

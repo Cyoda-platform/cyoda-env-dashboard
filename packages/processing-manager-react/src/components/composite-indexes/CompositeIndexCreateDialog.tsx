@@ -154,6 +154,7 @@ export const CompositeIndexCreateDialog: React.FC<CompositeIndexCreateDialogProp
       open={open}
       onCancel={handleCancel}
       width="90%"
+      className="composite-index-create-dialog"
       confirmLoading={loading}
       footer={
         <Space>

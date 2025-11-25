@@ -1,5 +1,6 @@
 // CompositeIndexCreateDialog styles
-.ant-modal {
+// Use specific class to avoid affecting other modals
+.composite-index-create-dialog {
   .ant-steps {
     margin-bottom: 24px;
   }

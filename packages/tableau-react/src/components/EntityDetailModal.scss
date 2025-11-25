@@ -17,8 +17,13 @@
 .entity-detail-tab {
   padding: 16px 0;
 
+  // Compact dividers between sections
+  .ant-divider {
+    margin: 16px 0;
+  }
+
   .entity-detail-section {
-    margin-bottom: 24px;
+    margin-bottom: 16px;
 
     h4 {
       font-weight: bold;
