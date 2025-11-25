@@ -20,6 +20,7 @@ interface ErrorEventRow {
   shardId: string;
   status: string;
   timeUUID: string;
+  entityClassName: string;
   entityId: string;
   entityHasErrors: boolean;
   errorEventTimeUUID: string;
@@ -178,10 +179,10 @@ export const ProcessingEventsErrorViewTable: React.FC<ProcessingEventsErrorViewT
     },
     {
       title: 'Entity-Class',
-      dataIndex: 'queueName',
+      dataIndex: 'entityClassName',
       key: 'entityClass',
       width: 200,
-      sorter: (a, b) => a.queueName.localeCompare(b.queueName),
+      sorter: (a, b) => (a.entityClassName || '').localeCompare(b.entityClassName || ''),
       onHeaderCell: () => ({
         width: 200,
         onResize: handleResize('entityClass'),

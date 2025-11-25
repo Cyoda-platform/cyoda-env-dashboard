@@ -1,14 +1,14 @@
 # Processing Manager - Fixes Applied
 
-**Date:** 2025-11-19  
-**Status:** ✅ ALL FIXES COMPLETE  
+**Date:** 2025-11-19 (Updated: 2025-11-25)
+**Status:** ✅ ALL FIXES COMPLETE
 **Developer:** Augment Agent
 
 ---
 
 ## 📋 Summary
 
-All 8 endpoint discrepancies identified in the Processing Manager migration analysis have been successfully fixed. The React implementation now matches the Vue.js reference implementation 100%.
+All 8 endpoint discrepancies + 1 UI bug identified in the Processing Manager migration analysis have been successfully fixed. The React implementation now matches the Vue.js reference implementation 100%.
 
 ### Before & After
 
@@ -302,4 +302,99 @@ Test each of the 8 fixed endpoints:
 | Tests | 80%+ ✅ |
 
 **All endpoints now match the Vue reference implementation perfectly!** 🎉
+
+---
+
+## 🐛 Additional UI Bug Fix (2025-11-25)
+
+### 9. Entity-Class Column Duplication Bug
+
+**Component:** `ProcessingEventsErrorViewTable`
+**File:** `packages/processing-manager-react/src/components/processing-events/ProcessingEventsErrorViewTable.tsx`
+
+**Issue:** The "Entity-Class" column was displaying the same data as the "Queue" column because it was using the wrong `dataIndex`.
+
+**Root Cause:**
+- The column was using `dataIndex: 'queueName'` instead of `dataIndex: 'entityClassName'`
+- The `ErrorEventRow` interface was missing the `entityClassName` field
+- This bug existed in the original Vue project as well
+
+**Vue Project Bug (Line 22):**
+```vue
+<el-table-column prop="queueName" label="Entity-Class" width="200" sortable>
+```
+
+**React Project - Before Fix (Line 181):**
+```typescript
+{
+  title: 'Entity-Class',
+  dataIndex: 'queueName',  // ❌ Wrong field - shows same data as Queue
+  key: 'entityClass',
+  width: 200,
+  sorter: (a, b) => a.queueName.localeCompare(b.queueName),
+}
+```
+
+**React Project - After Fix:**
+```typescript
+// 1. Added entityClassName to interface (Line 23)
+interface ErrorEventRow {
+  queueName: string;
+  createTime: string;
+  doneTime: string;
+  errorTime: string;
+  shardId: string;
+  status: string;
+  timeUUID: string;
+  entityClassName: string;  // ✅ Added
+  entityId: string;
+  entityHasErrors: boolean;
+  errorEventTimeUUID: string;
+  coreDataClassName: string;
+  clientDataClassName: string;
+}
+
+// 2. Fixed column definition (Line 181)
+{
+  title: 'Entity-Class',
+  dataIndex: 'entityClassName',  // ✅ Correct field
+  key: 'entityClass',
+  width: 200,
+  sorter: (a, b) => (a.entityClassName || '').localeCompare(b.entityClassName || ''),
+}
+```
+
+**Files Modified:**
+1. `packages/processing-manager-react/src/components/processing-events/ProcessingEventsErrorViewTable.tsx`
+   - Added `entityClassName: string` to `ErrorEventRow` interface
+   - Changed `dataIndex` from `'queueName'` to `'entityClassName'`
+   - Updated sorter to use `entityClassName` with null safety
+
+2. `packages/processing-manager-react/src/components/processing-events/__tests__/ProcessingEventsErrorViewTable.test.tsx`
+   - Added `entityClassName` field to mock data
+
+**Test Results:**
+```
+✅ 24/24 tests passed
+Duration: 30.82s
+```
+
+**Impact:**
+- Users can now see the correct entity class name in the "Entity-Class" column
+- The column no longer duplicates the "Queue" column data
+- This fix improves data visibility and debugging capabilities
+
+**Status:** ✅ FIXED
+
+---
+
+## 📊 Final Summary
+
+**Total Bugs Fixed:** 9 (8 endpoint bugs + 1 UI bug)
+
+| Bug Type | Count | Status |
+|----------|-------|--------|
+| Endpoint API Bugs | 8 | ✅ Fixed |
+| UI Column Bugs | 1 | ✅ Fixed |
+| **Total** | **9** | **✅ All Fixed** |
 
