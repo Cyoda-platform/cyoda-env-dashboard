@@ -12,6 +12,19 @@
 
   .ant-switch {
     min-width: 60px;
+    background-color: #8B5CF6; // Purple color for unchecked state (Business)
+
+    &.ant-switch-checked {
+      background-color: #1DD1FF; // Cyan color for checked state (Technical)
+    }
+
+    &:hover:not(.ant-switch-disabled) {
+      background-color: #A78BFA; // Lighter purple on hover
+
+      &.ant-switch-checked {
+        background-color: #4DDBFF; // Lighter cyan on hover
+      }
+    }
   }
 }
 
