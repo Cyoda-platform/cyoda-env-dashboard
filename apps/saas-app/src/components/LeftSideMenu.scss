@@ -168,6 +168,39 @@
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
 
+  // Theme menu item styling
+  .ant-menu-item[data-menu-id$="-theme"] {
+    cursor: pointer !important;
+
+    .ant-menu-title-content {
+      width: 100%;
+
+      > div {
+        width: 100%;
+      }
+    }
+
+    .ant-switch {
+      &.ant-switch-checked {
+        background-color: #1DD1FF !important;
+      }
+
+      &:not(.ant-switch-checked) {
+        background-color: #8B5CF6 !important;
+      }
+
+      &:hover:not(.ant-switch-disabled) {
+        &.ant-switch-checked {
+          background-color: #4DDBFF !important;
+        }
+
+        &:not(.ant-switch-checked) {
+          background-color: #A78BFA !important;
+        }
+      }
+    }
+  }
+
   // Logo container at the top of sidebar - center it vertically
   .sidebar-logo-container {
     display: flex;

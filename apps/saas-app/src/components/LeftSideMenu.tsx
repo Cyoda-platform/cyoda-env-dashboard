@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Menu, Modal, Button, Tooltip } from 'antd';
+import { Layout, Menu, Modal, Button, Tooltip, Switch } from 'antd';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   DatabaseOutlined,
@@ -17,10 +17,12 @@ import {
   TagsOutlined,
   ProjectOutlined,
   AppstoreOutlined,
+  BulbOutlined,
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { HelperStorage } from '@cyoda/http-api-react/utils/storage';
 import { AppLogo } from '@cyoda/ui-lib-react';
+import { useThemeStore } from '../stores/themeStore';
 import './LeftSideMenu.scss';
 
 const { Sider } = Layout;
@@ -38,6 +40,7 @@ export const LeftSideMenu: React.FC<LeftSideMenuProps> = ({ collapsed, onCollaps
   const location = useLocation();
   const [versionModalVisible, setVersionModalVisible] = useState(false);
   const [openKeys, setOpenKeys] = useState<string[]>([]);
+  const { mode, toggleMode } = useThemeStore();
 
   const handleLogout = () => {
     Modal.confirm({
@@ -78,6 +81,11 @@ export const LeftSideMenu: React.FC<LeftSideMenuProps> = ({ collapsed, onCollaps
     }
     if (key === 'version') {
       handleVersionClick();
+      return;
+    }
+    if (key === 'theme') {
+      // Toggle theme when clicking on the menu item (useful in collapsed mode)
+      toggleMode();
       return;
     }
 
@@ -246,6 +254,49 @@ export const LeftSideMenu: React.FC<LeftSideMenuProps> = ({ collapsed, onCollaps
       icon: <InfoCircleOutlined />,
       label: 'Version App',
       title: 'Version App',
+    },
+    {
+      key: 'theme',
+      icon: collapsed ? (
+        <Tooltip title={mode === 'light' ? 'Light Theme' : 'Dark Theme'} placement="right">
+          <BulbOutlined />
+        </Tooltip>
+      ) : (
+        <BulbOutlined />
+      ),
+      label: collapsed ? (
+        <span data-path="">Theme</span>
+      ) : (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            width: '100%',
+            paddingRight: 8,
+          }}
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleMode();
+          }}
+        >
+          <span>Theme</span>
+          <Switch
+            checked={mode === 'light'}
+            size="small"
+            checkedChildren="Light"
+            unCheckedChildren="Dark"
+            onClick={(checked, e) => {
+              e.stopPropagation();
+              toggleMode();
+            }}
+            style={{
+              backgroundColor: mode === 'light' ? '#1DD1FF' : '#8B5CF6',
+            }}
+          />
+        </div>
+      ),
+      title: 'Theme',
     },
   ];
 

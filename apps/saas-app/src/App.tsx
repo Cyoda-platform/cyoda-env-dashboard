@@ -6,6 +6,7 @@ import { Auth0Provider } from '@auth0/auth0-react';
 import { AppRoutes } from './routes';
 import { auth0Config } from './config/auth0';
 import ErrorBoundary from './components/ErrorBoundary';
+import { useThemeStore } from './stores/themeStore';
 import './App.scss';
 
 // Create a client
@@ -19,8 +20,8 @@ const queryClient = new QueryClient({
   },
 });
 
-// Ant Design theme configuration - CYODA AI Assistant Dark Theme
-const theme = {
+// Ant Design theme configuration - CYODA AI Assistant Theme
+const getDarkTheme = () => ({
   token: {
     colorPrimary: '#00D4AA',
     colorSuccess: '#00D4AA',
@@ -137,7 +138,47 @@ const theme = {
       colorPrimaryHover: '#00E5BF',
     },
   },
-};
+});
+
+// Light theme configuration (placeholder - will be customized later)
+const getLightTheme = () => ({
+  token: {
+    colorPrimary: '#00D4AA',
+    colorSuccess: '#00D4AA',
+    colorWarning: '#F59E0B',
+    colorError: '#EF4444',
+    colorInfo: '#3B82F6',
+    colorLink: '#00D4AA',
+    borderRadius: 8,
+    fontSize: 14,
+    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif",
+  },
+  algorithm: antdTheme.defaultAlgorithm, // Use Ant Design's light algorithm
+  components: {
+    Layout: {
+      headerBg: '#FFFFFF',
+      siderBg: '#FFFFFF',
+      bodyBg: '#F5F5F5',
+    },
+    Menu: {
+      itemBg: '#FFFFFF',
+      itemSelectedBg: 'rgba(0, 212, 170, 0.1)',
+      itemHoverBg: 'rgba(0, 212, 170, 0.05)',
+      itemColor: '#4B5563',
+      itemSelectedColor: '#00D4AA',
+    },
+    Card: {
+      colorBgContainer: '#FFFFFF',
+      colorBorderSecondary: 'rgba(0, 0, 0, 0.06)',
+      bodyPadding: 0,
+    },
+    Table: {
+      headerBg: '#FAFAFA',
+      headerColor: '#4B5563',
+      rowHoverBg: 'rgba(0, 212, 170, 0.05)',
+    },
+  },
+});
 
 // Loading fallback component
 const LoadingFallback: React.FC = () => (
@@ -153,6 +194,9 @@ const LoadingFallback: React.FC = () => (
 );
 
 function App() {
+  const mode = useThemeStore((state) => state.mode);
+  const theme = mode === 'dark' ? getDarkTheme() : getLightTheme();
+
   return (
     <ErrorBoundary>
       <Auth0Provider
