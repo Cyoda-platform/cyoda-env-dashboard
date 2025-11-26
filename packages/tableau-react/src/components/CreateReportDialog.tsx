@@ -202,7 +202,7 @@ const CreateReportDialog = forwardRef<CreateReportDialogRef, CreateReportDialogP
         ]}
       >
         <div className="create-report-dialog">
-          <Steps current={currentStep} style={{ marginBottom: 24 }}>
+          <Steps current={currentStep} className="create-report-dialog__steps">
             <Step title="Step 1" description="Please Enter Name and Description" />
             <Step title="Step 2" description="Please Select Class" />
           </Steps>

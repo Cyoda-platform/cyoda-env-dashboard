@@ -4,6 +4,43 @@
  */
 
 .create-report-dialog {
+  &__steps {
+    margin-bottom: 24px;
+
+    // Center align the entire steps component
+    display: flex;
+    justify-content: center;
+
+    // Reduce spacing between steps - make it very compact
+    :global(.ant-steps) {
+      max-width: 500px;
+      gap: 0 !important;
+    }
+
+    :global(.ant-steps-item) {
+      flex: none !important;
+      padding-inline-start: 0 !important;
+      padding-inline-end: 0 !important;
+      margin-inline-end: 0 !important;
+
+      &:not(:last-child) {
+        margin-inline-end: 0 !important;
+      }
+    }
+
+    // Make the connector line much shorter
+    :global(.ant-steps-item-tail) {
+      padding: 3.5px 4px !important;
+      margin-inline-start: 4px !important;
+      margin-inline-end: 4px !important;
+    }
+
+    // Reduce icon container padding
+    :global(.ant-steps-item-icon) {
+      margin-inline-end: 4px !important;
+    }
+  }
+
   .create-report-form {
     margin-top: 24px;
 

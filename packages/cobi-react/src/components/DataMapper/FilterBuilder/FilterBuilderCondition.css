@@ -38,6 +38,46 @@
   display: none;
 }
 
+/* Light theme - override border color for dotted lines */
+html[data-theme="light"] .builder-condition-row.inner-fields:before {
+  border-color: rgba(0, 0, 0, 0.3);
+}
+
+html[data-theme="light"] .builder-condition-row.inner-fields:after {
+  border-color: rgba(0, 0, 0, 0.3);
+}
+
+/* Light theme - input and select borders */
+html[data-theme="light"] .builder-condition-row .ant-select-selector {
+  border-color: rgba(0, 0, 0, 0.15) !important;
+}
+
+html[data-theme="light"] .builder-condition-row .ant-input,
+html[data-theme="light"] .builder-condition-row .ant-input-number,
+html[data-theme="light"] .builder-condition-row .ant-picker {
+  border-color: rgba(0, 0, 0, 0.15) !important;
+}
+
+html[data-theme="light"] .builder-condition-row .ant-select:hover .ant-select-selector {
+  border-color: var(--refine-primary) !important;
+}
+
+html[data-theme="light"] .builder-condition-row .ant-input:hover,
+html[data-theme="light"] .builder-condition-row .ant-input-number:hover,
+html[data-theme="light"] .builder-condition-row .ant-picker:hover {
+  border-color: var(--refine-primary) !important;
+}
+
+html[data-theme="light"] .builder-condition-row .ant-select-focused .ant-select-selector {
+  border-color: var(--refine-primary) !important;
+}
+
+html[data-theme="light"] .builder-condition-row .ant-input:focus,
+html[data-theme="light"] .builder-condition-row .ant-input-number-focused,
+html[data-theme="light"] .builder-condition-row .ant-picker-focused {
+  border-color: var(--refine-primary) !important;
+}
+
 .builder-condition-row .col-err .ant-select-selector {
   border-color: #ff4d4f !important;
 }

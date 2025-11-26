@@ -3,9 +3,11 @@
  * Migrated from: .old_project/packages/http-api/src/views/ConfigEditor/ConfigEditorReports.vue
  */
 
+@use '../../../ui-lib-react/src/styles/table-mixins' as table;
 @import 'react-resizable/css/styles.css';
 
 .report-configs {
+  @include table.fixed-columns-background;
   padding: 0; // No padding - AppLayout handles spacing
   border: none !important;
   border-top: none !important;

@@ -38,6 +38,17 @@
       display: none;
     }
   }
+}
+
+// Light theme - override border color for dotted lines
+html[data-theme="light"] .builder-condition-group.inner-fields {
+  &:before {
+    border-color: rgba(0, 0, 0, 0.3) !important;
+  }
+
+  &:after {
+    border-color: rgba(0, 0, 0, 0.3) !important;
+  }
 
   .group-actions {
     margin-top: 20px;

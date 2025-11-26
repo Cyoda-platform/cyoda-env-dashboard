@@ -10,3 +10,69 @@
   }
 }
 
+// Sticky scroll separator line
+.monaco-editor .sticky-line-container::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+// Light theme overrides - global scope
+[data-theme='light'] {
+  .report-editor-tab-json {
+    background: #FFFFFF !important;
+  }
+
+  .ant-tabs-content {
+    background: #FFFFFF !important;
+  }
+
+  .ant-tabs-tabpane {
+    background: #FFFFFF !important;
+  }
+
+  // Monaco editor - ALL possible elements
+  .monaco-editor,
+  .monaco-editor-background,
+  .monaco-editor .margin,
+  .monaco-editor .monaco-scrollable-element,
+  .monaco-editor .view-lines,
+  .monaco-editor .view-line,
+  .monaco-editor .lines-content,
+  .monaco-editor .overflow-guard,
+  .monaco-editor .margin-view-overlays,
+  .monaco-editor .decorationsOverviewRuler,
+  .monaco-editor .glyph-margin,
+  .monaco-editor .line-numbers,
+  .monaco-editor .monaco-editor-background,
+  .monaco-editor .inputarea,
+  .monaco-editor .cursors-layer,
+  .monaco-editor .scroll-decoration,
+  .monaco-editor .selected-text,
+  .monaco-editor .focused .selected-text,
+  .monaco-editor .view-overlays,
+  .monaco-editor .current-line,
+  .monaco-editor .view-ruler,
+  .monaco-editor .lines-decorations,
+  .monaco-editor .contentWidgets,
+  .monaco-editor .overlayWidgets,
+  .monaco-editor .minimap-decorations-layer,
+  .monaco-editor .minimap-shadow-visible,
+  .monaco-editor .slider,
+  .monaco-editor .scrollbar,
+  .monaco-editor > div,
+  .monaco-editor > div > div {
+    background: #FFFFFF !important;
+    background-color: #FFFFFF !important;
+  }
+
+  // Sticky scroll separator for light theme
+  .monaco-editor .sticky-line-container::after {
+    background: rgba(0, 0, 0, 0.1);
+  }
+}
+

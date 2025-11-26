@@ -10,116 +10,236 @@
     min-width: min-content;
   }
 
-  .ant-transfer-list {
-    background: var(--refine-bg-tertiary, #243142);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
+  // Dark theme
+  [data-theme="dark"] & {
+    .ant-transfer-list {
+      background: var(--refine-bg-tertiary, #243142);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
 
-    // Adaptive sizing - override inline styles
-    min-width: 300px !important;
-    width: 100% !important;
-    max-width: 500px !important;
-    // Let the list grow based on content, with a reasonable max
-    min-height: 500px !important;
-    max-height: calc(100vh - 250px) !important;
-    height: auto !important;
-
-    // Header styling
-    &-header {
-      background: rgba(0, 0, 0, 0.2);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 12px 16px;
-      border-radius: 8px 8px 0 0;
-
-      .ant-checkbox-wrapper {
-        color: var(--refine-text-secondary, #D1D5DB);
-      }
-
-      &-title {
-        color: var(--refine-text-primary, #F9FAFB);
-        font-weight: 600;
-      }
-    }
-
-    // Body/content area
-    &-body {
-      background: transparent;
-      // Let content area grow with items
-      min-height: 400px !important;
-      max-height: calc(100vh - 350px) !important;
+      // Adaptive sizing - override inline styles
+      min-width: 300px !important;
+      width: 100% !important;
+      max-width: 500px !important;
+      // Let the list grow based on content, with a reasonable max
+      min-height: 500px !important;
+      max-height: calc(100vh - 250px) !important;
       height: auto !important;
 
-      // Search input
-      .ant-input-affix-wrapper {
+      // Header styling
+      &-header {
         background: rgba(0, 0, 0, 0.2);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        color: var(--refine-text-primary, #F9FAFB);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 12px 16px;
+        border-radius: 8px 8px 0 0;
 
-        &:hover, &:focus, &:focus-within {
-          border-color: var(--refine-primary, #00D4AA);
-          background: rgba(0, 0, 0, 0.3);
+        .ant-checkbox-wrapper {
+          color: var(--refine-text-secondary, #D1D5DB);
         }
 
-        .ant-input {
-          background: transparent;
+        &-title {
+          color: var(--refine-text-primary, #F9FAFB);
+          font-weight: 600;
+        }
+      }
+
+      // Body/content area
+      &-body {
+        background: transparent;
+        // Let content area grow with items
+        min-height: 400px !important;
+        max-height: calc(100vh - 350px) !important;
+        height: auto !important;
+
+        // Search input
+        .ant-input-affix-wrapper {
+          background: rgba(0, 0, 0, 0.2);
+          border: 1px solid rgba(255, 255, 255, 0.1);
           color: var(--refine-text-primary, #F9FAFB);
 
-          &::placeholder {
+          &:hover, &:focus, &:focus-within {
+            border-color: var(--refine-primary, #00D4AA);
+            background: rgba(0, 0, 0, 0.3);
+          }
+
+          .ant-input {
+            background: transparent;
+            color: var(--refine-text-primary, #F9FAFB);
+
+            &::placeholder {
+              color: var(--refine-text-tertiary, #9CA3AF);
+            }
+          }
+
+          .ant-input-prefix {
             color: var(--refine-text-tertiary, #9CA3AF);
           }
         }
 
-        .ant-input-prefix {
-          color: var(--refine-text-tertiary, #9CA3AF);
+        // List items
+        &-content {
+          &-item {
+            color: var(--refine-text-primary, #F9FAFB);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all var(--refine-transition-fast, 150ms);
+
+            &:hover {
+              background: rgba(0, 212, 170, 0.1);
+            }
+
+            &-checked {
+              background: rgba(0, 212, 170, 0.15);
+            }
+
+            .ant-checkbox-wrapper {
+              color: var(--refine-text-primary, #F9FAFB);
+            }
+          }
         }
       }
+    }
 
-      // List items
-      &-content {
-        &-item {
-          color: var(--refine-text-primary, #F9FAFB);
-          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-          transition: all var(--refine-transition-fast, 150ms);
+    .ant-transfer-operation {
+      margin: 0 40px;
 
-          &:hover {
-            background: rgba(0, 212, 170, 0.1);
-          }
+      .ant-btn {
+        display: block;
+        background: var(--refine-bg-tertiary, #243142);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--refine-text-primary, #F9FAFB);
 
-          &-checked {
-            background: rgba(0, 212, 170, 0.15);
-          }
+        &:not(:last-child) {
+          margin-bottom: 8px;
+        }
 
-          .ant-checkbox-wrapper {
-            color: var(--refine-text-primary, #F9FAFB);
-          }
+        &:hover:not(:disabled) {
+          background: var(--refine-primary, #00D4AA);
+          border-color: var(--refine-primary, #00D4AA);
+          color: #1A2332;
+        }
+
+        &:disabled {
+          background: rgba(255, 255, 255, 0.05);
+          border-color: rgba(255, 255, 255, 0.05);
+          color: var(--refine-text-muted, #6B7280);
         }
       }
     }
   }
 
-  .ant-transfer-operation {
-    margin: 0 40px;
+  // Light theme
+  [data-theme="light"] & {
+    .ant-transfer-list {
+      background: #FFFFFF;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
 
-    .ant-btn {
-      display: block;
-      background: var(--refine-bg-tertiary, #243142);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: var(--refine-text-primary, #F9FAFB);
+      // Adaptive sizing - override inline styles
+      min-width: 300px !important;
+      width: 100% !important;
+      max-width: 500px !important;
+      // Let the list grow based on content, with a reasonable max
+      min-height: 500px !important;
+      max-height: calc(100vh - 250px) !important;
+      height: auto !important;
 
-      &:not(:last-child) {
-        margin-bottom: 8px;
+      // Header styling
+      &-header {
+        background: #F9FAFB;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        padding: 12px 16px;
+        border-radius: 8px 8px 0 0;
+
+        .ant-checkbox-wrapper {
+          color: var(--refine-text-secondary, #6B7280);
+        }
+
+        &-title {
+          color: var(--refine-text-primary, #111827);
+          font-weight: 600;
+        }
       }
 
-      &:hover:not(:disabled) {
-        background: var(--refine-primary, #00D4AA);
-        border-color: var(--refine-primary, #00D4AA);
-        color: #1A2332;
-      }
+      // Body/content area
+      &-body {
+        background: transparent;
+        // Let content area grow with items
+        min-height: 400px !important;
+        max-height: calc(100vh - 350px) !important;
+        height: auto !important;
 
-      &:disabled {
-        background: rgba(255, 255, 255, 0.05);
-        border-color: rgba(255, 255, 255, 0.05);
-        color: var(--refine-text-muted, #6B7280);
+        // Search input
+        .ant-input-affix-wrapper {
+          background: #F9FAFB;
+          border: 1px solid rgba(0, 0, 0, 0.1);
+          color: var(--refine-text-primary, #111827);
+
+          &:hover, &:focus, &:focus-within {
+            border-color: var(--refine-primary, #00D4AA);
+            background: #FFFFFF;
+          }
+
+          .ant-input {
+            background: transparent;
+            color: var(--refine-text-primary, #111827);
+
+            &::placeholder {
+              color: var(--refine-text-tertiary, #9CA3AF);
+            }
+          }
+
+          .ant-input-prefix {
+            color: var(--refine-text-tertiary, #9CA3AF);
+          }
+        }
+
+        // List items
+        &-content {
+          &-item {
+            color: var(--refine-text-primary, #111827);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all var(--refine-transition-fast, 150ms);
+
+            &:hover {
+              background: rgba(0, 212, 170, 0.05);
+            }
+
+            &-checked {
+              background: rgba(0, 212, 170, 0.1);
+            }
+
+            .ant-checkbox-wrapper {
+              color: var(--refine-text-primary, #111827);
+            }
+          }
+        }
+      }
+    }
+
+    .ant-transfer-operation {
+      margin: 0 40px;
+
+      .ant-btn {
+        display: block;
+        background: #FFFFFF;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        color: var(--refine-text-primary, #111827);
+
+        &:not(:last-child) {
+          margin-bottom: 8px;
+        }
+
+        &:hover:not(:disabled) {
+          background: var(--refine-primary, #00D4AA);
+          border-color: var(--refine-primary, #00D4AA);
+          color: #FFFFFF;
+        }
+
+        &:disabled {
+          background: #F9FAFB;
+          border-color: rgba(0, 0, 0, 0.05);
+          color: var(--refine-text-muted, #9CA3AF);
+        }
       }
     }
   }
