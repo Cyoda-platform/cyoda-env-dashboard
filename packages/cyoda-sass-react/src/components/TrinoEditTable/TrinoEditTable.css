@@ -1,7 +1,19 @@
-.trino-edit-table {
+/* Dark theme */
+[data-theme="dark"] .trino-edit-table {
   width: 100%;
   background-color: rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Light theme */
+[data-theme="light"] .trino-edit-table {
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.02);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 .trino-edit-table .table-container {
@@ -34,7 +46,8 @@
   justify-content: center;
 }
 
-.trino-edit-table .header {
+/* Dark theme header */
+[data-theme="dark"] .trino-edit-table .header {
   background: rgba(36, 49, 66, 0.9);
   color: var(--refine-text-secondary, #e5e7eb);
   text-align: left;
@@ -46,12 +59,26 @@
   letter-spacing: 0.5px;
 }
 
+/* Light theme header */
+[data-theme="light"] .trino-edit-table .header {
+  background: #4B5563;
+  color: #F9FAFB;
+  text-align: left;
+  padding: 5px;
+  border: 0.5px solid rgba(0, 0, 0, 0.1);
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
 .trino-edit-table .row-container {
   display: flex;
   width: 100%;
 }
 
-.trino-edit-table .row-container .cell {
+/* Dark theme cells */
+[data-theme="dark"] .trino-edit-table .row-container .cell {
   padding: 5px;
   border: 0.5px solid rgba(255, 255, 255, 0.08);
   display: flex;
@@ -60,13 +87,34 @@
   color: var(--refine-text-primary, #e5e7eb);
 }
 
-/* Alternating row colors for better readability */
-.trino-edit-table > .table-container > div:nth-child(even):not(.header) .cell {
+/* Light theme cells */
+[data-theme="light"] .trino-edit-table .row-container .cell {
+  padding: 5px;
+  border: 0.5px solid rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  background-color: transparent;
+  color: var(--refine-text-primary, #111827);
+}
+
+/* Alternating row colors for better readability - Dark theme */
+[data-theme="dark"] .trino-edit-table > .table-container > div:nth-child(even):not(.header) .cell {
   background-color: rgba(255, 255, 255, 0.02);
 }
 
-.trino-edit-table .row-container:hover .cell {
+/* Alternating row colors for better readability - Light theme */
+[data-theme="light"] .trino-edit-table > .table-container > div:nth-child(even):not(.header) .cell {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+/* Hover - Dark theme */
+[data-theme="dark"] .trino-edit-table .row-container:hover .cell {
   background-color: rgba(0, 212, 170, 0.08) !important;
+}
+
+/* Hover - Light theme */
+[data-theme="light"] .trino-edit-table .row-container:hover .cell {
+  background-color: rgba(0, 212, 170, 0.03) !important;
 }
 
 .trino-edit-table .row-container .cell-item {
@@ -86,18 +134,32 @@
   opacity: 0.8;
 }
 
-.trino-edit-table .not-data {
+/* Not-data rows - Dark theme */
+[data-theme="dark"] .trino-edit-table .not-data {
   background-color: rgba(255, 255, 255, 0.03);
+}
+
+/* Not-data rows - Light theme */
+[data-theme="light"] .trino-edit-table .not-data {
+  background-color: rgba(0, 0, 0, 0.03);
 }
 
 .trino-edit-table .not-data .cell {
   opacity: 0.7;
 }
 
-.trino-edit-table .expand-row {
+/* Expand row - Dark theme */
+[data-theme="dark"] .trino-edit-table .expand-row {
   border: 0.5px solid rgba(255, 255, 255, 0.08);
   padding: 16px;
   background-color: rgba(0, 0, 0, 0.2);
+}
+
+/* Expand row - Light theme */
+[data-theme="light"] .trino-edit-table .expand-row {
+  border: 0.5px solid rgba(0, 0, 0, 0.08);
+  padding: 16px;
+  background-color: rgba(0, 0, 0, 0.02);
 }
 
 .trino-edit-table .ant-form-item {

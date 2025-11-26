@@ -29,11 +29,28 @@
       padding: 48px; // Padding inside white container (2x standard)
       border-radius: 8px;
       min-height: calc(100vh - 104px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      border: 1px solid var(--refine-border-primary);
+      box-shadow: var(--refine-shadow-md);
       position: relative;
       z-index: 1;
-      transition: box-shadow var(--refine-transition-base);
+      transition: box-shadow var(--refine-transition-base), border-color var(--refine-transition-base);
+    }
+  }
+}
+
+// Light theme specific styles
+[data-theme="light"] {
+  .saas-app-layout {
+    .saas-app-content {
+      &::before {
+        background: radial-gradient(ellipse at top, rgba(0, 212, 170, 0.08) 0%, transparent 70%);
+      }
+
+      .content-wrapper {
+        background: #FFFFFF;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
     }
   }
 }

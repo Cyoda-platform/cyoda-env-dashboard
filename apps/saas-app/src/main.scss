@@ -54,10 +54,65 @@
   --refine-transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+// Light Theme Variables
+[data-theme="light"] {
+  // Primary Colors - Keep the same accent colors
+  --refine-primary: #00D4AA;
+  --refine-primary-dark: #00B894;
+  --refine-primary-light: #00E5BF;
+
+  // Secondary Colors - Blue
+  --refine-secondary: #3B82F6;
+  --refine-secondary-dark: #2563EB;
+  --refine-secondary-light: #60A5FA;
+
+  // Accent Colors
+  --refine-accent-purple: #8B5CF6;
+  --refine-accent-cyan: #00D4AA;
+  --refine-accent-pink: #EC4899;
+
+  // Light Theme Backgrounds
+  --refine-bg-primary: #FFFFFF;
+  --refine-bg-secondary: #F9FAFB;
+  --refine-bg-tertiary: #F3F4F6;
+  --refine-bg-elevated: #FFFFFF;
+
+  // Text Colors
+  --refine-text-primary: #111827;
+  --refine-text-secondary: #4B5563;
+  --refine-text-tertiary: #6B7280;
+  --refine-text-muted: #9CA3AF;
+
+  // Border Colors
+  --refine-border-primary: rgba(0, 0, 0, 0.1);
+  --refine-border-secondary: rgba(0, 0, 0, 0.05);
+
+  // Gradients - Same as dark theme
+  --refine-gradient-primary: linear-gradient(135deg, #00D4AA 0%, #00B894 50%, #3B82F6 100%);
+  --refine-gradient-secondary: linear-gradient(135deg, #00D4AA 0%, #3B82F6 100%);
+  --refine-gradient-accent: linear-gradient(135deg, #00D4AA 0%, #8B5CF6 100%);
+
+  // Shadows - Lighter for light theme
+  --refine-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --refine-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --refine-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --refine-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+  // Glassmorphism
+  --refine-glass-bg: rgba(255, 255, 255, 0.8);
+  --refine-glass-border: rgba(0, 0, 0, 0.1);
+
+  // Transitions - Same as dark theme
+  --refine-transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --refine-transition-base: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  --refine-transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 body {
   margin: 0;
   padding: 0;
   background: var(--refine-bg-primary);
   color: var(--refine-text-primary);
+  transition: background-color var(--refine-transition-base), color var(--refine-transition-base);
 }
 

@@ -45,3 +45,11 @@
   margin-left: auto;
 }
 
+/* Light theme - override table row hover */
+[data-theme="light"] .trino-index .ant-table-tbody > tr:hover > td {
+  background: rgba(0, 212, 170, 0.03) !important;
+}
+
+[data-theme="light"] .trino-index .ant-table-tbody > tr.ant-table-row-selected > td {
+  background: rgba(0, 212, 170, 0.06) !important;
+}

@@ -1,34 +1,70 @@
 // Global styles for the SaaS app - Refine.dev Enterprise Theme
 
 // CRITICAL FIX: Fixed columns must have solid background to prevent text overlap
-.ant-table-tbody > tr > td.ant-table-cell-fix-left,
-.ant-table-tbody > tr > td.ant-table-cell-fix-left-last,
-.ant-table-tbody > tr > td.ant-table-cell-fix-right,
-.ant-table-tbody > tr > td.ant-table-cell-fix-right-first {
-  background: #1E2A3A !important;
-  z-index: 2 !important;
+// Dark theme
+[data-theme="dark"] {
+  .ant-table-tbody > tr > td.ant-table-cell-fix-left,
+  .ant-table-tbody > tr > td.ant-table-cell-fix-left-last,
+  .ant-table-tbody > tr > td.ant-table-cell-fix-right,
+  .ant-table-tbody > tr > td.ant-table-cell-fix-right-first {
+    background: #1E2A3A !important;
+    z-index: 2 !important;
+  }
+
+  .ant-table-tbody > tr:hover > td.ant-table-cell-fix-left,
+  .ant-table-tbody > tr:hover > td.ant-table-cell-fix-left-last,
+  .ant-table-tbody > tr:hover > td.ant-table-cell-fix-right,
+  .ant-table-tbody > tr:hover > td.ant-table-cell-fix-right-first {
+    background: rgba(0, 212, 170, 0.05) !important;
+  }
+
+  .ant-table-tbody > tr.ant-table-row-selected > td.ant-table-cell-fix-left,
+  .ant-table-tbody > tr.ant-table-row-selected > td.ant-table-cell-fix-left-last,
+  .ant-table-tbody > tr.ant-table-row-selected > td.ant-table-cell-fix-right,
+  .ant-table-tbody > tr.ant-table-row-selected > td.ant-table-cell-fix-right-first {
+    background: rgba(0, 212, 170, 0.1) !important;
+  }
+
+  .ant-table-thead > tr > th.ant-table-cell-fix-left,
+  .ant-table-thead > tr > th.ant-table-cell-fix-left-last,
+  .ant-table-thead > tr > th.ant-table-cell-fix-right,
+  .ant-table-thead > tr > th.ant-table-cell-fix-right-first {
+    background: #243142 !important;
+    z-index: 3 !important;
+  }
 }
 
-.ant-table-tbody > tr:hover > td.ant-table-cell-fix-left,
-.ant-table-tbody > tr:hover > td.ant-table-cell-fix-left-last,
-.ant-table-tbody > tr:hover > td.ant-table-cell-fix-right,
-.ant-table-tbody > tr:hover > td.ant-table-cell-fix-right-first {
-  background: rgba(0, 212, 170, 0.05) !important;
-}
+// Light theme
+[data-theme="light"] {
+  .ant-table-tbody > tr > td.ant-table-cell-fix-left,
+  .ant-table-tbody > tr > td.ant-table-cell-fix-left-last,
+  .ant-table-tbody > tr > td.ant-table-cell-fix-right,
+  .ant-table-tbody > tr > td.ant-table-cell-fix-right-first {
+    background: #FFFFFF !important;
+    z-index: 2 !important;
+  }
 
-.ant-table-tbody > tr.ant-table-row-selected > td.ant-table-cell-fix-left,
-.ant-table-tbody > tr.ant-table-row-selected > td.ant-table-cell-fix-left-last,
-.ant-table-tbody > tr.ant-table-row-selected > td.ant-table-cell-fix-right,
-.ant-table-tbody > tr.ant-table-row-selected > td.ant-table-cell-fix-right-first {
-  background: rgba(0, 212, 170, 0.1) !important;
-}
+  .ant-table-tbody > tr:hover > td.ant-table-cell-fix-left,
+  .ant-table-tbody > tr:hover > td.ant-table-cell-fix-left-last,
+  .ant-table-tbody > tr:hover > td.ant-table-cell-fix-right,
+  .ant-table-tbody > tr:hover > td.ant-table-cell-fix-right-first {
+    background: rgba(0, 212, 170, 0.05) !important;
+  }
 
-.ant-table-thead > tr > th.ant-table-cell-fix-left,
-.ant-table-thead > tr > th.ant-table-cell-fix-left-last,
-.ant-table-thead > tr > th.ant-table-cell-fix-right,
-.ant-table-thead > tr > th.ant-table-cell-fix-right-first {
-  background: #243142 !important;
-  z-index: 3 !important;
+  .ant-table-tbody > tr.ant-table-row-selected > td.ant-table-cell-fix-left,
+  .ant-table-tbody > tr.ant-table-row-selected > td.ant-table-cell-fix-left-last,
+  .ant-table-tbody > tr.ant-table-row-selected > td.ant-table-cell-fix-right,
+  .ant-table-tbody > tr.ant-table-row-selected > td.ant-table-cell-fix-right-first {
+    background: rgba(0, 212, 170, 0.1) !important;
+  }
+
+  .ant-table-thead > tr > th.ant-table-cell-fix-left,
+  .ant-table-thead > tr > th.ant-table-cell-fix-left-last,
+  .ant-table-thead > tr > th.ant-table-cell-fix-right,
+  .ant-table-thead > tr > th.ant-table-cell-fix-right-first {
+    background: #F9FAFB !important;
+    z-index: 3 !important;
+  }
 }
 
 * {
@@ -57,7 +93,7 @@ code {
   background: var(--refine-bg-primary);
 }
 
-// Scrollbar styling - Dark theme
+// Scrollbar styling
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
@@ -76,6 +112,21 @@ code {
 
 ::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(135deg, var(--refine-primary-dark), var(--refine-accent-purple));
+}
+
+// Light theme scrollbar - lighter appearance
+[data-theme="light"] {
+  ::-webkit-scrollbar-track {
+    background: #F3F4F6;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, rgba(0, 212, 170, 0.6), rgba(139, 92, 246, 0.6));
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, var(--refine-primary), var(--refine-accent-purple));
+  }
 }
 
 // Custom scrollbar for Ant Design Select dropdown (rc-virtual-list)
@@ -323,6 +374,13 @@ div.ant-card.ant-card-borderless > .ant-card-body {
     border: none;
   }
 
+  // Light theme - add border
+  [data-theme="light"] & {
+    .ant-table-container {
+      border: 1px solid rgba(0, 0, 0, 0.08);
+    }
+  }
+
   // Table header
   .ant-table-thead > tr > th {
     background: var(--refine-bg-tertiary) !important;
@@ -356,7 +414,12 @@ div.ant-card.ant-card-borderless > .ant-card-body {
         padding: 12px 16px;
         font-size: 13px;
       }
+    }
+  }
 
+  // Dark theme hover and selected styles
+  [data-theme="dark"] & {
+    .ant-table-tbody > tr {
       &:hover {
         background: #1f3d3a !important; // Solid color: base + 5% teal
 
@@ -372,6 +435,32 @@ div.ant-card.ant-card-borderless > .ant-card-body {
           background: #204a44 !important;
         }
       }
+    }
+  }
+
+  // Light theme hover and selected styles
+  [data-theme="light"] & {
+    .ant-table-tbody > tr {
+      &:hover {
+        background: rgba(0, 212, 170, 0.03) !important; // Very light teal
+
+        > td {
+          background: rgba(0, 212, 170, 0.03) !important;
+        }
+      }
+
+      &.ant-table-row-selected {
+        background: rgba(0, 212, 170, 0.06) !important; // Light teal for selected
+
+        > td {
+          background: rgba(0, 212, 170, 0.06) !important;
+        }
+      }
+    }
+  }
+
+  .ant-table-tbody {
+    > tr {
     }
   }
 
@@ -439,15 +528,30 @@ div.ant-card.ant-card-borderless > .ant-card-body {
   }
 }
 
-// CRITICAL: Override for hover and selected rows - must be outside .ant-table block for maximum specificity
-.ant-table-wrapper .ant-table-tbody > tr.ant-table-row-hover > td,
-.ant-table-wrapper .ant-table-tbody > tr:hover > td {
-  background: #1f3d3a !important; // Solid color: base + 5% teal
+// CRITICAL: Override for hover and selected rows - Dark theme
+[data-theme="dark"] {
+  .ant-table-wrapper .ant-table-tbody > tr.ant-table-row-hover > td,
+  .ant-table-wrapper .ant-table-tbody > tr:hover > td {
+    background: #1f3d3a !important; // Solid color: base + 5% teal
+  }
+
+  .ant-table-wrapper .ant-table-tbody > tr.ant-table-row-selected > td,
+  .ant-table-wrapper .ant-table-tbody > tr[aria-selected="true"] > td {
+    background: #204a44 !important; // Solid color: base + 10% teal
+  }
 }
 
-.ant-table-wrapper .ant-table-tbody > tr.ant-table-row-selected > td,
-.ant-table-wrapper .ant-table-tbody > tr[aria-selected="true"] > td {
-  background: #204a44 !important; // Solid color: base + 10% teal
+// CRITICAL: Override for hover and selected rows - Light theme
+[data-theme="light"] {
+  .ant-table-wrapper .ant-table-tbody > tr.ant-table-row-hover > td,
+  .ant-table-wrapper .ant-table-tbody > tr:hover > td {
+    background: rgba(0, 212, 170, 0.03) !important; // Very light teal highlight
+  }
+
+  .ant-table-wrapper .ant-table-tbody > tr.ant-table-row-selected > td,
+  .ant-table-wrapper .ant-table-tbody > tr[aria-selected="true"] > td {
+    background: rgba(0, 212, 170, 0.06) !important; // Light teal for selected
+  }
 }
 
 // Global Table Styling - Additional rules
@@ -519,7 +623,7 @@ div.ant-card.ant-card-borderless > .ant-card-body {
       }
     }
 
-    // Page size selector
+    // Page size selector - will be overridden in light theme
     .ant-pagination-options {
       position: relative;
       z-index: 10;
@@ -555,6 +659,86 @@ div.ant-card.ant-card-borderless > .ant-card-body {
   .ant-empty {
     .ant-empty-description {
       color: var(--refine-text-muted);
+    }
+  }
+}
+
+// Light theme pagination overrides
+[data-theme="light"] {
+  .ant-table {
+    .ant-pagination {
+      .ant-pagination-item {
+        border-color: rgba(0, 0, 0, 0.15) !important;
+
+        a {
+          color: var(--refine-text-secondary) !important;
+        }
+
+        &:hover {
+          background: rgba(0, 212, 170, 0.05) !important;
+          border-color: var(--refine-primary) !important;
+
+          a {
+            color: var(--refine-primary) !important;
+          }
+        }
+
+        &.ant-pagination-item-active {
+          background: rgba(0, 212, 170, 0.1) !important;
+          border-color: var(--refine-primary) !important;
+
+          a {
+            color: var(--refine-primary) !important;
+          }
+
+          &:hover {
+            background: rgba(0, 212, 170, 0.15) !important;
+          }
+        }
+      }
+
+      .ant-pagination-prev,
+      .ant-pagination-next {
+        .ant-pagination-item-link {
+          border-color: rgba(0, 0, 0, 0.15) !important;
+          color: var(--refine-text-secondary) !important;
+
+          &:hover {
+            background: rgba(0, 212, 170, 0.05) !important;
+            border-color: var(--refine-primary) !important;
+            color: var(--refine-primary) !important;
+          }
+        }
+
+        &.ant-pagination-disabled {
+          .ant-pagination-item-link {
+            border-color: rgba(0, 0, 0, 0.08) !important;
+            color: var(--refine-text-muted) !important;
+          }
+        }
+      }
+
+      // Page size selector - Light background
+      .ant-pagination-options {
+        .ant-select-selector {
+          background: #F9FAFB !important;
+          border-color: rgba(0, 0, 0, 0.15) !important;
+          color: var(--refine-text-secondary) !important;
+        }
+
+        .ant-select-arrow {
+          color: var(--refine-text-secondary) !important;
+        }
+      }
+
+      // Jump to page input
+      .ant-pagination-options-quick-jumper {
+        input {
+          background: #F9FAFB !important;
+          border-color: rgba(0, 0, 0, 0.15) !important;
+          color: var(--refine-text-primary) !important;
+        }
+      }
     }
   }
 }
@@ -675,77 +859,159 @@ div.ant-card.ant-card-borderless > .ant-card-body {
   }
 }
 
-// Input styling improvements
-.ant-input,
-.ant-input-number,
-.ant-input-number-input,
-.ant-picker,
-.ant-select-selector,
-.ant-input-affix-wrapper {
-  background: rgba(30, 42, 58, 0.6) !important;
-  border-color: rgba(255, 255, 255, 0.15) !important;
-  color: var(--refine-text-primary) !important;
-  border-radius: 6px !important;
-
-  &::placeholder {
-    color: var(--refine-text-muted) !important;
-  }
-
-  &:hover {
-    border-color: var(--refine-primary) !important;
-    background: rgba(30, 42, 58, 0.8) !important;
-  }
-
-  &:focus,
-  &.ant-input-focused,
-  &.ant-select-focused,
-  &.ant-input-affix-wrapper-focused {
-    border-color: var(--refine-primary) !important;
-    box-shadow: 0 0 0 2px rgba(0, 212, 170, 0.1) !important;
-    background: rgba(30, 42, 58, 0.8) !important;
-  }
-
-  // For search inputs with icons
-  input {
-    background: transparent !important;
+// Input styling improvements - Dark theme
+[data-theme="dark"] {
+  .ant-input,
+  .ant-input-number,
+  .ant-input-number-input,
+  .ant-picker,
+  .ant-select-selector,
+  .ant-input-affix-wrapper {
+    background: rgba(30, 42, 58, 0.6) !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
     color: var(--refine-text-primary) !important;
+    border-radius: 6px !important;
 
     &::placeholder {
       color: var(--refine-text-muted) !important;
     }
-  }
 
-  .ant-input-prefix,
-  .ant-input-suffix {
-    color: rgba(255, 255, 255, 0.45) !important;
-  }
-}
-
-// Select specific styling
-.ant-select {
-  .ant-select-selector {
-    background: rgba(30, 42, 58, 0.6) !important;
-    border-color: rgba(255, 255, 255, 0.15) !important;
-
-    .ant-select-selection-placeholder {
-      color: var(--refine-text-muted) !important;
-    }
-
-    .ant-select-selection-item {
-      color: var(--refine-text-primary) !important;
-    }
-  }
-
-  &.ant-select-open,
-  &:hover {
-    .ant-select-selector {
+    &:hover {
       border-color: var(--refine-primary) !important;
       background: rgba(30, 42, 58, 0.8) !important;
     }
-  }
 
-  .ant-select-arrow {
-    color: var(--refine-text-secondary) !important;
+    &:focus,
+    &.ant-input-focused,
+    &.ant-select-focused,
+    &.ant-input-affix-wrapper-focused {
+      border-color: var(--refine-primary) !important;
+      box-shadow: 0 0 0 2px rgba(0, 212, 170, 0.1) !important;
+      background: rgba(30, 42, 58, 0.8) !important;
+    }
+
+    // For search inputs with icons
+    input {
+      background: transparent !important;
+      color: var(--refine-text-primary) !important;
+
+      &::placeholder {
+        color: var(--refine-text-muted) !important;
+      }
+    }
+
+    .ant-input-prefix,
+    .ant-input-suffix {
+      color: rgba(255, 255, 255, 0.45) !important;
+    }
+  }
+}
+
+// Input styling improvements - Light theme
+[data-theme="light"] {
+  .ant-input,
+  .ant-input-number,
+  .ant-input-number-input,
+  .ant-picker,
+  .ant-select-selector,
+  .ant-input-affix-wrapper {
+    background: #F9FAFB !important;
+    border-color: rgba(0, 0, 0, 0.15) !important;
+    color: var(--refine-text-primary) !important;
+    border-radius: 6px !important;
+
+    &::placeholder {
+      color: var(--refine-text-muted) !important;
+    }
+
+    &:hover {
+      border-color: var(--refine-primary) !important;
+      background: #F3F4F6 !important;
+    }
+
+    &:focus,
+    &.ant-input-focused,
+    &.ant-select-focused,
+    &.ant-input-affix-wrapper-focused {
+      border-color: var(--refine-primary) !important;
+      box-shadow: 0 0 0 2px rgba(0, 212, 170, 0.1) !important;
+      background: #FFFFFF !important;
+    }
+
+    // For search inputs with icons
+    input {
+      background: transparent !important;
+      color: var(--refine-text-primary) !important;
+
+      &::placeholder {
+        color: var(--refine-text-muted) !important;
+      }
+    }
+
+    .ant-input-prefix,
+    .ant-input-suffix {
+      color: rgba(0, 0, 0, 0.45) !important;
+    }
+  }
+}
+
+// Select specific styling - Dark theme
+[data-theme="dark"] {
+  .ant-select {
+    .ant-select-selector {
+      background: rgba(30, 42, 58, 0.6) !important;
+      border-color: rgba(255, 255, 255, 0.15) !important;
+
+      .ant-select-selection-placeholder {
+        color: var(--refine-text-muted) !important;
+      }
+
+      .ant-select-selection-item {
+        color: var(--refine-text-primary) !important;
+      }
+    }
+
+    &.ant-select-open,
+    &:hover {
+      .ant-select-selector {
+        border-color: var(--refine-primary) !important;
+        background: rgba(30, 42, 58, 0.8) !important;
+      }
+    }
+
+    .ant-select-arrow {
+      color: var(--refine-text-secondary) !important;
+    }
+  }
+}
+
+// Select specific styling - Light theme
+[data-theme="light"] {
+  .ant-select {
+    .ant-select-selector {
+      background: #F9FAFB !important;
+      border-color: rgba(0, 0, 0, 0.15) !important;
+
+      .ant-select-selection-placeholder {
+        color: var(--refine-text-muted) !important;
+      }
+
+      .ant-select-selection-item {
+        color: var(--refine-text-primary) !important;
+      }
+    }
+
+    &.ant-select-open,
+    &:hover {
+      .ant-select-selector {
+        border-color: var(--refine-primary) !important;
+        background: #F3F4F6 !important;
+      }
+    }
+
+    .ant-select-arrow {
+      color: var(--refine-text-secondary) !important;
+    }
   }
 }
 
@@ -764,35 +1030,68 @@ div.ant-card.ant-card-borderless > .ant-card-body {
   }
 }
 
-// Date picker dropdown (calendar) styling - Dark theme
-.ant-picker-dropdown {
-  .ant-picker-panel-container {
-    background: #1E2A3A !important; // Solid opaque background
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  }
+// Date picker dropdown (calendar) styling
+[data-theme="dark"] {
+  .ant-picker-dropdown {
+    .ant-picker-panel-container {
+      background: #1E2A3A !important;
+      border: 1px solid rgba(255, 255, 255, 0.1) !important;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
 
-  .ant-picker-panel {
-    background: transparent !important;
-    border: none !important;
-  }
+    .ant-picker-panel {
+      background: transparent !important;
+      border: none !important;
+    }
 
-  // Header (month/year selector)
-  .ant-picker-header {
-    background: rgba(0, 0, 0, 0.2) !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
-    color: var(--refine-text-primary) !important;
+    .ant-picker-header {
+      background: rgba(0, 0, 0, 0.2) !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+      color: var(--refine-text-primary) !important;
 
-    button {
-      color: var(--refine-text-secondary) !important;
+      button {
+        color: var(--refine-text-secondary) !important;
 
-      &:hover {
-        color: var(--refine-primary) !important;
+        &:hover {
+          color: var(--refine-primary) !important;
+        }
       }
     }
   }
+}
+
+[data-theme="light"] {
+  .ant-picker-dropdown {
+    .ant-picker-panel-container {
+      background: #FFFFFF !important;
+      border: 1px solid rgba(0, 0, 0, 0.1) !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .ant-picker-panel {
+      background: transparent !important;
+      border: none !important;
+    }
+
+    .ant-picker-header {
+      background: #F9FAFB !important;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+      color: var(--refine-text-primary) !important;
+
+      button {
+        color: var(--refine-text-secondary) !important;
+
+        &:hover {
+          color: var(--refine-primary) !important;
+        }
+      }
+    }
+  }
+}
+
+.ant-picker-dropdown {
 
   // Calendar body
   .ant-picker-body {
@@ -926,42 +1225,87 @@ div.ant-card.ant-card-borderless > .ant-card-body {
   }
 }
 
-// Select dropdown styling
-.ant-select-dropdown {
-  background: #1E2A3A !important; // Solid opaque background
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+// Select dropdown styling - Dark theme
+[data-theme="dark"] {
+  .ant-select-dropdown {
+    background: #1E2A3A !important;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 
-  .ant-select-item {
-    color: var(--refine-text-primary) !important;
-    background: transparent !important;
+    .ant-select-item {
+      color: var(--refine-text-primary) !important;
+      background: transparent !important;
 
-    &:hover {
-      background: rgba(0, 212, 170, 0.1) !important;
-    }
+      &:hover {
+        background: rgba(0, 212, 170, 0.1) !important;
+      }
 
-    &.ant-select-item-option-selected {
-      background: rgba(0, 212, 170, 0.15) !important;
-      color: var(--refine-primary) !important;
+      &.ant-select-item-option-selected {
+        background: rgba(0, 212, 170, 0.15) !important;
+        color: var(--refine-primary) !important;
+      }
     }
   }
 }
 
-// Tooltip styling
-.ant-tooltip {
-  .ant-tooltip-inner {
-    background: rgba(30, 42, 58, 0.95);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(0, 212, 170, 0.2);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 212, 170, 0.1);
-    color: var(--refine-text-primary);
-  }
+// Select dropdown styling - Light theme
+[data-theme="light"] {
+  .ant-select-dropdown {
+    background: #FFFFFF !important;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 
-  .ant-tooltip-arrow-content {
-    background: rgba(30, 42, 58, 0.95);
+    .ant-select-item {
+      color: var(--refine-text-primary) !important;
+      background: transparent !important;
+
+      &:hover {
+        background: rgba(0, 212, 170, 0.05) !important;
+      }
+
+      &.ant-select-item-option-selected {
+        background: rgba(0, 212, 170, 0.1) !important;
+        color: var(--refine-primary) !important;
+      }
+    }
+  }
+}
+
+// Tooltip styling - Dark theme
+[data-theme="dark"] {
+  .ant-tooltip {
+    .ant-tooltip-inner {
+      background: rgba(30, 42, 58, 0.95);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(0, 212, 170, 0.2);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 212, 170, 0.1);
+      color: var(--refine-text-primary);
+    }
+
+    .ant-tooltip-arrow-content {
+      background: rgba(30, 42, 58, 0.95);
+    }
+  }
+}
+
+// Tooltip styling - Light theme
+[data-theme="light"] {
+  .ant-tooltip {
+    .ant-tooltip-inner {
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(0, 212, 170, 0.2);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 212, 170, 0.1);
+      color: var(--refine-text-primary);
+    }
+
+    .ant-tooltip-arrow-content {
+      background: rgba(255, 255, 255, 0.98);
+    }
   }
 }
 
@@ -1059,22 +1403,44 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
-// Checkbox and Radio styling
-.ant-checkbox-wrapper,
-.ant-radio-wrapper {
-  color: var(--refine-text-primary) !important;
+// Checkbox and Radio styling - Dark theme
+[data-theme="dark"] {
+  .ant-checkbox-wrapper,
+  .ant-radio-wrapper {
+    color: var(--refine-text-primary) !important;
+  }
+
+  .ant-checkbox-inner,
+  .ant-radio-inner {
+    background: transparent !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+  }
+
+  .ant-checkbox-checked .ant-checkbox-inner,
+  .ant-radio-checked .ant-radio-inner {
+    background: var(--refine-primary) !important;
+    border-color: var(--refine-primary) !important;
+  }
 }
 
-.ant-checkbox-inner,
-.ant-radio-inner {
-  background: transparent !important;
-  border-color: rgba(255, 255, 255, 0.15) !important;
-}
+// Checkbox and Radio styling - Light theme
+[data-theme="light"] {
+  .ant-checkbox-wrapper,
+  .ant-radio-wrapper {
+    color: var(--refine-text-primary) !important;
+  }
 
-.ant-checkbox-checked .ant-checkbox-inner,
-.ant-radio-checked .ant-radio-inner {
-  background: var(--refine-primary) !important;
-  border-color: var(--refine-primary) !important;
+  .ant-checkbox-inner,
+  .ant-radio-inner {
+    background: transparent !important;
+    border-color: rgba(0, 0, 0, 0.25) !important;
+  }
+
+  .ant-checkbox-checked .ant-checkbox-inner,
+  .ant-radio-checked .ant-radio-inner {
+    background: var(--refine-primary) !important;
+    border-color: var(--refine-primary) !important;
+  }
 }
 
 // Divider styling
@@ -1221,29 +1587,58 @@ div[style*="background-color:#000"] {
   }
 }
 
-// Modal styling - Dark theme
-.ant-modal {
-  .ant-modal-content {
-    background: var(--refine-bg-secondary) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-  }
+// Modal styling
+[data-theme="dark"] {
+  .ant-modal {
+    .ant-modal-content {
+      background: var(--refine-bg-secondary) !important;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
 
-  .ant-modal-header {
-    background: var(--refine-bg-secondary) !important;
-    border-bottom: none !important;
+    .ant-modal-header {
+      background: var(--refine-bg-secondary) !important;
+      border-bottom: none !important;
 
-    .ant-modal-title {
+      .ant-modal-title {
+        color: var(--refine-text-primary) !important;
+        font-weight: 600;
+      }
+    }
+
+    .ant-modal-body {
+      background: var(--refine-bg-secondary) !important;
       color: var(--refine-text-primary) !important;
-      font-weight: 600;
     }
   }
+}
 
-  .ant-modal-body {
-    background: var(--refine-bg-secondary) !important;
-    color: var(--refine-text-primary) !important;
+[data-theme="light"] {
+  .ant-modal {
+    .ant-modal-content {
+      background: #FFFFFF !important;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    }
+
+    .ant-modal-header {
+      background: #FFFFFF !important;
+      border-bottom: none !important;
+
+      .ant-modal-title {
+        color: var(--refine-text-primary) !important;
+        font-weight: 600;
+      }
+    }
+
+    .ant-modal-body {
+      background: #FFFFFF !important;
+      color: var(--refine-text-primary) !important;
+    }
   }
+}
 
+.ant-modal {
   .ant-modal-footer {
     background: var(--refine-bg-secondary) !important;
     border-top: none !important;
@@ -1287,6 +1682,25 @@ div[style*="background-color:#000"] {
     &:hover {
       color: var(--refine-text-primary) !important;
       background: rgba(255, 255, 255, 0.05) !important;
+    }
+  }
+}
+
+// Light theme modal footer - white background
+[data-theme="light"] {
+  .ant-modal {
+    .ant-modal-footer {
+      background: #FFFFFF !important;
+
+      .ant-btn-default {
+        border-color: rgba(0, 0, 0, 0.15) !important;
+        color: var(--refine-text-primary) !important;
+
+        &:hover {
+          border-color: var(--refine-primary) !important;
+          color: var(--refine-primary) !important;
+        }
+      }
     }
   }
 }

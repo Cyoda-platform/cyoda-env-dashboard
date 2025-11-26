@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ConfigProvider, Spin, theme as antdTheme, App as AntdApp } from 'antd';
@@ -140,7 +140,7 @@ const getDarkTheme = () => ({
   },
 });
 
-// Light theme configuration (placeholder - will be customized later)
+// Light theme configuration - Variant 1: Classic light theme
 const getLightTheme = () => ({
   token: {
     colorPrimary: '#00D4AA',
@@ -158,7 +158,7 @@ const getLightTheme = () => ({
     Layout: {
       headerBg: '#FFFFFF',
       siderBg: '#FFFFFF',
-      bodyBg: '#F5F5F5',
+      bodyBg: '#F9FAFB',
     },
     Menu: {
       itemBg: '#FFFFFF',
@@ -167,15 +167,93 @@ const getLightTheme = () => ({
       itemColor: '#4B5563',
       itemSelectedColor: '#00D4AA',
     },
+    Button: {
+      primaryShadow: '0 4px 6px -1px rgba(0, 212, 170, 0.2)',
+    },
     Card: {
       colorBgContainer: '#FFFFFF',
       colorBorderSecondary: 'rgba(0, 0, 0, 0.06)',
       bodyPadding: 0,
     },
+    Modal: {
+      contentBg: '#FFFFFF',
+      headerBg: '#FFFFFF',
+    },
     Table: {
-      headerBg: '#FAFAFA',
+      headerBg: '#F9FAFB',
       headerColor: '#4B5563',
-      rowHoverBg: 'rgba(0, 212, 170, 0.05)',
+      headerSortActiveBg: '#F3F4F6',
+      headerSortHoverBg: 'rgba(0, 212, 170, 0.04)',
+      rowHoverBg: 'rgba(0, 212, 170, 0.03)',
+      rowSelectedBg: 'rgba(0, 212, 170, 0.06)',
+      bodySortBg: 'rgba(0, 212, 170, 0.02)',
+    },
+    Pagination: {
+      itemBg: '#FFFFFF',
+      itemActiveBg: 'rgba(0, 212, 170, 0.1)',
+      itemLinkBg: '#FFFFFF',
+      itemInputBg: '#FFFFFF',
+      itemActiveBgDisabled: '#F3F4F6',
+    },
+    Message: {
+      contentBg: '#FFFFFF',
+      contentPadding: '12px 16px',
+    },
+    Notification: {
+      colorBgElevated: '#FFFFFF',
+      colorText: '#111827',
+      colorTextHeading: '#111827',
+      colorIcon: '#00D4AA',
+      colorIconHover: '#00E5BF',
+    },
+    Tabs: {
+      itemColor: '#4B5563',
+      itemHoverColor: '#4B5563',
+      itemSelectedColor: '#00D4AA',
+      itemActiveColor: '#00D4AA',
+      inkBarColor: '#00D4AA',
+      cardBg: 'transparent',
+      cardGutter: 4,
+      cardHeight: 40,
+    },
+    Dropdown: {
+      colorBgElevated: '#FFFFFF',
+      colorText: '#111827',
+      colorTextDescription: '#6B7280',
+      controlItemBgHover: 'rgba(0, 212, 170, 0.05)',
+      controlItemBgActive: 'rgba(0, 212, 170, 0.1)',
+      colorBorder: 'rgba(0, 0, 0, 0.1)',
+    },
+    Transfer: {
+      listBg: '#FFFFFF',
+      listHeaderBg: '#F9FAFB',
+      itemBg: 'transparent',
+      itemHoverBg: 'rgba(0, 212, 170, 0.05)',
+      itemSelectedBg: 'rgba(0, 212, 170, 0.1)',
+    },
+    Input: {
+      colorBgContainer: '#FFFFFF',
+      colorBorder: 'rgba(0, 0, 0, 0.15)',
+      colorText: '#111827',
+      colorTextPlaceholder: '#9CA3AF',
+      hoverBorderColor: '#00D4AA',
+      activeBorderColor: '#00D4AA',
+      activeShadow: '0 0 0 2px rgba(0, 212, 170, 0.1)',
+    },
+    Select: {
+      colorBgContainer: '#FFFFFF',
+      colorBorder: 'rgba(0, 0, 0, 0.15)',
+      colorText: '#111827',
+      colorTextPlaceholder: '#9CA3AF',
+      optionSelectedBg: 'rgba(0, 212, 170, 0.1)',
+      optionActiveBg: 'rgba(0, 212, 170, 0.05)',
+      colorBgElevated: '#FFFFFF',
+    },
+    Checkbox: {
+      colorBgContainer: '#FFFFFF',
+      colorBorder: 'rgba(0, 0, 0, 0.2)',
+      colorPrimary: '#00D4AA',
+      colorPrimaryHover: '#00E5BF',
     },
   },
 });
@@ -196,6 +274,11 @@ const LoadingFallback: React.FC = () => (
 function App() {
   const mode = useThemeStore((state) => state.mode);
   const theme = mode === 'dark' ? getDarkTheme() : getLightTheme();
+
+  // Set data-theme attribute on document element
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', mode);
+  }, [mode]);
 
   return (
     <ErrorBoundary>

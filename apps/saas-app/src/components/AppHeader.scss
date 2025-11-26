@@ -2,20 +2,14 @@
 .saas-app-header {
   background: var(--refine-bg-secondary);
   padding: 0 32px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--refine-shadow-sm);
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 1000;
-  border-bottom: 1px solid rgba(0, 212, 170, 0.15);
-
-  // Clean dark background
-  background: linear-gradient(
-    180deg,
-    rgba(26, 35, 50, 1) 0%,
-    rgba(22, 30, 43, 1) 100%
-  );
+  border-bottom: 1px solid var(--refine-border-primary);
+  transition: background var(--refine-transition-base), box-shadow var(--refine-transition-base);
 
   // Thin teal accent line on top
   &::before {
@@ -118,6 +112,33 @@
       .entity-type-section {
         display: flex;
         align-items: center;
+      }
+    }
+  }
+}
+
+// Dark theme specific styles
+[data-theme="dark"] {
+  .saas-app-header {
+    background: linear-gradient(
+      180deg,
+      rgba(26, 35, 50, 1) 0%,
+      rgba(22, 30, 43, 1) 100%
+    );
+  }
+}
+
+// Light theme specific styles
+[data-theme="light"] {
+  .saas-app-header {
+    background: #FFFFFF;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+
+    // Logo color for light theme - white background instead of dark
+    .cyoda-logo {
+      .st0 {
+        fill: #FFFFFF !important; // White background for logo
       }
     }
   }
