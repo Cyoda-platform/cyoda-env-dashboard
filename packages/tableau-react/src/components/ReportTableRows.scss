@@ -110,3 +110,46 @@
   }
 }
 
+// Light theme overrides
+[data-theme='light'] {
+  .report-table-rows {
+    .ant-table {
+      border: 1px solid rgba(0, 0, 0, 0.1);
+
+      .ant-table-thead > tr > th {
+        background: #F3F4F6;
+        color: #374151;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        border-right: 1px solid rgba(0, 0, 0, 0.1);
+      }
+
+      .ant-table-tbody > tr {
+        background: #FFFFFF;
+
+        > td {
+          color: #111827;
+          border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+          border-right: 1px solid rgba(0, 0, 0, 0.06);
+        }
+
+        &:hover {
+          background-color: rgba(0, 212, 170, 0.08) !important;
+        }
+      }
+    }
+
+    // Clickable cell styling for light theme
+    .clickable-cell {
+      color: #00B894;
+
+      &:hover {
+        color: #00D4AA;
+      }
+
+      &:active {
+        color: #009977;
+      }
+    }
+  }
+}
+

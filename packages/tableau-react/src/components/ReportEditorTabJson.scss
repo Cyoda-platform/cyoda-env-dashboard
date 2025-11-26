@@ -10,16 +10,38 @@
   }
 }
 
-// Sticky scroll separator line
+// Sticky scroll container styling
+.monaco-editor .sticky-line-container {
+  background: rgba(15, 23, 42, 0.95) !important;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  border-bottom: none !important;
+}
+
+// Sticky scroll separator line - Cyoda Neon Dark theme
 .monaco-editor .sticky-line-container::after {
   content: '';
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  height: 1px;
-  background: rgba(255, 255, 255, 0.1);
+  height: 2px;
+  background: linear-gradient(90deg, #14b8a6 0%, #a78bfa 50%, #ec4899 100%);
+  opacity: 0.6;
+  box-shadow: 0 1px 4px rgba(20, 184, 166, 0.3);
 }
+
+// Alternative: solid color separator (uncomment if preferred)
+// .monaco-editor .sticky-line-container::after {
+//   content: '';
+//   position: absolute;
+//   bottom: 0;
+//   left: 0;
+//   right: 0;
+//   height: 1px;
+//   background: #14b8a6;
+//   opacity: 0.5;
+// }
 
 // Light theme overrides - global scope
 [data-theme='light'] {
@@ -70,9 +92,18 @@
     background-color: #FFFFFF !important;
   }
 
+  // Sticky scroll container for light theme
+  .monaco-editor .sticky-line-container {
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
   // Sticky scroll separator for light theme
   .monaco-editor .sticky-line-container::after {
-    background: rgba(0, 0, 0, 0.1);
+    background: linear-gradient(90deg, #0d9488 0%, #7c3aed 50%, #db2777 100%);
+    opacity: 0.4;
+    box-shadow: 0 1px 4px rgba(13, 148, 136, 0.2);
   }
 }
 

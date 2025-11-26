@@ -57,3 +57,54 @@
   }
 }
 
+// Light theme overrides
+[data-theme='light'] {
+  .history-setting {
+    h2 {
+      color: #111827;
+    }
+
+    .ant-form {
+      .ant-form-item {
+        .ant-form-item-label > label {
+          color: #374151;
+        }
+      }
+    }
+
+    // Switch styling for light theme
+    .ant-switch {
+      background-color: rgba(0, 0, 0, 0.15);
+
+      &.ant-switch-checked {
+        background-color: #00D4AA;
+      }
+    }
+
+    // Radio button styling for light theme
+    .ant-radio-group {
+      .ant-radio-button-wrapper {
+        background: #FFFFFF;
+        border-color: rgba(0, 0, 0, 0.15);
+        color: #374151;
+
+        &:hover {
+          color: #00B894;
+          border-color: #00D4AA;
+        }
+
+        &.ant-radio-button-wrapper-checked {
+          background: #00D4AA;
+          border-color: #00D4AA;
+          color: #FFFFFF;
+
+          &:hover {
+            background: #00E5BF;
+            border-color: #00E5BF;
+          }
+        }
+      }
+    }
+  }
+}
+

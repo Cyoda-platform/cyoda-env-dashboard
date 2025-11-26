@@ -96,3 +96,63 @@
   }
 }
 
+// Light theme overrides
+[data-theme='light'] {
+  .data-lineage-compare {
+    // Modal content background
+    .ant-modal-content {
+      background: #FFFFFF !important;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .ant-modal-header {
+      background: #FFFFFF !important;
+
+      .ant-modal-title {
+        color: #111827 !important;
+      }
+    }
+
+    .ant-modal-body {
+      background: #FFFFFF !important;
+    }
+
+    .compare-header {
+      background: #F9FAFB;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+
+      &__left,
+      &__right {
+        color: #374151;
+
+        > div {
+          strong {
+            color: #111827;
+          }
+        }
+      }
+
+      &__arrow {
+        color: #00B894;
+        filter: drop-shadow(0 0 8px rgba(0, 184, 148, 0.3));
+      }
+    }
+
+    .compare-content {
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      background: #F9FAFB;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    // Close button styling
+    .ant-modal-close {
+      color: #6B7280 !important;
+
+      &:hover {
+        color: #111827 !important;
+        background: rgba(0, 0, 0, 0.05) !important;
+      }
+    }
+  }
+}
+

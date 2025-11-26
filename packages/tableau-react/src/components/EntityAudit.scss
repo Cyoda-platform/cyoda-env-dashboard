@@ -14,3 +14,20 @@
   }
 }
 
+// Light theme overrides
+[data-theme='light'] {
+  .entity-audit {
+    .ant-table-expanded-row {
+      background-color: #f9fafb;
+    }
+
+    pre {
+      color: #111827;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      padding: 8px;
+      border-radius: 4px;
+    }
+  }
+}
+

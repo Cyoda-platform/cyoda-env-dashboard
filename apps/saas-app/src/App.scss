@@ -2190,6 +2190,75 @@ div[style*="background-color:#000"] {
 }
 
 // ============================================
+// MONACO EDITOR - STICKY SCROLL SEPARATOR
+// ============================================
+// Sticky scroll container styling - Dark theme
+// Using attribute selector to catch all sticky-related classes
+div[class*="sticky-scroll"],
+.monaco-editor div[class*="sticky-scroll"],
+.monaco-editor div[class*="sticky"],
+.monaco-editor .sticky-scroll-widget,
+.monaco-editor .sticky-widget,
+.monaco-editor .editor-sticky-scroll,
+.monaco-editor .sticky-line-container {
+  background: rgba(30, 42, 58, 0.95) !important;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  border-bottom: none !important;
+  position: relative !important;
+}
+
+// Sticky scroll separator line - Cyoda Neon Dark theme
+div[class*="sticky-scroll"]::after,
+.monaco-editor div[class*="sticky-scroll"]::after,
+.monaco-editor div[class*="sticky"]::after,
+.monaco-editor .sticky-scroll-widget::after,
+.monaco-editor .sticky-widget::after,
+.monaco-editor .editor-sticky-scroll::after,
+.monaco-editor .sticky-line-container::after {
+  content: '' !important;
+  display: block !important;
+  position: absolute !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  height: 2px !important;
+  background: linear-gradient(90deg, #14b8a6 0%, #a78bfa 50%, #ec4899 100%) !important;
+  opacity: 0.6 !important;
+  box-shadow: 0 1px 4px rgba(20, 184, 166, 0.3) !important;
+  z-index: 1000 !important;
+  pointer-events: none !important;
+}
+
+// Light theme sticky scroll
+[data-theme='light'] {
+  div[class*="sticky-scroll"],
+  .monaco-editor div[class*="sticky-scroll"],
+  .monaco-editor div[class*="sticky"],
+  .monaco-editor .sticky-scroll-widget,
+  .monaco-editor .sticky-widget,
+  .monaco-editor .editor-sticky-scroll,
+  .monaco-editor .sticky-line-container {
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  div[class*="sticky-scroll"]::after,
+  .monaco-editor div[class*="sticky-scroll"]::after,
+  .monaco-editor div[class*="sticky"]::after,
+  .monaco-editor .sticky-scroll-widget::after,
+  .monaco-editor .sticky-widget::after,
+  .monaco-editor .editor-sticky-scroll::after,
+  .monaco-editor .sticky-line-container::after {
+    background: linear-gradient(90deg, #0d9488 0%, #7c3aed 50%, #db2777 100%) !important;
+    opacity: 0.4 !important;
+    box-shadow: 0 1px 4px rgba(13, 148, 136, 0.2) !important;
+  }
+}
+
+// ============================================
 // CYTOSCAPE CANVAS - FORCE LIGHT BACKGROUND
 // ============================================
 .graph-container,

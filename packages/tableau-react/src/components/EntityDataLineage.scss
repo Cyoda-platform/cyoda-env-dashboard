@@ -64,3 +64,42 @@
   }
 }
 
+// Light theme overrides
+[data-theme='light'] {
+  .entity-data-lineage {
+    .filter-section {
+      h4 {
+        color: #111827;
+      }
+    }
+
+    .transactions-section {
+      .header {
+        strong {
+          color: #111827;
+        }
+      }
+
+      .body {
+        border-left: 2px solid #9CA3AF;
+
+        &::before {
+          border-bottom: 7px solid #9CA3AF;
+        }
+      }
+
+      .transaction-item {
+        .date {
+          color: #374151;
+        }
+
+        .info {
+          span {
+            color: #374151;
+          }
+        }
+      }
+    }
+  }
+}
+

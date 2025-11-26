@@ -31,3 +31,20 @@
   z-index: 1050 !important;
 }
 
+// Light theme overrides
+[data-theme='light'] {
+  .entity-transitions {
+    h4 {
+      color: #111827;
+    }
+
+    p {
+      color: #6B7280;
+    }
+
+    .ant-form-item-label > label {
+      color: #374151;
+    }
+  }
+}
+

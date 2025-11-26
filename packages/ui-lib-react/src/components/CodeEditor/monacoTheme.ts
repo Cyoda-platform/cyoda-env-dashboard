@@ -215,10 +215,211 @@ export const CYODA_EDITOR_OPTIONS: editor.IStandaloneEditorConstructionOptions =
 };
 
 /**
+ * Cyoda Light Theme for Monaco Editor
+ * Clean light colors for better readability in light mode
+ */
+export const CYODA_LIGHT_THEME: editor.IStandaloneThemeData = {
+  base: 'vs',
+  inherit: true,
+  rules: [
+    // Comments
+    { token: 'comment', foreground: '6B7280', fontStyle: 'italic' },
+    { token: 'comment.line', foreground: '6B7280', fontStyle: 'italic' },
+    { token: 'comment.block', foreground: '6B7280', fontStyle: 'italic' },
+
+    // JSON specific tokens
+    { token: 'string.key.json', foreground: 'DB2777' }, // Pink for JSON keys
+    { token: 'string.value.json', foreground: '00B894' }, // Teal for JSON values
+    { token: 'number.json', foreground: 'D97706' }, // Amber for numbers
+    { token: 'keyword.json', foreground: 'D97706' }, // Amber for true/false/null
+    { token: 'delimiter.bracket.json', foreground: '7C3AED' }, // Purple for {}
+    { token: 'delimiter.array.json', foreground: 'D97706' }, // Amber for []
+    { token: 'delimiter.colon.json', foreground: '6B7280' }, // Gray for :
+    { token: 'delimiter.comma.json', foreground: '6B7280' }, // Gray for ,
+
+    // Generic strings
+    { token: 'string', foreground: '00B894' },
+    { token: 'string.quoted', foreground: '00B894' },
+    { token: 'string.double', foreground: '00B894' },
+    { token: 'string.single', foreground: '00B894' },
+
+    // Keywords
+    { token: 'keyword', foreground: 'D97706', fontStyle: 'bold' },
+    { token: 'keyword.control', foreground: 'D97706', fontStyle: 'bold' },
+    { token: 'keyword.operator', foreground: '7C3AED' },
+
+    // Numbers
+    { token: 'number', foreground: 'D97706' },
+    { token: 'number.float', foreground: 'D97706' },
+    { token: 'number.hex', foreground: 'D97706' },
+    { token: 'number.octal', foreground: 'D97706' },
+    { token: 'number.binary', foreground: 'D97706' },
+
+    // Booleans and null
+    { token: 'constant.language.boolean', foreground: 'D97706' },
+    { token: 'constant.language.null', foreground: 'D97706' },
+    { token: 'constant.language.undefined', foreground: 'D97706' },
+
+    // Functions
+    { token: 'function', foreground: '7C3AED' },
+    { token: 'entity.name.function', foreground: '7C3AED' },
+    { token: 'support.function', foreground: '7C3AED' },
+
+    // Variables
+    { token: 'variable', foreground: '374151' },
+    { token: 'variable.parameter', foreground: 'DB2777' },
+    { token: 'variable.other', foreground: '374151' },
+
+    // Types
+    { token: 'type', foreground: '0D9488' },
+    { token: 'type.identifier', foreground: '0D9488' },
+    { token: 'entity.name.type', foreground: '0D9488' },
+
+    // Operators
+    { token: 'operator', foreground: '7C3AED' },
+
+    // Delimiters
+    { token: 'delimiter', foreground: '6B7280' },
+    { token: 'delimiter.bracket', foreground: '6B7280' },
+    { token: 'delimiter.parenthesis', foreground: '6B7280' },
+    { token: 'delimiter.square', foreground: '6B7280' },
+
+    // Constants
+    { token: 'constant', foreground: 'D97706' },
+    { token: 'constant.language', foreground: 'D97706' },
+    { token: 'constant.numeric', foreground: 'D97706' },
+    { token: 'constant.character', foreground: 'D97706' },
+
+    // Tags (HTML/XML)
+    { token: 'tag', foreground: 'DB2777' },
+    { token: 'tag.id', foreground: '7C3AED' },
+    { token: 'tag.class', foreground: '0D9488' },
+
+    // Attributes
+    { token: 'attribute.name', foreground: 'DB2777' },
+    { token: 'attribute.value', foreground: '0D9488' },
+
+    // Regex
+    { token: 'regexp', foreground: 'D97706' },
+
+    // Invalid
+    { token: 'invalid', foreground: 'DC2626', fontStyle: 'bold' },
+  ],
+  colors: {
+    // Editor background
+    'editor.background': '#FFFFFF',
+    'editor.foreground': '#111827',
+
+    // Line numbers
+    'editorLineNumber.foreground': '#9CA3AF',
+    'editorLineNumber.activeForeground': '#00B894',
+
+    // Current line
+    'editor.lineHighlightBackground': '#F9FAFB',
+    'editor.lineHighlightBorder': '#00000000',
+
+    // Selection
+    'editor.selectionBackground': '#00B89433',
+    'editor.inactiveSelectionBackground': '#00B89422',
+    'editor.selectionHighlightBackground': '#00B89422',
+
+    // Cursor
+    'editorCursor.foreground': '#00B894',
+
+    // Whitespace
+    'editorWhitespace.foreground': '#E5E7EB',
+
+    // Indent guides
+    'editorIndentGuide.background': '#E5E7EB',
+    'editorIndentGuide.activeBackground': '#D1D5DB',
+
+    // Gutter
+    'editorGutter.background': '#FFFFFF',
+    'editorGutter.modifiedBackground': '#7C3AED',
+    'editorGutter.addedBackground': '#00B894',
+    'editorGutter.deletedBackground': '#DC2626',
+
+    // Scrollbar
+    'scrollbar.shadow': '#00000000',
+    'scrollbarSlider.background': '#E5E7EB',
+    'scrollbarSlider.hoverBackground': '#D1D5DB',
+    'scrollbarSlider.activeBackground': '#00B894',
+
+    // Minimap
+    'minimap.background': '#F9FAFB',
+    'minimap.selectionHighlight': '#00B89433',
+
+    // Brackets
+    'editorBracketMatch.background': '#00B89422',
+    'editorBracketMatch.border': '#00B894',
+
+    // Find/Replace
+    'editor.findMatchBackground': '#D9770644',
+    'editor.findMatchHighlightBackground': '#D9770622',
+    'editor.findRangeHighlightBackground': '#D9770611',
+
+    // Widgets
+    'editorWidget.background': '#FFFFFF',
+    'editorWidget.border': '#E5E7EB',
+    'editorSuggestWidget.background': '#FFFFFF',
+    'editorSuggestWidget.border': '#E5E7EB',
+    'editorSuggestWidget.selectedBackground': '#F9FAFB',
+    'editorHoverWidget.background': '#FFFFFF',
+    'editorHoverWidget.border': '#E5E7EB',
+
+    // Peek view
+    'peekView.border': '#00B894',
+    'peekViewEditor.background': '#FFFFFF',
+    'peekViewResult.background': '#FFFFFF',
+    'peekViewTitle.background': '#F9FAFB',
+
+    // Diff editor - brighter backgrounds for better visibility
+    'diffEditor.insertedTextBackground': '#CCFBF1', // Bright teal background for added text
+    'diffEditor.removedTextBackground': '#FEE2E2', // Bright red background for removed text
+    'diffEditor.insertedLineBackground': '#E0F2FE', // Light blue for full added line
+    'diffEditor.removedLineBackground': '#FEF2F2', // Light pink for full removed line
+    'diffEditor.insertedTextBorder': '#14B8A6', // Solid teal border for added text
+    'diffEditor.removedTextBorder': '#EF4444', // Solid red border for removed text
+    'diffEditor.border': '#D1D5DB',
+    'diffEditor.diagonalFill': '#F3F4F680',
+
+    // Overview ruler
+    'editorOverviewRuler.border': '#00000000',
+    'editorOverviewRuler.modifiedForeground': '#7C3AED',
+    'editorOverviewRuler.addedForeground': '#00B894',
+    'editorOverviewRuler.deletedForeground': '#DC2626',
+    'editorOverviewRuler.errorForeground': '#DC2626',
+    'editorOverviewRuler.warningForeground': '#D97706',
+
+    // Error/Warning squiggles
+    'editorError.foreground': '#DC2626',
+    'editorWarning.foreground': '#D97706',
+    'editorInfo.foreground': '#7C3AED',
+    'editorHint.foreground': '#00B894',
+  },
+};
+
+/**
  * Register the Cyoda Dark theme with Monaco
  */
 export function registerCyodaDarkTheme(monaco: any) {
   monaco.editor.defineTheme('cyoda-dark', CYODA_DARK_THEME);
   monaco.editor.setTheme('cyoda-dark');
+}
+
+/**
+ * Register the Cyoda Light theme with Monaco
+ */
+export function registerCyodaLightTheme(monaco: any) {
+  monaco.editor.defineTheme('cyoda-light', CYODA_LIGHT_THEME);
+}
+
+/**
+ * Register both themes and set the appropriate one based on current theme
+ */
+export function registerCyodaThemes(monaco: any, theme: 'light' | 'dark' = 'dark') {
+  monaco.editor.defineTheme('cyoda-dark', CYODA_DARK_THEME);
+  monaco.editor.defineTheme('cyoda-light', CYODA_LIGHT_THEME);
+  monaco.editor.setTheme(theme === 'light' ? 'cyoda-light' : 'cyoda-dark');
 }
 

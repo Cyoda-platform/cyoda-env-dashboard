@@ -135,3 +135,69 @@
   }
 }
 
+// Light theme overrides
+[data-theme='light'] {
+  .detail-tree-item-inline {
+    border: 1px solid #e5e7eb;
+
+    .field-name {
+      background: #f3f4f6;
+      color: #374151;
+    }
+
+    .field-value {
+      color: #111827;
+    }
+  }
+
+  .detail-tree-item-expandable {
+    border: 1px solid #e5e7eb;
+
+    .detail-tree-collapse {
+      .ant-collapse-header {
+        color: #374151;
+        background: #f3f4f6;
+
+        &:hover {
+          background: #e5e7eb;
+        }
+
+        .ant-collapse-expand-icon {
+          color: #00B894;
+        }
+      }
+    }
+
+    .field-value-pre {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      color: #111827;
+    }
+
+    .field-value-text {
+      color: #374151;
+    }
+
+    pre[class*="language-"] {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+
+      code {
+        color: #111827;
+      }
+    }
+  }
+
+  .detail-tree-item-list {
+    border: 1px solid #e5e7eb;
+
+    .list-header {
+      background: #f3f4f6;
+
+      .field-name {
+        color: #374151;
+      }
+    }
+  }
+}
+

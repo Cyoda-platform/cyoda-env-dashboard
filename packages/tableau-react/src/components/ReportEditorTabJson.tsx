@@ -230,6 +230,83 @@ const ReportEditorTabJson: React.FC<ReportEditorTabJsonProps> = ({
   const handleEditorDidMount: OnMount = (editor, monaco) => {
     editorRef.current = editor;
     monacoRef.current = monaco;
+
+    // Add sticky scroll separator styles dynamically
+    const addStickyScrollStyles = () => {
+      const editorDom = editor.getDomNode();
+      if (!editorDom) return;
+
+      // Remove any existing separators first to avoid duplicates
+      const existingSeparators = editorDom.querySelectorAll('.sticky-separator');
+      existingSeparators.forEach(sep => sep.remove());
+
+      // Find the main sticky scroll container (not individual lines)
+      // Try different possible selectors
+      let stickyContainer = editorDom.querySelector('.editor-sticky-scroll-container') ||
+                           editorDom.querySelector('[class*="sticky-scroll-container"]') ||
+                           editorDom.querySelector('[class*="sticky-scroll"]');
+
+      if (!stickyContainer) return;
+
+      const htmlEl = stickyContainer as HTMLElement;
+
+      // Determine if light theme is active
+      const isLightTheme = currentTheme === 'light';
+
+      // Create and add separator line
+      const separator = document.createElement('div');
+      separator.className = 'sticky-separator';
+
+      if (isLightTheme) {
+        // Light theme styles
+        separator.style.cssText = `
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          width: 100%;
+          height: 2px;
+          background: linear-gradient(90deg, #0d9488 0%, #7c3aed 50%, #db2777 100%);
+          opacity: 0.4;
+          box-shadow: 0 1px 4px rgba(13, 148, 136, 0.2);
+          z-index: 1000;
+          pointer-events: none;
+        `;
+        htmlEl.style.background = 'rgba(255, 255, 255, 0.95)';
+        htmlEl.style.backdropFilter = 'blur(8px)';
+        htmlEl.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.1)';
+      } else {
+        // Dark theme styles
+        separator.style.cssText = `
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          width: 100%;
+          height: 2px;
+          background: linear-gradient(90deg, #14b8a6 0%, #a78bfa 50%, #ec4899 100%);
+          opacity: 0.6;
+          box-shadow: 0 1px 4px rgba(20, 184, 166, 0.3);
+          z-index: 1000;
+          pointer-events: none;
+        `;
+        htmlEl.style.background = 'rgba(30, 42, 58, 0.95)';
+        htmlEl.style.backdropFilter = 'blur(8px)';
+        htmlEl.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.3)';
+      }
+
+      htmlEl.style.position = 'relative';
+      htmlEl.appendChild(separator);
+    };
+
+    // Apply styles after editor is fully initialized
+    setTimeout(addStickyScrollStyles, 1000);
+    setTimeout(addStickyScrollStyles, 3000);
+
+    // Re-apply styles on scroll to catch dynamically created sticky elements
+    editor.onDidScrollChange(() => {
+      addStickyScrollStyles();
+    });
   };
 
   const handleEditorChange = (value: string | undefined) => {

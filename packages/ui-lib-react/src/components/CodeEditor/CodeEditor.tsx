@@ -1,7 +1,12 @@
 import React, { useRef, useEffect, useState } from 'react'
 import * as monaco from 'monaco-editor'
-import { registerCyodaDarkTheme, CYODA_EDITOR_OPTIONS } from './monacoTheme'
+import { registerCyodaThemes, CYODA_EDITOR_OPTIONS } from './monacoTheme'
 import './CodeEditor.scss'
+
+// Helper to detect current theme
+const getCurrentTheme = (): 'light' | 'dark' => {
+  return document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark'
+}
 
 // Monaco editor worker setup - load workers from CDN
 window.MonacoEnvironment = {
@@ -115,8 +120,9 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   useEffect(() => {
     if (!containerRef.current || isInitialized) return
 
-    // Register the Cyoda Dark theme
-    registerCyodaDarkTheme(monaco)
+    // Register both Cyoda themes and set the current one
+    const currentTheme = getCurrentTheme()
+    registerCyodaThemes(monaco, currentTheme)
 
     const monacoLanguage = getMonacoLanguage(language)
 
@@ -126,7 +132,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
         ...CYODA_EDITOR_OPTIONS,
         value: formatValue(value),
         language: monacoLanguage,
-        theme: 'cyoda-dark',
+        theme: currentTheme === 'light' ? 'cyoda-light' : 'cyoda-dark',
         readOnly,
       })
 
@@ -164,7 +170,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
       const diffEditor = monaco.editor.createDiffEditor(containerRef.current, {
         ...CYODA_EDITOR_OPTIONS,
         originalEditable: !diffReadonly,
-        theme: 'cyoda-dark',
+        theme: currentTheme === 'light' ? 'cyoda-light' : 'cyoda-dark',
         renderOverviewRuler: true,
         renderSideBySide: true,
         enableSplitViewResizing: true,
@@ -218,6 +224,29 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
       setIsInitialized(false)
     }
   }, []) // Only run once on mount
+
+  // Watch for theme changes and update Monaco theme
+  useEffect(() => {
+    if (!isInitialized) return
+
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme') {
+          const newTheme = getCurrentTheme()
+          monaco.editor.setTheme(newTheme === 'light' ? 'cyoda-light' : 'cyoda-dark')
+        }
+      })
+    })
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme']
+    })
+
+    return () => {
+      observer.disconnect()
+    }
+  }, [isInitialized])
 
   // Update value when it changes externally
   useEffect(() => {
