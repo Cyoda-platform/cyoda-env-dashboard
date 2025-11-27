@@ -529,14 +529,51 @@ export const ShardsDetailTabCqlExecStats: React.FC = () => {
             placeholder="Filter by table"
             allowClear
             showSearch
-            style={{ width: 250 }}
+            style={{ width: 400 }}
+            popupMatchSelectWidth={false}
+            popupClassName="cql-stats-table-filter-dropdown"
+            dropdownStyle={{ minWidth: 500, maxWidth: 800 }}
             value={tableFilter}
             onChange={setTableFilter}
             loading={trackedTablesLoading}
-            options={trackedTables.map((table: string) => ({
-              label: table.replace(/^"|"$/g, ''),
-              value: table,
-            }))}
+            optionRender={(option) => {
+              const tableName = option.value as string;
+              const { isComposite, tables } = formatTableName(tableName);
+
+              if (isComposite) {
+                return (
+                  <div style={{ padding: '8px 12px' }}>
+                    <div style={{ fontSize: '11px', color: '#999', marginBottom: '4px' }}>
+                      Composite Key ({tables.length} columns)
+                    </div>
+                    <div style={{ fontSize: '14px', whiteSpace: 'normal', lineHeight: '1.5', color: '#333' }}>
+                      {tables.join(', ')}
+                    </div>
+                  </div>
+                );
+              }
+
+              return (
+                <div style={{ fontSize: '14px', padding: '8px 12px' }}>
+                  {tables[0]}
+                </div>
+              );
+            }}
+            optionLabelProp="label"
+            options={trackedTables.map((table: string) => {
+              const { isComposite, tables } = formatTableName(table);
+
+              // Label for selected value (shown in the input field)
+              const label = isComposite
+                ? `${tables[0]} (+${tables.length - 1} more)`
+                : tables[0];
+
+              return {
+                label,
+                value: table,
+                title: isComposite ? tables.join(', ') : tables[0], // Tooltip
+              };
+            })}
           />
           <Button
             icon={<ReloadOutlined />}
