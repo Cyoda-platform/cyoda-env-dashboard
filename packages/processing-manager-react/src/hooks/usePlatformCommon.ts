@@ -25,6 +25,9 @@ import {
   getZkInfoLoadedShardsDistribution,
   getZkInfoClusterState,
   getReportingFetchTypes,
+  getCqlExecStatsAllTablesBrief,
+  getCqlExecStatsTable,
+  getCqlExecStatsClear,
 } from '@cyoda/http-api-react';
 
 // ============================================================================
@@ -53,6 +56,10 @@ export const platformCommonKeys = {
   zkOnlineNodes: () => [...platformCommonKeys.all, 'zk-online-nodes'] as const,
   zkShardsDistribution: () => [...platformCommonKeys.all, 'zk-shards-distribution'] as const,
   zkClusterState: () => [...platformCommonKeys.all, 'zk-cluster-state'] as const,
+
+  // CQL Execution Statistics
+  cqlExecStats: () => [...platformCommonKeys.all, 'cql-exec-stats'] as const,
+  cqlExecStatsTable: (table: string) => [...platformCommonKeys.all, 'cql-exec-stats', 'table', table] as const,
 };
 
 // ============================================================================
@@ -322,6 +329,73 @@ export function useZkClusterState() {
 }
 
 // ============================================================================
+// CQL Execution Statistics Hooks
+// ============================================================================
+
+/**
+ * Get all tables brief statistics
+ */
+export function useCqlExecStatsAllTablesBrief() {
+  return useQuery({
+    queryKey: platformCommonKeys.cqlExecStats(),
+    queryFn: async () => {
+      console.log('useCqlExecStatsAllTablesBrief: Fetching all tables brief...');
+      try {
+        const { data } = await getCqlExecStatsAllTablesBrief();
+        console.log('useCqlExecStatsAllTablesBrief: Received data:', data);
+        // Ensure data is always an array
+        return Array.isArray(data) ? data : [];
+      } catch (error) {
+        console.error('useCqlExecStatsAllTablesBrief: Error fetching stats:', error);
+        throw error;
+      }
+    },
+    placeholderData: [],
+  });
+}
+
+/**
+ * Get statistics for a specific table
+ */
+export function useCqlExecStatsTable(table?: string) {
+  return useQuery({
+    queryKey: platformCommonKeys.cqlExecStatsTable(table || ''),
+    queryFn: async () => {
+      if (!table) return null;
+      console.log('useCqlExecStatsTable: Fetching stats for table:', table);
+      try {
+        const { data } = await getCqlExecStatsTable(table);
+        console.log('useCqlExecStatsTable: Received data:', data);
+        return data;
+      } catch (error) {
+        console.error('useCqlExecStatsTable: Error fetching table stats:', error);
+        throw error;
+      }
+    },
+    enabled: !!table,
+  });
+}
+
+/**
+ * Clear CQL execution statistics
+ */
+export function useClearCqlExecStats() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => {
+      console.log('useClearCqlExecStats: Clearing CQL execution stats...');
+      const { data } = await getCqlExecStatsClear();
+      return data;
+    },
+    onSuccess: () => {
+      console.log('useClearCqlExecStats: Successfully cleared stats, invalidating queries');
+      queryClient.invalidateQueries({ queryKey: platformCommonKeys.cqlExecStats() });
+    },
+  });
+}
+
+// ============================================================================
 // Default Export
 // ============================================================================
 
@@ -351,5 +425,10 @@ export default {
   useZkOnlineNodes,
   useZkShardsDistribution,
   useZkClusterState,
+
+  // CQL Execution Statistics
+  useCqlExecStatsAllTablesBrief,
+  useCqlExecStatsTable,
+  useClearCqlExecStats,
 };
 

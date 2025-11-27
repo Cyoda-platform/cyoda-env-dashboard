@@ -422,3 +422,31 @@ export function getZkInfoClusterState() {
   return axios.get(`/platform-common/zk-info/cluster-state`);
 }
 
+// ============================================================================
+// CQL Execution Statistics APIs
+// ============================================================================
+
+/**
+ * Get all tables brief statistics
+ */
+export function getCqlExecStatsAllTablesBrief() {
+  return axios.get(`/platform-common/cql-exec-stats/all-tables-brief`);
+}
+
+/**
+ * Get statistics for a specific table
+ * @param table - Table name (will be quoted automatically)
+ */
+export function getCqlExecStatsTable(table: string) {
+  // Ensure table name is properly quoted
+  const quotedTable = table.startsWith('"') ? table : `"${table}"`;
+  return axios.get(`/platform-common/cql-exec-stats/table/${quotedTable}`);
+}
+
+/**
+ * Clear CQL execution statistics
+ */
+export function getCqlExecStatsClear() {
+  return axios.get(`/platform-common/cql-exec-stats/clear-cql-exec-stats`);
+}
+

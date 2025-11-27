@@ -14,6 +14,7 @@ export { default as ShardsDetailTabCompositeIndexes } from './ShardsDetailTabCom
 export { default as ShardsDetailTabCachesList } from './ShardsDetailTabCachesList';
 export { default as ShardsDetailTabNetworkInfo } from './ShardsDetailTabNetworkInfo';
 export { default as ShardsDetailTabZKInfo } from './ShardsDetailTabZKInfo';
+export { default as ShardsDetailTabCqlExecStats } from './ShardsDetailTabCqlExecStats';
 export { default as ActualShards } from './ActualShards';
 export { default as Tasks } from './Tasks';
 export { default as PendingTasksCount } from './PendingTasksCount';

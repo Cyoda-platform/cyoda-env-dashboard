@@ -25,6 +25,7 @@ import {
   ShardsDetailTabCachesList,
   ShardsDetailTabNetworkInfo,
   ShardsDetailTabZKInfo,
+  ShardsDetailTabCqlExecStats,
 } from '../components/shards';
 import './NodesDetail.scss';
 
@@ -120,6 +121,11 @@ export default function NodesDetail() {
       key: '11',
       label: 'ZooKeeper info',
       children: activeKey === '11' ? <ShardsDetailTabZKInfo /> : null,
+    },
+    {
+      key: '12',
+      label: 'CQL Execution Statistics',
+      children: activeKey === '12' ? <ShardsDetailTabCqlExecStats /> : null,
     },
   ];
 
