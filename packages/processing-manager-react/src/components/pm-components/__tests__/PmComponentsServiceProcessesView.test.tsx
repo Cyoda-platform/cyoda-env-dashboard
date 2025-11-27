@@ -41,13 +41,11 @@ const mockNoneReadyData = [
 describe('PmComponentsServiceProcessesView', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     vi.mocked(hooks.useLoadServiceProcessesStats).mockReturnValue({
       data: {
-        data: {
-          ready: mockReadyData,
-          noneReady: mockNoneReadyData,
-        },
+        ready: mockReadyData,
+        noneReady: mockNoneReadyData,
       },
     } as any);
   });
@@ -120,30 +118,26 @@ describe('PmComponentsServiceProcessesView', () => {
   it('should handle empty ready data', () => {
     vi.mocked(hooks.useLoadServiceProcessesStats).mockReturnValue({
       data: {
-        data: {
-          ready: [],
-          noneReady: mockNoneReadyData,
-        },
+        ready: [],
+        noneReady: mockNoneReadyData,
       },
     } as any);
 
     render(<PmComponentsServiceProcessesView />);
-    
+
     expect(screen.getByText(/Ready Component - 0 items/)).toBeInTheDocument();
   });
 
   it('should handle empty noneReady data', () => {
     vi.mocked(hooks.useLoadServiceProcessesStats).mockReturnValue({
       data: {
-        data: {
-          ready: mockReadyData,
-          noneReady: [],
-        },
+        ready: mockReadyData,
+        noneReady: [],
       },
     } as any);
 
     render(<PmComponentsServiceProcessesView />);
-    
+
     expect(screen.getByText(/None Ready Component - 0 items/)).toBeInTheDocument();
   });
 
@@ -162,7 +156,7 @@ describe('PmComponentsServiceProcessesView', () => {
     })).toBeInTheDocument();
   });
 
-  it('should handle missing data.data', () => {
+  it('should handle empty data object', () => {
     vi.mocked(hooks.useLoadServiceProcessesStats).mockReturnValue({
       data: {},
     } as any);
@@ -180,28 +174,24 @@ describe('PmComponentsServiceProcessesView', () => {
   it('should handle missing ready field', () => {
     vi.mocked(hooks.useLoadServiceProcessesStats).mockReturnValue({
       data: {
-        data: {
-          noneReady: mockNoneReadyData,
-        },
+        noneReady: mockNoneReadyData,
       },
     } as any);
 
     render(<PmComponentsServiceProcessesView />);
-    
+
     expect(screen.getByText(/Ready Component - 0 items/)).toBeInTheDocument();
   });
 
   it('should handle missing noneReady field', () => {
     vi.mocked(hooks.useLoadServiceProcessesStats).mockReturnValue({
       data: {
-        data: {
-          ready: mockReadyData,
-        },
+        ready: mockReadyData,
       },
     } as any);
 
     render(<PmComponentsServiceProcessesView />);
-    
+
     expect(screen.getByText(/None Ready Component - 0 items/)).toBeInTheDocument();
   });
 
@@ -213,20 +203,18 @@ describe('PmComponentsServiceProcessesView', () => {
 
   it('should update when data changes', () => {
     const { rerender } = render(<PmComponentsServiceProcessesView />);
-    
+
     expect(screen.getByText(/Ready Component - 2 items/)).toBeInTheDocument();
-    
+
     vi.mocked(hooks.useLoadServiceProcessesStats).mockReturnValue({
       data: {
-        data: {
-          ready: [...mockReadyData, { id: 4, name: 'Service 4', status: 'ready' }],
-          noneReady: mockNoneReadyData,
-        },
+        ready: [...mockReadyData, { id: 4, name: 'Service 4', status: 'ready' }],
+        noneReady: mockNoneReadyData,
       },
     } as any);
-    
+
     rerender(<PmComponentsServiceProcessesView />);
-    
+
     expect(screen.getByText(/Ready Component - 3 items/)).toBeInTheDocument();
   });
 });

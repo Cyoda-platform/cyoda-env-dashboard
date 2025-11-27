@@ -17,9 +17,9 @@ export const PmComponentsServiceProcessesView: React.FC = () => {
   const { data } = useLoadServiceProcessesStats();
 
   useEffect(() => {
-    if (data?.data) {
-      setReady(data.data.ready || []);
-      setNoneReady(data.data.noneReady || []);
+    if (data) {
+      setReady(data.ready || []);
+      setNoneReady(data.noneReady || []);
     }
   }, [data]);
 
