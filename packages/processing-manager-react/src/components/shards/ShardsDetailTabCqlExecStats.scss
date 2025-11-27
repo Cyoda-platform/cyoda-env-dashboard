@@ -61,3 +61,39 @@
   }
 }
 
+// Light theme
+[data-theme="light"] .table-detail-content {
+  .table-info-box {
+    background-color: #f5f5f5;
+  }
+
+  .table-info-label {
+    color: #666;
+  }
+
+  // Lighter borders for tables in modal
+  table {
+    tr {
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+    }
+  }
+}
+
+// Dark theme
+[data-theme="dark"] .table-detail-content {
+  .table-info-box {
+    background-color: rgba(255, 255, 255, 0.08);
+  }
+
+  .table-info-label {
+    color: rgba(255, 255, 255, 0.65);
+  }
+
+  // More delicate borders for tables in modal
+  table {
+    tr {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+    }
+  }
+}
+

@@ -5,7 +5,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { Table, Button, Modal, Alert, message, Spin, Select, Tabs, Row, Col } from 'antd';
-import { ReloadOutlined, DeleteOutlined } from '@ant-design/icons';
+import { ReloadOutlined, DeleteOutlined, RightOutlined, DownOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import {
   useCqlExecStatsTables,
@@ -369,10 +369,10 @@ export const ShardsDetailTabCqlExecStats: React.FC = () => {
     return (
       <div className="table-detail-content">
         {/* Always show table information block */}
-        <div style={{ marginBottom: 16, padding: '12px', backgroundColor: '#f5f5f5', borderRadius: '4px' }}>
+        <div className="table-info-box" style={{ marginBottom: 16, padding: '12px', borderRadius: '4px' }}>
           {isComposite ? (
             <>
-              <div style={{ fontSize: '13px', fontWeight: 500, marginBottom: '8px', color: '#666' }}>
+              <div className="table-info-label" style={{ fontSize: '13px', fontWeight: 500, marginBottom: '8px' }}>
                 Composite Partition Key ({tables.length} columns):
               </div>
               <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '13px', fontFamily: 'monospace' }}>
@@ -383,7 +383,7 @@ export const ShardsDetailTabCqlExecStats: React.FC = () => {
             </>
           ) : (
             <>
-              <div style={{ fontSize: '13px', fontWeight: 500, marginBottom: '4px', color: '#666' }}>
+              <div className="table-info-label" style={{ fontSize: '13px', fontWeight: 500, marginBottom: '4px' }}>
                 Table:
               </div>
               <div style={{ fontSize: '14px', fontFamily: 'monospace', fontWeight: 500 }}>
@@ -502,6 +502,13 @@ export const ShardsDetailTabCqlExecStats: React.FC = () => {
               pagination={false}
               size="small"
               expandable={{
+                expandIcon: ({ expanded, onExpand, record }) => (
+                  expanded ? (
+                    <DownOutlined onClick={(e) => onExpand(record, e)} style={{ cursor: 'pointer' }} />
+                  ) : (
+                    <RightOutlined onClick={(e) => onExpand(record, e)} style={{ cursor: 'pointer' }} />
+                  )
+                ),
                 expandedRowRender: (record: TableOperationStatsDTO) => {
                   if (!record.minuteStats || Object.keys(record.minuteStats).length === 0) {
                     return <p style={{ margin: 0, padding: '8px', color: '#999' }}>No minute-level statistics available</p>;
