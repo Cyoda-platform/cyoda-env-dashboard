@@ -19,12 +19,10 @@ const mockRefetch = vi.fn();
 const mockStartComponent = vi.fn();
 const mockStopComponent = vi.fn();
 
-const mockData = {
-  data: [
-    { id: '1', name: 'Component 1', running: true },
-    { id: '2', name: 'Component 2', running: false },
-  ],
-};
+const mockData = [
+  { id: '1', name: 'Component 1', running: true },
+  { id: '2', name: 'Component 2', running: false },
+];
 
 describe('PmComponentsCyodaRunnableComponents', () => {
   beforeEach(() => {

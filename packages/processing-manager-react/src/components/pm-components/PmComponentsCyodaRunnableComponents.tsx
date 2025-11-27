@@ -79,8 +79,8 @@ export const PmComponentsCyodaRunnableComponents: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (data?.data) {
-      setTableData(data.data);
+    if (data) {
+      setTableData(data);
     }
   }, [data]);
 
@@ -89,6 +89,8 @@ export const PmComponentsCyodaRunnableComponents: React.FC = () => {
       setLoadingStart(row.id);
       await startComponent({ id: row.id });
       await refetch();
+    } catch (error) {
+      console.error('Error starting component:', error);
     } finally {
       setLoadingStart(null);
     }
@@ -99,6 +101,8 @@ export const PmComponentsCyodaRunnableComponents: React.FC = () => {
       setLoadingStop(row.id);
       await stopComponent({ id: row.id });
       await refetch();
+    } catch (error) {
+      console.error('Error stopping component:', error);
     } finally {
       setLoadingStop(null);
     }
@@ -110,6 +114,8 @@ export const PmComponentsCyodaRunnableComponents: React.FC = () => {
       await stopComponent({ id: row.id });
       await startComponent({ id: row.id });
       await refetch();
+    } catch (error) {
+      console.error('Error reloading component:', error);
     } finally {
       setLoadingReload(null);
     }
