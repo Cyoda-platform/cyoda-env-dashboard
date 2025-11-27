@@ -7,7 +7,7 @@
 
 import React, { useState, useMemo, useRef, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Table, Button, Tooltip, Divider, Modal, message, Space, Upload } from 'antd';
+import { Table, Button, Tooltip, Divider, Modal, message, Space } from 'antd';
 import {
   PlusOutlined,
   ReloadOutlined,
@@ -28,6 +28,7 @@ import moment from 'moment';
 import CreateReportDialog from '../components/CreateReportDialog';
 import HistoryFilter from '../components/HistoryFilter';
 import ReportScheduling from '../components/ReportScheduling';
+import ImportDialog from '../components/ImportDialog';
 import { ConfigEditorStreamGrid, ConfigEditorStreamGridRef } from '@cyoda/ui-lib-react';
 import { HelperStorage } from '@cyoda/ui-lib-react';
 import { ResizableTitle } from '../components/ResizableTitle';
@@ -74,7 +75,7 @@ export const ReportConfigsStream: React.FC = () => {
   const [showScheduling, setShowScheduling] = useState(false);
   const [selectedReportId, setSelectedReportId] = useState<string | undefined>();
   const [exportLoading, setExportLoading] = useState(false);
-  const [importLoading, setImportLoading] = useState(false);
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
   const [pageSize, setPageSize] = useState<number>(10);
 
   const streamGridRef = useRef<ConfigEditorStreamGridRef>(null);
@@ -402,6 +403,7 @@ export const ReportConfigsStream: React.FC = () => {
       link.remove();
       window.URL.revokeObjectURL(url);
 
+      // Show success message after successful API call and file download trigger
       message.success('Reports exported successfully');
     } catch (error) {
       console.error('Export failed:', error);
@@ -411,50 +413,37 @@ export const ReportConfigsStream: React.FC = () => {
     }
   };
 
-  const handleImport = async (file: File) => {
-    try {
-      setImportLoading(true);
-      const text = await file.text();
-      const importData = JSON.parse(text);
-
-      if (!importData.data?.value || !Array.isArray(importData.data.value)) {
-        message.error('Invalid import file format');
-        return false;
-      }
-
-      // Import each definition
-      let successCount = 0;
-      let failCount = 0;
-
-      // Use the import endpoint - send the whole importData object, not just the value array
-      try {
-        await axios.post(
-          `${API_BASE}/platform-api/stream-data/import`,
-          importData
-        );
-        successCount = importData.data.value.length;
-      } catch (error) {
-        console.error('Failed to import definitions:', error);
-        failCount = importData.data.value.length;
-      }
-
-      if (successCount > 0) {
-        message.success(`Successfully imported ${successCount} report(s)`);
-        refetch();
-      }
-
-      if (failCount > 0) {
-        message.warning(`Failed to import ${failCount} report(s)`);
-      }
-
-      return false; // Prevent default upload behavior
-    } catch (error) {
-      console.error('Import failed:', error);
-      message.error('Failed to import reports');
-      return false;
-    } finally {
-      setImportLoading(false);
+  const handleImport = async (importData: any, failOnExists?: boolean) => {
+    if (!importData.data?.value || !Array.isArray(importData.data.value)) {
+      throw new Error('Invalid import file format');
     }
+
+    // Use the import endpoint - send the whole importData object, not just the value array
+    const response = await axios.post(
+      `${API_BASE}/platform-api/stream-data/import`,
+      importData,
+      {
+        params: { failOnExists },
+        // @ts-ignore - muteErrors is a custom property
+        muteErrors: true
+      }
+    );
+
+    // Return the response data for ImportDialog to handle
+    return {
+      success: response.data.success !== false,
+      errors: response.data.errors || []
+    };
+  };
+
+  const validateImportData = (data: any) => {
+    return data && data.data?.value && Array.isArray(data.data.value);
+  };
+
+  const getImportPreview = (data: any) => {
+    const count = data.data?.value?.length || 0;
+    const names = data.data?.value?.map((d: any) => d.name).join(', ') || '';
+    return { count, names };
   };
 
   const columns: TableColumnsType<TableRow> = [
@@ -602,19 +591,13 @@ export const ReportConfigsStream: React.FC = () => {
           </Tooltip>
 
           <Tooltip title="Import previously exported reports">
-            <Upload
-              accept=".json"
-              showUploadList={false}
-              beforeUpload={handleImport}
+            <Button
+              type="default"
+              icon={<DownloadOutlined />}
+              onClick={() => setImportDialogOpen(true)}
             >
-              <Button
-                type="default"
-                icon={<DownloadOutlined />}
-                loading={importLoading}
-              >
-                Import
-              </Button>
-            </Upload>
+              Import
+            </Button>
           </Tooltip>
 
           <Divider type="vertical" />
@@ -696,6 +679,23 @@ export const ReportConfigsStream: React.FC = () => {
         isDeleteAvailable={true}
         onFetchDefinition={handleFetchDefinition}
         onLoadData={handleLoadStreamData}
+      />
+
+      <ImportDialog
+        open={importDialogOpen}
+        onClose={() => setImportDialogOpen(false)}
+        onSuccess={() => {
+          message.success('Stream reports imported successfully');
+          refetch();
+        }}
+        onImport={handleImport}
+        title="Import Stream Reports"
+        description="Upload a previously exported stream report JSON file to import reports into the system."
+        validateData={validateImportData}
+        getItemsPreview={getImportPreview}
+        showFailOnExists={true}
+        failOnExistsLabel="Fail On Exists"
+        failOnExistsTooltip="If enabled, import will fail if stream reports with the same ID already exist. If disabled, existing reports will be overwritten."
       />
     </div>
   );

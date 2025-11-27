@@ -18,6 +18,7 @@ import type { CatalogItem } from '@cyoda/http-api-react';
 import CatalogueOfAliasesFilter from '../components/CatalogueOfAliasesFilter';
 import ModellingPopUpAliasNew, { ModellingPopUpAliasNewRef } from '../components/Modelling/Alias/ModellingPopUpAliasNew';
 import CatalogueAliasChangeStateDialog, { CatalogueAliasChangeStateDialogRef } from '../components/CatalogueAliasChangeStateDialog';
+import ImportDialog from '../components/ImportDialog';
 import { ResizableTitle } from '../components/ResizableTitle';
 import { HelperStorage } from '@cyoda/ui-lib-react';
 import './CatalogueOfAliases.scss';
@@ -52,6 +53,7 @@ const CatalogueOfAliases: React.FC = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [filterForm, setFilterForm] = useState<FilterForm>({});
   const [pageSize, setPageSize] = useState<number>(50);
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
   const aliasDialogRef = useRef<ModellingPopUpAliasNewRef>(null);
   const changeStateDialogRef = useRef<CatalogueAliasChangeStateDialogRef>(null);
 
@@ -283,6 +285,8 @@ const CatalogueOfAliases: React.FC = () => {
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
+
+      // Show success message after successful API call and file download trigger
       message.success('Aliases exported successfully');
     },
     onError: () => {
@@ -291,25 +295,27 @@ const CatalogueOfAliases: React.FC = () => {
   });
 
   // Import handler
-  const handleImport = () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = '.json';
-    input.onchange = async (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0];
-      if (!file) return;
+  const handleImport = async (data: any) => {
+    // For catalog items, always use needRewrite=true (backend doesn't support failOnExists properly)
+    const response = await importCatalogItems(data, true);
 
-      try {
-        const text = await file.text();
-        const data = JSON.parse(text);
-        await importCatalogItems(data);
-        message.success('Aliases imported successfully');
-        refetch();
-      } catch (error) {
-        message.error('Failed to import aliases');
-      }
+    // Return the response data for ImportDialog to handle
+    return {
+      success: response.data.success !== false,
+      errors: response.data.errors || []
     };
-    input.click();
+  };
+
+  const validateImportData = (data: any) => {
+    // Validate that the data has the expected structure for catalog items
+    // API returns CatalogItemExportImportContainer with 'aliases' field
+    return data && Array.isArray(data.aliases);
+  };
+
+  const getImportPreview = (data: any) => {
+    const count = data.aliases?.length || 0;
+    const names = data.aliases?.map((item: any) => item.aliasDef?.name || item.name || 'Unnamed').join(', ') || '';
+    return { count, names };
   };
 
   // Handlers
@@ -463,10 +469,14 @@ const CatalogueOfAliases: React.FC = () => {
           <Button type="primary" icon={<PlusOutlined />} onClick={handleCreateNew}>
             Create New
           </Button>
-          <Button icon={<ExportOutlined />} onClick={handleExport}>
+          <Button
+            icon={<ExportOutlined />}
+            onClick={handleExport}
+            disabled={selectedRowKeys.length === 0}
+          >
             Export
           </Button>
-          <Button icon={<ImportOutlined />} onClick={handleImport}>
+          <Button icon={<ImportOutlined />} onClick={() => setImportDialogOpen(true)}>
             Import
           </Button>
         </Space>
@@ -532,6 +542,21 @@ const CatalogueOfAliases: React.FC = () => {
       <CatalogueAliasChangeStateDialog
         ref={changeStateDialogRef}
         onStateChanged={handleStateChanged}
+      />
+
+      <ImportDialog
+        open={importDialogOpen}
+        onClose={() => setImportDialogOpen(false)}
+        onSuccess={() => {
+          message.success('Aliases imported successfully');
+          refetch();
+        }}
+        onImport={handleImport}
+        title="Import Aliases"
+        description="Upload a previously exported aliases JSON file to import aliases into the catalog. Existing aliases will be overwritten."
+        validateData={validateImportData}
+        getItemsPreview={getImportPreview}
+        showFailOnExists={false}
       />
     </div>
   );

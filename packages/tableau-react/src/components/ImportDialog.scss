@@ -1,0 +1,124 @@
+// Common styles for all themes
+.import-dialog {
+  .ant-upload-drag-icon {
+    font-size: 48px;
+    color: #14b8a6 !important;
+  }
+
+  .import-result {
+    padding: 16px;
+    background: transparent;
+    border-radius: 8px;
+
+    &__status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+  }
+}
+
+// Light theme styles (default)
+[data-theme="light"],
+[data-theme="light"] .ant-modal {
+  .import-dialog {
+    .ant-upload-drag {
+      border: 2px dashed #d9d9d9 !important;
+      border-radius: 8px;
+      background: #fafafa !important;
+      transition: all 0.3s;
+
+      &:hover {
+        border-color: #14b8a6 !important;
+        background: #f0f0f0 !important;
+      }
+    }
+
+    .ant-upload-text {
+      font-size: 16px;
+      color: rgba(0, 0, 0, 0.85) !important;
+      margin-top: 8px;
+    }
+
+    .ant-upload-hint {
+      font-size: 14px;
+      color: rgba(0, 0, 0, 0.45) !important;
+    }
+
+    .import-result {
+      &__item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px;
+        background: #fafafa;
+        border: 1px solid #d9d9d9;
+        border-radius: 4px;
+        margin-bottom: 8px;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+
+      &__name {
+        flex: 1;
+        font-size: 14px;
+        color: rgba(0, 0, 0, 0.85);
+      }
+    }
+  }
+}
+
+// Dark theme styles
+[data-theme="dark"],
+[data-theme="dark"] .ant-modal {
+  .import-dialog {
+    .ant-upload-drag {
+      border: 2px dashed rgba(255, 255, 255, 0.15) !important;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.04) !important;
+      transition: all 0.3s;
+
+      &:hover {
+        border-color: #14b8a6 !important;
+        background: rgba(255, 255, 255, 0.06) !important;
+      }
+    }
+
+    .ant-upload-text {
+      font-size: 16px;
+      color: inherit !important;
+      margin-top: 8px;
+    }
+
+    .ant-upload-hint {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.45) !important;
+    }
+
+    .import-result {
+      &__item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 4px;
+        margin-bottom: 8px;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+
+      &__name {
+        flex: 1;
+        font-size: 14px;
+        color: inherit;
+      }
+    }
+  }
+}
+

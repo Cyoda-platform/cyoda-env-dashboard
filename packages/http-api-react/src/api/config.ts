@@ -164,7 +164,10 @@ export function exportCatalogItemsByClass(entityClasses: string) {
  * Import catalog items
  */
 export function importCatalogItems(container: CatalogItemExportImportContainer, needRewrite: boolean = true) {
-  return axios.post(`/platform-api/catalog/item/import?needRewrite=${needRewrite}`, container);
+  return axios.post(`/platform-api/catalog/item/import?needRewrite=${needRewrite}`, container, {
+    // @ts-ignore - muteErrors is a custom property
+    muteErrors: true
+  });
 }
 
 /**
@@ -178,7 +181,11 @@ export function exportReportsByIds(ids: string[]) {
  * Import report definitions
  */
 export function importReports(data: any, params?: any) {
-  return axios.post('/platform-api/reporting/import', data, { params });
+  return axios.post('/platform-api/reporting/import', data, {
+    params,
+    // @ts-ignore - muteErrors is a custom property
+    muteErrors: true
+  });
 }
 
 /**

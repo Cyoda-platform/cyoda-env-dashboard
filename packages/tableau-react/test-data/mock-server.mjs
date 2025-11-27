@@ -570,18 +570,24 @@ app.post('/platform-api/catalog/item/import', (req, res) => {
 
   let imported = 0;
   let skipped = 0;
+  const errors = [];
 
   container.aliases.forEach(item => {
     const itemId = item.id || `CAT-${Date.now()}-${imported}`;
 
     // Check if item already exists
-    const exists = Object.values(global.catalogItems).some(
+    const existingItem = Object.values(global.catalogItems).find(
       existing => existing.name === item.name && existing.entityClass === item.entityClass
     );
 
-    if (exists && needRewrite !== 'true') {
+    if (existingItem && needRewrite !== 'true') {
       console.log(`⏭️  Skipping existing item: ${item.name}`);
       skipped++;
+      errors.push({
+        name: item.name,
+        id: itemId,
+        error: `Alias '${item.name}' for entity class '${item.entityClass}' already exists`
+      });
     } else {
       global.catalogItems[itemId] = {
         ...item,
@@ -601,7 +607,12 @@ app.post('/platform-api/catalog/item/import', (req, res) => {
     success: true,
     imported,
     skipped,
-    total: container.aliases.length
+    failed: errors.length,
+    errors,
+    total: container.aliases.length,
+    message: errors.length > 0
+      ? `Import completed: ${imported} successful, ${skipped} skipped`
+      : `Successfully imported ${imported} catalog item(s)`
   });
 });
 
@@ -1086,6 +1097,94 @@ app.post('/platform-api/reporting/query-plan', (req, res) => {
   };
 
   res.json(mockQueryPlan);
+});
+
+// Export stream report definitions by IDs
+app.get('/platform-api/stream-data/export-by-ids', (req, res) => {
+  const { includeIds } = req.query;
+
+  if (!includeIds) {
+    return res.status(400).json({ error: 'includeIds parameter is required' });
+  }
+
+  const ids = includeIds.split(',');
+  console.log(`📤 Exporting stream report definitions: ${ids.join(', ')}`);
+
+  // Collect the definitions to export
+  const exportData = {
+    data: {
+      value: []
+    }
+  };
+
+  ids.forEach(id => {
+    const definition = streamDefinitions.find(d => d.id === id);
+    if (definition) {
+      exportData.data.value.push(definition);
+    }
+  });
+
+  console.log(`✓ Exported ${exportData.data.value.length} stream report definitions`);
+  res.json(exportData);
+});
+
+// Import stream report definitions
+app.post('/platform-api/stream-data/import', (req, res) => {
+  const importData = req.body;
+  const { failOnExists } = req.query;
+
+  console.log('📥 Importing stream report definitions...');
+  console.log('   failOnExists:', failOnExists);
+
+  if (!importData || !importData.data || !importData.data.value) {
+    return res.status(400).json({ error: 'Invalid import data format' });
+  }
+
+  const imported = [];
+  const errors = [];
+
+  importData.data.value.forEach(def => {
+    try {
+      const id = def.id;
+
+      // Check if stream report already exists and failOnExists is true
+      if (failOnExists === 'true' && streamDefinitions.find(d => d.id === id)) {
+        errors.push({
+          name: def.name,
+          id: id,
+          error: `Stream report with ID ${id} already exists`
+        });
+        console.log(`  ✗ Failed: ${def.name} (${id}) - already exists`);
+        return;
+      }
+
+      // Remove existing definition if it exists (when failOnExists is false)
+      const existingIndex = streamDefinitions.findIndex(d => d.id === id);
+      if (existingIndex !== -1) {
+        streamDefinitions.splice(existingIndex, 1);
+      }
+
+      // Add the new definition
+      streamDefinitions.push(def);
+      imported.push(id);
+      console.log(`  ✓ Imported: ${def.name} (${id})`);
+    } catch (error) {
+      errors.push({ name: def.name, error: error.message });
+      console.error(`  ✗ Failed to import: ${def.name}`, error);
+    }
+  });
+
+  console.log(`✓ Import complete: ${imported.length} successful, ${errors.length} failed`);
+
+  res.json({
+    success: errors.length > 0 && imported.length === 0 ? false : true,
+    imported: imported.length,
+    failed: errors.length,
+    errors: errors,
+    message: errors.length > 0
+      ? `Import completed with errors: ${imported.length} successful, ${errors.length} failed`
+      : `Successfully imported ${imported.length} stream report definition(s)`
+  });
 });
 
 // Search entities (must come before get by ID to avoid route conflict)
@@ -1799,8 +1898,10 @@ app.get('/platform-api/reporting/export-by-ids', (req, res) => {
 // Import report definitions
 app.post('/platform-api/reporting/import', (req, res) => {
   const importData = req.body;
+  const { failOnExists } = req.query;
 
   console.log('📥 Importing report definitions...');
+  console.log('   failOnExists:', failOnExists);
 
   if (!importData || !importData.data || !importData.data.value) {
     return res.status(400).json({ error: 'Invalid import data format' });
@@ -1812,14 +1913,24 @@ app.post('/platform-api/reporting/import', (req, res) => {
 
   importData.data.value.forEach(def => {
     try {
-      // Generate new ID if not exists or if it conflicts
-      const id = def.id || `RPT-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      const id = def.id;
+
+      // Check if report already exists and failOnExists is true
+      if (failOnExists === 'true' && definitions[id]) {
+        errors.push({
+          name: def.name,
+          id: id,
+          error: `Report with ID ${id} already exists`
+        });
+        console.log(`  ✗ Failed: ${def.name} (${id}) - already exists`);
+        return;
+      }
 
       const now = new Date().toISOString();
       definitions[id] = {
         ...def,
         id: id,
-        creationDate: def.creationDate || now,
+        creationDate: definitions[id]?.creationDate || def.creationDate || now,
         modificationDate: now,
         userId: def.userId || 'admin'
       };
@@ -1837,11 +1948,13 @@ app.post('/platform-api/reporting/import', (req, res) => {
   console.log(`✓ Import complete: ${imported.length} successful, ${errors.length} failed`);
 
   res.json({
-    success: true,
+    success: errors.length > 0 && imported.length === 0 ? false : true,
     imported: imported.length,
     failed: errors.length,
     errors: errors,
-    message: `Successfully imported ${imported.length} report definition(s)`
+    message: errors.length > 0
+      ? `Import completed with errors: ${imported.length} successful, ${errors.length} failed`
+      : `Successfully imported ${imported.length} report definition(s)`
   });
 });
 

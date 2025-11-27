@@ -272,7 +272,18 @@ describe('CatalogueOfAliases', () => {
     }, { timeout: 10000 });
   }, 15000);
 
-  it('should handle export', async () => {
+  it('should have export button disabled when nothing is selected', async () => {
+    render(<CatalogueOfAliases />, { wrapper: createWrapper() });
+
+    await waitFor(() => {
+      expect(screen.getByText('Test Alias 1')).toBeInTheDocument();
+    }, { timeout: 10000 });
+
+    const exportButton = screen.getByRole('button', { name: /export/i });
+    expect(exportButton).toBeDisabled();
+  }, 15000);
+
+  it('should handle export when items are selected', async () => {
     const user = userEvent.setup();
     const mockExportData = {
       '@bean': 'com.cyoda.core.model.catalog.CatalogItemExportImportContainer',
@@ -302,6 +313,17 @@ describe('CatalogueOfAliases', () => {
       expect(screen.getByText('Test Alias 1')).toBeInTheDocument();
     }, { timeout: 10000 });
 
+    // Select first row
+    const checkboxes = renderContainer.querySelectorAll('input[type="checkbox"]');
+    if (checkboxes.length > 1) {
+      await user.click(checkboxes[1] as HTMLElement); // First data row checkbox
+    }
+
+    await waitFor(() => {
+      const exportButton = screen.getByRole('button', { name: /export/i });
+      expect(exportButton).not.toBeDisabled();
+    });
+
     const exportButton = screen.getByRole('button', { name: /export/i });
     await user.click(exportButton);
 
@@ -313,9 +335,16 @@ describe('CatalogueOfAliases', () => {
     createElementSpy.mockRestore();
   }, 15000);
 
-  it('should handle import', async () => {
+  it('should handle import with automatic processing', async () => {
     const user = userEvent.setup();
-    (httpApiReact.importCatalogItems as any).mockResolvedValue({});
+
+    // Mock successful import response
+    (httpApiReact.importCatalogItems as any).mockResolvedValue({
+      data: {
+        success: true,
+        errors: []
+      }
+    });
 
     const mockFile = new File(
       [JSON.stringify({ aliases: mockCatalogItems })],
@@ -379,8 +408,12 @@ describe('CatalogueOfAliases', () => {
     const importButton = screen.getByRole('button', { name: /import/i });
     await user.click(importButton);
 
+    // Wait for import to be called automatically after file selection
     await waitFor(() => {
-      expect(httpApiReact.importCatalogItems).toHaveBeenCalled();
+      expect(httpApiReact.importCatalogItems).toHaveBeenCalledWith(
+        { aliases: mockCatalogItems },
+        true // needRewrite should be true (failOnExists removed)
+      );
     }, { timeout: 10000 });
 
     // Cleanup

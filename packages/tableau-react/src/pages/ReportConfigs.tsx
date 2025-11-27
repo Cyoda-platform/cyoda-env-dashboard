@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useRef, useMemo, useCallback, useEffect } from 'react';
-import { Table, Button, Tooltip, Space, Divider, Upload, App } from 'antd';
+import { Table, Button, Tooltip, Space, Divider, App } from 'antd';
 import {
   PlusOutlined,
   EditOutlined,
@@ -26,6 +26,7 @@ import { exportReportsByIds, importReports, createReportDefinition } from '@cyod
 import CreateReportDialog, { type CreateReportDialogRef, type CreateReportFormData } from '../components/CreateReportDialog';
 import CloneReportDialog, { type CloneReportDialogRef } from '../components/CloneReportDialog';
 import ConfigEditorReportsFilter from '../components/ConfigEditorReportsFilter';
+import ImportDialog from '../components/ImportDialog';
 import { ResizableTitle } from '../components/ResizableTitle';
 import HelperReportDefinition from '../utils/HelperReportDefinition';
 import { HelperStorage } from '@cyoda/ui-lib-react';
@@ -127,7 +128,7 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
   const [filterForm, setFilterForm] = useState<FilterForm>({});
   const [runningReports, setRunningReports] = useState<RunningReport[]>([]);
   const [exportLoading, setExportLoading] = useState(false);
-  const [importLoading, setImportLoading] = useState(false);
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
   const [pageSize, setPageSize] = useState<number>(50);
 
   // Column widths state - load from localStorage
@@ -543,6 +544,7 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
 
+      // Show success message after successful API call and file download trigger
       message.success('Reports exported successfully');
     } catch (error: any) {
       console.error('Export failed:', error);
@@ -552,29 +554,28 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
     }
   }, [selectedRowKeys]);
 
-  const handleImport = useCallback(async (file: File) => {
-    try {
-      setImportLoading(true);
+  const handleImport = useCallback(async (data: any, failOnExists?: boolean) => {
+    // Import reports
+    const response = await importReports(data, { failOnExists });
 
-      // Read file content
-      const text = await file.text();
-      const data = JSON.parse(text);
+    // Return the response data for ImportDialog to handle
+    return {
+      success: response.data.success !== false,
+      errors: response.data.errors || []
+    };
+  }, []);
 
-      // Import reports
-      await importReports(data);
+  const validateImportData = useCallback((data: any) => {
+    // Validate that the data has the expected structure from export API
+    // Format: { data: { value: [...] } }
+    return data && data.data?.value && Array.isArray(data.data.value);
+  }, []);
 
-      message.success('Reports imported successfully');
-      refetch();
-    } catch (error: any) {
-      console.error('Import failed:', error);
-      message.error(error.message || 'Failed to import reports');
-    } finally {
-      setImportLoading(false);
-    }
-
-    // Prevent upload
-    return false;
-  }, [refetch]);
+  const getImportPreview = useCallback((data: any) => {
+    const count = data.data?.value?.length || 0;
+    const names = data.data?.value?.map((d: any) => d.name).join(', ') || '';
+    return { count, names };
+  }, []);
 
   const handleResetState = useCallback(() => {
     setFilterForm({});
@@ -788,19 +789,13 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
           </Tooltip>
 
           <Tooltip title="Import previously exported reports">
-            <Upload
-              accept=".json"
-              showUploadList={false}
-              beforeUpload={handleImport}
+            <Button
+              type="default"
+              icon={<DownloadOutlined />}
+              onClick={() => setImportDialogOpen(true)}
             >
-              <Button
-                type="default"
-                icon={<DownloadOutlined />}
-                loading={importLoading}
-              >
-                Import
-              </Button>
-            </Upload>
+              Import
+            </Button>
           </Tooltip>
 
           <Divider type="vertical" />
@@ -875,6 +870,23 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
           onStatusChange={handleStatusChange}
         />
       ))}
+
+      <ImportDialog
+        open={importDialogOpen}
+        onClose={() => setImportDialogOpen(false)}
+        onSuccess={() => {
+          message.success('Reports imported successfully');
+          refetch();
+        }}
+        onImport={handleImport}
+        title="Import Reports"
+        description="Upload a previously exported report JSON file to import reports into the system."
+        validateData={validateImportData}
+        getItemsPreview={getImportPreview}
+        showFailOnExists={true}
+        failOnExistsLabel="Fail On Exists"
+        failOnExistsTooltip="If enabled, import will fail if reports with the same ID already exist. If disabled, existing reports will be overwritten."
+      />
       </div>
     </App>
   );
