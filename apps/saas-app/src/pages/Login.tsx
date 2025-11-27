@@ -139,8 +139,8 @@ const Login: React.FC = () => {
               </Button>
             </Form.Item>
 
-            <Divider style={{ margin: '24px 0', borderColor: 'rgba(255, 255, 255, 0.1)' }}>
-              <span style={{ color: 'rgba(209, 213, 219, 0.6)', fontSize: '13px' }}>OR</span>
+            <Divider style={{ margin: '24px 0' }}>
+              <span style={{ fontSize: '13px' }}>OR</span>
             </Divider>
 
             <Button
@@ -149,11 +149,6 @@ const Login: React.FC = () => {
               block
               loading={auth0Loading}
               onClick={handleAuth0Login}
-              style={{
-                borderColor: 'rgba(0, 212, 170, 0.3)',
-                color: '#D1D5DB',
-                background: 'rgba(26, 35, 50, 0.6)',
-              }}
             >
               Login with Auth0
             </Button>

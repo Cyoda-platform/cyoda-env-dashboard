@@ -282,5 +282,37 @@ describe('LeftSideMenu', () => {
       expect(openSubmenu).toBeInTheDocument();
     });
   });
+
+  describe('Logout Modal', () => {
+    it('should open logout modal when clicking logout menu item', async () => {
+      const user = userEvent.setup();
+      renderWithRouter(
+        <LeftSideMenu collapsed={false} onCollapse={mockOnCollapse} />
+      );
+
+      const logoutMenuItem = screen.getByText('Logout');
+      await user.click(logoutMenuItem);
+
+      await waitFor(() => {
+        expect(screen.getByText('Confirm Logout')).toBeInTheDocument();
+        expect(screen.getByText('Do you really want to logout?')).toBeInTheDocument();
+      });
+    });
+
+    it('should show both logout buttons in modal', async () => {
+      const user = userEvent.setup();
+      renderWithRouter(
+        <LeftSideMenu collapsed={false} onCollapse={mockOnCollapse} />
+      );
+
+      const logoutMenuItem = screen.getByText('Logout');
+      await user.click(logoutMenuItem);
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /^Logout$/ })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /Logout and Clear Data/ })).toBeInTheDocument();
+      });
+    });
+  });
 });
 

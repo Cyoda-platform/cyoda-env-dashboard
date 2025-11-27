@@ -39,31 +39,32 @@ export const LeftSideMenu: React.FC<LeftSideMenuProps> = ({ collapsed, onCollaps
   const navigate = useNavigate();
   const location = useLocation();
   const [versionModalVisible, setVersionModalVisible] = useState(false);
+  const [logoutModalVisible, setLogoutModalVisible] = useState(false);
   const [openKeys, setOpenKeys] = useState<string[]>([]);
   const { mode, toggleMode } = useThemeStore();
 
+  const handleLogoutClick = () => {
+    setLogoutModalVisible(true);
+  };
+
   const handleLogout = () => {
-    Modal.confirm({
-      title: 'Confirm Logout',
-      content: 'Do you really want to logout?',
-      okText: 'Logout',
-      cancelText: 'Logout and Clear Data',
-      closable: true,
-      onOk: () => {
-        // Logout without clearing data
-        helperStorage.remove('auth');
-        navigate('/login');
-      },
-      onCancel: () => {
-        // Logout and clear all data
-        helperStorage.clear();
-        localStorage.clear(); // Also clear non-prefixed items
-        navigate('/login');
-      },
-      okButtonProps: {
-        danger: true,
-      },
-    });
+    // Logout without clearing data
+    helperStorage.remove('auth');
+    setLogoutModalVisible(false);
+    navigate('/login');
+  };
+
+  const handleLogoutAndClear = () => {
+    // Logout and clear all data
+    helperStorage.clear();
+    localStorage.clear(); // Also clear non-prefixed items
+    setLogoutModalVisible(false);
+    navigate('/login');
+  };
+
+  const handleLogoutCancel = () => {
+    // Just close the modal without any action
+    setLogoutModalVisible(false);
   };
 
   const handleVersionClick = () => {
@@ -76,7 +77,7 @@ export const LeftSideMenu: React.FC<LeftSideMenuProps> = ({ collapsed, onCollaps
 
     // Special handlers for non-navigation items
     if (key === 'logout') {
-      handleLogout();
+      handleLogoutClick();
       return;
     }
     if (key === 'version') {
@@ -406,6 +407,30 @@ export const LeftSideMenu: React.FC<LeftSideMenuProps> = ({ collapsed, onCollaps
           </div>
         </div>
       </Sider>
+
+      {/* Logout Confirmation Modal */}
+      <Modal
+        title={
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <LogoutOutlined style={{ color: '#F59E0B', fontSize: 20 }} />
+            <span>Confirm Logout</span>
+          </div>
+        }
+        open={logoutModalVisible}
+        onCancel={handleLogoutCancel}
+        closable={true}
+        footer={[
+          <Button key="clear" onClick={handleLogoutAndClear}>
+            Logout and Clear Data
+          </Button>,
+          <Button key="logout" danger type="primary" onClick={handleLogout}>
+            Logout
+          </Button>,
+        ]}
+        width={500}
+      >
+        <p>Do you really want to logout?</p>
+      </Modal>
 
       {/* Version Info Modal */}
       <Modal
