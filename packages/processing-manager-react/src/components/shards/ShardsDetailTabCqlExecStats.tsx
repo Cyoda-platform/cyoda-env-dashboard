@@ -56,15 +56,59 @@ interface TableDetailStats extends TableTimeStatsDTO {
 }
 
 /**
- * Helper function to format time value using measure
+ * Helper function to format time values in milliseconds for detail modal
+ * Converts time from nanoseconds to milliseconds
+ * API returns time in nanoseconds, need to divide by 1,000,000 to get ms
  */
 const formatTimeWithMeasure = (time: number | undefined, measure: number | undefined, measureDesc: string | undefined): string => {
   if (time == null) return '-';
-  if (measure && measure !== 1) {
-    const converted = (time / measure).toFixed(0);
-    return `${Number(converted).toLocaleString()}(${measureDesc || 'us'})`;
+
+  // time is in nanoseconds (base unit)
+  // Convert to milliseconds: divide by 1,000,000
+  const timeInMs = time / 1000000;
+
+  // Format with appropriate precision
+  if (timeInMs < 0.01) {
+    // Very small values: show 3 decimal places
+    return `${timeInMs.toFixed(3)} ms`;
+  } else if (timeInMs < 1) {
+    // Less than 1ms: show 2 decimal places
+    return `${timeInMs.toFixed(2)} ms`;
+  } else if (timeInMs < 10) {
+    // 1-10ms: show 1 decimal place
+    return `${timeInMs.toFixed(1)} ms`;
+  } else {
+    // >= 10ms: show whole number
+    return `${Math.round(timeInMs).toLocaleString()} ms`;
   }
-  return `${time.toLocaleString()}(${measureDesc || 'us'})`;
+};
+
+/**
+ * Format time in milliseconds for consistent table display
+ * Converts time from nanoseconds to milliseconds
+ * API returns time in nanoseconds, need to divide by 1,000,000 to get ms
+ */
+const formatTimeInMs = (time: number | undefined): string => {
+  if (time == null) return '-';
+
+  // time is in nanoseconds (base unit)
+  // Convert to milliseconds: divide by 1,000,000
+  const timeInMs = time / 1000000;
+
+  // Format with appropriate precision
+  if (timeInMs < 0.01) {
+    // Very small values: show 3 decimal places
+    return timeInMs.toFixed(3);
+  } else if (timeInMs < 1) {
+    // Less than 1ms: show 2 decimal places
+    return timeInMs.toFixed(2);
+  } else if (timeInMs < 10) {
+    // 1-10ms: show 1 decimal place
+    return timeInMs.toFixed(1);
+  } else {
+    // >= 10ms: show whole number
+    return Math.round(timeInMs).toLocaleString();
+  }
 };
 
 /**
@@ -82,6 +126,27 @@ const formatTableName = (tableName: string): { isComposite: boolean; tables: str
   }
 
   return { isComposite: false, tables: [cleanName] };
+};
+
+/**
+ * Get color for time value based on performance thresholds
+ * @param time - Time value in nanoseconds (always!)
+ * @param measure - Display divisor (ignored for color calculation)
+ * @returns Color code or undefined for normal values
+ */
+const getTimeColor = (time: number | undefined, measure: number = 1): string | undefined => {
+  if (time == null) return undefined;
+
+  // time is ALWAYS in nanoseconds regardless of measure
+  // measure is only used for display formatting, not for color calculation
+  const timeInNanoseconds = time;
+
+  // Thresholds in nanoseconds (1ms = 1,000,000 ns)
+  if (timeInNanoseconds >= 100000000) return '#ef4444'; // Red: >= 100ms - very slow
+  if (timeInNanoseconds >= 50000000) return '#f97316';  // Orange: >= 50ms - slow
+  if (timeInNanoseconds >= 10000000) return '#fbbf24';  // Yellow: >= 10ms - moderate
+
+  return undefined; // Normal: < 10ms (no highlighting)
 };
 
 export const ShardsDetailTabCqlExecStats: React.FC = () => {
@@ -206,51 +271,71 @@ export const ShardsDetailTabCqlExecStats: React.FC = () => {
       },
     },
     {
-      title: 'Min',
+      title: 'Min (ms)',
       dataIndex: ['tableStats', 'min'],
       key: 'min',
       width: 130,
       sorter: (a, b) => (a.tableStats?.min || 0) - (b.tableStats?.min || 0),
       render: (time: number, record: TableBriefStats) => {
         if (!record.tableStats) return '-';
-        return formatTimeWithMeasure(time, record.tableStats.measure, record.tableStats.measureDesc);
+        const color = getTimeColor(time, record.tableStats.measure);
+        return (
+          <span style={{ color, fontWeight: color ? 600 : 'normal' }}>
+            {formatTimeInMs(time)}
+          </span>
+        );
       },
     },
     {
-      title: 'Avg',
+      title: 'Avg (ms)',
       dataIndex: ['tableStats', 'avg'],
       key: 'avg',
       width: 130,
       sorter: (a, b) => (a.tableStats?.avg || 0) - (b.tableStats?.avg || 0),
       render: (time: number, record: TableBriefStats) => {
         if (!record.tableStats) return '-';
-        return formatTimeWithMeasure(time, record.tableStats.measure, record.tableStats.measureDesc);
+        const color = getTimeColor(time, record.tableStats.measure);
+        return (
+          <span style={{ color, fontWeight: color ? 600 : 'normal' }}>
+            {formatTimeInMs(time)}
+          </span>
+        );
       },
     },
     {
-      title: 'Max',
+      title: 'Max (ms)',
       dataIndex: ['tableStats', 'max'],
       key: 'max',
       width: 130,
       sorter: (a, b) => (a.tableStats?.max || 0) - (b.tableStats?.max || 0),
       render: (time: number, record: TableBriefStats) => {
         if (!record.tableStats) return '-';
-        return formatTimeWithMeasure(time, record.tableStats.measure, record.tableStats.measureDesc);
+        const color = getTimeColor(time, record.tableStats.measure);
+        return (
+          <span style={{ color, fontWeight: color ? 600 : 'normal' }}>
+            {formatTimeInMs(time)}
+          </span>
+        );
       },
     },
     {
-      title: 'Last',
+      title: 'Last (ms)',
       dataIndex: ['tableStats', 'last'],
       key: 'last',
       width: 130,
       sorter: (a, b) => (a.tableStats?.last || 0) - (b.tableStats?.last || 0),
       render: (time: number, record: TableBriefStats) => {
         if (!record.tableStats) return '-';
-        return formatTimeWithMeasure(time, record.tableStats.measure, record.tableStats.measureDesc);
+        const color = getTimeColor(time, record.tableStats.measure);
+        return (
+          <span style={{ color, fontWeight: color ? 600 : 'normal' }}>
+            {formatTimeInMs(time)}
+          </span>
+        );
       },
     },
     {
-      title: 'Total',
+      title: 'Total (s)',
       dataIndex: ['tableStats', 'total'],
       key: 'total',
       width: 130,
@@ -258,7 +343,7 @@ export const ShardsDetailTabCqlExecStats: React.FC = () => {
       render: (time: number, record: TableBriefStats) => {
         if (!record.tableStats || time == null) return '-';
         // Total is in seconds, not microseconds
-        return `${time.toLocaleString()}(s)`;
+        return time.toLocaleString();
       },
     },
   ];
@@ -330,15 +415,21 @@ export const ShardsDetailTabCqlExecStats: React.FC = () => {
                 </tr>
                 <tr style={{ borderBottom: '1px solid #f0f0f0' }}>
                   <td style={{ padding: '8px', fontWeight: 500 }}>Average Time:</td>
-                  <td style={{ padding: '8px', textAlign: 'right' }}>{formatTimeWithMeasure(stats.avg, stats.measure, stats.measureDesc)}</td>
+                  <td style={{ padding: '8px', textAlign: 'right', color: getTimeColor(stats.avg, stats.measure), fontWeight: getTimeColor(stats.avg, stats.measure) ? 600 : 'normal' }}>
+                    {formatTimeWithMeasure(stats.avg, stats.measure, stats.measureDesc)}
+                  </td>
                 </tr>
                 <tr style={{ borderBottom: '1px solid #f0f0f0' }}>
                   <td style={{ padding: '8px', fontWeight: 500 }}>Min Time:</td>
-                  <td style={{ padding: '8px', textAlign: 'right' }}>{formatTimeWithMeasure(stats.min, stats.measure, stats.measureDesc)}</td>
+                  <td style={{ padding: '8px', textAlign: 'right', color: getTimeColor(stats.min, stats.measure), fontWeight: getTimeColor(stats.min, stats.measure) ? 600 : 'normal' }}>
+                    {formatTimeWithMeasure(stats.min, stats.measure, stats.measureDesc)}
+                  </td>
                 </tr>
                 <tr style={{ borderBottom: '1px solid #f0f0f0' }}>
                   <td style={{ padding: '8px', fontWeight: 500 }}>Max Time:</td>
-                  <td style={{ padding: '8px', textAlign: 'right' }}>{formatTimeWithMeasure(stats.max, stats.measure, stats.measureDesc)}</td>
+                  <td style={{ padding: '8px', textAlign: 'right', color: getTimeColor(stats.max, stats.measure), fontWeight: getTimeColor(stats.max, stats.measure) ? 600 : 'normal' }}>
+                    {formatTimeWithMeasure(stats.max, stats.measure, stats.measureDesc)}
+                  </td>
                 </tr>
                 <tr style={{ borderBottom: '1px solid #f0f0f0' }}>
                   <td style={{ padding: '8px', fontWeight: 500 }}>Total Time:</td>
@@ -346,7 +437,9 @@ export const ShardsDetailTabCqlExecStats: React.FC = () => {
                 </tr>
                 <tr style={{ borderBottom: '1px solid #f0f0f0' }}>
                   <td style={{ padding: '8px', fontWeight: 500 }}>Last Time:</td>
-                  <td style={{ padding: '8px', textAlign: 'right' }}>{formatTimeWithMeasure(stats.last, stats.measure, stats.measureDesc)}</td>
+                  <td style={{ padding: '8px', textAlign: 'right', color: getTimeColor(stats.last, stats.measure), fontWeight: getTimeColor(stats.last, stats.measure) ? 600 : 'normal' }}>
+                    {formatTimeWithMeasure(stats.last, stats.measure, stats.measureDesc)}
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -452,19 +545,40 @@ export const ShardsDetailTabCqlExecStats: React.FC = () => {
                           title: 'Avg',
                           dataIndex: 'avg',
                           key: 'avg',
-                          render: (val: number, row: any) => formatTimeWithMeasure(val, row.measure, row.measureDesc),
+                          render: (val: number, row: any) => {
+                            const color = getTimeColor(val, row.measure);
+                            return (
+                              <span style={{ color, fontWeight: color ? 600 : 'normal' }}>
+                                {formatTimeWithMeasure(val, row.measure, row.measureDesc)}
+                              </span>
+                            );
+                          },
                         },
                         {
                           title: 'Min',
                           dataIndex: 'min',
                           key: 'min',
-                          render: (val: number, row: any) => formatTimeWithMeasure(val, row.measure, row.measureDesc),
+                          render: (val: number, row: any) => {
+                            const color = getTimeColor(val, row.measure);
+                            return (
+                              <span style={{ color, fontWeight: color ? 600 : 'normal' }}>
+                                {formatTimeWithMeasure(val, row.measure, row.measureDesc)}
+                              </span>
+                            );
+                          },
                         },
                         {
                           title: 'Max',
                           dataIndex: 'max',
                           key: 'max',
-                          render: (val: number, row: any) => formatTimeWithMeasure(val, row.measure, row.measureDesc),
+                          render: (val: number, row: any) => {
+                            const color = getTimeColor(val, row.measure);
+                            return (
+                              <span style={{ color, fontWeight: color ? 600 : 'normal' }}>
+                                {formatTimeWithMeasure(val, row.measure, row.measureDesc)}
+                              </span>
+                            );
+                          },
                         },
                       ]}
                     />
@@ -488,22 +602,40 @@ export const ShardsDetailTabCqlExecStats: React.FC = () => {
                   title: 'Avg',
                   dataIndex: ['operationStats', 'avg'],
                   key: 'avg',
-                  render: (val: number, record: TableOperationStatsDTO) =>
-                    formatTimeWithMeasure(val, record.operationStats?.measure, record.operationStats?.measureDesc),
+                  render: (val: number, record: TableOperationStatsDTO) => {
+                    const color = getTimeColor(val, record.operationStats?.measure);
+                    return (
+                      <span style={{ color, fontWeight: color ? 600 : 'normal' }}>
+                        {formatTimeWithMeasure(val, record.operationStats?.measure, record.operationStats?.measureDesc)}
+                      </span>
+                    );
+                  },
                 },
                 {
                   title: 'Min',
                   dataIndex: ['operationStats', 'min'],
                   key: 'min',
-                  render: (val: number, record: TableOperationStatsDTO) =>
-                    formatTimeWithMeasure(val, record.operationStats?.measure, record.operationStats?.measureDesc),
+                  render: (val: number, record: TableOperationStatsDTO) => {
+                    const color = getTimeColor(val, record.operationStats?.measure);
+                    return (
+                      <span style={{ color, fontWeight: color ? 600 : 'normal' }}>
+                        {formatTimeWithMeasure(val, record.operationStats?.measure, record.operationStats?.measureDesc)}
+                      </span>
+                    );
+                  },
                 },
                 {
                   title: 'Max',
                   dataIndex: ['operationStats', 'max'],
                   key: 'max',
-                  render: (val: number, record: TableOperationStatsDTO) =>
-                    formatTimeWithMeasure(val, record.operationStats?.measure, record.operationStats?.measureDesc),
+                  render: (val: number, record: TableOperationStatsDTO) => {
+                    const color = getTimeColor(val, record.operationStats?.measure);
+                    return (
+                      <span style={{ color, fontWeight: color ? 600 : 'normal' }}>
+                        {formatTimeWithMeasure(val, record.operationStats?.measure, record.operationStats?.measureDesc)}
+                      </span>
+                    );
+                  },
                 },
               ]}
             />
@@ -531,8 +663,8 @@ export const ShardsDetailTabCqlExecStats: React.FC = () => {
             showSearch
             style={{ width: 400 }}
             popupMatchSelectWidth={false}
-            popupClassName="cql-stats-table-filter-dropdown"
-            dropdownStyle={{ minWidth: 500, maxWidth: 800 }}
+            classNames={{ popup: { root: 'cql-stats-table-filter-dropdown' } }}
+            styles={{ popup: { root: { minWidth: 500, maxWidth: 800 } } }}
             value={tableFilter}
             onChange={setTableFilter}
             loading={trackedTablesLoading}
@@ -644,7 +776,7 @@ export const ShardsDetailTabCqlExecStats: React.FC = () => {
           </Button>,
         ]}
         width={800}
-        destroyOnClose
+        destroyOnHidden
       >
         {renderDetailContent()}
       </Modal>
