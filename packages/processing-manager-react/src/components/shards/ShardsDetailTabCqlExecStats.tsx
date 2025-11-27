@@ -675,7 +675,7 @@ export const ShardsDetailTabCqlExecStats: React.FC = () => {
                     <div style={{ fontSize: '11px', color: '#999', marginBottom: '4px' }}>
                       Composite Key ({tables.length} columns)
                     </div>
-                    <div style={{ fontSize: '14px', whiteSpace: 'normal', lineHeight: '1.5', color: '#333' }}>
+                    <div className="composite-key-text" style={{ fontSize: '14px', whiteSpace: 'normal', lineHeight: '1.5' }}>
                       {tables.join(', ')}
                     </div>
                   </div>
