@@ -164,6 +164,7 @@ export const ShardsDetailTabCqlExecStats: React.FC = () => {
   const {
     data: tablesData = [],
     isLoading: tablesLoading,
+    isFetching: tablesFetching,
     error: tablesError,
     refetch: refetchTables,
   } = useCqlExecStatsAllTablesBrief();
@@ -706,7 +707,7 @@ export const ShardsDetailTabCqlExecStats: React.FC = () => {
           <Button
             icon={<ReloadOutlined />}
             onClick={() => refetchTables()}
-            loading={tablesLoading}
+            loading={tablesFetching}
           >
             Refresh
           </Button>
@@ -743,7 +744,7 @@ export const ShardsDetailTabCqlExecStats: React.FC = () => {
         rowKey="table"
         bordered
         size="small"
-        loading={tablesLoading || clearStatsMutation.isPending}
+        loading={tablesFetching || clearStatsMutation.isPending}
         onRow={(record) => ({
           onClick: () => handleRowClick(record),
           style: { cursor: 'pointer' },

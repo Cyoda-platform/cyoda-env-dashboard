@@ -52,6 +52,7 @@ describe('ShardsDetailTabCqlExecStats', () => {
     mockUseCqlExecStatsAllTablesBrief.mockReturnValue({
       data: [],
       isLoading: false,
+      isFetching: false,
       error: null,
       refetch: vi.fn(),
     });
@@ -91,6 +92,7 @@ describe('ShardsDetailTabCqlExecStats', () => {
     mockUseCqlExecStatsAllTablesBrief.mockReturnValue({
       data: [],
       isLoading: true,
+      isFetching: true,
       error: null,
       refetch: vi.fn(),
     });
@@ -132,6 +134,7 @@ describe('ShardsDetailTabCqlExecStats', () => {
     mockUseCqlExecStatsAllTablesBrief.mockReturnValue({
       data: mockData,
       isLoading: false,
+      isFetching: false,
       error: null,
       refetch: vi.fn(),
     });
@@ -151,6 +154,7 @@ describe('ShardsDetailTabCqlExecStats', () => {
     mockUseCqlExecStatsAllTablesBrief.mockReturnValue({
       data: [],
       isLoading: false,
+      isFetching: false,
       error: new Error(errorMessage),
       refetch: vi.fn(),
     });
@@ -163,6 +167,7 @@ describe('ShardsDetailTabCqlExecStats', () => {
     mockUseCqlExecStatsAllTablesBrief.mockReturnValue({
       data: [],
       isLoading: false,
+      isFetching: false,
       error: null,
       refetch: vi.fn(),
     });
@@ -219,6 +224,7 @@ describe('ShardsDetailTabCqlExecStats', () => {
     mockUseCqlExecStatsAllTablesBrief.mockReturnValue({
       data: mockData,
       isLoading: false,
+      isFetching: false,
       error: null,
       refetch: vi.fn(),
     });
@@ -243,6 +249,7 @@ describe('ShardsDetailTabCqlExecStats', () => {
     mockUseCqlExecStatsAllTablesBrief.mockReturnValue({
       data: mockData,
       isLoading: false,
+      isFetching: false,
       error: null,
       refetch: vi.fn(),
     });
@@ -260,6 +267,7 @@ describe('ShardsDetailTabCqlExecStats', () => {
       mockUseCqlExecStatsAllTablesBrief.mockReturnValue({
         data: [],
         isLoading: false,
+        isFetching: false,
         error: null,
         refetch: mockRefetch,
       });
@@ -326,6 +334,7 @@ describe('ShardsDetailTabCqlExecStats', () => {
       mockUseCqlExecStatsAllTablesBrief.mockReturnValue({
         data: mockData,
         isLoading: false,
+        isFetching: false,
         error: null,
         refetch: vi.fn(),
       });
@@ -375,6 +384,7 @@ describe('ShardsDetailTabCqlExecStats', () => {
       mockUseCqlExecStatsAllTablesBrief.mockReturnValue({
         data: mockData,
         isLoading: false,
+        isFetching: false,
         error: null,
         refetch: vi.fn(),
       });
