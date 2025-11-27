@@ -179,31 +179,25 @@ describe('ProcessingEventsErrorViewTable', () => {
     expect(screen.getByText('ClientClass2')).toBeInTheDocument();
   });
 
-  it('should render Time-UUID as link', () => {
+  it('should render Time-UUID as clickable link', () => {
     renderComponent({ tableData: mockTableData });
-    
-    const link1 = screen.getByRole('link', { name: 'uuid-1' });
+
+    const link1 = screen.getByText('uuid-1');
     expect(link1).toBeInTheDocument();
-    expect(link1).toHaveAttribute(
-      'href',
-      '/nodes/test-node/event-view?queue=test-queue-1&shard=shard-1&timeUUID=uuid-1'
-    );
+    expect(link1.tagName).toBe('A');
+    expect(link1).toHaveStyle({ cursor: 'pointer' });
   });
 
-  it('should render multiple Time-UUID links', () => {
+  it('should render multiple Time-UUID clickable links', () => {
     renderComponent({ tableData: mockTableData });
-    
-    const link1 = screen.getByRole('link', { name: 'uuid-1' });
-    const link2 = screen.getByRole('link', { name: 'uuid-2' });
-    
-    expect(link1).toHaveAttribute(
-      'href',
-      '/nodes/test-node/event-view?queue=test-queue-1&shard=shard-1&timeUUID=uuid-1'
-    );
-    expect(link2).toHaveAttribute(
-      'href',
-      '/nodes/test-node/event-view?queue=test-queue-2&shard=shard-2&timeUUID=uuid-2'
-    );
+
+    const link1 = screen.getByText('uuid-1');
+    const link2 = screen.getByText('uuid-2');
+
+    expect(link1).toBeInTheDocument();
+    expect(link2).toBeInTheDocument();
+    expect(link1.tagName).toBe('A');
+    expect(link2.tagName).toBe('A');
   });
 
   it('should render correct number of rows', () => {

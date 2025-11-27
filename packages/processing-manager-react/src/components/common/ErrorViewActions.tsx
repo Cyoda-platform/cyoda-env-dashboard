@@ -12,9 +12,14 @@ import { useProcessingQueueForceMarkProcessed } from '../../hooks';
 
 interface ErrorViewActionsProps {
   onReload?: () => void;
+  params?: {
+    queue?: string;
+    shard?: string;
+    timeUUID?: string;
+  };
 }
 
-export const ErrorViewActions: React.FC<ErrorViewActionsProps> = ({ onReload }) => {
+export const ErrorViewActions: React.FC<ErrorViewActionsProps> = ({ onReload, params: propParams }) => {
   const location = useLocation();
   const { mutateAsync: forceMarkProcessed } = useProcessingQueueForceMarkProcessed();
 
@@ -26,8 +31,9 @@ export const ErrorViewActions: React.FC<ErrorViewActionsProps> = ({ onReload }) 
       cancelText: 'Cancel',
       onOk: async () => {
         try {
-          const params = new URLSearchParams(location.search);
-          await forceMarkProcessed({ params: Object.fromEntries(params) });
+          // Use propParams if provided, otherwise get from URL
+          const params = propParams || Object.fromEntries(new URLSearchParams(location.search));
+          await forceMarkProcessed({ params });
           onReload?.();
           message.success('Force mark processed completed');
         } catch (error) {

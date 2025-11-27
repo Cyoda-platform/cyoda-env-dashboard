@@ -13,4 +13,5 @@ export { default as ProcessingEventsEntitiesErrorListView } from './ProcessingEv
 export { default as ProcessingEventsEntitiesErrorListViewFilter } from './ProcessingEventsEntitiesErrorListViewFilter';
 export { default as ProcessingEventsEntitiesErrorListViewTable } from './ProcessingEventsEntitiesErrorListViewTable';
 export { default as SiftLoggerConfView } from './SiftLoggerConfView';
+export { default as EventViewModal } from './EventViewModal';
 

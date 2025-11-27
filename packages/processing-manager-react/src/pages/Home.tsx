@@ -21,12 +21,29 @@ interface NodeData {
   grafana?: any;
 }
 
+// Helper function to check if node is online
+// If status is not provided or unknown, we check if node has baseUrl (means it's reachable)
+// Otherwise we check if status indicates online state
+const isNodeOnline = (status?: string, baseUrl?: string): boolean => {
+  // If no status provided, check if node has baseUrl (means it's in the cluster and reachable)
+  if (!status || status === 'Unknown') {
+    return !!baseUrl;
+  }
+
+  const upperStatus = status.toUpperCase();
+  // Check for various online status values
+  return upperStatus === 'ONLINE' ||
+         upperStatus === 'RUNNING' ||
+         upperStatus === 'UP' ||
+         upperStatus === 'ACTIVE';
+};
+
 export default function Home() {
   const { data, isLoading, error } = useClusterStats();
   const navigate = useNavigate();
 
-  const onlineNodes = data?.pmNodes?.filter((node: any) => node.status === 'ONLINE' || node.status === 'Running').length || 0;
-  const offlineNodes = data?.pmNodes?.filter((node: any) => node.status === 'OFFLINE' || node.status === 'Stopped').length || 0;
+  const onlineNodes = data?.pmNodes?.filter((node: any) => isNodeOnline(node.status, node.baseUrl)).length || 0;
+  const offlineNodes = data?.pmNodes?.filter((node: any) => !isNodeOnline(node.status, node.baseUrl)).length || 0;
   const totalNodes = data?.pmNodes?.length || 0;
 
   const handleNodeClick = (hostname: string) => {
@@ -109,7 +126,7 @@ export default function Home() {
         {data && nodes.length > 0 && (
           <div className="nodes-list">
             {nodes.map((node, index) => {
-              const isOnline = node.status === 'ONLINE' || node.status === 'Running';
+              const isOnline = isNodeOnline(node.status, node.baseUrl);
 
               // Build description with node details
               const descriptionParts = [];

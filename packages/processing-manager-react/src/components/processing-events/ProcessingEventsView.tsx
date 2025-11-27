@@ -6,13 +6,14 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Form, Select, DatePicker, Button, Table, Row, Col, Spin } from 'antd';
 import { SyncOutlined } from '@ant-design/icons';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useProcessingQueueEvents, useSummary, useProcessingQueues } from '../../hooks';
 import dayjs from 'dayjs';
 import type { ColumnsType } from 'antd/es/table';
 import type { ResizeCallbackData } from 'react-resizable';
 import { HelperStorage } from '@cyoda/http-api-react';
 import { ResizableTitle } from '../ResizableTitle';
+import { EventViewModal } from './EventViewModal';
 import './ProcessingEventsView.scss';
 
 interface ProcessingEvent {
@@ -51,6 +52,14 @@ export const ProcessingEventsView: React.FC = () => {
     from: dayjs().startOf('day').format('YYYY-MM-DD HH:mm:ss'),
     to: dayjs().endOf('day').format('YYYY-MM-DD HH:mm:ss'),
   });
+
+  // Modal state
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<{
+    queue: string;
+    shard: number;
+    timeUUID: string;
+  } | null>(null);
 
   const { data: eventsData, isLoading } = useProcessingQueueEvents(filters);
   const { data: summaryData } = useSummary({});
@@ -110,17 +119,6 @@ export const ProcessingEventsView: React.FC = () => {
       });
     };
   }, []);
-
-  // Debug: Log what queuesData actually is
-  React.useEffect(() => {
-    console.log('🔍 queuesData received:', queuesData);
-    console.log('🔍 queuesData type:', typeof queuesData);
-    console.log('🔍 queuesData isArray:', Array.isArray(queuesData));
-    if (Array.isArray(queuesData) && queuesData.length > 0) {
-      console.log('🔍 First queue item:', queuesData[0]);
-      console.log('🔍 First queue item type:', typeof queuesData[0]);
-    }
-  }, [queuesData]);
 
   const tableData: ProcessingEvent[] = useMemo(() => {
     if (!eventsData || !Array.isArray(eventsData)) return [];
@@ -262,9 +260,19 @@ export const ProcessingEventsView: React.FC = () => {
         onResize: handleResize('timeUUID'),
       }),
       render: (timeUUID: string, record: ProcessingEvent) => (
-        <Link to={`/nodes/${name}/event-view?queue=${record.entityClassName}&shard=${record.shard}&timeUUID=${timeUUID}`}>
+        <a
+          onClick={() => {
+            setSelectedEvent({
+              queue: record.queue,
+              shard: record.shard,
+              timeUUID,
+            });
+            setModalOpen(true);
+          }}
+          style={{ cursor: 'pointer', color: '#1890ff' }}
+        >
           {timeUUID}
-        </Link>
+        </a>
       ),
     },
     {
@@ -440,6 +448,20 @@ export const ProcessingEventsView: React.FC = () => {
           },
         }}
       />
+
+      {/* Event View Modal */}
+      {selectedEvent && (
+        <EventViewModal
+          open={modalOpen}
+          onClose={() => {
+            setModalOpen(false);
+            setSelectedEvent(null);
+          }}
+          queue={selectedEvent.queue}
+          shard={selectedEvent.shard}
+          timeUUID={selectedEvent.timeUUID}
+        />
+      )}
     </div>
   );
 };

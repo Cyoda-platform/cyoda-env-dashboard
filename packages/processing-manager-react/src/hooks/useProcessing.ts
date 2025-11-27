@@ -681,7 +681,7 @@ export function useProcessingQueueEntitiesErrorList(params?: any, options?: any)
 /**
  * Load processing queue error event by entity
  */
-export function useProcessingQueueErrorEventByEntity(params?: any) {
+export function useProcessingQueueErrorEventByEntity(params?: any, options?: any) {
   return useQuery({
     queryKey: [...processingKeys.all, 'queue-error-event-by-entity', params],
     queryFn: async () => {
@@ -692,6 +692,7 @@ export function useProcessingQueueErrorEventByEntity(params?: any) {
       return data;
     },
     enabled: !!params,
+    ...options,
   });
 }
 

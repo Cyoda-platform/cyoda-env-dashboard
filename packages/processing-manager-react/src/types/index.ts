@@ -8,15 +8,19 @@
 // ============================================================================
 
 export interface PmNode {
-  name: string;
-  host: string;
-  port: number;
-  status: 'RUNNING' | 'STOPPED' | 'ERROR';
+  hostname?: string;
+  name?: string;
+  host?: string;
+  port?: number;
+  baseUrl?: string;
+  status?: string; // Can be 'Running', 'Stopped', 'ONLINE', 'OFFLINE', etc. - depends on backend
+  version?: string;
   cpuUsage?: number;
   memoryUsage?: number;
   diskUsage?: number;
   uptime?: number;
   lastUpdate?: string;
+  grafana?: any;
 }
 
 export interface PmClusterStats {

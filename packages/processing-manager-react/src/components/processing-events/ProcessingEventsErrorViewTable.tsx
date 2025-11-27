@@ -5,11 +5,12 @@
 
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
 import { Table } from 'antd';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import type { ColumnsType } from 'antd/es/table';
 import type { ResizeCallbackData } from 'react-resizable';
 import { HelperStorage } from '@cyoda/http-api-react';
 import { ResizableTitle } from '../ResizableTitle';
+import { EventViewModal } from './EventViewModal';
 import './ProcessingEventsErrorViewTable.scss';
 
 interface ErrorEventRow {
@@ -37,6 +38,14 @@ export const ProcessingEventsErrorViewTable: React.FC<ProcessingEventsErrorViewT
 }) => {
   const { name } = useParams<{ name: string }>();
   const storage = useMemo(() => new HelperStorage(), []);
+
+  // Modal state
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<{
+    queue: string;
+    shard: string;
+    timeUUID: string;
+  } | null>(null);
 
   // Column widths state
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>(() => {
@@ -166,11 +175,19 @@ export const ProcessingEventsErrorViewTable: React.FC<ProcessingEventsErrorViewT
       width: columnWidths.timeUUID,
       sorter: (a, b) => a.timeUUID.localeCompare(b.timeUUID),
       render: (timeUUID: string, record: ErrorEventRow) => (
-        <Link
-          to={`/nodes/${name}/event-view?queue=${record.queueName}&shard=${record.shardId}&timeUUID=${timeUUID}`}
+        <a
+          onClick={() => {
+            setSelectedEvent({
+              queue: record.queueName,
+              shard: record.shardId,
+              timeUUID,
+            });
+            setModalOpen(true);
+          }}
+          style={{ cursor: 'pointer', color: '#1890ff' }}
         >
           {timeUUID}
-        </Link>
+        </a>
       ),
       onHeaderCell: () => ({
         width: columnWidths.timeUUID,
@@ -267,6 +284,20 @@ export const ProcessingEventsErrorViewTable: React.FC<ProcessingEventsErrorViewT
           position: ['bottomCenter'],
         }}
       />
+
+      {/* Event View Modal */}
+      {selectedEvent && (
+        <EventViewModal
+          open={modalOpen}
+          onClose={() => {
+            setModalOpen(false);
+            setSelectedEvent(null);
+          }}
+          queue={selectedEvent.queue}
+          shard={selectedEvent.shard}
+          timeUUID={selectedEvent.timeUUID}
+        />
+      )}
     </div>
   );
 };

@@ -14,6 +14,22 @@ vi.mock('../../../hooks', () => ({
   useProcessingQueueEvents: vi.fn(),
   useSummary: vi.fn(),
   useProcessingQueues: vi.fn(),
+  useProcessingQueueErrorEventByEntity: vi.fn(),
+}));
+
+// Mock EventViewModal component
+vi.mock('../EventViewModal', () => ({
+  EventViewModal: vi.fn(({ open, onClose, queue, shard, timeUUID }) => (
+    open ? (
+      <div data-testid="event-view-modal">
+        <div>Modal Open</div>
+        <div>Queue: {queue}</div>
+        <div>Shard: {shard}</div>
+        <div>TimeUUID: {timeUUID}</div>
+        <button onClick={onClose}>Close Modal</button>
+      </div>
+    ) : null
+  )),
 }));
 
 const mockEventsData = [
@@ -145,20 +161,22 @@ describe('ProcessingEventsView', () => {
     expect(screen.getByText('Yes')).toBeInTheDocument();
   });
 
-  it('should render Time UUID as links', () => {
+  it('should render Time UUID as clickable links', () => {
     renderComponent();
-    
-    const link1 = screen.getByRole('link', { name: 'uuid-1' });
-    const link2 = screen.getByRole('link', { name: 'uuid-2' });
+
+    const link1 = screen.getByText('uuid-1');
+    const link2 = screen.getByText('uuid-2');
     expect(link1).toBeInTheDocument();
     expect(link2).toBeInTheDocument();
+    expect(link1.tagName).toBe('A');
+    expect(link2.tagName).toBe('A');
   });
 
-  it('should have correct link URLs', () => {
+  it('should have clickable Time UUID links with pointer cursor', () => {
     renderComponent();
-    
-    const link1 = screen.getByRole('link', { name: 'uuid-1' });
-    expect(link1).toHaveAttribute('href', '/nodes/test-node/event-view?queue=TestEntity&shard=1&timeUUID=uuid-1');
+
+    const link1 = screen.getByText('uuid-1');
+    expect(link1).toHaveStyle({ cursor: 'pointer' });
   });
 
   it('should render Reset Filter button', () => {
@@ -296,9 +314,69 @@ describe('ProcessingEventsView', () => {
 
   it('should have fixed left column', () => {
     const { container } = renderComponent();
-    
+
     const fixedColumn = container.querySelector('.ant-table-cell-fix-left');
     expect(fixedColumn).toBeInTheDocument();
+  });
+
+  it('should open modal when UUID is clicked', async () => {
+    const user = userEvent.setup();
+    renderComponent();
+
+    const link1 = screen.getByText('uuid-1');
+    await user.click(link1);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('event-view-modal')).toBeInTheDocument();
+      expect(screen.getByText('Modal Open')).toBeInTheDocument();
+    });
+  });
+
+  it('should pass correct params to modal when UUID is clicked', async () => {
+    const user = userEvent.setup();
+    renderComponent();
+
+    const link1 = screen.getByText('uuid-1');
+    await user.click(link1);
+
+    await waitFor(() => {
+      expect(screen.getByText('Queue: test-queue-1')).toBeInTheDocument();
+      expect(screen.getByText('Shard: 1')).toBeInTheDocument();
+      expect(screen.getByText('TimeUUID: uuid-1')).toBeInTheDocument();
+    });
+  });
+
+  it('should close modal when close button is clicked', async () => {
+    const user = userEvent.setup();
+    renderComponent();
+
+    const link1 = screen.getByText('uuid-1');
+    await user.click(link1);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('event-view-modal')).toBeInTheDocument();
+    });
+
+    const closeButton = screen.getByText('Close Modal');
+    await user.click(closeButton);
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('event-view-modal')).not.toBeInTheDocument();
+    });
+  });
+
+  it('should open modal with correct queue from queueName field', async () => {
+    const user = userEvent.setup();
+    renderComponent();
+
+    const link2 = screen.getByText('uuid-2');
+    await user.click(link2);
+
+    await waitFor(() => {
+      expect(screen.getByText('Queue: test-queue-2')).toBeInTheDocument();
+      expect(screen.getByText('Shard: 2')).toBeInTheDocument();
+      expect(screen.getByText('TimeUUID: uuid-2')).toBeInTheDocument();
+    });
   });
 });
 

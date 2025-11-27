@@ -90,9 +90,16 @@ describe('ErrorViewActions', () => {
 
   it('should be a primary button', () => {
     renderWithRouter(<ErrorViewActions />);
-    
+
     const button = screen.getByRole('button', { name: /Actions/i });
     expect(button).toHaveClass('ant-btn-primary');
+  });
+
+  it('should accept params prop', () => {
+    const params = { queue: 'test-queue', shard: '1', timeUUID: 'test-uuid' };
+    renderWithRouter(<ErrorViewActions params={params} />);
+
+    expect(screen.getByRole('button', { name: /Actions/i })).toBeInTheDocument();
   });
 
   it('should use dropdown trigger on click', () => {

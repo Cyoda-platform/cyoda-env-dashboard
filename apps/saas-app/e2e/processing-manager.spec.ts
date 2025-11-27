@@ -59,16 +59,51 @@ test.describe('Processing Manager - Real Backend', () => {
   test('should display processing statistics', async ({ page }) => {
     await page.goto('/processing');
     await page.waitForTimeout(2000);
-    
+
     // Look for statistics/metrics
     const stats = page.locator('.ant-statistic, .ant-card-meta, [data-testid="processing-stats"]');
     const hasStats = await stats.count() > 0;
-    
+
     if (hasStats) {
       await expect(stats.first()).toBeVisible();
       console.log('✓ Processing statistics displayed');
     } else {
       console.log('✓ Statistics may be on separate tab');
+    }
+  });
+
+  test('should correctly count online and offline nodes', async ({ page }) => {
+    await page.goto('/processing');
+    await page.waitForTimeout(2000);
+
+    // Check if statistics are displayed
+    const totalNodesElement = page.locator('.ant-statistic:has-text("Total Nodes")');
+    const onlineNodesElement = page.locator('.ant-statistic:has-text("Online Nodes")');
+    const offlineNodesElement = page.locator('.ant-statistic:has-text("Offline Nodes")');
+
+    const hasTotalNodes = await totalNodesElement.count() > 0;
+    const hasOnlineNodes = await onlineNodesElement.count() > 0;
+    const hasOfflineNodes = await offlineNodesElement.count() > 0;
+
+    if (hasTotalNodes && hasOnlineNodes && hasOfflineNodes) {
+      // Get the values
+      const totalValue = await totalNodesElement.locator('.ant-statistic-content-value').textContent();
+      const onlineValue = await onlineNodesElement.locator('.ant-statistic-content-value').textContent();
+      const offlineValue = await offlineNodesElement.locator('.ant-statistic-content-value').textContent();
+
+      console.log(`✓ Node statistics: Total=${totalValue}, Online=${onlineValue}, Offline=${offlineValue}`);
+
+      // Verify that online + offline = total (if all values are numbers)
+      const total = parseInt(totalValue || '0');
+      const online = parseInt(onlineValue || '0');
+      const offline = parseInt(offlineValue || '0');
+
+      if (!isNaN(total) && !isNaN(online) && !isNaN(offline)) {
+        expect(online + offline).toBe(total);
+        console.log('  ✓ Node count validation passed: online + offline = total');
+      }
+    } else {
+      console.log('✓ Node statistics not found or in different format');
     }
   });
 
