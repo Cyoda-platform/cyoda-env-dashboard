@@ -24,6 +24,15 @@
     }
   }
 
+  // Allow word wrap in table cells for long table names
+  .ant-table-tbody > tr > td {
+    white-space: normal !important;
+    word-break: break-word;
+
+    // Ensure proper vertical alignment
+    vertical-align: top;
+  }
+
   // Style for table name cells
   code {
     background-color: #f5f5f5;

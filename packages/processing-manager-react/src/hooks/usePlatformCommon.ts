@@ -25,6 +25,8 @@ import {
   getZkInfoLoadedShardsDistribution,
   getZkInfoClusterState,
   getReportingFetchTypes,
+  getCqlExecStatsTables,
+  getCqlExecStatsAllTables,
   getCqlExecStatsAllTablesBrief,
   getCqlExecStatsTable,
   getCqlExecStatsClear,
@@ -59,6 +61,8 @@ export const platformCommonKeys = {
 
   // CQL Execution Statistics
   cqlExecStats: () => [...platformCommonKeys.all, 'cql-exec-stats'] as const,
+  cqlExecStatsTables: () => [...platformCommonKeys.all, 'cql-exec-stats', 'tables'] as const,
+  cqlExecStatsAllTables: () => [...platformCommonKeys.all, 'cql-exec-stats', 'all-tables'] as const,
   cqlExecStatsTable: (table: string) => [...platformCommonKeys.all, 'cql-exec-stats', 'table', table] as const,
 };
 
@@ -333,6 +337,48 @@ export function useZkClusterState() {
 // ============================================================================
 
 /**
+ * Get list of tracked tables
+ */
+export function useCqlExecStatsTables() {
+  return useQuery({
+    queryKey: platformCommonKeys.cqlExecStatsTables(),
+    queryFn: async () => {
+      console.log('useCqlExecStatsTables: Fetching tracked tables list...');
+      try {
+        const { data } = await getCqlExecStatsTables();
+        console.log('useCqlExecStatsTables: Received data:', data);
+        return Array.isArray(data) ? data : [];
+      } catch (error) {
+        console.error('useCqlExecStatsTables: Error fetching tables:', error);
+        throw error;
+      }
+    },
+    placeholderData: [],
+  });
+}
+
+/**
+ * Get full statistics for all tables (with per-operation and minute-level details)
+ */
+export function useCqlExecStatsAllTables() {
+  return useQuery({
+    queryKey: platformCommonKeys.cqlExecStatsAllTables(),
+    queryFn: async () => {
+      console.log('useCqlExecStatsAllTables: Fetching all tables full stats...');
+      try {
+        const { data } = await getCqlExecStatsAllTables();
+        console.log('useCqlExecStatsAllTables: Received data:', data);
+        return Array.isArray(data) ? data : [];
+      } catch (error) {
+        console.error('useCqlExecStatsAllTables: Error fetching stats:', error);
+        throw error;
+      }
+    },
+    placeholderData: [],
+  });
+}
+
+/**
  * Get all tables brief statistics
  */
 export function useCqlExecStatsAllTablesBrief() {
@@ -427,6 +473,8 @@ export default {
   useZkClusterState,
 
   // CQL Execution Statistics
+  useCqlExecStatsTables,
+  useCqlExecStatsAllTables,
   useCqlExecStatsAllTablesBrief,
   useCqlExecStatsTable,
   useClearCqlExecStats,

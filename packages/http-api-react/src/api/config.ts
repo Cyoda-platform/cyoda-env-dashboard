@@ -427,6 +427,20 @@ export function getZkInfoClusterState() {
 // ============================================================================
 
 /**
+ * Get list of tracked tables
+ */
+export function getCqlExecStatsTables() {
+  return axios.get(`/platform-common/cql-exec-stats/tables`);
+}
+
+/**
+ * Get full statistics for all tables (with per-operation and minute-level details)
+ */
+export function getCqlExecStatsAllTables() {
+  return axios.get(`/platform-common/cql-exec-stats/all-tables`);
+}
+
+/**
  * Get all tables brief statistics
  */
 export function getCqlExecStatsAllTablesBrief() {
