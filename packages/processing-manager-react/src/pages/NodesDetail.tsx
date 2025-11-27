@@ -9,7 +9,8 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Tabs } from 'antd';
+import { Tabs, Button } from 'antd';
+import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { useParams } from 'react-router-dom';
 import { useAppStore } from '../stores/appStore';
 import { useProcessingStore } from '../stores/processingStore';
@@ -129,9 +130,57 @@ export default function NodesDetail() {
     },
   ];
 
+  const currentIndex = tabItems.findIndex(item => item.key === activeKey);
+  const isFirstTab = currentIndex === 0;
+  const isLastTab = currentIndex === tabItems.length - 1;
+
+  const handlePrevTab = () => {
+    if (currentIndex > 0) {
+      const prevKey = tabItems[currentIndex - 1].key;
+      handleTabChange(prevKey);
+    }
+  };
+
+  const handleNextTab = () => {
+    if (currentIndex < tabItems.length - 1) {
+      const nextKey = tabItems[currentIndex + 1].key;
+      handleTabChange(nextKey);
+    }
+  };
+
+  const tabBarExtraContent = {
+    left: (
+      <Button
+        type="text"
+        icon={<LeftOutlined />}
+        onClick={handlePrevTab}
+        disabled={isFirstTab}
+        size="small"
+        style={{ marginLeft: '8px' }}
+      />
+    ),
+    right: (
+      <Button
+        type="text"
+        icon={<RightOutlined />}
+        onClick={handleNextTab}
+        disabled={isLastTab}
+        size="small"
+        style={{ marginRight: '8px' }}
+      />
+    ),
+  };
+
   return (
     <div className="nodes-detail">
-      <Tabs activeKey={activeKey} onChange={handleTabChange} items={tabItems} />
+      <Tabs
+        activeKey={activeKey}
+        onChange={handleTabChange}
+        items={tabItems}
+        tabBarExtraContent={tabBarExtraContent}
+        moreIcon={null}
+        tabBarGutter={16}
+      />
     </div>
   );
 }

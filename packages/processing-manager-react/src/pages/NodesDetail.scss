@@ -28,6 +28,11 @@
         background: #00D4AA;
         height: 2px;
       }
+
+      // Hide the dropdown menu (three dots)
+      .ant-tabs-nav-more {
+        display: none !important;
+      }
     }
   }
 }

@@ -22,6 +22,7 @@ vi.mock('../../components/shards', () => ({
   ShardsDetailTabCachesList: () => <div>Caches List Tab</div>,
   ShardsDetailTabNetworkInfo: () => <div>Network Info Tab</div>,
   ShardsDetailTabZKInfo: () => <div>ZooKeeper Info Tab</div>,
+  ShardsDetailTabCqlExecStats: () => <div>CQL Execution Statistics Tab</div>,
 }));
 
 // Mock the layout component
@@ -281,6 +282,96 @@ describe('NodesDetail Page', () => {
 
       // Check that the component renders with tabs
       expect(container.querySelector('.ant-tabs')).toBeInTheDocument();
+    });
+  });
+
+  describe('Tab Navigation Arrows', () => {
+    it('should render left and right navigation arrows', () => {
+      const { container } = renderWithRouter(<NodesDetail />);
+
+      // Check for arrow buttons
+      const leftArrow = container.querySelector('.anticon-left');
+      const rightArrow = container.querySelector('.anticon-right');
+
+      expect(leftArrow).toBeInTheDocument();
+      expect(rightArrow).toBeInTheDocument();
+    });
+
+    it('should disable left arrow on first tab', () => {
+      const { container } = renderWithRouter(<NodesDetail />);
+
+      // First tab is active by default
+      const leftArrowButton = container.querySelector('.anticon-left')?.closest('button');
+      const rightArrowButton = container.querySelector('.anticon-right')?.closest('button');
+
+      expect(leftArrowButton).toBeDisabled();
+      expect(rightArrowButton).not.toBeDisabled();
+    });
+
+    it('should navigate to next tab when right arrow is clicked', async () => {
+      const { container } = renderWithRouter(<NodesDetail />);
+
+      // Initially on first tab
+      expect(screen.getByText('Processing Manager Tab')).toBeInTheDocument();
+
+      // Click right arrow
+      const rightArrowButton = container.querySelector('.anticon-right')?.closest('button');
+      fireEvent.click(rightArrowButton!);
+
+      // Should navigate to second tab
+      await waitFor(() => {
+        expect(screen.getByText('Summary Tab')).toBeInTheDocument();
+      });
+      expect(screen.queryByText('Processing Manager Tab')).not.toBeInTheDocument();
+    });
+
+    it('should navigate to previous tab when left arrow is clicked', async () => {
+      const { container } = renderWithRouter(<NodesDetail />);
+
+      // Navigate to second tab first
+      fireEvent.click(screen.getByText('Server Summary'));
+      await waitFor(() => {
+        expect(screen.getByText('Summary Tab')).toBeInTheDocument();
+      });
+
+      // Click left arrow
+      const leftArrowButton = container.querySelector('.anticon-left')?.closest('button');
+      fireEvent.click(leftArrowButton!);
+
+      // Should navigate back to first tab
+      await waitFor(() => {
+        expect(screen.getByText('Processing Manager Tab')).toBeInTheDocument();
+      });
+      expect(screen.queryByText('Summary Tab')).not.toBeInTheDocument();
+    });
+
+    it('should disable right arrow on last tab', async () => {
+      const { container } = renderWithRouter(<NodesDetail />);
+
+      // Navigate to last tab (CQL Execution Statistics)
+      fireEvent.click(screen.getByText('CQL Execution Statistics'));
+
+      await waitFor(() => {
+        expect(screen.getByText('CQL Execution Statistics Tab')).toBeInTheDocument();
+      });
+
+      const leftArrowButton = container.querySelector('.anticon-left')?.closest('button');
+      const rightArrowButton = container.querySelector('.anticon-right')?.closest('button');
+
+      expect(leftArrowButton).not.toBeDisabled();
+      expect(rightArrowButton).toBeDisabled();
+    });
+
+    it('should save tab state when navigating with arrows', async () => {
+      const { container } = renderWithRouter(<NodesDetail />);
+
+      // Click right arrow
+      const rightArrowButton = container.querySelector('.anticon-right')?.closest('button');
+      fireEvent.click(rightArrowButton!);
+
+      await waitFor(() => {
+        expect(localStorage.setItem).toHaveBeenCalledWith('nodesDetailTab', '2');
+      });
     });
   });
 });
