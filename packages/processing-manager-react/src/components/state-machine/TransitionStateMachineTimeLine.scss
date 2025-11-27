@@ -30,12 +30,10 @@
       align-items: center;
       margin-bottom: 4px;
       font-size: 14px;
-      color: #fff;
     }
 
     .timeline-timestamp {
       font-size: 12px;
-      color: #8b949e;
     }
   }
 
@@ -45,6 +43,34 @@
       strong {
         color: #14b8a6;
       }
+    }
+  }
+}
+
+// Dark theme
+[data-theme="dark"] .timeline-card {
+  .timeline-item-content {
+    .timeline-state {
+      color: #fff;
+    }
+
+    .timeline-timestamp {
+      color: #8b949e;
+    }
+  }
+}
+
+// Light theme
+[data-theme="light"] .timeline-card {
+  border: 1px solid #e5e7eb !important;
+
+  .timeline-item-content {
+    .timeline-state {
+      color: #111827;
+    }
+
+    .timeline-timestamp {
+      color: #6b7280;
     }
   }
 }

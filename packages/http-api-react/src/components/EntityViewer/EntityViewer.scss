@@ -1,19 +1,17 @@
 /**
  * EntityViewer Styles
  * Migrated from: .old_project/packages/http-api/src/components/EntityViewer/EntityViewer.vue
+ * Updated: Added light/dark theme support
  */
 
 .entity-viewer {
   cursor: move;
   transition: opacity 0.5s;
-  background: rgba(30, 42, 58, 0.9) !important;
   min-height: 100px;
   position: absolute;
-  border: 1px solid rgba(0, 212, 170, 0.3) !important;
   display: inline-block;
   min-width: 200px;
   max-width: 600px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
   user-select: none;
 
   &.dragging {
@@ -36,13 +34,10 @@
   }
 
   .header {
-    background-color: rgba(0, 212, 170, 0.2) !important;
-    color: var(--refine-primary) !important;
     padding: 5px 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid rgba(0, 212, 170, 0.3) !important;
 
     .wrap-icon {
       margin-left: 15px;
@@ -53,7 +48,6 @@
         margin: 0 2px;
         cursor: pointer;
         font-size: 14px;
-        color: var(--refine-primary) !important;
 
         &:hover {
           opacity: 0.8;
@@ -68,11 +62,58 @@
     overflow-y: auto;
     overflow-x: auto;
     background: transparent !important;
-    color: var(--refine-text-primary) !important;
   }
 
   &.action-hover {
     opacity: 0.5;
+  }
+}
+
+// Dark theme
+[data-theme="dark"] .entity-viewer {
+  background: rgba(30, 42, 58, 0.9) !important;
+  border: 1px solid rgba(0, 212, 170, 0.3) !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+
+  .header {
+    background-color: rgba(0, 212, 170, 0.2) !important;
+    color: #14b8a6 !important;
+    border-bottom: 1px solid rgba(0, 212, 170, 0.3) !important;
+
+    .wrap-icon {
+      svg,
+      .anticon {
+        color: #14b8a6 !important;
+      }
+    }
+  }
+
+  .body {
+    color: #e5e7eb !important;
+  }
+}
+
+// Light theme
+[data-theme="light"] .entity-viewer {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(20, 184, 166, 0.3) !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+
+  .header {
+    background-color: rgba(20, 184, 166, 0.1) !important;
+    color: #0d9488 !important;
+    border-bottom: 1px solid rgba(20, 184, 166, 0.2) !important;
+
+    .wrap-icon {
+      svg,
+      .anticon {
+        color: #0d9488 !important;
+      }
+    }
+  }
+
+  .body {
+    color: #111827 !important;
   }
 }
 

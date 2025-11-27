@@ -3,11 +3,9 @@
     font-size: 18px;
     margin-bottom: 10px;
     padding-left: 0;
-    color: #fff;
   }
 
   .wrap-box {
-    background-color: rgba(255, 255, 255, 0.05);
     padding: 16px;
     border-radius: 4px;
   }
@@ -26,7 +24,6 @@
       min-width: 0;
 
       strong {
-        color: #fff;
         font-weight: 600;
       }
     }
@@ -39,9 +36,57 @@
 
   .type-class {
     text-transform: uppercase;
-    color: #9ca3af;
     font-size: 14px;
     font-weight: 500;
+  }
+}
+
+// Dark theme
+[data-theme="dark"] .network-info-server {
+  h1.label {
+    color: #fff;
+  }
+
+  .wrap-box {
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+
+  .row-flex {
+    > div {
+      strong {
+        color: #fff;
+      }
+    }
+  }
+
+  .type-class {
+    color: #9ca3af;
+  }
+}
+
+// Light theme
+[data-theme="light"] .network-info-server {
+  h1.label {
+    color: #111827;
+  }
+
+  .wrap-box {
+    background-color: rgba(0, 0, 0, 0.02);
+    border: 1px solid #e5e7eb;
+  }
+
+  .row-flex {
+    > div {
+      color: #374151;
+
+      strong {
+        color: #111827;
+      }
+    }
+  }
+
+  .type-class {
+    color: #6b7280;
   }
 }
 

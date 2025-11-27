@@ -14,3 +14,8 @@
   }
 }
 
+// Light theme - add border to Grafana chart cards
+[data-theme="light"] .grafana-chart-card {
+  border: 1px solid #e5e7eb !important;
+}
+

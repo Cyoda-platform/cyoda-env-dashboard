@@ -43,6 +43,15 @@
   }
 }
 
+// Light theme - add border
+[data-theme="light"] .summary-console-card {
+  border: 1px solid #e5e7eb !important;
+
+  .ant-card-head {
+    border-bottom: 1px solid #e5e7eb !important;
+  }
+}
+
 // SSH Console Modal styles
 .ssh-console-modal {
   .ant-modal-content {

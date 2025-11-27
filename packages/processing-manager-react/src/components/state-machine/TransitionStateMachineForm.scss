@@ -15,3 +15,13 @@
   }
 }
 
+// Light theme - ensure no borders
+[data-theme="light"] .transition-state-machine-form {
+  border: none !important;
+  box-shadow: none !important;
+
+  .ant-card-head {
+    border-bottom: none !important;
+  }
+}
+

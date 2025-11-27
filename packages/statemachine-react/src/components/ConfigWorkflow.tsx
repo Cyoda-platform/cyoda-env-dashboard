@@ -6,7 +6,7 @@
  * Updated to use Monaco Editor instead of Prism.js for unified UI and better functionality
  */
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Spin, Alert } from 'antd';
 import MonacoEditor, { BeforeMount } from '@monaco-editor/react';
 import { useWorkflow } from '../hooks/useStatemachine';
@@ -26,6 +26,27 @@ export const ConfigWorkflow: React.FC<ConfigWorkflowProps> = ({
     workflowId,
     !!workflowId
   );
+
+  const [currentTheme, setCurrentTheme] = useState<'light' | 'dark'>('dark');
+
+  // Detect theme from data-theme attribute
+  useEffect(() => {
+    const theme = document.documentElement.getAttribute('data-theme') as 'light' | 'dark' | null;
+    setCurrentTheme(theme || 'dark');
+
+    // Watch for theme changes
+    const observer = new MutationObserver(() => {
+      const newTheme = document.documentElement.getAttribute('data-theme') as 'light' | 'dark' | null;
+      setCurrentTheme(newTheme || 'dark');
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme'],
+    });
+
+    return () => observer.disconnect();
+  }, []);
 
   // Define custom Neon Dark theme before editor mounts
   const handleEditorWillMount: BeforeMount = (monaco) => {
@@ -94,6 +115,19 @@ export const ConfigWorkflow: React.FC<ConfigWorkflowProps> = ({
     );
   }
 
+  // Alert styles based on theme
+  const alertStyle = currentTheme === 'light'
+    ? {
+        marginBottom: '16px',
+        backgroundColor: '#e0f2fe',
+        border: '1px solid #bae6fd',
+      }
+    : {
+        marginBottom: '16px',
+        backgroundColor: '#1e293b',
+        border: '1px solid #374151',
+      };
+
   return (
     <div style={{ marginTop: '16px' }}>
       <Alert
@@ -101,11 +135,7 @@ export const ConfigWorkflow: React.FC<ConfigWorkflowProps> = ({
         description="This is the raw JSON configuration of the workflow. You can use this for debugging or exporting the workflow structure."
         type="info"
         showIcon
-        style={{
-          marginBottom: '16px',
-          backgroundColor: '#1e293b',
-          border: '1px solid #374151',
-        }}
+        style={alertStyle}
       />
 
       <div style={{ border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '6px', overflow: 'hidden' }}>

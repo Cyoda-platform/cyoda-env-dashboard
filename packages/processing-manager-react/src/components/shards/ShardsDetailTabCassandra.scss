@@ -30,3 +30,12 @@
   }
 }
 
+// Light theme - add border to Service card
+[data-theme="light"] .shards-detail-tab-cassandra {
+  .cassandra-controls-column {
+    .ant-card {
+      border: 1px solid #e5e7eb !important;
+    }
+  }
+}
+

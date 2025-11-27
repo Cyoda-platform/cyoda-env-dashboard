@@ -1869,68 +1869,143 @@ div[style*="background-color:#000"] {
   }
 }
 
-// Confirm modal (delete confirmation, etc.)
-.ant-modal-confirm {
-  .ant-modal-content {
-    background: var(--refine-bg-secondary) !important;
-  }
-
-  .ant-modal-confirm-body {
-    .ant-modal-confirm-title {
-      color: var(--refine-text-primary) !important;
+// Confirm modal (delete confirmation, etc.) - Dark theme
+[data-theme="dark"] {
+  .ant-modal-confirm {
+    .ant-modal-content {
+      background: var(--refine-bg-secondary) !important;
+      border: 1px solid rgba(255, 255, 255, 0.1) !important;
     }
 
-    .ant-modal-confirm-content {
-      color: var(--refine-text-secondary) !important;
+    .ant-modal-confirm-body {
+      .ant-modal-confirm-title {
+        color: var(--refine-text-primary) !important;
+      }
+
+      .ant-modal-confirm-content {
+        color: var(--refine-text-secondary) !important;
+      }
+
+      .anticon {
+        &.anticon-exclamation-circle {
+          color: #F59E0B !important;
+        }
+
+        &.anticon-check-circle {
+          color: var(--refine-primary) !important;
+        }
+
+        &.anticon-info-circle {
+          color: #3B82F6 !important;
+        }
+
+        &.anticon-close-circle {
+          color: #EF4444 !important;
+        }
+      }
     }
 
-    .anticon {
-      &.anticon-exclamation-circle {
-        color: #F59E0B !important;
+    .ant-modal-confirm-btns {
+      .ant-btn-default {
+        background: transparent !important;
+        border-color: rgba(255, 255, 255, 0.2) !important;
+        color: var(--refine-text-primary) !important;
+
+        &:hover {
+          border-color: var(--refine-primary) !important;
+          color: var(--refine-primary) !important;
+        }
       }
 
-      &.anticon-check-circle {
-        color: var(--refine-primary) !important;
-      }
-
-      &.anticon-info-circle {
-        color: #3B82F6 !important;
-      }
-
-      &.anticon-close-circle {
-        color: #EF4444 !important;
-      }
-    }
-  }
-
-  .ant-modal-confirm-btns {
-    .ant-btn-default {
-      background: transparent !important;
-      border-color: rgba(255, 255, 255, 0.2) !important;
-      color: var(--refine-text-primary) !important;
-
-      &:hover {
+      .ant-btn-primary {
+        background: var(--refine-primary) !important;
         border-color: var(--refine-primary) !important;
-        color: var(--refine-primary) !important;
+
+        &:hover {
+          background: var(--refine-primary-light) !important;
+        }
+      }
+
+      .ant-btn-dangerous {
+        background: transparent !important;
+        border-color: #EF4444 !important;
+        color: #EF4444 !important;
+
+        &:hover {
+          background: rgba(239, 68, 68, 0.1) !important;
+        }
+      }
+    }
+  }
+}
+
+// Confirm modal - Light theme
+[data-theme="light"] {
+  .ant-modal-confirm {
+    .ant-modal-content {
+      background: #FFFFFF !important;
+      border: 1px solid rgba(0, 0, 0, 0.1) !important;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .ant-modal-confirm-body {
+      .ant-modal-confirm-title {
+        color: var(--refine-text-primary) !important;
+      }
+
+      .ant-modal-confirm-content {
+        color: var(--refine-text-secondary) !important;
+      }
+
+      .anticon {
+        &.anticon-exclamation-circle {
+          color: #F59E0B !important;
+        }
+
+        &.anticon-check-circle {
+          color: var(--refine-primary) !important;
+        }
+
+        &.anticon-info-circle {
+          color: #3B82F6 !important;
+        }
+
+        &.anticon-close-circle {
+          color: #EF4444 !important;
+        }
       }
     }
 
-    .ant-btn-primary {
-      background: var(--refine-primary) !important;
-      border-color: var(--refine-primary) !important;
+    .ant-modal-confirm-btns {
+      .ant-btn-default {
+        background: #FFFFFF !important;
+        border-color: rgba(0, 0, 0, 0.15) !important;
+        color: var(--refine-text-primary) !important;
 
-      &:hover {
-        background: var(--refine-primary-light) !important;
+        &:hover {
+          border-color: var(--refine-primary) !important;
+          color: var(--refine-primary) !important;
+        }
       }
-    }
 
-    .ant-btn-dangerous {
-      background: transparent !important;
-      border-color: #EF4444 !important;
-      color: #EF4444 !important;
+      .ant-btn-primary {
+        background: var(--refine-primary) !important;
+        border-color: var(--refine-primary) !important;
+        color: #FFFFFF !important;
 
-      &:hover {
-        background: rgba(239, 68, 68, 0.1) !important;
+        &:hover {
+          background: var(--refine-primary-light) !important;
+        }
+      }
+
+      .ant-btn-dangerous {
+        background: #FFFFFF !important;
+        border-color: #EF4444 !important;
+        color: #EF4444 !important;
+
+        &:hover {
+          background: rgba(239, 68, 68, 0.1) !important;
+        }
       }
     }
   }

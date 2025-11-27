@@ -21,7 +21,7 @@ import {
 } from '@ant-design/icons';
 import { GraphicalStateMachinePanel } from '@cyoda/ui-lib-react';
 import type { Transition, Process, Criteria, PositionsMap } from '../../types';
-import { style } from './style';
+import { getStyleForTheme } from './style';
 import { coreLayout } from './layouts';
 import './GraphicalStateMachine.scss';
 import {
@@ -71,6 +71,33 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
   const [showEdgesTitles, setShowEdgesTitles] = useState(false);
   const [showListOfTransitions, setShowListOfTransitions] = useState(true);
   const [hiddenTransitions, setHiddenTransitions] = useState<Set<string>>(new Set());
+  const [currentTheme, setCurrentTheme] = useState<'light' | 'dark'>('dark');
+
+  // Detect theme from data-theme attribute
+  useEffect(() => {
+    const theme = document.documentElement.getAttribute('data-theme') as 'light' | 'dark' | null;
+    setCurrentTheme(theme || 'dark');
+
+    // Watch for theme changes
+    const observer = new MutationObserver(() => {
+      const newTheme = document.documentElement.getAttribute('data-theme') as 'light' | 'dark' | null;
+      setCurrentTheme(newTheme || 'dark');
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme'],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  // Update Cytoscape styles when theme changes
+  useEffect(() => {
+    if (cyRef.current) {
+      cyRef.current.style(getStyleForTheme(currentTheme));
+    }
+  }, [currentTheme]);
 
   // Filter active transitions - memoize to prevent re-initialization loop
   const activeTransitions = useMemo(() => transitions.filter((t) => t.active), [transitions]);
@@ -122,7 +149,7 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
     const cy = cytoscape({
       container: containerRef.current,
       elements,
-      style,
+      style: getStyleForTheme(currentTheme),
       layout: positionsMap ? { name: 'preset' } : {
         name: 'breadthfirst',
         directed: true,

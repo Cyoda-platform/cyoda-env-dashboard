@@ -15,7 +15,24 @@
 
     li:not(.name) {
       margin-top: 4px;
+    }
+  }
+}
+
+// Dark theme
+[data-theme="dark"] .transition-detail-statistics {
+  .ant-card-body ul {
+    li:not(.name) {
       color: rgba(255, 255, 255, 0.85);
+    }
+  }
+}
+
+// Light theme
+[data-theme="light"] .transition-detail-statistics {
+  .ant-card-body ul {
+    li:not(.name) {
+      color: #374151;
     }
   }
 }

@@ -1,45 +1,51 @@
 /**
  * Cytoscape Stylesheet
  * Migrated from: .old_project/packages/cyoda-ui-lib/src/components-library/patterns/GraphicalStatemachineMap/style.ts
+ * Updated: Added theme support for light/dark modes
  */
 
 import type { Stylesheet as CytoscapeStylesheet } from 'cytoscape';
 
-export const style: CytoscapeStylesheet[] = [
-  {
-    selector: 'node',
-    style: {
-      'label': 'data(title)',
-      'color': '#ffffff', // White text for dark theme
-      'text-background-color': '#1f2937', // Dark background for labels
-      'text-background-opacity': 0.95,
-      'text-background-padding': '4px',
-      'text-max-width': 180,
-      'text-wrap': 'wrap',
-      'width': 45,
-      'height': 45,
-      'background-color': '#14b8a6', // Neon teal fallback
-      'border-width': 2,
-      'border-color': '#5eead4', // Lighter teal border
+export const getStyleForTheme = (theme: 'light' | 'dark'): CytoscapeStylesheet[] => {
+  const labelTextColor = theme === 'light' ? '#111827' : '#ffffff';
+  const labelBgColor = theme === 'light' ? '#ffffff' : '#1f2937';
+  const labelBgOpacity = theme === 'light' ? 0.9 : 0.95;
+
+  return [
+    {
+      selector: 'node',
+      style: {
+        'label': 'data(title)',
+        'color': labelTextColor,
+        'text-background-color': labelBgColor,
+        'text-background-opacity': labelBgOpacity,
+        'text-background-padding': '4px',
+        'text-max-width': 180,
+        'text-wrap': 'wrap',
+        'width': 45,
+        'height': 45,
+        'background-color': '#14b8a6', // Neon teal fallback
+        'border-width': 2,
+        'border-color': '#5eead4', // Lighter teal border
+      },
     },
-  },
-  {
-    selector: 'edge',
-    style: {
-      'label': 'data(title)',
-      'color': '#ffffff', // White text for dark theme
-      'text-background-color': '#1f2937', // Dark background for labels
-      'text-background-opacity': 0.95,
-      'line-color': '#a78bfa', // Neon purple
-      'z-compound-depth': 'bottom',
-      'width': 5,
-      'target-arrow-shape': 'triangle',
-      'target-arrow-color': '#c084fc', // Lighter purple for arrow
-      'arrow-scale': 1.1,
-      'curve-style': 'bezier',
-      'control-point-step-size': 240,
+    {
+      selector: 'edge',
+      style: {
+        'label': 'data(title)',
+        'color': labelTextColor,
+        'text-background-color': labelBgColor,
+        'text-background-opacity': labelBgOpacity,
+        'line-color': '#a78bfa', // Neon purple
+        'z-compound-depth': 'bottom',
+        'width': 5,
+        'target-arrow-shape': 'triangle',
+        'target-arrow-color': '#c084fc', // Lighter purple for arrow
+        'arrow-scale': 1.1,
+        'curve-style': 'bezier',
+        'control-point-step-size': 240,
+      },
     },
-  },
   {
     selector: '.edge',
     style: {
@@ -162,5 +168,9 @@ export const style: CytoscapeStylesheet[] = [
       'width': 7,
     },
   },
-];
+  ];
+};
+
+// Export default style for backward compatibility
+export const style = getStyleForTheme('dark');
 

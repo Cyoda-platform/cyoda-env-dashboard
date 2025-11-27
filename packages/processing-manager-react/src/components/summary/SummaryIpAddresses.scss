@@ -52,3 +52,12 @@
   }
 }
 
+// Light theme - add border
+[data-theme="light"] .summary-ip-card {
+  border: 1px solid #e5e7eb !important;
+
+  .ant-card-head {
+    border-bottom: 1px solid #e5e7eb !important;
+  }
+}
+
