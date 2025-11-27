@@ -150,8 +150,6 @@ const getTimeColor = (time: number | undefined, measure: number = 1): string | u
 };
 
 export const ShardsDetailTabCqlExecStats: React.FC = () => {
-  console.log('ShardsDetailTabCqlExecStats: Component mounted');
-
   const [selectedTable, setSelectedTable] = useState<string | null>(null);
   const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
   const [tableFilter, setTableFilter] = useState<string | undefined>(undefined);
@@ -180,14 +178,6 @@ export const ShardsDetailTabCqlExecStats: React.FC = () => {
   // Clear statistics mutation
   const clearStatsMutation = useClearCqlExecStats();
 
-  console.log('ShardsDetailTabCqlExecStats: tablesData =', tablesData, 'isLoading =', tablesLoading);
-
-  // Debug: log a sample record to see structure
-  if (tablesData && tablesData.length > 0) {
-    console.log('Sample table record:', tablesData[0]);
-    console.log('Sample tableStats:', tablesData[0]?.tableStats);
-  }
-
   // Filter tables data based on selected table filter
   const filteredTablesData = useMemo(() => {
     if (!tableFilter) return tablesData;
@@ -195,7 +185,6 @@ export const ShardsDetailTabCqlExecStats: React.FC = () => {
   }, [tablesData, tableFilter]);
 
   const handleRowClick = (record: TableBriefStats) => {
-    console.log('Row clicked:', record);
     setSelectedTable(record.table);
     setIsDetailModalVisible(true);
   };
