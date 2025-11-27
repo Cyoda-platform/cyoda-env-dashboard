@@ -712,8 +712,7 @@ export const ShardsDetailTabCqlExecStats: React.FC = () => {
             Refresh
           </Button>
           <Button
-            type="primary"
-            danger
+            type="default"
             icon={<DeleteOutlined />}
             onClick={handleClearStats}
             loading={clearStatsMutation.isPending}
