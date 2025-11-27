@@ -17,14 +17,29 @@
   border-radius: 50%;
   font-size: 12px;
   font-weight: bold;
+}
+
+/* Dark theme */
+[data-theme="dark"] .state-indicator-automated-badge {
   color: #fff;
 }
 
-.state-indicator-automated-badge.active {
+[data-theme="dark"] .state-indicator-automated-badge.active {
   background-color: #52c41a;
 }
 
-.state-indicator-automated-badge.inactive {
+[data-theme="dark"] .state-indicator-automated-badge.inactive {
   background-color: #d9d9d9;
+}
+
+/* Light theme */
+[data-theme="light"] .state-indicator-automated-badge.active {
+  background-color: #52c41a;
+  color: #fff;
+}
+
+[data-theme="light"] .state-indicator-automated-badge.inactive {
+  background-color: #8c8c8c;
+  color: #fff;
 }
 

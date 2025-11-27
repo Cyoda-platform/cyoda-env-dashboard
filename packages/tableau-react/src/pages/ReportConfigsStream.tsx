@@ -528,17 +528,19 @@ export const ReportConfigsStream: React.FC = () => {
         onResize: handleResize('action'),
       }),
       render: (_, record) => (
-        <Space>
+        <Space size="small">
           <Tooltip title="Edit">
             <Button
-              type="primary"
+              type="text"
+              size="small"
               icon={<EditOutlined />}
               onClick={() => handleEdit(record)}
             />
           </Tooltip>
           <Tooltip title="Run">
             <Button
-              type="primary"
+              type="text"
+              size="small"
               icon={<PlayCircleOutlined />}
               onClick={() => handleRun(record)}
               loading={record.loadingReportButton}
@@ -546,7 +548,8 @@ export const ReportConfigsStream: React.FC = () => {
           </Tooltip>
           <Tooltip title="Schedule">
             <Button
-              type="default"
+              type="text"
+              size="small"
               icon={<ClockCircleOutlined />}
               onClick={() => {
                 setSelectedReportId(record.id);
@@ -556,6 +559,8 @@ export const ReportConfigsStream: React.FC = () => {
           </Tooltip>
           <Tooltip title="Delete">
             <Button
+              type="text"
+              size="small"
               danger
               icon={<DeleteOutlined />}
               onClick={() => handleDelete(record)}

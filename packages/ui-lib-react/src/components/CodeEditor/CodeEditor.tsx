@@ -8,22 +8,28 @@ const getCurrentTheme = (): 'light' | 'dark' => {
   return document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark'
 }
 
-// Monaco editor worker setup - load workers from CDN
+// Monaco editor worker setup - use blob URLs to avoid CORS issues
+import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
+import jsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker'
+import cssWorker from 'monaco-editor/esm/vs/language/css/css.worker?worker'
+import htmlWorker from 'monaco-editor/esm/vs/language/html/html.worker?worker'
+import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker'
+
 window.MonacoEnvironment = {
-  getWorkerUrl: function (_moduleId: string, label: string) {
+  getWorker(_: string, label: string) {
     if (label === 'json') {
-      return 'https://cdn.jsdelivr.net/npm/monaco-editor@0.54.0/min/vs/language/json/json.worker.js'
+      return new jsonWorker()
     }
     if (label === 'css' || label === 'scss' || label === 'less') {
-      return 'https://cdn.jsdelivr.net/npm/monaco-editor@0.54.0/min/vs/language/css/css.worker.js'
+      return new cssWorker()
     }
     if (label === 'html' || label === 'handlebars' || label === 'razor') {
-      return 'https://cdn.jsdelivr.net/npm/monaco-editor@0.54.0/min/vs/language/html/html.worker.js'
+      return new htmlWorker()
     }
     if (label === 'typescript' || label === 'javascript') {
-      return 'https://cdn.jsdelivr.net/npm/monaco-editor@0.54.0/min/vs/language/typescript/ts.worker.js'
+      return new tsWorker()
     }
-    return 'https://cdn.jsdelivr.net/npm/monaco-editor@0.54.0/min/vs/editor/editor.worker.js'
+    return new editorWorker()
   },
 }
 

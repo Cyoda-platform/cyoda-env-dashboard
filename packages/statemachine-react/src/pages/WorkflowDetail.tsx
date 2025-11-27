@@ -4,7 +4,7 @@
  * Migrated from: .old_project/packages/statemachine/src/views/workflow/WorkflowId.vue
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { Card, Radio, Divider, Space, Button } from 'antd';
 import { TableOutlined, ApartmentOutlined, SettingOutlined, ArrowLeftOutlined } from '@ant-design/icons';
@@ -25,11 +25,31 @@ export const WorkflowDetail: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [layoutMode, setLayoutMode] = useState<LayoutMode>('tabular');
+  const [currentTheme, setCurrentTheme] = useState<'light' | 'dark'>('dark');
 
   const persistedType = (searchParams.get('persistedType') || 'persisted') as PersistedType;
   const entityClassName = searchParams.get('entityClassName') || '';
 
   const isNew = !workflowId || workflowId === 'new';
+
+  // Detect theme from data-theme attribute
+  useEffect(() => {
+    const theme = document.documentElement.getAttribute('data-theme') as 'light' | 'dark' | null;
+    setCurrentTheme(theme || 'dark');
+
+    // Watch for theme changes
+    const observer = new MutationObserver(() => {
+      const newTheme = document.documentElement.getAttribute('data-theme') as 'light' | 'dark' | null;
+      setCurrentTheme(newTheme || 'dark');
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme'],
+    });
+
+    return () => observer.disconnect();
+  }, []);
 
   // Fetch data for graphical view (only if not creating new)
   const { data: workflow } = useWorkflow(persistedType, workflowId || '', !!workflowId && !isNew);
@@ -120,7 +140,10 @@ export const WorkflowDetail: React.FC = () => {
                       backgroundColor: layoutMode === 'tabular' ? '#14b8a6' : 'transparent',
                     }}
                   >
-                    <TableOutlined style={{ fontSize: '22px', color: '#ffffff' }} />
+                    <TableOutlined style={{
+                      fontSize: '22px',
+                      color: layoutMode === 'tabular' ? '#ffffff' : (currentTheme === 'light' ? '#595959' : '#ffffff')
+                    }} />
                   </Radio.Button>
                   <Radio.Button
                     value="graphical"
@@ -130,7 +153,10 @@ export const WorkflowDetail: React.FC = () => {
                       backgroundColor: layoutMode === 'graphical' ? '#14b8a6' : 'transparent',
                     }}
                   >
-                    <ApartmentOutlined style={{ fontSize: '22px', color: '#ffffff' }} />
+                    <ApartmentOutlined style={{
+                      fontSize: '22px',
+                      color: layoutMode === 'graphical' ? '#ffffff' : (currentTheme === 'light' ? '#595959' : '#ffffff')
+                    }} />
                   </Radio.Button>
                   <Radio.Button
                     value="config"
@@ -140,7 +166,10 @@ export const WorkflowDetail: React.FC = () => {
                       backgroundColor: layoutMode === 'config' ? '#14b8a6' : 'transparent',
                     }}
                   >
-                    <SettingOutlined style={{ fontSize: '22px', color: '#ffffff' }} />
+                    <SettingOutlined style={{
+                      fontSize: '22px',
+                      color: layoutMode === 'config' ? '#ffffff' : (currentTheme === 'light' ? '#595959' : '#ffffff')
+                    }} />
                   </Radio.Button>
                 </Radio.Group>
               </div>

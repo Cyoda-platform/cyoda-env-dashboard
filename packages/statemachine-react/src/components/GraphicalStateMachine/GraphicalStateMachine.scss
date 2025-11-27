@@ -1,7 +1,7 @@
 /**
  * Graphical State Machine Styles
  * Migrated from Vue component styles
- * Updated: Canvas and button styling
+ * Updated: Canvas and button styling with light/dark theme support
  */
 
 .graphical-statemachine-wrapper {
@@ -16,8 +16,17 @@
     right: 0;
     bottom: 0;
     z-index: 9999;
-    background: #1f2937;
   }
+}
+
+// Dark theme
+[data-theme="dark"] .graphical-statemachine-wrapper.fullscreen {
+  background: #1f2937;
+}
+
+// Light theme
+[data-theme="light"] .graphical-statemachine-wrapper.fullscreen {
+  background: #f3f4f6;
 }
 
 .graphical-statemachine {
@@ -27,6 +36,16 @@
   display: flex;
   flex-direction: column;
 
+  .graph-wrapper {
+    padding-bottom: 50px;
+    display: flex;
+    position: relative;
+    flex: 1;
+  }
+}
+
+// Dark theme styles
+[data-theme="dark"] .graphical-statemachine {
   .panel {
     padding: 16px;
     background: #1f2937;
@@ -34,13 +53,24 @@
   }
 
   .graph-wrapper {
-    padding-bottom: 50px;
-    display: flex;
-    position: relative;
-    background: #1f2937; // Dark theme (was rgb(255, 255, 255) in Vue)
-    flex: 1;
+    background: #1f2937;
+  }
+}
+
+// Light theme styles
+[data-theme="light"] .graphical-statemachine {
+  .panel {
+    padding: 16px;
+    background: #f3f4f6;
+    border-bottom: 1px solid #e5e7eb;
   }
 
+  .graph-wrapper {
+    background: #f3f4f6;
+  }
+}
+
+.graphical-statemachine {
   .wrap-map {
     display: flex;
     flex: 1 1 auto;
@@ -53,7 +83,6 @@
       left: 8px;
       z-index: 10;
       max-width: 450px;
-      background: #374151;
       border-radius: 4px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
       pointer-events: auto; // Only the table itself should capture events
@@ -82,34 +111,7 @@
       }
 
       .ant-table {
-        background: #374151;
-        color: #e5e7eb;
         margin: 0 !important;
-
-        .ant-table-thead > tr > th {
-          background: #4b5563;
-          color: #f3f4f6;
-          border-bottom-color: #6b7280;
-          font-weight: 600;
-        }
-
-        .ant-table-tbody > tr > td {
-          border-bottom-color: #4b5563;
-          background: #374151;
-          color: #e5e7eb;
-        }
-
-        .ant-table-tbody > tr:hover > td {
-          background: #4b5563;
-        }
-
-        .ant-btn-text {
-          color: #14b8a6;
-
-          &:hover {
-            color: #5eead4;
-          }
-        }
 
         // Remove fixed height from table body to allow dynamic sizing
         .ant-table-body {
@@ -179,10 +181,8 @@
     right: 16px;
     top: 16px;
     z-index: 10;
-    background: #374151;
     padding: 8px;
     border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 
     .ant-space {
       gap: 4px !important;
@@ -211,11 +211,9 @@
     bottom: 16px;
     transform: translateX(-50%);
     z-index: 10;
-    background: #374151;
     padding: 12px 24px;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-    color: #e5e7eb;
 
     .ant-space {
       gap: 24px !important;
@@ -365,6 +363,100 @@
         }
       }
     }
+  }
+}
+
+// Dark theme specific styles
+[data-theme="dark"] .graphical-statemachine {
+  .wrap-map .gf-transitions-list {
+    background: #374151;
+
+    .ant-table {
+      background: #374151;
+      color: #e5e7eb;
+
+      .ant-table-thead > tr > th {
+        background: #4b5563;
+        color: #f3f4f6;
+        border-bottom-color: #6b7280;
+        font-weight: 600;
+      }
+
+      .ant-table-tbody > tr > td {
+        border-bottom-color: #4b5563;
+        background: #374151;
+        color: #e5e7eb;
+      }
+
+      .ant-table-tbody > tr:hover > td {
+        background: #4b5563;
+      }
+
+      .ant-btn-text {
+        color: #14b8a6;
+
+        &:hover {
+          color: #5eead4;
+        }
+      }
+    }
+  }
+
+  .map-controls {
+    background: #374151;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  .map-legend {
+    background: #374151;
+    color: #e5e7eb;
+  }
+}
+
+// Light theme specific styles
+[data-theme="light"] .graphical-statemachine {
+  .wrap-map .gf-transitions-list {
+    background: #ffffff;
+
+    .ant-table {
+      background: #ffffff;
+      color: #111827;
+
+      .ant-table-thead > tr > th {
+        background: #f3f4f6;
+        color: #374151;
+        border-bottom-color: #e5e7eb;
+        font-weight: 600;
+      }
+
+      .ant-table-tbody > tr > td {
+        border-bottom-color: #e5e7eb;
+        background: #ffffff;
+        color: #111827;
+      }
+
+      .ant-table-tbody > tr:hover > td {
+        background: #f9fafb;
+      }
+
+      .ant-btn-text {
+        color: #14b8a6;
+
+        &:hover {
+          color: #0d9488;
+        }
+      }
+    }
+  }
+
+  .map-controls {
+    background: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .map-legend {
+    background: #ffffff;
+    color: #111827;
   }
 }
 

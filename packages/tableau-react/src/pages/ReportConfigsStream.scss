@@ -3,6 +3,7 @@
 .report-configs-stream {
   @include table.table-container-wrapper;
   @include table.resizable-columns;
+  @include table.fixed-columns-background;
   padding: 0; // No padding - AppLayout handles spacing
 
   .page-title {
