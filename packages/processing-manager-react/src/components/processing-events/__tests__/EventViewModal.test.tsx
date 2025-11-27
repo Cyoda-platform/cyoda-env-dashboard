@@ -21,15 +21,9 @@ vi.mock('../../common/ErrorViewActions', () => ({
   )),
 }));
 
-// Mock react-syntax-highlighter
-vi.mock('react-syntax-highlighter', () => ({
-  Prism: vi.fn(({ children }) => <pre data-testid="syntax-highlighter">{children}</pre>),
-}));
-
-vi.mock('react-syntax-highlighter/dist/esm/styles/prism', () => ({
-  default: {},
-  prism: {},
-  vscDarkPlus: {},
+// Mock CodeEditor from ui-lib-react
+vi.mock('@cyoda/ui-lib-react', () => ({
+  CodeEditor: vi.fn(({ value }) => <pre data-testid="code-editor">{value}</pre>),
 }));
 
 const mockEventData = {
@@ -221,7 +215,7 @@ describe('EventViewModal', () => {
     expect(screen.queryByTestId('error-view-actions')).not.toBeInTheDocument();
   });
 
-  it('should render core event data with syntax highlighter', () => {
+  it('should render core event data with code editor', () => {
     render(
       <EventViewModal
         open={true}
@@ -232,8 +226,8 @@ describe('EventViewModal', () => {
       />
     );
 
-    const syntaxHighlighter = screen.getByTestId('syntax-highlighter');
-    expect(syntaxHighlighter).toBeInTheDocument();
+    const codeEditor = screen.getByTestId('code-editor');
+    expect(codeEditor).toBeInTheDocument();
   });
 
   it('should show loading state', () => {

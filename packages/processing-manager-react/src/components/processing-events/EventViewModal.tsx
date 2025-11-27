@@ -6,8 +6,7 @@
 import { useMemo } from 'react';
 import { Modal, Descriptions, Spin, Button } from 'antd';
 import { useProcessingQueueErrorEventByEntity } from '../../hooks';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { prism } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { CodeEditor } from '@cyoda/ui-lib-react';
 import { ErrorViewActions } from '../common/ErrorViewActions';
 
 interface EventViewModalProps {
@@ -56,7 +55,8 @@ export const EventViewModal: React.FC<EventViewModalProps> = ({
       title="Event view"
       open={open}
       onCancel={onClose}
-      width={900}
+      width="90%"
+      style={{ maxWidth: '1400px' }}
       footer={[
         <Button key="close" onClick={onClose}>
           Close
@@ -64,7 +64,7 @@ export const EventViewModal: React.FC<EventViewModalProps> = ({
       ]}
       styles={{
         body: {
-          maxHeight: '70vh',
+          maxHeight: '80vh',
           overflowY: 'auto',
         },
       }}
@@ -123,30 +123,27 @@ export const EventViewModal: React.FC<EventViewModalProps> = ({
           <Descriptions.Item label="Error Event Time-UUID">
             {event.errorEventTimeUUID || '-'}
           </Descriptions.Item>
+        </Descriptions>
 
-          <Descriptions.Item label="Core event data">
-            <div style={{ 
-              background: '#f5f5f5', 
-              padding: '8px', 
-              borderRadius: '4px',
-              marginTop: '8px'
-            }}>
-              {/* @ts-ignore - react-syntax-highlighter type compatibility issue */}
-              <SyntaxHighlighter
-                language="javascript"
-                style={prism}
-                customStyle={{
-                  margin: 0,
-                  maxHeight: '300px',
-                  fontSize: '12px',
-                  background: 'transparent',
-                }}
-              >
-                {formattedCoreData}
-              </SyntaxHighlighter>
-            </div>
-          </Descriptions.Item>
+        {/* Core event data - full width section */}
+        <div style={{ marginTop: '24px' }}>
+          <div style={{
+            marginBottom: '8px',
+            fontSize: '14px',
+            fontWeight: 'normal',
+          }}>
+            Core event data:
+          </div>
+          <CodeEditor
+            value={formattedCoreData}
+            language="json"
+            readOnly={true}
+            height="400px"
+          />
+        </div>
 
+        {/* Client event data */}
+        <Descriptions column={1} bordered={false} size="small" labelStyle={{ fontWeight: 'normal' }} style={{ marginTop: '24px' }}>
           <Descriptions.Item label="Client event data">
             {event.clientDataClassName || '-'}
           </Descriptions.Item>
