@@ -117,7 +117,7 @@ export const ModellingColDefs: React.FC<ModellingColDefsProps> = ({ configDefini
       key: 'action',
       width: 180,
       render: (_: any, record: any) => (
-        <Button type="primary" danger disabled={readOnly} onClick={() => handleRemove(record.key)}>
+        <Button danger disabled={readOnly} onClick={() => handleRemove(record.key)}>
           Remove
         </Button>
       ),
@@ -150,7 +150,7 @@ export const ModellingColDefs: React.FC<ModellingColDefsProps> = ({ configDefini
 
       {selectedRowKeys.length > 0 && (
         <div className="form-multiple-selection">
-          <Button type="primary" danger icon={<DeleteOutlined />} onClick={handleBulkDelete}>
+          <Button danger icon={<DeleteOutlined />} onClick={handleBulkDelete}>
             Delete Selected ({selectedRowKeys.length})
           </Button>
         </div>

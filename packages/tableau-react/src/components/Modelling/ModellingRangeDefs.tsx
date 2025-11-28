@@ -64,7 +64,7 @@ export const ModellingRangeDefs: React.FC<ModellingRangeDefsProps> = ({
       key: 'action',
       width: 180,
       render: (_: any, record: ColDef, index: number) => (
-        <Button type="primary" danger onClick={handleRemove} disabled={readOnly}>
+        <Button danger onClick={handleRemove} disabled={readOnly}>
           Remove
         </Button>
       ),

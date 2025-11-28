@@ -269,7 +269,7 @@ const FilterBuilderCondition: React.FC<FilterBuilderConditionProps> = ({
 
         {!disableRemove && !readOnly && (
           <Col span={2}>
-            <Button type="primary" danger shape="circle" icon={<DeleteOutlined />} onClick={handleRemove} />
+            <Button danger shape="circle" icon={<DeleteOutlined />} onClick={handleRemove} />
           </Col>
         )}
       </Row>

@@ -423,7 +423,7 @@ export const LeftSideMenu: React.FC<LeftSideMenuProps> = ({ collapsed, onCollaps
           <Button key="clear" onClick={handleLogoutAndClear}>
             Logout and Clear Data
           </Button>,
-          <Button key="logout" danger type="primary" onClick={handleLogout}>
+          <Button key="logout" danger onClick={handleLogout}>
             Logout
           </Button>,
         ]}
