@@ -140,8 +140,43 @@
 
     .compare-content {
       border: 1px solid rgba(0, 0, 0, 0.1);
-      background: #F9FAFB;
+      background: #FFFFFF;
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+
+      // Remove white/colored background that covers diff highlights
+      .monaco-diff-editor {
+        // Make ALL backgrounds transparent to reveal diff highlights
+        .monaco-editor,
+        .monaco-editor .view-lines,
+        .monaco-editor .view-line,
+        .monaco-editor .lines-content,
+        .monaco-editor .monaco-scrollable-element,
+        .monaco-editor .overflow-guard,
+        .monaco-editor .monaco-editor-background,
+        .monaco-editor .margin,
+        .monaco-editor .margin-view-overlays {
+          background: none !important;
+          background-color: transparent !important;
+        }
+
+        // Ensure diff editor containers are transparent
+        .editor.original,
+        .editor.modified,
+        .editor.original .monaco-editor,
+        .editor.modified .monaco-editor {
+          background: none !important;
+          background-color: transparent !important;
+        }
+
+        // Keep diff highlights visible (these should have background)
+        .monaco-editor .view-overlays .line-insert,
+        .monaco-editor .view-overlays .line-delete,
+        .monaco-editor .char-insert,
+        .monaco-editor .char-delete {
+          // These elements should keep their background colors from Monaco theme
+          opacity: 1 !important;
+        }
+      }
     }
 
     // Close button styling

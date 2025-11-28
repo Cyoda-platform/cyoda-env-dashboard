@@ -373,13 +373,13 @@ export const CYODA_LIGHT_THEME: editor.IStandaloneThemeData = {
     'peekViewResult.background': '#FFFFFF',
     'peekViewTitle.background': '#F9FAFB',
 
-    // Diff editor - brighter backgrounds for better visibility
-    'diffEditor.insertedTextBackground': '#CCFBF1', // Bright teal background for added text
-    'diffEditor.removedTextBackground': '#FEE2E2', // Bright red background for removed text
-    'diffEditor.insertedLineBackground': '#E0F2FE', // Light blue for full added line
-    'diffEditor.removedLineBackground': '#FEF2F2', // Light pink for full removed line
-    'diffEditor.insertedTextBorder': '#14B8A6', // Solid teal border for added text
-    'diffEditor.removedTextBorder': '#EF4444', // Solid red border for removed text
+    // Diff editor - same colors as dark theme for consistency
+    'diffEditor.insertedTextBackground': '#00D4AA40', // Teal background for added text (same as dark)
+    'diffEditor.removedTextBackground': '#EF444440', // Red background for removed text (same as dark)
+    'diffEditor.insertedLineBackground': '#00D4AA25', // Lighter teal for full line (same as dark)
+    'diffEditor.removedLineBackground': '#EF444425', // Lighter red for full line (same as dark)
+    'diffEditor.insertedTextBorder': '#00D4AA80', // Teal border for added text (same as dark)
+    'diffEditor.removedTextBorder': '#EF444480', // Red border for removed text (same as dark)
     'diffEditor.border': '#D1D5DB',
     'diffEditor.diagonalFill': '#F3F4F680',
 
