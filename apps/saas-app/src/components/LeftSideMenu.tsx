@@ -157,6 +157,21 @@ export const LeftSideMenu: React.FC<LeftSideMenuProps> = ({ collapsed, onCollaps
     }
   };
 
+  // Check if a submenu has an active child (for indicator dot)
+  const hasActiveChild = (submenuKey: string): boolean => {
+    const path = location.pathname;
+
+    if (submenuKey === 'reporting') {
+      return path.startsWith('/tableau');
+    }
+    if (submenuKey === 'lifecycle') {
+      return path.startsWith('/workflows') || path.startsWith('/instances') ||
+             path.startsWith('/workflow/') || path.startsWith('/instance/');
+    }
+
+    return false;
+  };
+
   const menuItems: MenuItem[] = [
     {
       key: '/trino',
@@ -168,7 +183,25 @@ export const LeftSideMenu: React.FC<LeftSideMenuProps> = ({ collapsed, onCollaps
       key: 'reporting',
       icon: collapsed ? (
         <Tooltip title="Reporting" placement="right">
-          <FileTextOutlined />
+          <span style={{ position: 'relative', display: 'inline-block' }}>
+            <FileTextOutlined />
+            {hasActiveChild('reporting') && !openKeys.includes('reporting') && (
+              <span
+                className="submenu-active-indicator"
+                style={{
+                  position: 'absolute',
+                  top: '50%',
+                  right: -12,
+                  transform: 'translateY(-50%)',
+                  width: '6px',
+                  height: '6px',
+                  borderRadius: '50%',
+                  background: 'linear-gradient(135deg, #00d4aa 0%, #4d9fff 100%)',
+                  boxShadow: '0 0 4px rgba(0, 212, 170, 0.6)',
+                }}
+              />
+            )}
+          </span>
         </Tooltip>
       ) : (
         <FileTextOutlined />
@@ -200,7 +233,25 @@ export const LeftSideMenu: React.FC<LeftSideMenuProps> = ({ collapsed, onCollaps
       key: 'lifecycle',
       icon: collapsed ? (
         <Tooltip title="Lifecycle" placement="right">
-          <ApartmentOutlined />
+          <span style={{ position: 'relative', display: 'inline-block' }}>
+            <ApartmentOutlined />
+            {hasActiveChild('lifecycle') && !openKeys.includes('lifecycle') && (
+              <span
+                className="submenu-active-indicator"
+                style={{
+                  position: 'absolute',
+                  top: '50%',
+                  right: -12,
+                  transform: 'translateY(-50%)',
+                  width: '6px',
+                  height: '6px',
+                  borderRadius: '50%',
+                  background: 'linear-gradient(135deg, #00d4aa 0%, #4d9fff 100%)',
+                  boxShadow: '0 0 4px rgba(0, 212, 170, 0.6)',
+                }}
+              />
+            )}
+          </span>
         </Tooltip>
       ) : (
         <ApartmentOutlined />
@@ -304,7 +355,7 @@ export const LeftSideMenu: React.FC<LeftSideMenuProps> = ({ collapsed, onCollaps
   // Determine selected key based on current path
   const getSelectedKey = (): string[] => {
     const path = location.pathname;
-    
+
     // Check for exact matches first
     if (path.startsWith('/trino')) return ['/trino'];
     if (path.startsWith('/tableau/reports/stream')) return ['/tableau/reports/stream'];
@@ -315,7 +366,7 @@ export const LeftSideMenu: React.FC<LeftSideMenuProps> = ({ collapsed, onCollaps
     if (path.startsWith('/tasks')) return ['/tasks'];
     if (path.startsWith('/entity-viewer')) return ['/entity-viewer'];
     if (path.startsWith('/processing-ui')) return ['/processing-ui'];
-    
+
     return [];
   };
 
