@@ -287,3 +287,89 @@ table.ant-table thead.ant-table-thead tr th.ant-table-cell-fix-right-first {
   box-shadow: inset -10px 0 8px -8px rgba(0, 0, 0, 0.5) !important;
 }
 
+/* RESIZE HANDLES - Vertical line design for ALL tables */
+/* Override react-resizable default corner icon with vertical line */
+.react-resizable-handle,
+.react-resizable-handle-se {
+  position: absolute !important;
+  right: -5px !important;
+  bottom: 0 !important;
+  top: 0 !important;
+  z-index: 10 !important;
+  width: 10px !important;
+  height: 100% !important;
+  cursor: col-resize !important;
+  background: transparent !important;
+  background-image: none !important;
+  background-position: unset !important;
+  background-repeat: unset !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+}
+
+.react-resizable-handle::before,
+.react-resizable-handle-se::before {
+  content: '' !important;
+  display: block !important;
+  position: absolute !important;
+  right: 4px !important;
+  top: 0 !important;
+  width: 1px !important;
+  height: 100% !important;
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  transition: all 0.2s ease !important;
+}
+
+.react-resizable-handle::after,
+.react-resizable-handle-se::after {
+  display: none !important;
+  content: none !important;
+}
+
+.react-resizable-handle:hover,
+.react-resizable-handle-se:hover {
+  background: transparent !important;
+  background-image: none !important;
+}
+
+.react-resizable-handle:hover::before,
+.react-resizable-handle-se:hover::before {
+  background-color: #14b8a6 !important;
+  width: 2px !important;
+  box-shadow: 0 0 8px rgba(20, 184, 166, 0.5) !important;
+}
+
+/* Light theme */
+[data-theme="light"] .react-resizable-handle::before,
+[data-theme="light"] .react-resizable-handle-se::before {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+[data-theme="light"] .react-resizable-handle:hover::before,
+[data-theme="light"] .react-resizable-handle-se:hover::before {
+  background-color: #14b8a6 !important;
+  box-shadow: 0 0 8px rgba(20, 184, 166, 0.4) !important;
+}
+
+/* TABLE BORDERS - Light theme - add vertical and horizontal lines like in dark theme */
+[data-theme="light"] .ant-table {
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+[data-theme="light"] .ant-table-thead > tr > th {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+  border-right: 1px solid rgba(0, 0, 0, 0.06) !important;
+}
+
+[data-theme="light"] .ant-table-tbody > tr > td {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+  border-right: 1px solid rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Remove border-right from last column */
+[data-theme="light"] .ant-table-thead > tr > th:last-child,
+[data-theme="light"] .ant-table-tbody > tr > td:last-child {
+  border-right: none !important;
+}
