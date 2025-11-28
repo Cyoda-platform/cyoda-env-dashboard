@@ -423,7 +423,7 @@ export const Workflows: React.FC = () => {
         <Space size="small">
           <Tooltip title="Workflow">
             <Button
-              type="primary"
+              type="default"
               size="small"
               icon={<SearchOutlined />}
               onClick={() => handleViewWorkflow(record)}
@@ -431,7 +431,7 @@ export const Workflows: React.FC = () => {
           </Tooltip>
           <Tooltip title="Instances">
             <Button
-              type="primary"
+              type="default"
               size="small"
               icon={<TableOutlined />}
               onClick={() => handleViewInstances(record)}
@@ -439,7 +439,7 @@ export const Workflows: React.FC = () => {
           </Tooltip>
           <Tooltip title="Copy workflow">
             <Button
-              type="primary"
+              type="default"
               size="small"
               icon={<CopyOutlined />}
               onClick={() => handleCopyWorkflow(record)}
@@ -448,6 +448,7 @@ export const Workflows: React.FC = () => {
           </Tooltip>
           <Tooltip title="Delete">
             <Button
+              type="default"
               danger
               size="small"
               icon={<DeleteOutlined />}

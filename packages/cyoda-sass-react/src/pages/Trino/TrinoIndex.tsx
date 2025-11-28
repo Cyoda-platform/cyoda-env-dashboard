@@ -115,7 +115,7 @@ const TrinoIndex: React.FC = () => {
           </Tooltip>
           <Tooltip title="Delete">
             <Button
-              type="primary"
+              type="default"
               danger
               icon={<DeleteOutlined />}
               onClick={() => handleDelete(record)}

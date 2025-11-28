@@ -520,7 +520,7 @@ export const ReportConfigsStream: React.FC = () => {
         <Space size="small">
           <Tooltip title="Edit">
             <Button
-              type="text"
+              type="default"
               size="small"
               icon={<EditOutlined />}
               onClick={() => handleEdit(record)}
@@ -528,7 +528,7 @@ export const ReportConfigsStream: React.FC = () => {
           </Tooltip>
           <Tooltip title="Run">
             <Button
-              type="text"
+              type="default"
               size="small"
               icon={<PlayCircleOutlined />}
               onClick={() => handleRun(record)}
@@ -537,7 +537,7 @@ export const ReportConfigsStream: React.FC = () => {
           </Tooltip>
           <Tooltip title="Schedule">
             <Button
-              type="text"
+              type="default"
               size="small"
               icon={<ClockCircleOutlined />}
               onClick={() => {
@@ -548,7 +548,7 @@ export const ReportConfigsStream: React.FC = () => {
           </Tooltip>
           <Tooltip title="Delete">
             <Button
-              type="text"
+              type="default"
               size="small"
               danger
               icon={<DeleteOutlined />}

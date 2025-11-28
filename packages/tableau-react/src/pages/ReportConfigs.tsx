@@ -706,7 +706,7 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
         <Space size="small">
           <Tooltip title="Edit">
             <Button
-              type="text"
+              type="default"
               size="small"
               icon={<EditOutlined />}
               onClick={() => handleEditReport(record)}
@@ -715,7 +715,7 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
           </Tooltip>
           <Tooltip title="Clone">
             <Button
-              type="text"
+              type="default"
               size="small"
               icon={<CopyOutlined />}
               onClick={() => handleCloneClick(record)}
@@ -725,7 +725,7 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
           {!record.loadingReportButton ? (
             <Tooltip title="Run">
               <Button
-                type="text"
+                type="default"
                 size="small"
                 icon={<PlayCircleOutlined />}
                 onClick={() => handleRunReport(record)}
@@ -735,7 +735,7 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
           ) : (
             <Tooltip title="Cancel">
               <Button
-                type="text"
+                type="default"
                 size="small"
                 danger
                 icon={<StopOutlined />}
@@ -745,7 +745,7 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
           )}
           <Tooltip title="Delete">
             <Button
-              type="text"
+              type="default"
               size="small"
               danger
               icon={<DeleteOutlined />}
