@@ -7,7 +7,6 @@ This document lists all development server ports used in the monorepo.
 | Port | Application | Command | Description |
 |------|-------------|---------|-------------|
 | **3000** | **SaaS App** | `npm run dev:saas` | **Main SaaS application** (ALWAYS on port 3000) |
-| 3003 | Demo App | `npm run dev -w apps/demo-app` | Demo application showcasing packages |
 
 ## 📦 Packages (Standalone Development)
 
@@ -39,7 +38,6 @@ This document lists all development server ports used in the monorepo.
 
 Port configurations are defined in:
 - `apps/saas-app/vite.config.ts` - Port 3000
-- `apps/demo-app/vite.config.ts` - Port 3003
 - `packages/cobi-react/vite.config.ts` - Port 3001
 - `packages/tableau-react/vite.config.ts` - Port 3002
 - `packages/processing-manager-react/vite.config.ts` - Port 3008

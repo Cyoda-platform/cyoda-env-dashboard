@@ -9,10 +9,9 @@ import { chromium } from 'playwright';
 
 // All running applications
 const APPS = [
-  { name: 'Demo App', url: 'http://localhost:3000', description: 'Main demo application' },
+  { name: 'SaaS App', url: 'http://localhost:3000', description: 'Main SaaS application' },
   { name: 'Tableau', url: 'http://localhost:3007', description: 'Tableau integration' },
   { name: 'Processing Manager', url: 'http://localhost:3008', description: 'Processing manager' },
-  { name: 'Cyoda SaaS', url: 'http://localhost:3009', description: 'SaaS application' },
   { name: 'Tasks', url: 'http://localhost:3010', description: 'Tasks management' },
   { name: 'State Machine', url: 'http://localhost:3014', description: 'State machine workflows' },
   { name: 'Source Configuration', url: 'http://localhost:5176', description: 'Source configuration' },
