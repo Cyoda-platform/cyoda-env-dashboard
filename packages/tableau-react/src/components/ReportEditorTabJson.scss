@@ -10,12 +10,158 @@
   }
 }
 
-// Sticky scroll container styling
-.monaco-editor .sticky-line-container {
-  background: rgba(15, 23, 42, 0.95) !important;
-  backdrop-filter: blur(8px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  border-bottom: none !important;
+// Sticky scroll - MAXIMUM SPECIFICITY FIX
+// Monaco's editor.main.css uses .monaco-editor .sticky-widget
+// We need HIGHER specificity to override it
+.report-editor-tab-json .monaco-editor.monaco-editor {
+  // Triple class specificity to beat Monaco's built-in styles
+  .sticky-widget.sticky-widget.sticky-widget {
+    background-color: #1E2A3A !important;
+    background: #1E2A3A !important;
+    backdrop-filter: blur(8px) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+    z-index: 100 !important;
+    position: relative !important;
+    width: 100% !important;
+    overflow: hidden !important;
+    right: initial !important;
+    margin-left: 0 !important;
+  }
+
+  // Also target by widgetid attribute with high specificity
+  div[widgetid="editor.contrib.stickyScrollWidget"][widgetid="editor.contrib.stickyScrollWidget"] {
+    background-color: #1E2A3A !important;
+    background: #1E2A3A !important;
+    backdrop-filter: blur(8px) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+    z-index: 100 !important;
+    width: 100% !important;
+    overflow: hidden !important;
+    right: initial !important;
+    margin-left: 0 !important;
+  }
+
+  // Sticky line container inside
+  .sticky-widget .sticky-line-container,
+  div[widgetid="editor.contrib.stickyScrollWidget"] .sticky-line-container {
+    background-color: transparent !important;
+    background: transparent !important;
+  }
+
+  // Ensure text is visible - target ALL elements
+  .sticky-widget .view-line,
+  div[widgetid="editor.contrib.stickyScrollWidget"] .view-line {
+    color: #E0E0E0 !important;
+    opacity: 1 !important;
+    background: transparent !important;
+
+    // ALL child elements (spans, etc.)
+    * {
+      color: #E0E0E0 !important;
+      opacity: 1 !important;
+      background: transparent !important;
+      background-color: transparent !important;
+    }
+
+    // CRITICAL: Monaco Token Kit elements (mtk*)
+    [class*="mtk"] {
+      color: #E0E0E0 !important;
+      opacity: 1 !important;
+      background: transparent !important;
+      background-color: transparent !important;
+      visibility: visible !important;
+      display: inline !important;
+    }
+  }
+
+  // View lines content
+  .sticky-widget .view-lines,
+  div[widgetid="editor.contrib.stickyScrollWidget"] .view-lines {
+    background: transparent !important;
+
+    * {
+      color: #E0E0E0 !important;
+      opacity: 1 !important;
+    }
+  }
+
+  // Sticky line container - ensure all text is visible
+  .sticky-widget .sticky-line-container,
+  div[widgetid="editor.contrib.stickyScrollWidget"] .sticky-line-container {
+    * {
+      color: #E0E0E0 !important;
+      opacity: 1 !important;
+    }
+  }
+}
+
+// Fallback with even higher specificity
+.monaco-editor.monaco-editor .sticky-widget.sticky-widget {
+  background-color: #1E2A3A !important;
+  background: #1E2A3A !important;
+  backdrop-filter: blur(8px) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+  z-index: 100 !important;
+  width: 100% !important;
+  overflow: hidden !important;
+  right: initial !important;
+  margin-left: 0 !important;
+}
+
+// ULTRA HIGH SPECIFICITY - Using custom classes added by JavaScript
+.monaco-editor-custom.monaco-editor-custom {
+  .sticky-widget-custom.sticky-widget-custom.sticky-widget-custom {
+    background-color: #1E2A3A !important;
+    background: #1E2A3A !important;
+    backdrop-filter: blur(8px) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+    z-index: 100 !important;
+    width: 100% !important;
+    overflow: hidden !important;
+    right: initial !important;
+    margin-left: 0 !important;
+
+    .sticky-line-container {
+      background-color: transparent !important;
+      background: transparent !important;
+
+      * {
+        color: #E0E0E0 !important;
+        opacity: 1 !important;
+      }
+    }
+
+    .view-line {
+      color: #E0E0E0 !important;
+      opacity: 1 !important;
+      background: transparent !important;
+
+      * {
+        color: #E0E0E0 !important;
+        opacity: 1 !important;
+        background: transparent !important;
+        background-color: transparent !important;
+      }
+
+      [class*="mtk"] {
+        color: #E0E0E0 !important;
+        opacity: 1 !important;
+        background: transparent !important;
+        background-color: transparent !important;
+        visibility: visible !important;
+        display: inline !important;
+      }
+    }
+
+    .view-lines {
+      background: transparent !important;
+
+      * {
+        color: #E0E0E0 !important;
+        opacity: 1 !important;
+      }
+    }
+  }
 }
 
 // Sticky scroll separator line - Cyoda Neon Dark theme
@@ -92,11 +238,137 @@
     background-color: #FFFFFF !important;
   }
 
-  // Sticky scroll container for light theme
-  .monaco-editor .sticky-line-container {
-    background: rgba(255, 255, 255, 0.95) !important;
-    backdrop-filter: blur(8px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  // Sticky scroll - Light theme
+  .monaco-editor,
+  .report-editor-tab-json .monaco-editor {
+    // Target the sticky-widget div directly
+    .sticky-widget {
+      background-color: #FFFFFF !important;
+      background: #FFFFFF !important;
+      backdrop-filter: blur(8px) !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+      z-index: 100 !important;
+      width: 100% !important;
+      overflow: hidden !important;
+      right: initial !important;
+      margin-left: 0 !important;
+    }
+
+    // Also target by widgetid attribute
+    div[widgetid="editor.contrib.stickyScrollWidget"] {
+      background-color: #FFFFFF !important;
+      background: #FFFFFF !important;
+      backdrop-filter: blur(8px) !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+      z-index: 100 !important;
+      width: 100% !important;
+      overflow: hidden !important;
+      right: initial !important;
+      margin-left: 0 !important;
+    }
+
+    // Sticky line container inside
+    .sticky-widget .sticky-line-container,
+    div[widgetid="editor.contrib.stickyScrollWidget"] .sticky-line-container {
+      background-color: transparent !important;
+      background: transparent !important;
+
+      * {
+        color: #1F2937 !important;
+        opacity: 1 !important;
+      }
+    }
+
+    // Ensure text is visible - ALL elements
+    .sticky-widget .view-line,
+    div[widgetid="editor.contrib.stickyScrollWidget"] .view-line {
+      color: #1F2937 !important;
+      opacity: 1 !important;
+      background: transparent !important;
+
+      * {
+        color: #1F2937 !important;
+        opacity: 1 !important;
+        background: transparent !important;
+        background-color: transparent !important;
+      }
+
+      [class*="mtk"] {
+        color: #1F2937 !important;
+        opacity: 1 !important;
+        background: transparent !important;
+        background-color: transparent !important;
+        visibility: visible !important;
+        display: inline !important;
+      }
+    }
+
+    // View lines content
+    .sticky-widget .view-lines,
+    div[widgetid="editor.contrib.stickyScrollWidget"] .view-lines {
+      background: transparent !important;
+
+      * {
+        color: #1F2937 !important;
+        opacity: 1 !important;
+      }
+    }
+  }
+
+  // ULTRA HIGH SPECIFICITY for light theme - Using custom classes
+  .monaco-editor-custom.monaco-editor-custom {
+    .sticky-widget-custom.sticky-widget-custom.sticky-widget-custom {
+      background-color: #FFFFFF !important;
+      background: #FFFFFF !important;
+      backdrop-filter: blur(8px) !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+      z-index: 100 !important;
+      width: 100% !important;
+      overflow: hidden !important;
+      right: initial !important;
+      margin-left: 0 !important;
+
+      .sticky-line-container {
+        background-color: transparent !important;
+        background: transparent !important;
+
+        * {
+          color: #1F2937 !important;
+          opacity: 1 !important;
+        }
+      }
+
+      .view-line {
+        color: #1F2937 !important;
+        opacity: 1 !important;
+        background: transparent !important;
+
+        * {
+          color: #1F2937 !important;
+          opacity: 1 !important;
+          background: transparent !important;
+          background-color: transparent !important;
+        }
+
+        [class*="mtk"] {
+          color: #1F2937 !important;
+          opacity: 1 !important;
+          background: transparent !important;
+          background-color: transparent !important;
+          visibility: visible !important;
+          display: inline !important;
+        }
+      }
+
+      .view-lines {
+        background: transparent !important;
+
+        * {
+          color: #1F2937 !important;
+          opacity: 1 !important;
+        }
+      }
+    }
   }
 
   // Sticky scroll separator for light theme

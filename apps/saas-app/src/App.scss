@@ -2275,12 +2275,32 @@ div[class*="sticky-scroll"],
 .monaco-editor .sticky-scroll-widget,
 .monaco-editor .sticky-widget,
 .monaco-editor .editor-sticky-scroll,
-.monaco-editor .sticky-line-container {
-  background: rgba(30, 42, 58, 0.95) !important;
+.monaco-editor .sticky-line-container,
+.monaco-editor [widgetid*="editor.contrib.stickyScrollWidget"] {
+  background: #1E2A3A !important; // Fully opaque background to prevent text showing through
   backdrop-filter: blur(8px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   border-bottom: none !important;
   position: relative !important;
+  z-index: 10 !important; // Ensure sticky scroll is above content
+}
+
+// Fix overlayWidgets container
+.monaco-editor .overlayWidgets {
+  z-index: 10 !important;
+}
+
+// Sticky scroll text visibility - ensure text is visible
+div[class*="sticky-scroll"] .view-line,
+.monaco-editor div[class*="sticky-scroll"] .view-line,
+.monaco-editor div[class*="sticky"] .view-line,
+.monaco-editor .sticky-scroll-widget .view-line,
+.monaco-editor .sticky-widget .view-line,
+.monaco-editor .editor-sticky-scroll .view-line,
+.monaco-editor .sticky-line-container .view-line,
+.monaco-editor [widgetid*="editor.contrib.stickyScrollWidget"] .view-line {
+  color: #E0E0E0 !important; // Ensure text is visible in dark theme
+  opacity: 1 !important;
 }
 
 // Sticky scroll separator line - Cyoda Neon Dark theme
@@ -2314,10 +2334,25 @@ div[class*="sticky-scroll"]::after,
   .monaco-editor .sticky-scroll-widget,
   .monaco-editor .sticky-widget,
   .monaco-editor .editor-sticky-scroll,
-  .monaco-editor .sticky-line-container {
-    background: rgba(255, 255, 255, 0.95) !important;
+  .monaco-editor .sticky-line-container,
+  .monaco-editor [widgetid*="editor.contrib.stickyScrollWidget"] {
+    background: #FFFFFF !important; // Fully opaque background to prevent text showing through
     backdrop-filter: blur(8px);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    z-index: 10 !important; // Ensure sticky scroll is above content
+  }
+
+  // Light theme sticky scroll text visibility
+  div[class*="sticky-scroll"] .view-line,
+  .monaco-editor div[class*="sticky-scroll"] .view-line,
+  .monaco-editor div[class*="sticky"] .view-line,
+  .monaco-editor .sticky-scroll-widget .view-line,
+  .monaco-editor .sticky-widget .view-line,
+  .monaco-editor .editor-sticky-scroll .view-line,
+  .monaco-editor .sticky-line-container .view-line,
+  .monaco-editor [widgetid*="editor.contrib.stickyScrollWidget"] .view-line {
+    color: #1F2937 !important; // Dark text for light theme
+    opacity: 1 !important;
   }
 
   div[class*="sticky-scroll"]::after,

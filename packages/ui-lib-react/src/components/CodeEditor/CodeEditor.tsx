@@ -8,29 +8,21 @@ const getCurrentTheme = (): 'light' | 'dark' => {
   return document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark'
 }
 
-// Monaco editor worker setup - use blob URLs to avoid CORS issues
-import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
-import jsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker'
-import cssWorker from 'monaco-editor/esm/vs/language/css/css.worker?worker'
-import htmlWorker from 'monaco-editor/esm/vs/language/html/html.worker?worker'
-import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker'
+// Monaco editor worker setup - skip in test environment
+// Check if we're in a test environment (vitest sets process.env.VITEST or import.meta.env.VITEST)
+const isTestEnv = typeof process !== 'undefined' && (process.env.VITEST || process.env.NODE_ENV === 'test')
 
-window.MonacoEnvironment = {
-  getWorker(_: string, label: string) {
-    if (label === 'json') {
-      return new jsonWorker()
-    }
-    if (label === 'css' || label === 'scss' || label === 'less') {
-      return new cssWorker()
-    }
-    if (label === 'html' || label === 'handlebars' || label === 'razor') {
-      return new htmlWorker()
-    }
-    if (label === 'typescript' || label === 'javascript') {
-      return new tsWorker()
-    }
-    return new editorWorker()
-  },
+// Track worker setup state
+let workersSetupPromise: Promise<void> | null = null
+
+if (!isTestEnv && typeof window !== 'undefined') {
+  // Dynamically import workers only in non-test environment
+  // This prevents Vite from trying to resolve worker imports during tests
+  workersSetupPromise = import('./monacoWorkers').then(({ setupMonacoWorkers }) => {
+    setupMonacoWorkers()
+  }).catch((error) => {
+    console.warn('Failed to load Monaco editor workers:', error)
+  })
 }
 
 export type CodeLanguage = 'javascript' | 'typescript' | 'json' | 'xml' | 'html' | 'css' | 'plain'
@@ -126,11 +118,17 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   useEffect(() => {
     if (!containerRef.current || isInitialized) return
 
-    // Register both Cyoda themes and set the current one
-    const currentTheme = getCurrentTheme()
-    registerCyodaThemes(monaco, currentTheme)
+    const initEditor = async () => {
+      // Wait for workers to be set up in production (if needed)
+      if (workersSetupPromise) {
+        await workersSetupPromise
+      }
 
-    const monacoLanguage = getMonacoLanguage(language)
+      // Register both Cyoda themes and set the current one
+      const currentTheme = getCurrentTheme()
+      registerCyodaThemes(monaco, currentTheme)
+
+      const monacoLanguage = getMonacoLanguage(language)
 
     if (!diff) {
       // Standard editor
@@ -223,6 +221,10 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
       setIsInitialized(true)
       onReady?.(diffEditor)
     }
+    }
+
+    // Call the async init function
+    initEditor()
 
     return () => {
       editorRef.current?.dispose()

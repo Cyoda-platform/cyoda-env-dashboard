@@ -11,6 +11,7 @@ import { Spin, Alert } from 'antd';
 import MonacoEditor, { BeforeMount } from '@monaco-editor/react';
 import { useWorkflow } from '../hooks/useStatemachine';
 import type { PersistedType } from '../types';
+import './ConfigWorkflow.scss';
 
 interface ConfigWorkflowProps {
   workflowId: string;

@@ -231,6 +231,104 @@ const ReportEditorTabJson: React.FC<ReportEditorTabJsonProps> = ({
     editorRef.current = editor;
     monacoRef.current = monaco;
 
+    // Fix sticky scroll background - apply styles directly to DOM with MAXIMUM FORCE
+    const fixStickyScrollBackground = () => {
+      const editorDom = editor.getDomNode();
+      if (!editorDom) return;
+
+      const bgColor = currentTheme === 'light' ? '#FFFFFF' : '#1E2A3A';
+      const textColor = currentTheme === 'light' ? '#1F2937' : '#E0E0E0';
+
+      // DEBUG: Log sticky scroll structure
+      console.log('=== STICKY SCROLL DEBUG ===');
+      console.log('Theme:', currentTheme);
+      console.log('Text color:', textColor);
+      console.log('BG color:', bgColor);
+
+      // Find the sticky-widget div (the actual container)
+      const stickyWidgets = editorDom.querySelectorAll('.sticky-widget');
+      console.log('Found sticky widgets:', stickyWidgets.length);
+
+      stickyWidgets.forEach((widget: any, widgetIndex: number) => {
+        console.log(`Widget ${widgetIndex}:`, widget);
+        console.log(`Widget ${widgetIndex} innerHTML:`, widget.innerHTML);
+        console.log(`Widget ${widgetIndex} children:`, widget.children);
+
+        // Log ALL elements inside widget
+        const allElements = widget.querySelectorAll('*');
+        console.log(`Widget ${widgetIndex} has ${allElements.length} total elements`);
+        allElements.forEach((el: any, i: number) => {
+          console.log(`  Element ${i}: ${el.tagName}.${el.className} - "${el.textContent?.substring(0, 50)}"`);
+        });
+
+        // Add custom class for higher CSS specificity
+        widget.classList.add('sticky-widget-custom');
+
+        // Apply inline styles with !important (highest priority)
+        widget.style.setProperty('background-color', bgColor, 'important');
+        widget.style.setProperty('background', bgColor, 'important');
+        widget.style.setProperty('backdrop-filter', 'blur(8px)', 'important');
+        widget.style.setProperty('z-index', '100', 'important');
+        widget.style.setProperty('box-shadow', '0 2px 8px rgba(0, 0, 0, 0.3)', 'important');
+
+        // Override Monaco's default styles
+        widget.style.setProperty('width', '100%', 'important');
+        widget.style.setProperty('overflow', 'hidden', 'important');
+        widget.style.setProperty('right', 'initial', 'important');
+        widget.style.setProperty('margin-left', '0', 'important');
+
+        // CRITICAL: Apply styles to ALL elements inside widget
+        // BUT: Don't override Monaco's syntax highlighting colors (mtk* classes)
+        const allWidgetElements = widget.querySelectorAll('*');
+        console.log(`Applying styles to ${allWidgetElements.length} elements in widget`);
+        allWidgetElements.forEach((el: any) => {
+          // Check if element has mtk* class (Monaco Token Kit - syntax highlighting)
+          const hasMtkClass = el.className && el.className.toString().includes('mtk');
+
+          if (!hasMtkClass) {
+            // For non-syntax elements, apply our text color
+            el.style.setProperty('color', textColor, 'important');
+          }
+          // Note: We don't override mtk* elements - Monaco handles their colors via theme
+
+          // For all elements: ensure visibility and transparent background
+          el.style.setProperty('opacity', '1', 'important');
+          el.style.setProperty('visibility', 'visible', 'important');
+          el.style.setProperty('background', 'transparent', 'important');
+          el.style.setProperty('background-color', 'transparent', 'important');
+        });
+      });
+
+      // Also target by widgetid
+      const widgetById = editorDom.querySelector('[widgetid="editor.contrib.stickyScrollWidget"]');
+      if (widgetById) {
+        (widgetById as any).style.setProperty('background-color', bgColor, 'important');
+        (widgetById as any).style.setProperty('background', bgColor, 'important');
+        (widgetById as any).style.setProperty('backdrop-filter', 'blur(8px)', 'important');
+        (widgetById as any).style.setProperty('z-index', '100', 'important');
+        (widgetById as any).style.setProperty('box-shadow', '0 2px 8px rgba(0, 0, 0, 0.3)', 'important');
+      }
+
+      // Add custom class to monaco-editor for higher CSS specificity
+      const monacoEditor = editorDom.querySelector('.monaco-editor');
+      if (monacoEditor) {
+        monacoEditor.classList.add('monaco-editor-custom');
+      }
+    };
+
+    // Apply fixes immediately
+    fixStickyScrollBackground();
+
+    // Re-apply on scroll (sticky scroll might be created dynamically)
+    editor.onDidScrollChange(() => {
+      setTimeout(fixStickyScrollBackground, 0);
+    });
+
+    // Re-apply on content change
+    editor.onDidChangeModelContent(() => {
+      setTimeout(fixStickyScrollBackground, 0);
+    });
+
     // Add sticky scroll separator styles dynamically
     const addStickyScrollStyles = () => {
       const editorDom = editor.getDomNode();

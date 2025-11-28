@@ -10,6 +10,47 @@ afterEach(() => {
   cleanup()
 })
 
+// Mock monaco-editor workers to avoid import errors
+vi.mock('monaco-editor/esm/vs/editor/editor.worker?worker', () => ({
+  default: class MockWorker {
+    constructor() {}
+    postMessage() {}
+    terminate() {}
+  }
+}))
+
+vi.mock('monaco-editor/esm/vs/language/json/json.worker?worker', () => ({
+  default: class MockWorker {
+    constructor() {}
+    postMessage() {}
+    terminate() {}
+  }
+}))
+
+vi.mock('monaco-editor/esm/vs/language/css/css.worker?worker', () => ({
+  default: class MockWorker {
+    constructor() {}
+    postMessage() {}
+    terminate() {}
+  }
+}))
+
+vi.mock('monaco-editor/esm/vs/language/html/html.worker?worker', () => ({
+  default: class MockWorker {
+    constructor() {}
+    postMessage() {}
+    terminate() {}
+  }
+}))
+
+vi.mock('monaco-editor/esm/vs/language/typescript/ts.worker?worker', () => ({
+  default: class MockWorker {
+    constructor() {}
+    postMessage() {}
+    terminate() {}
+  }
+}))
+
 // Mock window.matchMedia - MUST be done before any Ant Design components are imported
 global.matchMedia = global.matchMedia || function (query: string) {
   return {

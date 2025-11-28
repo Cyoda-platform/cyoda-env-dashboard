@@ -51,6 +51,12 @@ export default defineConfig({
       '@cyoda/statemachine-react': resolve(__dirname, './packages/statemachine-react/src/index.ts'),
       '@cyoda/tableau-react': resolve(__dirname, './packages/tableau-react/src/index.ts'),
       'monaco-editor': resolve(__dirname, './vitest.monaco-mock.ts'),
+      // Mock monaco-editor workers
+      'monaco-editor/esm/vs/editor/editor.worker?worker': resolve(__dirname, './vitest.worker-mock.ts'),
+      'monaco-editor/esm/vs/language/json/json.worker?worker': resolve(__dirname, './vitest.worker-mock.ts'),
+      'monaco-editor/esm/vs/language/css/css.worker?worker': resolve(__dirname, './vitest.worker-mock.ts'),
+      'monaco-editor/esm/vs/language/html/html.worker?worker': resolve(__dirname, './vitest.worker-mock.ts'),
+      'monaco-editor/esm/vs/language/typescript/ts.worker?worker': resolve(__dirname, './vitest.worker-mock.ts'),
     }
   }
 })
