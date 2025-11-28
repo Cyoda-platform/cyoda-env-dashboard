@@ -608,6 +608,36 @@
         color: #EF4444 !important;
       }
     }
+
+    // Collapsed menu - dots for submenu items in light theme
+    &.ant-layout-sider-collapsed {
+      .ant-menu-sub {
+        .ant-menu-item {
+          &::before {
+            background-color: rgba(0, 0, 0, 0.35) !important;
+          }
+
+          &.ant-menu-item-selected::before {
+            background-color: #00D4AA !important;
+          }
+        }
+      }
+    }
+
+    // Also for menu-collapsed class
+    .ant-menu.menu-collapsed {
+      .ant-menu-sub {
+        .ant-menu-item {
+          &::before {
+            background-color: rgba(0, 0, 0, 0.35) !important;
+          }
+
+          &.ant-menu-item-selected::before {
+            background-color: #00D4AA !important;
+          }
+        }
+      }
+    }
   }
 }
 

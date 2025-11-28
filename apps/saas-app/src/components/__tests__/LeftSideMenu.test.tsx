@@ -314,5 +314,84 @@ describe('LeftSideMenu', () => {
       });
     });
   });
+
+  describe('Active Child Indicator', () => {
+    it('should show indicator dot on Reporting parent when on tableau route and collapsed', () => {
+      const { container } = renderWithRouter(
+        <LeftSideMenu collapsed={true} onCollapse={mockOnCollapse} />,
+        '/tableau/reports'
+      );
+
+      // Find the indicator dot
+      const indicator = container.querySelector('.submenu-active-indicator');
+      expect(indicator).toBeInTheDocument();
+    });
+
+    it('should show indicator dot on Lifecycle parent when on workflows route and collapsed', () => {
+      const { container } = renderWithRouter(
+        <LeftSideMenu collapsed={true} onCollapse={mockOnCollapse} />,
+        '/workflows'
+      );
+
+      // Find the indicator dot
+      const indicator = container.querySelector('.submenu-active-indicator');
+      expect(indicator).toBeInTheDocument();
+    });
+
+    it('should show indicator dot on Lifecycle parent when on instances route and collapsed', () => {
+      const { container } = renderWithRouter(
+        <LeftSideMenu collapsed={true} onCollapse={mockOnCollapse} />,
+        '/instances'
+      );
+
+      // Find the indicator dot
+      const indicator = container.querySelector('.submenu-active-indicator');
+      expect(indicator).toBeInTheDocument();
+    });
+
+    it('should NOT show indicator dot when menu is expanded', () => {
+      const { container } = renderWithRouter(
+        <LeftSideMenu collapsed={false} onCollapse={mockOnCollapse} />,
+        '/tableau/reports'
+      );
+
+      // Indicator should not be present when expanded
+      const indicator = container.querySelector('.submenu-active-indicator');
+      expect(indicator).not.toBeInTheDocument();
+    });
+
+    it('should NOT show indicator dot when not on a submenu route', () => {
+      const { container } = renderWithRouter(
+        <LeftSideMenu collapsed={true} onCollapse={mockOnCollapse} />,
+        '/tasks'
+      );
+
+      // Indicator should not be present
+      const indicator = container.querySelector('.submenu-active-indicator');
+      expect(indicator).not.toBeInTheDocument();
+    });
+
+    it('should hide indicator dot when submenu is opened in collapsed mode', async () => {
+      const user = userEvent.setup();
+      const { container } = renderWithRouter(
+        <LeftSideMenu collapsed={true} onCollapse={mockOnCollapse} />,
+        '/tableau/reports'
+      );
+
+      // Initially, indicator should be visible
+      let indicator = container.querySelector('.submenu-active-indicator');
+      expect(indicator).toBeInTheDocument();
+
+      // Open the submenu
+      const reportingSubmenuTitle = container.querySelector('.ant-menu-submenu .ant-menu-submenu-title');
+      await user.click(reportingSubmenuTitle!);
+
+      await waitFor(() => {
+        // After opening submenu, indicator should be hidden
+        indicator = container.querySelector('.submenu-active-indicator');
+        expect(indicator).not.toBeInTheDocument();
+      });
+    });
+  });
 });
 
