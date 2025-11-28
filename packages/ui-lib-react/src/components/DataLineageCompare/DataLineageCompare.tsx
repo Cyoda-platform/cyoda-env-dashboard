@@ -5,6 +5,21 @@ import dayjs from 'dayjs'
 import { CodeEditor } from '../CodeEditor'
 import './DataLineageCompare.scss'
 
+/**
+ * DataLineageCompare Component
+ *
+ * Displays a diff comparison between two transaction states using Monaco Editor.
+ *
+ * IMPORTANT: This component has critical styling requirements for diff highlighting
+ * to work correctly in both light and dark themes. See README.md for details.
+ *
+ * Key dependencies:
+ * - DataLineageCompare.scss: Contains transparent background overrides for light theme
+ * - monacoTheme.ts: Contains matching diff colors for both themes
+ *
+ * DO NOT modify the SCSS without visual testing in both themes!
+ */
+
 export interface Transaction {
   transactionId: string
   dateTime: string

@@ -143,9 +143,13 @@
       background: #FFFFFF;
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 
-      // Remove white/colored background that covers diff highlights
+      // CRITICAL: Remove white/colored background that covers diff highlights
+      // Without these styles, Monaco Editor's background layers will hide the diff highlighting
+      // in light theme, making it impossible to see changes between versions.
+      // DO NOT REMOVE OR MODIFY THESE STYLES without visual testing in both themes!
       .monaco-diff-editor {
-        // Make ALL backgrounds transparent to reveal diff highlights
+        // Make ALL backgrounds transparent to reveal diff highlights underneath
+        // Monaco Editor creates multiple layered elements, all need to be transparent
         .monaco-editor,
         .monaco-editor .view-lines,
         .monaco-editor .view-line,
@@ -168,7 +172,8 @@
           background-color: transparent !important;
         }
 
-        // Keep diff highlights visible (these should have background)
+        // Keep diff highlights visible (these should have background from Monaco theme)
+        // These are the actual colored highlights that show insertions/deletions
         .monaco-editor .view-overlays .line-insert,
         .monaco-editor .view-overlays .line-delete,
         .monaco-editor .char-insert,

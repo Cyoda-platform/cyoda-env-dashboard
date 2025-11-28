@@ -373,7 +373,10 @@ export const CYODA_LIGHT_THEME: editor.IStandaloneThemeData = {
     'peekViewResult.background': '#FFFFFF',
     'peekViewTitle.background': '#F9FAFB',
 
-    // Diff editor - same colors as dark theme for consistency
+    // CRITICAL: Diff editor colors - MUST match dark theme for consistency
+    // These colors are used in DataLineageCompare component
+    // Light theme uses same colors as dark theme to ensure consistent diff highlighting
+    // DO NOT change these without also updating DataLineageCompare.scss transparent backgrounds!
     'diffEditor.insertedTextBackground': '#00D4AA40', // Teal background for added text (same as dark)
     'diffEditor.removedTextBackground': '#EF444440', // Red background for removed text (same as dark)
     'diffEditor.insertedLineBackground': '#00D4AA25', // Lighter teal for full line (same as dark)
