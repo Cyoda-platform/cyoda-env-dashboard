@@ -28,13 +28,15 @@
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  
+
   &.active {
-    background-color: #4dbd74;
+    background-color: #00D4AA;
+    box-shadow: 0 0 0 2px rgba(0, 212, 170, 0.3);
   }
-  
+
   &.deactive {
-    background-color: #f86c6b;
+    background-color: #F59E0B;
+    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.3);
   }
 }
 

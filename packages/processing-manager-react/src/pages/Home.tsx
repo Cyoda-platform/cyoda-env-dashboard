@@ -83,7 +83,7 @@ export default function Home() {
               title="Online Nodes"
               value={onlineNodes}
               prefix={<CheckCircleOutlined />}
-              valueStyle={{ color: '#3f8600' }}
+              valueStyle={{ color: '#00D4AA' }}
               loading={isLoading}
             />
           </Card>
@@ -94,7 +94,7 @@ export default function Home() {
               title="Offline Nodes"
               value={offlineNodes}
               prefix={<CloseCircleOutlined />}
-              valueStyle={{ color: '#cf1322' }}
+              valueStyle={{ color: '#F59E0B' }}
               loading={isLoading}
             />
           </Card>

@@ -15,6 +15,12 @@
 
   .stats-row {
     margin-bottom: 24px;
+
+    .ant-card {
+      .ant-card-body {
+        padding: 20px;
+      }
+    }
   }
 
   .nodes-section {
@@ -75,13 +81,13 @@
     display: inline-block;
 
     &.active {
-      background-color: #52c41a;
-      box-shadow: 0 0 0 2px rgba(82, 196, 26, 0.3);
+      background-color: #00D4AA;
+      box-shadow: 0 0 0 2px rgba(0, 212, 170, 0.3);
     }
 
     &.deactive {
-      background-color: #ff4d4f;
-      box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.3);
+      background-color: #F59E0B;
+      box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.3);
     }
   }
 }
