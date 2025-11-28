@@ -221,11 +221,14 @@ const ReportEditor: React.FC = () => {
     },
   ];
 
-  // Check for duplicate alias names
-  const hasDuplicateAliases = useMemo(() => {
-    const aliases = configDefinition.colDefs?.map((col: any) => col.alias) || [];
-    return new Set(aliases).size !== aliases.length;
+  // Check for duplicate alias names (same logic as Vue ConfigEditorAlertAliasSameName.vue)
+  const duplicateAliasNames = useMemo(() => {
+    const columns = (configDefinition.colDefs || []).map((el: any) => el.fullPath);
+    const aliasDefs = configDefinition.aliasDefs || [];
+    return aliasDefs.filter((el: any) => columns.includes(el.name)).map((el: any) => el.name);
   }, [configDefinition]);
+
+  const hasDuplicateAliases = duplicateAliasNames.length > 0;
 
   if (isLoading) {
     return (
@@ -242,7 +245,7 @@ const ReportEditor: React.FC = () => {
       {hasDuplicateAliases && (
         <Alert
           message="Warning: Duplicate Alias Names"
-          description="Some columns have the same alias name. This may cause issues with the report."
+          description={`Alias name same with column names: ${duplicateAliasNames.join(', ')}`}
           type="warning"
           showIcon
           closable

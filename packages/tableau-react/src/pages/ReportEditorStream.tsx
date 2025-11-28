@@ -7,7 +7,7 @@
 
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { Tabs, Button, Spin, message, Tooltip, Form, Select, Divider } from 'antd';
+import { Tabs, Button, Spin, message, Tooltip, Form, Select, Divider, Alert } from 'antd';
 import { ArrowLeftOutlined, SaveOutlined, PlayCircleOutlined } from '@ant-design/icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { axios } from '@cyoda/http-api-react';
@@ -243,6 +243,15 @@ export const ReportEditorStream: React.FC = () => {
     return ['GREATER_THAN', 'LESS_THAN', 'EQUALS', 'NOT_EQUALS', 'BETWEEN'];
   }, []);
 
+  // Check for duplicate alias names (same logic as Vue ConfigEditorAlertAliasSameName.vue)
+  const duplicateAliasNames = useMemo(() => {
+    const columns = (configDefinition.colDefs || []).map((el: any) => el.fullPath);
+    const aliasDefs = configDefinition.aliasDefs || [];
+    return aliasDefs.filter((el: any) => columns.includes(el.name)).map((el: any) => el.name);
+  }, [configDefinition]);
+
+  const hasDuplicateAliases = duplicateAliasNames.length > 0;
+
   const handleConfigChange = useCallback((updates: Partial<StreamReportDefinition>) => {
     setConfigDefinition((prev) => ({ ...prev, ...updates }));
   }, []);
@@ -397,6 +406,17 @@ export const ReportEditorStream: React.FC = () => {
           </span>
         </Tooltip>
       </div>
+
+      {hasDuplicateAliases && (
+        <Alert
+          message="Warning: Duplicate Alias Names"
+          description={`Alias name same with column names: ${duplicateAliasNames.join(', ')}`}
+          type="warning"
+          showIcon
+          closable
+          style={{ marginBottom: 16 }}
+        />
+      )}
 
       <Tabs
         type="card"
