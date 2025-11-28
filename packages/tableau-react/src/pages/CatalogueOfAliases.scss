@@ -34,5 +34,58 @@
   .ant-table {
     background: white;
   }
+
+  // Export/Import buttons styling
+  .export-import-button,
+  .export-import-button.ant-btn,
+  .export-import-button.ant-btn-default {
+    background-color: #1DD1FF !important;
+    border-color: #1DD1FF !important;
+    color: #fff !important;
+
+    // Icon color
+    .anticon {
+      color: #fff !important;
+    }
+
+    // Hover state
+    &:hover:not(:disabled),
+    &:hover:not(.ant-btn-disabled) {
+      background-color: #4DE0FF !important;
+      border-color: #4DE0FF !important;
+      color: #fff !important;
+
+      .anticon {
+        color: #fff !important;
+      }
+    }
+
+    // Active/Focus state
+    &:active:not(:disabled),
+    &:focus:not(:disabled),
+    &:active:not(.ant-btn-disabled),
+    &:focus:not(.ant-btn-disabled) {
+      background-color: #00C4EF !important;
+      border-color: #00C4EF !important;
+      color: #fff !important;
+
+      .anticon {
+        color: #fff !important;
+      }
+    }
+
+    // Disabled state
+    &:disabled,
+    &.ant-btn-disabled {
+      background-color: #1DD1FF !important;
+      border-color: #1DD1FF !important;
+      color: #fff !important;
+      opacity: 0.5;
+
+      .anticon {
+        color: #fff !important;
+      }
+    }
+  }
 }
 

@@ -7,6 +7,7 @@ import { useDataMappings, useDeleteDataMapping, useExportAllCobi, useImportCobiC
 import { AIGenerateButton } from '../../components/AIGenerate';
 import type { MappingConfigDto } from '../../types';
 import './DataMapperIndex.css';
+import '../../../../statemachine-react/src/components/ExportImport/ExportImport.scss';
 
 const DataMapperIndex: React.FC = () => {
   const navigate = useNavigate();
@@ -337,6 +338,7 @@ const DataMapperIndex: React.FC = () => {
             </Button>
             <Tooltip title="Export all data mappings">
               <Button
+                className="export-import-button"
                 icon={<DownloadOutlined />}
                 onClick={handleExport}
                 loading={exportMutation.isPending}
@@ -351,6 +353,7 @@ const DataMapperIndex: React.FC = () => {
                 showUploadList={false}
               >
                 <Button
+                  className="export-import-button"
                   icon={<UploadOutlined />}
                   loading={importMutation.isPending}
                 >

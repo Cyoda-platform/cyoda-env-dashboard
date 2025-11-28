@@ -17,6 +17,7 @@ import type { DataSourceConfigDto } from '../../types';
 import { AIGenerateButton } from '../../components/AIGenerate';
 import dayjs from 'dayjs';
 import './DataSourceConfigIndex.css';
+import '../../../../statemachine-react/src/components/ExportImport/ExportImport.scss';
 
 const { confirm } = Modal;
 
@@ -337,6 +338,7 @@ const DataSourceConfigIndex: React.FC = () => {
             </Button>
             <Tooltip title="Export all data source configurations">
               <Button
+                className="export-import-button"
                 icon={<DownloadOutlined />}
                 onClick={handleExport}
                 loading={exportMutation.isPending}
@@ -351,6 +353,7 @@ const DataSourceConfigIndex: React.FC = () => {
                 showUploadList={false}
               >
                 <Button
+                  className="export-import-button"
                   icon={<UploadOutlined />}
                   loading={importMutation.isPending}
                 >

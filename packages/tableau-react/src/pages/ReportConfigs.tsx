@@ -32,6 +32,7 @@ import HelperReportDefinition from '../utils/HelperReportDefinition';
 import { HelperStorage } from '@cyoda/ui-lib-react';
 import type { ReportDefinition } from '../types';
 import './ReportConfigs.scss';
+import '../../../statemachine-react/src/components/ExportImport/ExportImport.scss';
 
 interface ReportConfigRow {
   id: string;
@@ -778,7 +779,7 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
 
           <Tooltip title="Export selected reports">
             <Button
-              type="primary"
+              className="export-import-button"
               icon={<UploadOutlined />}
               onClick={handleExport}
               loading={exportLoading}
@@ -790,7 +791,7 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
 
           <Tooltip title="Import previously exported reports">
             <Button
-              type="default"
+              className="export-import-button"
               icon={<DownloadOutlined />}
               onClick={() => setImportDialogOpen(true)}
             >
@@ -800,7 +801,7 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
 
           <Divider type="vertical" />
 
-          <Button icon={<ReloadOutlined />} onClick={handleResetState}>
+          <Button type="default" icon={<ReloadOutlined />} onClick={handleResetState}>
             Reset State
           </Button>
         </Space>

@@ -36,6 +36,7 @@ import type { HistoryFilterForm } from '../utils/HelperReportDefinition';
 import type { ReportDefinition } from '../types';
 import HelperReportDefinition from '../utils/HelperReportDefinition';
 import './ReportConfigsStream.scss';
+import '../../../statemachine-react/src/components/ExportImport/ExportImport.scss';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
 
@@ -580,7 +581,7 @@ export const ReportConfigsStream: React.FC = () => {
 
           <Tooltip title="Export selected reports">
             <Button
-              type="primary"
+              className="export-import-button"
               icon={<UploadOutlined />}
               onClick={handleExport}
               loading={exportLoading}
@@ -592,7 +593,7 @@ export const ReportConfigsStream: React.FC = () => {
 
           <Tooltip title="Import previously exported reports">
             <Button
-              type="default"
+              className="export-import-button"
               icon={<DownloadOutlined />}
               onClick={() => setImportDialogOpen(true)}
             >
@@ -603,7 +604,7 @@ export const ReportConfigsStream: React.FC = () => {
           <Divider type="vertical" />
 
           <Tooltip title="Reset state: filters, table settings, etc.">
-            <Button icon={<UndoOutlined />} onClick={handleResetState}>
+            <Button type="default" icon={<UndoOutlined />} onClick={handleResetState}>
               Reset state
             </Button>
           </Tooltip>

@@ -144,9 +144,9 @@ const TrinoIndex: React.FC = () => {
             <div className="trino-index-actions">
               <Tooltip title="Reset state: filters, table settings, etc.">
                 <Button
+                  type="default"
                   icon={<ReloadOutlined />}
                   onClick={handleResetState}
-                  type="primary"
                 >
                   Reset state
                 </Button>

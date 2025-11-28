@@ -10,6 +10,7 @@ import { UploadOutlined, DownloadOutlined } from '@ant-design/icons';
 import { ExportDialog } from './ExportDialog';
 import { ImportDialog } from './ImportDialog';
 import type { Workflow } from '../../types';
+import './ExportImport.scss';
 
 export interface ExportImportProps {
   selectedWorkflows: Workflow[];
@@ -50,7 +51,7 @@ export const ExportImport: React.FC<ExportImportProps> = ({
       <Space>
         <Tooltip title="Export selected workflows">
           <Button
-            type="primary"
+            className="export-import-button"
             icon={<UploadOutlined />}
             onClick={handleExportClick}
             disabled={selectedWorkflows.length === 0}
@@ -61,7 +62,7 @@ export const ExportImport: React.FC<ExportImportProps> = ({
 
         <Tooltip title="Import previously exported workflows">
           <Button
-            type="default"
+            className="export-import-button"
             icon={<DownloadOutlined />}
             onClick={() => setImportDialogOpen(true)}
           >

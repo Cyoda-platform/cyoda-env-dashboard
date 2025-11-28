@@ -22,6 +22,7 @@ import ImportDialog from '../components/ImportDialog';
 import { ResizableTitle } from '../components/ResizableTitle';
 import { HelperStorage } from '@cyoda/ui-lib-react';
 import './CatalogueOfAliases.scss';
+import '../../../statemachine-react/src/components/ExportImport/ExportImport.scss';
 
 interface TableDataRow {
   id: string;
@@ -470,13 +471,18 @@ const CatalogueOfAliases: React.FC = () => {
             Create New
           </Button>
           <Button
+            className="export-import-button"
             icon={<ExportOutlined />}
             onClick={handleExport}
             disabled={selectedRowKeys.length === 0}
           >
             Export
           </Button>
-          <Button icon={<ImportOutlined />} onClick={() => setImportDialogOpen(true)}>
+          <Button
+            className="export-import-button"
+            icon={<ImportOutlined />}
+            onClick={() => setImportDialogOpen(true)}
+          >
             Import
           </Button>
         </Space>

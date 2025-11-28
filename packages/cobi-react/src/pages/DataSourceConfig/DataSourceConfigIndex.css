@@ -39,3 +39,91 @@
   color: #262626;
 }
 
+/* Export/Import buttons styling */
+.export-import-button,
+.export-import-button.ant-btn,
+.export-import-button.ant-btn-default {
+  background-color: #1DD1FF !important;
+  border-color: #1DD1FF !important;
+  color: #fff !important;
+}
+
+.export-import-button .anticon,
+.export-import-button.ant-btn .anticon,
+.export-import-button.ant-btn-default .anticon {
+  color: #fff !important;
+}
+
+.export-import-button:hover:not(:disabled),
+.export-import-button:hover:not(.ant-btn-disabled),
+.export-import-button.ant-btn:hover:not(:disabled),
+.export-import-button.ant-btn:hover:not(.ant-btn-disabled),
+.export-import-button.ant-btn-default:hover:not(:disabled),
+.export-import-button.ant-btn-default:hover:not(.ant-btn-disabled) {
+  background-color: #4DE0FF !important;
+  border-color: #4DE0FF !important;
+  color: #fff !important;
+}
+
+.export-import-button:hover:not(:disabled) .anticon,
+.export-import-button:hover:not(.ant-btn-disabled) .anticon,
+.export-import-button.ant-btn:hover:not(:disabled) .anticon,
+.export-import-button.ant-btn:hover:not(.ant-btn-disabled) .anticon,
+.export-import-button.ant-btn-default:hover:not(:disabled) .anticon,
+.export-import-button.ant-btn-default:hover:not(.ant-btn-disabled) .anticon {
+  color: #fff !important;
+}
+
+.export-import-button:active:not(:disabled),
+.export-import-button:focus:not(:disabled),
+.export-import-button:active:not(.ant-btn-disabled),
+.export-import-button:focus:not(.ant-btn-disabled),
+.export-import-button.ant-btn:active:not(:disabled),
+.export-import-button.ant-btn:focus:not(:disabled),
+.export-import-button.ant-btn:active:not(.ant-btn-disabled),
+.export-import-button.ant-btn:focus:not(.ant-btn-disabled),
+.export-import-button.ant-btn-default:active:not(:disabled),
+.export-import-button.ant-btn-default:focus:not(:disabled),
+.export-import-button.ant-btn-default:active:not(.ant-btn-disabled),
+.export-import-button.ant-btn-default:focus:not(.ant-btn-disabled) {
+  background-color: #00C4EF !important;
+  border-color: #00C4EF !important;
+  color: #fff !important;
+}
+
+.export-import-button:active:not(:disabled) .anticon,
+.export-import-button:focus:not(:disabled) .anticon,
+.export-import-button:active:not(.ant-btn-disabled) .anticon,
+.export-import-button:focus:not(.ant-btn-disabled) .anticon,
+.export-import-button.ant-btn:active:not(:disabled) .anticon,
+.export-import-button.ant-btn:focus:not(:disabled) .anticon,
+.export-import-button.ant-btn:active:not(.ant-btn-disabled) .anticon,
+.export-import-button.ant-btn:focus:not(.ant-btn-disabled) .anticon,
+.export-import-button.ant-btn-default:active:not(:disabled) .anticon,
+.export-import-button.ant-btn-default:focus:not(:disabled) .anticon,
+.export-import-button.ant-btn-default:active:not(.ant-btn-disabled) .anticon,
+.export-import-button.ant-btn-default:focus:not(.ant-btn-disabled) .anticon {
+  color: #fff !important;
+}
+
+.export-import-button:disabled,
+.export-import-button.ant-btn-disabled,
+.export-import-button.ant-btn:disabled,
+.export-import-button.ant-btn.ant-btn-disabled,
+.export-import-button.ant-btn-default:disabled,
+.export-import-button.ant-btn-default.ant-btn-disabled {
+  background-color: #1DD1FF !important;
+  border-color: #1DD1FF !important;
+  color: #fff !important;
+  opacity: 0.5;
+}
+
+.export-import-button:disabled .anticon,
+.export-import-button.ant-btn-disabled .anticon,
+.export-import-button.ant-btn:disabled .anticon,
+.export-import-button.ant-btn.ant-btn-disabled .anticon,
+.export-import-button.ant-btn-default:disabled .anticon,
+.export-import-button.ant-btn-default.ant-btn-disabled .anticon {
+  color: #fff !important;
+}
+
