@@ -193,9 +193,9 @@ npm start
 
 ## 📚 Documentation
 
-- **Migration Docs**: `docs/migration/` - Migration history and status
 - **User Guides**: `docs/guides/` - Setup and usage guides
 - **Package READMEs**: Each package has its own README with specific documentation
+- **SaaS App Docs**: `apps/saas-app/` - Main application documentation and quick start guides
 
 ## 🧪 Testing
 
