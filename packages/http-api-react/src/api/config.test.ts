@@ -180,14 +180,33 @@ describe('Configuration API', () => {
   });
 
   describe('importCatalogItems', () => {
-    it('should call POST /platform-api/catalog/item/import', async () => {
+    it('should call POST /platform-api/catalog/item/import with default needRewrite=true', async () => {
       const mockResponse = { data: { imported: 2 } };
       const container = { items: [] } as any;
       vi.mocked(axios.post).mockResolvedValue(mockResponse);
 
       const result = await configApi.importCatalogItems(container);
 
-      expect(axios.post).toHaveBeenCalledWith('/platform-api/catalog/item/import?needRewrite=true', container);
+      expect(axios.post).toHaveBeenCalledWith(
+        '/platform-api/catalog/item/import?needRewrite=true',
+        container,
+        { muteErrors: true }
+      );
+      expect(result).toEqual(mockResponse);
+    });
+
+    it('should call POST /platform-api/catalog/item/import with needRewrite=false', async () => {
+      const mockResponse = { data: { imported: 2 } };
+      const container = { items: [] } as any;
+      vi.mocked(axios.post).mockResolvedValue(mockResponse);
+
+      const result = await configApi.importCatalogItems(container, false);
+
+      expect(axios.post).toHaveBeenCalledWith(
+        '/platform-api/catalog/item/import?needRewrite=false',
+        container,
+        { muteErrors: true }
+      );
       expect(result).toEqual(mockResponse);
     });
   });
