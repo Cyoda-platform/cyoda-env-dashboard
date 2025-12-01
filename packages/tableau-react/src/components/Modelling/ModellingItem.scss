@@ -4,7 +4,7 @@
   position: relative;
 
   .inner {
-    display: inline-block;
+    display: block;
     padding-left: 18px;
     padding-right: 180px;
     position: relative;
@@ -18,12 +18,15 @@
     }
 
     &.inner-related {
-      border-left: 3px solid var(--refine-primary);
-      padding-left: 42px;
-      margin-left: -22px;
+      background-color: rgba(20, 184, 166, 0.08);
+      padding-left: 18px;
+      margin-left: 0;
+      padding-right: 10px;
+      border-radius: 4px;
     }
 
-    &:hover .eye {
+    &:hover .eye,
+    &:hover .join-link-icon {
       display: inline-block;
     }
   }
@@ -47,6 +50,24 @@
 
     &.is-joins {
       color: #faad14;
+    }
+  }
+
+  .join-link-icon {
+    cursor: pointer;
+    color: #14b8a6;
+    display: none;
+    position: absolute;
+    font-size: 14px;
+    left: 0;
+    top: 3px;
+
+    &:hover {
+      color: #0d9488;
+    }
+
+    &.active {
+      color: #0d9488;
     }
   }
 
@@ -86,8 +107,11 @@
   }
 
   .entity-class-name {
-    color: var(--refine-text-secondary);
-    font-size: 0.9em;
+    color: #6b7280;
+    font-size: 0.85em;
+    display: inline;
+    margin-left: 4px;
+    font-style: italic;
   }
 
   .wrap-form {
@@ -107,9 +131,7 @@
   }
 
   &.has-join {
-    .inner-related {
-      background-color: rgba(82, 196, 26, 0.1);
-    }
+    // Styles already applied via .inner-related
   }
 
   &.rel-active {

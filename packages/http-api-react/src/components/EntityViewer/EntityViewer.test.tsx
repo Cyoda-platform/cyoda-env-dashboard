@@ -35,8 +35,8 @@ describe('EntityViewer', () => {
   ];
 
   const mockRelatedPaths = [
-    { path: 'user.profile' },
-    { path: 'user.settings' },
+    { columnPath: 'user.profile', decision: 'JOIN', targetEntityClass: 'com.example.Profile' },
+    { columnPath: 'user.settings', decision: 'JOIN', targetEntityClass: 'com.example.Settings' },
   ];
 
   const mockRemoveEntity = vi.fn();

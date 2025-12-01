@@ -62,8 +62,9 @@ export interface ColDefValue {
 }
 
 export interface RelatedPath {
-  path: string;
-  targetClass: string;
+  columnPath: string;
+  decision: string;
+  targetEntityClass: string;
 }
 
 export interface AliasDef {

@@ -179,7 +179,11 @@ export const EntityViewer = forwardRef<EntityViewerRef, EntityViewerProps>(
         if (!svgCanvas) return;
 
         const className = `${parentEntityViewerName}-${targetName}`;
-        const strokeColor = '#5c5c5c';
+
+        // Get theme-aware stroke color
+        const isDarkTheme = document.documentElement.getAttribute('data-theme') === 'dark';
+        const strokeColor = isDarkTheme ? '#14b8a6' : '#0d9488'; // Teal color matching the theme
+        const strokeOpacity = isDarkTheme ? '0.6' : '0.5';
 
         // Create circle at start point
         const circle1 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
@@ -187,6 +191,7 @@ export const EntityViewer = forwardRef<EntityViewerRef, EntityViewerProps>(
         circle1.setAttribute('cy', String(y1));
         circle1.setAttribute('r', '5');
         circle1.setAttribute('fill', strokeColor);
+        circle1.setAttribute('fill-opacity', strokeOpacity);
         circle1.setAttribute('class', className);
         svgCanvas.appendChild(circle1);
 
@@ -196,6 +201,7 @@ export const EntityViewer = forwardRef<EntityViewerRef, EntityViewerProps>(
         circle2.setAttribute('cy', String(y2));
         circle2.setAttribute('r', '5');
         circle2.setAttribute('fill', strokeColor);
+        circle2.setAttribute('fill-opacity', strokeOpacity);
         circle2.setAttribute('class', className);
         svgCanvas.appendChild(circle2);
 
@@ -206,6 +212,7 @@ export const EntityViewer = forwardRef<EntityViewerRef, EntityViewerProps>(
         line.setAttribute('x2', String(x2));
         line.setAttribute('y2', String(y2));
         line.setAttribute('stroke', strokeColor);
+        line.setAttribute('stroke-opacity', strokeOpacity);
         line.setAttribute('stroke-width', '2');
         line.setAttribute('class', className);
         svgCanvas.appendChild(line);

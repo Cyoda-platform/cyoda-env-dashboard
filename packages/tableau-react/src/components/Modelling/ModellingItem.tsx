@@ -77,7 +77,7 @@ export const ModellingItem: React.FC<ModellingItemProps> = ({
   }, [reportInfoRow]);
 
   const joinItem = useMemo(() => {
-    return relatedPaths.find((el) => el?.path?.replace('.[*]', '') === reportInfoRow.columnName);
+    return relatedPaths.find((el) => el?.columnPath?.replace('.[*]', '') === reportInfoRow.columnName);
   }, [relatedPaths, reportInfoRow.columnName]);
 
   const isJoinAvailable = useMemo(() => {
@@ -335,22 +335,24 @@ export const ModellingItem: React.FC<ModellingItemProps> = ({
   return (
     <div className={`modelling-item ${getChecked ? 'checked-path' : ''} ${joinItem ? 'has-join' : ''}`}>
       <div className={`inner ${joinItem ? 'inner-related' : ''}`}>
-        <Tooltip title={label.fullPath} placement="top">
-          <EyeOutlined className="eye" onClick={handleClickEye} />
-        </Tooltip>
+        {/* Show link icon for joins, otherwise show eye icon */}
+        {isJoinAvailable ? (
+          <Tooltip title={`Related to ${joinItem!.targetEntityClass}`} placement="top">
+            <LinkOutlined
+              className={`join-link-icon ${isShowJoin ? 'active' : ''}`}
+              onClick={handleClickJoin}
+            />
+          </Tooltip>
+        ) : (
+          <Tooltip title={label.fullPath} placement="top">
+            <EyeOutlined className="eye" onClick={handleClickEye} />
+          </Tooltip>
+        )}
 
         {isChildAvailable && (
           <span onClick={handleClick} style={{ cursor: 'pointer', marginLeft: 8 }}>
             {isShowGroupClass ? <CaretDownOutlined /> : <CaretRightOutlined />}
           </span>
-        )}
-
-        {isJoinAvailable && (
-          <LinkOutlined
-            className={`join-link ${isShowJoin ? 'active' : ''}`}
-            onClick={handleClickJoin}
-            style={{ marginLeft: 8, cursor: 'pointer' }}
-          />
         )}
 
         {canBeSelected && !onlyView ? (
@@ -372,15 +374,15 @@ export const ModellingItem: React.FC<ModellingItemProps> = ({
               data-column-path={getElement.columnPath}
             >
               {reportInfoRow.columnName}
-              {isMap && (
-                <Tooltip title="To select multiple keys for map fields, please use Aliases">
-                  <InfoCircleOutlined style={{ marginLeft: 4 }} />
-                </Tooltip>
-              )}
               {isJoinAvailable && (
                 <span className="entity-class-name">
                   {' '}({HelperEntities.getShortNameOfEntity(joinItem!.targetEntityClass)})
                 </span>
+              )}
+              {isMap && (
+                <Tooltip title="To select multiple keys for map fields, please use Aliases">
+                  <InfoCircleOutlined style={{ marginLeft: 4 }} />
+                </Tooltip>
               )}
             </Checkbox>
           </span>
@@ -398,10 +400,12 @@ export const ModellingItem: React.FC<ModellingItemProps> = ({
             ) : (
               <>
                 {isJoinAvailable && onlyView ? (
-                  <a onClick={handleClickJoin}>
-                    {reportInfoRow.columnName}{' '}
-                    ({HelperEntities.getShortNameOfEntity(joinItem!.targetEntityClass)})
-                  </a>
+                  <>
+                    <a onClick={handleClickJoin}>{reportInfoRow.columnName}</a>
+                    <span className="entity-class-name">
+                      {' '}({HelperEntities.getShortNameOfEntity(joinItem!.targetEntityClass)})
+                    </span>
+                  </>
                 ) : (
                   <>
                     {reportInfoRow.columnName}

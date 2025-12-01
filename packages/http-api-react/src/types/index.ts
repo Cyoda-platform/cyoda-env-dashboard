@@ -505,9 +505,9 @@ export interface Cache {
 // ============================================================================
 
 export interface RelatedPath {
-  path: string;
-  type: string;
-  cardinality: string;
+  columnPath: string;
+  decision: string;
+  targetEntityClass: string;
 }
 
 // ============================================================================
