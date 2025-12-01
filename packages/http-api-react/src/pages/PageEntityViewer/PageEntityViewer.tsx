@@ -10,10 +10,10 @@ import { Select, Checkbox, Alert, Spin, Tooltip } from 'antd';
 import { InfoCircleOutlined, ZoomInOutlined, ZoomOutOutlined, SyncOutlined } from '@ant-design/icons';
 
 import { EntityViewer, type EntityViewerRef } from '../../components/EntityViewer';
-import { StreamGrid, type StreamGridRef } from '../../components/StreamGrid';
+import { ConfigEditorStreamGrid, type ConfigEditorStreamGridRef } from '@cyoda/ui-lib-react';
 import { useEntityViewerStore } from '../../stores/entityViewerStore';
 import { useGlobalUiSettingsStore } from '../../stores/globalUiSettingsStore';
-import { getReportingFetchTypes } from '../../api/entities';
+import { getReportingFetchTypes, getStreamData } from '../../api/entities';
 import { HelperEntities, eventBus } from '../../utils';
 import type { EntityOption } from '../../utils/HelperEntities';
 import './PageEntityViewer.scss';
@@ -30,7 +30,7 @@ export const PageEntityViewer: React.FC = () => {
   const [streamGridTitle, setStreamGridTitle] = useState('Report Stream Result');
 
   const entityViewerRefs = useRef<Map<string, EntityViewerRef>>(new Map());
-  const streamGridRef = useRef<StreamGridRef>(null);
+  const streamGridRef = useRef<ConfigEditorStreamGridRef>(null);
 
   const { entitys, onlyDynamic, addEntity, clearEntities, setOnlyDynamic } = useEntityViewerStore();
   const { entityType } = useGlobalUiSettingsStore();
@@ -65,7 +65,8 @@ export const PageEntityViewer: React.FC = () => {
           streamGridRef.current.setDialogVisible(true);
           streamGridRef.current.setConfigDefinitionRequest(configDefinitionRequest);
           streamGridRef.current.setOnlyUniq(true);
-          streamGridRef.current.loadPage();
+          // Pass the request directly to loadPage to avoid race condition
+          streamGridRef.current.loadPage(false, configDefinitionRequest);
         }
       }, 100);
     };
@@ -130,6 +131,18 @@ export const PageEntityViewer: React.FC = () => {
       }
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleLoadStreamData = async (request: any) => {
+    try {
+      console.log('Loading stream data with request:', request);
+      const { data } = await getStreamData(request);
+      console.log('Stream data response:', data);
+      return data;
+    } catch (error) {
+      console.error('Failed to load stream data:', error);
+      return { rows: [] };
     }
   };
 
@@ -294,7 +307,11 @@ export const PageEntityViewer: React.FC = () => {
         </Spin>
 
       {isStreamGridAvailable && (
-        <StreamGrid ref={streamGridRef} title={streamGridTitle} />
+        <ConfigEditorStreamGrid
+          ref={streamGridRef}
+          title={streamGridTitle}
+          onLoadData={handleLoadStreamData}
+        />
       )}
     </div>
   );

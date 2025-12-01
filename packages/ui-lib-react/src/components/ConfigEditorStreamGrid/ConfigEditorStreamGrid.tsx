@@ -37,7 +37,9 @@ export interface ConfigEditorStreamGridRef {
   definitionId: string | null
   setDefinitionId: (id: string | null) => void
   configDefinitionRequest: ConfigDefinitionRequest
+  setConfigDefinitionRequest: (request: ConfigDefinitionRequest) => void
   onlyUniq: boolean
+  setOnlyUniq: (value: boolean) => void
   loadPage: () => Promise<void>
   open: (id: string) => void
 }
@@ -89,22 +91,43 @@ export const ConfigEditorStreamGrid = forwardRef<ConfigEditorStreamGridRef, Conf
     console.log('ConfigEditorStreamGrid: Computing tableData from lastRequest:', lastRequest)
     if (lastRequest?.rows && lastRequest.rows.length > 0) {
       console.log('ConfigEditorStreamGrid: First row:', lastRequest.rows[0])
-      const data = lastRequest.rows.map((row, index) => ({
+      let data = lastRequest.rows.map((row) => row.columnsValues)
+
+      // If onlyUniq is true and there's only one column, filter to unique values
+      const keys = Object.keys(data[0] || {})
+      if (onlyUniq && keys.length === 1) {
+        console.log('ConfigEditorStreamGrid: Filtering to unique values for column:', keys[0])
+        // Use a Set to get unique values based on the single column
+        const uniqueValues = new Map()
+        data.forEach((row) => {
+          const value = row[keys[0]]
+          const key = JSON.stringify(value)
+          if (!uniqueValues.has(key)) {
+            uniqueValues.set(key, row)
+          }
+        })
+        data = Array.from(uniqueValues.values())
+        console.log('ConfigEditorStreamGrid: Unique values count:', data.length)
+      }
+
+      // Add keys for React table
+      const dataWithKeys = data.map((row, index) => ({
         key: index,
-        ...row.columnsValues
+        ...row
       }))
-      console.log('ConfigEditorStreamGrid: Computed tableData:', data)
-      return data
+      console.log('ConfigEditorStreamGrid: Computed tableData:', dataWithKeys)
+      return dataWithKeys
     }
     console.log('ConfigEditorStreamGrid: No rows in lastRequest')
     return []
-  }, [lastRequest])
+  }, [lastRequest, onlyUniq])
 
-  const loadPage = useCallback(async (reset = false) => {
+  const loadPage = useCallback(async (reset = false, customRequest?: any) => {
     try {
       setIsLoading(true)
+      const baseRequest = customRequest || configDefinitionRequest
       const request = {
-        ...configDefinitionRequest,
+        ...baseRequest,
         offset: page * pageSize,
         length: pageSize,
         pointTime: reset ? Date.now() : (lastRequest.pointTime || null)
@@ -197,7 +220,9 @@ export const ConfigEditorStreamGrid = forwardRef<ConfigEditorStreamGridRef, Conf
     definitionId,
     setDefinitionId,
     configDefinitionRequest,
+    setConfigDefinitionRequest,
     onlyUniq,
+    setOnlyUniq,
     loadPage,
     open: (id: string) => {
       setDefinitionId(id)

@@ -10,14 +10,12 @@ import { EyeOutlined, CaretDownOutlined, CaretRightOutlined, LinkOutlined, InfoC
 import { ModellingGroupClass } from './ModellingGroupClass';
 import { ModellingGroup } from './ModellingGroup';
 import { ModellingItemClassForm } from './ModellingItemClassForm';
-import { UniqueValuesModal } from '../UniqueValuesModal/UniqueValuesModal';
 import type { ReportingInfoRow, RelatedPath, ColDef, RequestParam } from '../../types/modelling';
 import HelperModelling from '../../utils/HelperModelling';
-import { HelperEntities } from '@cyoda/http-api-react/utils';
+import { HelperEntities, eventBus } from '@cyoda/http-api-react/utils';
 import { useModellingStore } from '../../stores/modellingStore';
 import { useEntityViewerStore } from '@cyoda/http-api-react/stores';
 import { getReportingInfo, getReportingRelatedPaths } from '../../api/modelling';
-import { getEntityColumnValues } from '@cyoda/http-api-react/api';
 import './ModellingItem.scss';
 
 interface ModellingItemProps {
@@ -54,7 +52,6 @@ export const ModellingItem: React.FC<ModellingItemProps> = ({
   const [reportingInfoRows, setReportingInfoRows] = useState<ReportingInfoRow[]>([]);
   const [relatedPathsInner, setRelatedPathsInner] = useState<RelatedPath[]>([]);
   const [formValues, setFormValues] = useState<string[]>([]);
-  const [uniqueValuesVisible, setUniqueValuesVisible] = useState(false);
 
   // Track previous value of isOpenAllSelected to detect changes
   const prevIsOpenAllSelectedRef = useRef<boolean>(isOpenAllSelected);
@@ -266,31 +263,69 @@ export const ModellingItem: React.FC<ModellingItemProps> = ({
       return;
     }
 
-    setUniqueValuesVisible(true);
-  };
-
-  const handleCloseUniqueValues = () => {
-    setUniqueValuesVisible(false);
-  };
-
-  const handleLoadUniqueValues = async (
-    entityClass: string,
-    fieldPath: string,
-    page: number,
-    pageSize: number
-  ) => {
-    try {
-      const params = {
-        offset: page * pageSize,
-        length: pageSize,
-      };
-
-      const response = await getEntityColumnValues(entityClass, fieldPath, params);
-      return response.data || [];
-    } catch (error) {
-      console.error('Failed to load unique values:', error);
-      return [];
+    // Get element and prepare parent parts
+    const element = getElement;
+    let parentPartsValue: any[] = [];
+    if (parentColDef && Object.keys(parentColDef).length > 0) {
+      parentPartsValue = parentColDef.parts.value;
     }
+
+    // Create configDefinitionRequest matching the old Vue implementation
+    const configDefinitionRequest = {
+      '@bean': 'com.cyoda.core.streamdata.StreamDataRequest',
+      pointTime: null,
+      offset: 0,
+      length: 100,
+      fromPosIndex: 0,
+      sdDef: {
+        requestClass,
+        rangeCondition: {
+          '@bean': 'com.cyoda.core.conditions.queryable.GreaterThan',
+          fieldName: 'creationDate',
+          operation: 'GREATER_THAN',
+          value: {
+            '@type': 'java.util.Date',
+            value: '1900-01-01T00:00:00.000+03:00',
+          },
+        },
+        rangeOrder: 'ASC',
+        condition: {
+          '@bean': 'com.cyoda.core.conditions.GroupCondition',
+          operator: 'AND',
+          conditions: [],
+        },
+        columns: [
+          {
+            '@bean': 'com.cyoda.core.reports.columns.ReportSimpleColumn',
+            name: label.fullPath,
+          },
+        ],
+        colDefs: [
+          {
+            fullPath: label.fullPath,
+            parts: {
+              '@meta': 'com.cyoda.core.reports.columndefs.ReportColPartDef[]',
+              value: [
+                ...parentPartsValue,
+                {
+                  rootClass: requestClass,
+                  path: element.columnPath,
+                  type: element.clazzType!,
+                },
+              ],
+            },
+            colType: label.colType,
+          },
+        ],
+        aliasDefs: [],
+      },
+    };
+
+    // Emit event to open StreamGrid with unique values
+    eventBus.emit('streamGrid:open', {
+      configDefinitionRequest,
+      title: `Unique values for "${fullPath}" for 100 rows`,
+    });
   };
 
   // Fill form from checked values
@@ -470,16 +505,6 @@ export const ModellingItem: React.FC<ModellingItemProps> = ({
           parentColDef={joinItem && label}
         />
       )}
-
-      {/* Unique Values Modal */}
-      <UniqueValuesModal
-        visible={uniqueValuesVisible}
-        fieldName={reportInfoRow.columnName}
-        fieldPath={fullPath}
-        entityClass={requestClass}
-        onClose={handleCloseUniqueValues}
-        onLoadData={handleLoadUniqueValues}
-      />
     </div>
   );
 };

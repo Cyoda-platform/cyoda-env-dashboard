@@ -297,3 +297,10 @@ export function getEntityAuditLog(entityClass: string, entityId: string, params?
   return axios.get(`/platform-api/entity/${entityClass}/${entityId}/audit${query}`);
 }
 
+/**
+ * Get stream data for reports
+ */
+export function getStreamData(request: any) {
+  return axios.post('/platform-api/stream-data/get', request);
+}
+
