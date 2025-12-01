@@ -107,7 +107,7 @@ export const EntityViewer = forwardRef<EntityViewerRef, EntityViewerProps>(
           triesIterator += 1;
           if (triesIterator > tries) result = true;
 
-          newCoordLeft = previousEntityCoord.left + previousEntityWidth + 15 * triesIterator;
+          newCoordLeft = previousEntityCoord.left + previousEntityWidth + 80 * triesIterator;
 
           const isFreeSpace = allEntities
             .filter((currentEntity) => {
@@ -117,8 +117,8 @@ export const EntityViewer = forwardRef<EntityViewerRef, EntityViewerProps>(
             .every((currentEntity) => {
               const currentEntityCoord = getCoords(currentEntity);
               if (newCoordLeft > currentEntityCoord.leftEnd) {
-                if (newCoordLeft - currentEntityCoord.leftEnd < 15) {
-                  newCoordLeft = currentEntityCoord.leftEnd + 15;
+                if (newCoordLeft - currentEntityCoord.leftEnd < 80) {
+                  newCoordLeft = currentEntityCoord.leftEnd + 80;
                 }
                 return true;
               }

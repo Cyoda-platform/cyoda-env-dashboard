@@ -79,6 +79,16 @@ export const PageEntityViewer: React.FC = () => {
     };
   }, []);
 
+  // Draw lines when entities change
+  useEffect(() => {
+    if (entitys.length > 0) {
+      // Wait for all entity viewers to render and position themselves
+      setTimeout(() => {
+        reDrawLines();
+      }, 300);
+    }
+  }, [entitys.length]);
+
   const loadDataClassOptions = async () => {
     setIsLoading(true);
     try {
@@ -130,13 +140,16 @@ export const PageEntityViewer: React.FC = () => {
       const heights = Array.from(allEntities).map((el) => (el as HTMLElement).offsetHeight);
       const maxHeight = Math.max(...heights, 0);
       const boxInner = document.querySelector('.wrap-entity-view-box-inner') as HTMLElement;
-      
+
       if (boxInner) {
         const currentHeight = boxInner.offsetHeight - 300;
         if (currentHeight < maxHeight) {
           boxInner.style.minHeight = `${maxHeight + 600}px`;
         }
       }
+
+      // Draw lines after all entities are loaded and positioned
+      reDrawLines();
     }, 100);
   };
 
