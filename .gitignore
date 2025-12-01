@@ -16,10 +16,17 @@ dist/
 build/
 
 # Environment variables
+# Note: .env.template and .env.development.local.example are templates and should be committed
+# Only actual .env.*.local files should be ignored
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Ignore .env files in packages (for standalone development)
+packages/*/.env.local
+packages/*/.env.development.local
+packages/*/.env.production.local
 
 # IDE
 .vscode/

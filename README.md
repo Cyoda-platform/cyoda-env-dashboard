@@ -35,6 +35,8 @@ npm run dev
 
 The app will be available at `http://localhost:3000`
 
+> **📝 Note:** No `.env` file setup needed! The app works out of the box with the configuration in `apps/saas-app/.env`
+
 ## 📁 Project Structure
 
 ```
@@ -185,10 +187,16 @@ npm run format
 
 ## 🌐 Backend Connection
 
-The SaaS app connects to the Cyoda backend via proxy configuration in `vite.config.ts`:
+The SaaS app connects to the Cyoda backend via proxy configuration in `apps/saas-app/vite.config.ts`:
 
 - **Platform API**: `https://cyoda-develop.kube3.cyoda.org`
 - **Processing API**: `https://cyoda-develop.kube3.cyoda.org/api`
+
+**Configuration:**
+- Environment variables: `apps/saas-app/.env`
+- Proxy settings: `apps/saas-app/vite.config.ts`
+
+> **⚠️ Important:** Do NOT use `.env.template` or `.env.development.local.example` in the root directory. These are for standalone package development only.
 
 For local development with mock backend:
 ```bash
