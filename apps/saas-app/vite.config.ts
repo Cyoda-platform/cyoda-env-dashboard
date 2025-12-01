@@ -4,8 +4,8 @@ import path from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
-  // Load env file from the workspace root (two levels up from this config file)
-  const envDir = path.resolve(__dirname, '../..');
+  // Load env file from the app directory (same directory as this config file)
+  const envDir = __dirname;
   const env = loadEnv(mode, envDir, '');
 
   // Fail fast if required environment variables are not set
