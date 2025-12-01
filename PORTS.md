@@ -6,7 +6,7 @@ This document lists all development server ports used in the monorepo.
 
 | Port | Application | Command | Description |
 |------|-------------|---------|-------------|
-| **3000** | **SaaS App** | `npm run dev:saas` | **Main SaaS application** (ALWAYS on port 3000) |
+| **3000** | **SaaS App** | `npm run dev` | **Main SaaS application** (ALWAYS on port 3000) |
 
 ## 📦 Packages (Standalone Development)
 
@@ -57,7 +57,7 @@ When adding a new app or package:
 
 **To run the main SaaS application:**
 ```bash
-npm run dev:saas
+npm run dev
 ```
 
 Then open: **http://localhost:3000**

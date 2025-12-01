@@ -11,7 +11,8 @@
     "apps/*"
   ],
   "scripts": {
-    "dev": "npm run dev --workspaces --if-present",
+    "dev": "npm run dev -w apps/saas-app",
+    "dev:all": "npm run dev --workspaces --if-present",
     "dev:saas": "npm run dev -w apps/saas-app",
     "build": "npm run build --workspaces --if-present",
     "build:saas": "npm run build:saas-deps && npm run build -w apps/saas-app",

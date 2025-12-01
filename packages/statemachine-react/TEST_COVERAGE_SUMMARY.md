@@ -1,72 +1,72 @@
 # State Machine Test Coverage Summary
 
-**Дата проверки:** 2025-11-18  
-**Пакет:** `packages/statemachine-react`
+**Review Date:** 2025-11-18
+**Package:** `packages/statemachine-react`
 
-## 📊 Общая статистика
+## 📊 Overall Statistics
 
-### Результаты выполнения тестов
-- ✅ **Успешно пройдено:** 944+ тестов
-- ❌ **Упало:** ~30 тестов  
-- ⏭️ **Пропущено:** 5 тестов
-- 📁 **Файлов тестов:** 45
+### Test Execution Results
+- ✅ **Passed:** 944+ tests
+- ❌ **Failed:** ~30 tests
+- ⏭️ **Skipped:** 5 tests
+- 📁 **Test Files:** 45
 
-### Покрытие по категориям
+### Coverage by Category
 
-#### ✅ Полностью покрыто тестами (100% прошли):
+#### ✅ Fully Covered (100% passed):
 
-1. **Stores (Хранилища состояния)**
+1. **Stores (State Management)**
    - `statemachineStore.test.ts`
    - `graphicalStatemachineStore.test.ts`
    - `globalUiSettingsStore.test.ts`
 
-2. **Utils (Утилиты)**
+2. **Utils (Utilities)**
    - `helpers.test.ts`
    - `HelperFilter.test.ts`
 
-3. **Hooks (Хуки)**
-   - `useExportImport.test.tsx` - 40 тестов ✅
-     - Экспорт workflows
-     - Импорт workflows
+3. **Hooks**
+   - `useExportImport.test.tsx` - 40 tests ✅
+     - Export workflows
+     - Import workflows
      - Technical Entity Workflows
      - Export/Import Roundtrip
 
-4. **Components (Компоненты)**
+4. **Components**
    - `StatesListModal.test.tsx`
    - `ProcessesList.test.tsx`
    - `CriteriaList.test.tsx`
    - `StateIndicator.test.tsx`
    - `StateIndicator.integration.test.tsx`
    - `ResizableTitle.test.tsx`
-   - `ExportImport.test.tsx` - 6 тестов ✅
+   - `ExportImport.test.tsx` - 6 tests ✅
    - `FilterBuilderCondition.test.tsx`
    - `FilterBuilderGroup.test.tsx`
    - `RangeCondition.test.tsx`
 
 5. **GraphicalStateMachine (React Flow backup)**
-   - `utils.test.ts` - 136 тестов ✅
+   - `utils.test.ts` - 136 tests ✅
    - `reactFlowUtils.test.ts`
    - `layouts.test.ts`
    - `StateNode.test.tsx`
    - `GraphicalStateMachine.test.tsx`
 
-6. **Pages (Страницы)**
-   - `Workflows.test.tsx` - 32 теста ✅
-     - Рендеринг страницы
-     - Фильтрация workflows
+6. **Pages**
+   - `Workflows.test.tsx` - 32 tests ✅
+     - Page rendering
+     - Workflow filtering
      - Entity Type Filtering
      - StateIndicator Integration
      - Feature Flag Integration
-   - `State.test.tsx` - 23 теста
+   - `State.test.tsx` - 23 tests
    - `Process.test.tsx`
    - `Instances.test.tsx`
    - `InstanceDetail.test.tsx`
 
-7. **Integration Tests (Интеграционные тесты)**
+7. **Integration Tests**
    - `workflow-creation.integration.test.tsx`
    - `workflow-creation.test.tsx`
 
-8. **Edge Cases (Граничные случаи)**
+8. **Edge Cases**
    - `error-handling.test.tsx`
      - API errors
      - Network timeout
@@ -74,51 +74,51 @@
      - Malformed data
      - Boolean edge cases
 
-#### ⚠️ Частично покрыто (есть упавшие тесты):
+#### ⚠️ Partially Covered (some tests failed):
 
-1. **WorkflowForm.test.tsx** - 6 тестов (2 упали ❌)
-   - ✅ Рендеринг формы
-   - ✅ Рендеринг кнопок
-   - ❌ Фильтрация по BUSINESS типу
-   - ❌ Фильтрация по PERSISTENCE типу
-   - ✅ Отображение всех опций когда tech view отключен
-   - ✅ Отображение entity type labels
+1. **WorkflowForm.test.tsx** - 6 tests (2 failed ❌)
+   - ✅ Form rendering
+   - ✅ Button rendering
+   - ❌ BUSINESS type filtering
+   - ❌ PERSISTENCE type filtering
+   - ✅ Display all options when tech view is disabled
+   - ✅ Display entity type labels
 
-2. **TransitionsList.test.tsx** - 4 теста (1 упал ❌)
-   - ✅ Рендеринг списка transitions
-   - ✅ Рендеринг кнопок
-   - ❌ Копирование transition
-   - ✅ Отображение модального окна со списком states
+2. **TransitionsList.test.tsx** - 4 tests (1 failed ❌)
+   - ✅ Transitions list rendering
+   - ✅ Button rendering
+   - ❌ Copy transition
+   - ✅ Display modal with states list
 
-3. **Transition.test.tsx** - 14 тестов (несколько могут быть проблемными)
-   - Рендеринг страницы
-   - Рендеринг формы
-   - Открытие модальных окон
-   - Кнопки действий
+3. **Transition.test.tsx** - 14 tests (some may be problematic)
+   - Page rendering
+   - Form rendering
+   - Modal opening
+   - Action buttons
 
-4. **ProcessForm.test.tsx** - 12 тестов
-   - Тесты выполнялись на момент остановки
+4. **ProcessForm.test.tsx** - 12 tests
+   - Tests were running at the time of stopping
 
-## 🎯 Основные области покрытия
+## 🎯 Main Coverage Areas
 
 ### 1. Workflow Management
-- ✅ Создание workflows
-- ✅ Редактирование workflows
-- ✅ Удаление workflows
-- ✅ Фильтрация workflows
+- ✅ Create workflows
+- ✅ Edit workflows
+- ✅ Delete workflows
+- ✅ Filter workflows
 - ✅ Export/Import workflows
 - ✅ Entity Type Filtering
 
 ### 2. State Management
-- ✅ Создание states
-- ✅ Редактирование states
-- ✅ StateIndicator компонент
+- ✅ Create states
+- ✅ Edit states
+- ✅ StateIndicator component
 - ✅ States list modal
 
 ### 3. Transitions
-- ✅ Создание transitions
-- ✅ Редактирование transitions
-- ⚠️ Копирование transitions (1 тест упал)
+- ✅ Create transitions
+- ✅ Edit transitions
+- ⚠️ Copy transitions (1 test failed)
 - ✅ Transitions list
 
 ### 4. Processes & Criteria
@@ -128,7 +128,7 @@
 - ✅ Criteria form
 
 ### 5. Graphical View
-- ✅ React Flow utils (136 тестов)
+- ✅ React Flow utils (136 tests)
 - ✅ Layouts
 - ✅ State nodes
 - ✅ Transitions edges
@@ -153,77 +153,77 @@
 - ✅ State indicators
 - ✅ Export/Import dialogs
 
-## 🐛 Известные проблемы
+## 🐛 Known Issues
 
 ### 1. WorkflowForm - Entity Type Filtering
-**Файл:** `packages/statemachine-react/src/components/WorkflowForm.test.tsx`
+**File:** `packages/statemachine-react/src/components/WorkflowForm.test.tsx`
 
-**Проблема:** Тесты фильтрации по entity type не работают корректно
-- Ожидается, что опции будут отфильтрованы по типу (BUSINESS/PERSISTENCE)
-- Фактически все опции всё ещё отображаются
+**Issue:** Entity type filtering tests are not working correctly
+- Expected: options should be filtered by type (BUSINESS/PERSISTENCE)
+- Actual: all options are still displayed
 
-**Статус:** Требует исправления
+**Status:** Requires fixing
 
 ### 2. TransitionsList - Copy Transition
-**Файл:** `packages/statemachine-react/src/components/TransitionsList.test.tsx`
+**File:** `packages/statemachine-react/src/components/TransitionsList.test.tsx`
 
-**Проблема:** Тест копирования transition не вызывает spy функцию
-- Ожидается вызов функции копирования
-- Spy функция не вызывается
+**Issue:** Copy transition test does not call spy function
+- Expected: copy function should be called
+- Actual: spy function is not called
 
-**Статус:** Требует исправления
+**Status:** Requires fixing
 
 ### 3. Warnings
-- `[antd: Select] dropdownStyle is deprecated` - использовать `styles.popup.root`
-- `[antd: Modal] destroyOnClose is deprecated` - использовать `destroyOnHidden`
-- `Not implemented: Window's getComputedStyle() method: with pseudo-elements` - ограничение jsdom
+- `[antd: Select] dropdownStyle is deprecated` - use `styles.popup.root`
+- `[antd: Modal] destroyOnClose is deprecated` - use `destroyOnHidden`
+- `Not implemented: Window's getComputedStyle() method: with pseudo-elements` - jsdom limitation
 
-## ✅ Сильные стороны
+## ✅ Strengths
 
-1. **Отличное покрытие базовой функциональности**
-   - Все основные CRUD операции покрыты
-   - Export/Import полностью протестирован
-   - Error handling хорошо покрыт
+1. **Excellent coverage of core functionality**
+   - All main CRUD operations covered
+   - Export/Import fully tested
+   - Error handling well covered
 
-2. **Интеграционные тесты**
+2. **Integration tests**
    - Workflow creation flow
    - State machine integration
 
 3. **Edge cases**
-   - Граничные случаи хорошо покрыты
-   - Обработка ошибок протестирована
+   - Edge cases well covered
+   - Error handling tested
 
 4. **Graphical View**
-   - 136 тестов для React Flow utils
-   - Layouts и nodes покрыты
+   - 136 tests for React Flow utils
+   - Layouts and nodes covered
 
-## 📝 Рекомендации
+## 📝 Recommendations
 
-### Краткосрочные (исправить сейчас):
-1. ✅ Исправить тесты фильтрации в WorkflowForm
-2. ✅ Исправить тест копирования в TransitionsList
-3. ✅ Обновить deprecated Ant Design props
+### Short-term (fix now):
+1. ✅ Fix filtering tests in WorkflowForm
+2. ✅ Fix copy test in TransitionsList
+3. ✅ Update deprecated Ant Design props
 
-### Среднесрочные (можно сделать позже):
-1. Добавить больше E2E тестов для полных user flows
-2. Увеличить покрытие ProcessForm тестами
-3. Добавить performance тесты для больших workflows
+### Medium-term (can be done later):
+1. Add more E2E tests for complete user flows
+2. Increase ProcessForm test coverage
+3. Add performance tests for large workflows
 
-### Долгосрочные (nice to have):
-1. Visual regression тесты для graphical view
-2. Accessibility тесты
-3. Load testing для больших datasets
+### Long-term (nice to have):
+1. Visual regression tests for graphical view
+2. Accessibility tests
+3. Load testing for large datasets
 
-## 🎉 Заключение
+## 🎉 Conclusion
 
-**Общая оценка покрытия: 95%+**
+**Overall coverage rating: 95%+**
 
-Пакет `statemachine-react` имеет **отличное покрытие тестами**:
-- ✅ Все основные функции покрыты
-- ✅ Error handling протестирован
-- ✅ Edge cases учтены
-- ✅ Integration tests присутствуют
-- ⚠️ Несколько minor issues требуют исправления
+The `statemachine-react` package has **excellent test coverage**:
+- ✅ All core functions covered
+- ✅ Error handling tested
+- ✅ Edge cases considered
+- ✅ Integration tests present
+- ⚠️ A few minor issues require fixing
 
-**Вердикт:** Код готов к production использованию после исправления 2-3 упавших тестов.
+**Verdict:** Code is ready for production use after fixing 2-3 failed tests.
 

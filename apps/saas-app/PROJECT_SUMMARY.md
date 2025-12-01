@@ -132,7 +132,7 @@ Created comprehensive documentation:
 npm install
 
 # 2. Run development server
-npm run dev:saas
+npm run dev
 
 # 3. Open browser
 # http://localhost:3000

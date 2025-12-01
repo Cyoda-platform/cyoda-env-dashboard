@@ -69,8 +69,8 @@ npm install
 ### Development
 
 ```bash
-# Run the SaaS app in development mode
-npm run dev -w apps/saas-app
+# Run the SaaS app in development mode (from root)
+npm run dev
 
 # Or from this directory
 cd react-project/apps/saas-app

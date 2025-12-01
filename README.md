@@ -30,7 +30,7 @@ yarn install
 
 Run the main SaaS application:
 ```bash
-npm run dev:saas
+npm run dev
 ```
 
 The app will be available at `http://localhost:3000`
@@ -95,7 +95,7 @@ The **`apps/saas-app`** is the primary application that integrates all packages.
 
 ```bash
 # Development
-npm run dev:saas
+npm run dev
 
 # Build
 npm run build:saas
@@ -130,10 +130,16 @@ npm run type-check
 
 ## 🔨 Development
 
-### Run All Packages
+### Run SaaS App (Default)
 
 ```bash
 npm run dev
+```
+
+### Run All Packages (if needed)
+
+```bash
+npm run dev:all
 ```
 
 ### Run Specific Package
@@ -244,8 +250,9 @@ npm run test:coverage
 
 | Script | Description |
 |--------|-------------|
-| `npm run dev` | Run all packages in dev mode |
-| `npm run dev:saas` | Run SaaS app only |
+| `npm run dev` | Run SaaS app (default) |
+| `npm run dev:all` | Run all packages in dev mode |
+| `npm run dev:saas` | Run SaaS app only (same as `dev`) |
 | `npm run build` | Build all packages |
 | `npm run build:saas` | Build SaaS app and dependencies |
 | `npm run test` | Run unit tests |

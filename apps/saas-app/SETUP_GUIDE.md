@@ -91,7 +91,7 @@ This builds the 7 required packages.
 
 **Option 1: From Root (Recommended)**
 ```bash
-npm run dev:saas
+npm run dev
 ```
 
 **Option 2: From App Directory**

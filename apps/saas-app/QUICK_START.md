@@ -13,8 +13,8 @@ npm install
 ### 2. Run the Development Server
 
 ```bash
-# Option A: From the root
-npm run dev:saas
+# Option A: From the root (recommended)
+npm run dev
 
 # Option B: From the app directory
 cd react-project/apps/saas-app
