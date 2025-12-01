@@ -48,11 +48,11 @@
 
 /* Dark theme header */
 [data-theme="dark"] .trino-edit-table .header {
-  background: rgba(36, 49, 66, 0.9);
-  color: var(--refine-text-secondary, #e5e7eb);
+  background-color: rgba(0, 212, 170, 0.2);
+  color: #14b8a6;
   text-align: left;
   padding: 5px;
-  border: 0.5px solid rgba(255, 255, 255, 0.08);
+  border: 0.5px solid rgba(0, 212, 170, 0.3);
   font-weight: 600;
   font-size: 11px;
   text-transform: uppercase;
@@ -61,11 +61,11 @@
 
 /* Light theme header */
 [data-theme="light"] .trino-edit-table .header {
-  background: #4B5563;
-  color: #F9FAFB;
+  background-color: rgba(20, 184, 166, 0.1);
+  color: #0d9488;
   text-align: left;
   padding: 5px;
-  border: 0.5px solid rgba(0, 0, 0, 0.1);
+  border: 0.5px solid rgba(20, 184, 166, 0.2);
   font-weight: 600;
   font-size: 11px;
   text-transform: uppercase;

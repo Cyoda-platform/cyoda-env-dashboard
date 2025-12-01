@@ -129,16 +129,16 @@ const axios = {
     console.log('Mock GET:', url);
 
     // Handle different endpoints
-    if (url === '/sql/schema/listAll') {
+    if (url === '/api/sql/schema/listAll') {
       return { data: mockSchemas, status: 200 };
     }
 
-    if (url === '/model/') {
+    if (url === '/api/model/') {
       return { data: mockEntityModels, status: 200 };
     }
 
     // Check genTables BEFORE checking schema by ID (more specific pattern first)
-    if (url.startsWith('/sql/schema/genTables/')) {
+    if (url.startsWith('/api/sql/schema/genTables/')) {
       const modelId = url.split('/').pop();
       console.log('Mock API: Generating tables for model ID:', modelId);
 
@@ -225,7 +225,7 @@ const axios = {
     }
 
     // Check schema by ID (less specific pattern, check last)
-    if (url.startsWith('/sql/schema/') && url.length > 13) {
+    if (url.startsWith('/api/sql/schema/') && url.length > 17) {
       const schemaId = url.split('/').pop();
       const schema = mockSchemas.find(s => s.id === schemaId);
       return { data: schema || null, status: schema ? 200 : 404 };
@@ -237,7 +237,7 @@ const axios = {
   post: async (url: string, data: any) => {
     console.log('Mock POST:', url, data);
 
-    if (url === '/sql/schema/') {
+    if (url === '/api/sql/schema/') {
       // Save schema - return the data with an ID if it doesn't have one
       const savedSchema = {
         ...data,
@@ -256,11 +256,11 @@ const axios = {
       return { data: savedSchema, status: 200 };
     }
 
-    if (url.startsWith('/sql/schema/updateTables/')) {
+    if (url.startsWith('/api/sql/schema/updateTables/')) {
       return { data, status: 200 };
     }
 
-    if (url.startsWith('/model/import/')) {
+    if (url.startsWith('/api/model/import/')) {
       return { data: { success: true, imported: 1 }, status: 200 };
     }
 
@@ -275,7 +275,7 @@ const axios = {
   delete: async (url: string) => {
     console.log('Mock DELETE:', url);
 
-    if (url.startsWith('/sql/schema/')) {
+    if (url.startsWith('/api/sql/schema/')) {
       const schemaId = url.split('/').pop();
       const index = mockSchemas.findIndex(s => s.id === schemaId);
       if (index >= 0) {

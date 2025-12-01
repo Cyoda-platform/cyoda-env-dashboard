@@ -21,13 +21,13 @@ describe('SQL Schema API', () => {
   });
 
   describe('getListAll', () => {
-    it('should call GET /sql/schema/listAll', async () => {
+    it('should call GET /api/sql/schema/listAll', async () => {
       const mockResponse = { data: [] };
       vi.mocked(axios.get).mockResolvedValue(mockResponse);
 
       const result = await sqlSchemaApi.getListAll();
 
-      expect(axios.get).toHaveBeenCalledWith('/sql/schema/listAll');
+      expect(axios.get).toHaveBeenCalledWith('/api/sql/schema/listAll');
       expect(result).toEqual(mockResponse);
     });
 
@@ -52,13 +52,13 @@ describe('SQL Schema API', () => {
   });
 
   describe('getSchemaById', () => {
-    it('should call GET /sql/schema/{schemaId}', async () => {
+    it('should call GET /api/sql/schema/{schemaId}', async () => {
       const mockResponse = { data: { id: 'schema-123', name: 'Test Schema' } };
       vi.mocked(axios.get).mockResolvedValue(mockResponse);
 
       const result = await sqlSchemaApi.getSchemaById('schema-123');
 
-      expect(axios.get).toHaveBeenCalledWith('/sql/schema/schema-123');
+      expect(axios.get).toHaveBeenCalledWith('/api/sql/schema/schema-123');
       expect(result).toEqual(mockResponse);
     });
 
@@ -80,14 +80,14 @@ describe('SQL Schema API', () => {
   });
 
   describe('saveSchema', () => {
-    it('should call POST /sql/schema/ with schema data', async () => {
+    it('should call POST /api/sql/schema/ with schema data', async () => {
       const mockSchema = { id: 'schema-123', name: 'Test Schema', tables: [] };
       const mockResponse = { data: mockSchema };
       vi.mocked(axios.post).mockResolvedValue(mockResponse);
 
       const result = await sqlSchemaApi.saveSchema(mockSchema);
 
-      expect(axios.post).toHaveBeenCalledWith('/sql/schema/', mockSchema);
+      expect(axios.post).toHaveBeenCalledWith('/api/sql/schema/', mockSchema);
       expect(result).toEqual(mockResponse);
     });
 
@@ -120,13 +120,13 @@ describe('SQL Schema API', () => {
   });
 
   describe('delete', () => {
-    it('should call DELETE /sql/schema/{schemaId}', async () => {
+    it('should call DELETE /api/sql/schema/{schemaId}', async () => {
       const mockResponse = { data: undefined };
       vi.mocked(axios.delete).mockResolvedValue(mockResponse);
 
       const result = await sqlSchemaApi.delete('schema-123');
 
-      expect(axios.delete).toHaveBeenCalledWith('/sql/schema/schema-123');
+      expect(axios.delete).toHaveBeenCalledWith('/api/sql/schema/schema-123');
       expect(result).toEqual(mockResponse);
     });
 
@@ -145,13 +145,13 @@ describe('SQL Schema API', () => {
   });
 
   describe('getEntityModelList', () => {
-    it('should call GET /model/', async () => {
+    it('should call GET /api/model/', async () => {
       const mockResponse = { data: [] };
       vi.mocked(axios.get).mockResolvedValue(mockResponse);
 
       const result = await sqlSchemaApi.getEntityModelList();
 
-      expect(axios.get).toHaveBeenCalledWith('/model/');
+      expect(axios.get).toHaveBeenCalledWith('/api/model/');
       expect(result).toEqual(mockResponse);
     });
 
@@ -176,13 +176,13 @@ describe('SQL Schema API', () => {
   });
 
   describe('getGenTable', () => {
-    it('should call GET /sql/schema/genTables/{id}', async () => {
+    it('should call GET /api/sql/schema/genTables/{id}', async () => {
       const mockResponse = { data: [] };
       vi.mocked(axios.get).mockResolvedValue(mockResponse);
 
       const result = await sqlSchemaApi.getGenTable('model-123');
 
-      expect(axios.get).toHaveBeenCalledWith('/sql/schema/genTables/model-123');
+      expect(axios.get).toHaveBeenCalledWith('/api/sql/schema/genTables/model-123');
       expect(result).toEqual(mockResponse);
     });
 
@@ -207,14 +207,14 @@ describe('SQL Schema API', () => {
   });
 
   describe('updateTables', () => {
-    it('should call POST /sql/schema/updateTables/{metaId} with tables', async () => {
+    it('should call POST /api/sql/schema/updateTables/{metaId} with tables', async () => {
       const mockTables = [{ name: 'table1', columns: [] }];
       const mockResponse = { data: mockTables };
       vi.mocked(axios.post).mockResolvedValue(mockResponse);
 
       const result = await sqlSchemaApi.updateTables('meta-123', mockTables);
 
-      expect(axios.post).toHaveBeenCalledWith('/sql/schema/updateTables/meta-123', mockTables);
+      expect(axios.post).toHaveBeenCalledWith('/api/sql/schema/updateTables/meta-123', mockTables);
       expect(result).toEqual(mockResponse);
     });
 
@@ -239,14 +239,14 @@ describe('SQL Schema API', () => {
   });
 
   describe('importData', () => {
-    it('should call POST /model/import/JSON/SAMPLE_DATA/nobel_1/1 with sample data', async () => {
+    it('should call POST /api/model/import/JSON/SAMPLE_DATA/nobel_1/1 with sample data', async () => {
       const mockData = { key: 'value' };
       const mockResponse = { data: { success: true } };
       vi.mocked(axios.post).mockResolvedValue(mockResponse);
 
       const result = await sqlSchemaApi.importData(mockData);
 
-      expect(axios.post).toHaveBeenCalledWith('/model/import/JSON/SAMPLE_DATA/nobel_1/1', mockData);
+      expect(axios.post).toHaveBeenCalledWith('/api/model/import/JSON/SAMPLE_DATA/nobel_1/1', mockData);
       expect(result).toEqual(mockResponse);
     });
 
