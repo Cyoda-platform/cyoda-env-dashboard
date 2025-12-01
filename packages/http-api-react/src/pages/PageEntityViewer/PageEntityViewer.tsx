@@ -194,8 +194,8 @@ export const PageEntityViewer: React.FC = () => {
                   }
                   style={{ width: 600 }}
                   options={requestClassOptions}
-                  popupClassName="page-entity-viewer-dropdown"
-                  dropdownStyle={{ minWidth: '600px', maxWidth: '800px' }}
+                  classNames={{ popup: { root: 'page-entity-viewer-dropdown' } }}
+                  styles={{ popup: { root: { minWidth: '600px', maxWidth: '800px' } } }}
                 />
               </div>
 

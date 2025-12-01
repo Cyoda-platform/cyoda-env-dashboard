@@ -62,8 +62,8 @@ export const TasksFilter: React.FC<TasksFilterProps> = memo(({ onChangeFilter })
                 allowClear
                 aria-label="Filter by status"
                 aria-describedby="status-filter-description"
-                popupClassName="tasks-filter-dropdown"
-                dropdownStyle={{ minWidth: '300px' }}
+                classNames={{ popup: { root: 'tasks-filter-dropdown' } }}
+                styles={{ popup: { root: { minWidth: '300px' } } }}
               >
                 {optionsStatus.map((item: any) => (
                   <Option key={item.key} value={item.key}>
@@ -83,8 +83,8 @@ export const TasksFilter: React.FC<TasksFilterProps> = memo(({ onChangeFilter })
                 allowClear
                 aria-label="Filter by assignee"
                 aria-describedby="assignee-filter-description"
-                popupClassName="tasks-filter-dropdown"
-                dropdownStyle={{ minWidth: '300px' }}
+                classNames={{ popup: { root: 'tasks-filter-dropdown' } }}
+                styles={{ popup: { root: { minWidth: '300px' } } }}
               >
                 {optionsAssignee.map((item: any) => (
                   <Option key={item.name} value={item.name}>
@@ -104,8 +104,8 @@ export const TasksFilter: React.FC<TasksFilterProps> = memo(({ onChangeFilter })
                 allowClear
                 aria-label="Filter by priority"
                 aria-describedby="priority-filter-description"
-                popupClassName="tasks-filter-dropdown"
-                dropdownStyle={{ minWidth: '300px' }}
+                classNames={{ popup: { root: 'tasks-filter-dropdown' } }}
+                styles={{ popup: { root: { minWidth: '300px' } } }}
               >
                 {optionsPriority.map((item: any) => (
                   <Option key={item.key} value={item.key}>

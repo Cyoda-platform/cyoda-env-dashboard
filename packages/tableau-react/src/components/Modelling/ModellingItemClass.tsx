@@ -151,6 +151,13 @@ export const ModellingItemClass: React.FC<ModellingItemClassProps> = ({
 
   // Load data with optional form values
   const loadData = async (columnPath: string) => {
+    console.log('[ModellingItemClass] loadData called', {
+      requestClass: requestParam.requestClass,
+      reportClass: requestParam.reportClass,
+      columnPath,
+      onlyRange
+    });
+
     setIsLoading(true);
     try {
       const { data } = await getReportingInfo(
@@ -159,7 +166,20 @@ export const ModellingItemClass: React.FC<ModellingItemClassProps> = ({
         columnPath,
         onlyRange
       );
-      setReportingInfoRows(HelperModelling.sortData(HelperModelling.filterData(data)));
+      console.log('[ModellingItemClass] loadData response', {
+        reportClass: requestParam.reportClass,
+        dataLength: data?.length,
+        data: JSON.parse(JSON.stringify(data))
+      });
+      const filtered = HelperModelling.filterData(data);
+      const sorted = HelperModelling.sortData(filtered);
+      console.log('[ModellingItemClass] After filter and sort', {
+        reportClass: requestParam.reportClass,
+        filteredLength: filtered?.length,
+        sortedLength: sorted?.length,
+        sorted
+      });
+      setReportingInfoRows(sorted);
     } catch (error) {
       console.error('Failed to load class data:', error);
     } finally {
@@ -169,21 +189,26 @@ export const ModellingItemClass: React.FC<ModellingItemClassProps> = ({
 
   // Load data when clicked
   const handleClick = async (e?: React.MouseEvent) => {
-    // Check if the click came from the content area (nested children)
+    // Stop event propagation to prevent parent items from toggling
     if (e) {
-      const target = e.target as HTMLElement;
-      // If the click came from within the content area, ignore it
-      if (target.closest('.modelling-item-class-content')) {
-        console.log('Ignoring click from content area');
-        return;
-      }
+      e.stopPropagation();
     }
 
-    console.log('handleClick proceeding for', reportClassComputed);
+    console.log('[ModellingItemClass] handleClick for', reportClassComputed, {
+      reportingInfoRows: reportingInfoRows?.length,
+      isShowGroup,
+      willToggleTo: !isShowGroup,
+      requestParam
+    });
+
     if (!reportingInfoRows) {
+      console.log('[ModellingItemClass] Loading data for', requestParam.columnPath);
       await loadData(requestParam.columnPath);
     }
-    setIsShowGroup(!isShowGroup);
+
+    const newShowGroup = !isShowGroup;
+    console.log('[ModellingItemClass] Setting isShowGroup to', newShowGroup, 'for', reportClassComputed);
+    setIsShowGroup(newShowGroup);
   };
 
   // Handle form change

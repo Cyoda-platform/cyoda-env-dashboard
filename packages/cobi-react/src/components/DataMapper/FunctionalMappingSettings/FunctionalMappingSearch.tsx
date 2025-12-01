@@ -103,7 +103,7 @@ const FunctionalMappingSearch: React.FC<FunctionalMappingSearchProps> = ({
       showSearch={{ filter }}
       displayRender={displayRender}
       style={{ width: 300 }}
-      popupClassName="functional-mapping-search-popup"
+      classNames={{ popup: { root: 'functional-mapping-search-popup' } }}
     />
   );
 };

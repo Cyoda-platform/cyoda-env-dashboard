@@ -63,6 +63,30 @@ describe('HelperModelling', () => {
       expect(result).toHaveLength(1);
     });
 
+    it('should filter out MAP type without elementType', () => {
+      const data: ReportingInfoRow[] = [
+        { columnName: 'others', columnPath: 'path1', type: 'MAP', keyInfo: 'java.lang.String' } as any,
+        { columnName: 'strings', columnPath: 'path2', type: 'MAP', keyInfo: 'java.lang.String', elementType: { type: 'LEAF' } } as any,
+      ];
+
+      const result = HelperModelling.filterData(data);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].columnName).toBe('strings');
+    });
+
+    it('should filter out LIST type without elementInfo', () => {
+      const data: ReportingInfoRow[] = [
+        { columnName: 'list1', columnPath: 'path1', type: 'LIST' } as any,
+        { columnName: 'list2', columnPath: 'path2', type: 'LIST', elementInfo: { type: 'LEAF' } } as any,
+      ];
+
+      const result = HelperModelling.filterData(data);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].columnName).toBe('list2');
+    });
+
     it('should return empty array for non-array input', () => {
       const result = HelperModelling.filterData('not an array' as any);
 

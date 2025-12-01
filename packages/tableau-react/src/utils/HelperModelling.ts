@@ -22,6 +22,15 @@ export default class HelperModelling {
     }
 
     return datas.filter((el) => {
+      // For MAP/LIST types, elementType/elementInfo must exist and not be empty
+      if (el.type === 'MAP' && !el.elementType) {
+        return false;
+      }
+      if (el.type === 'LIST' && !el.elementInfo) {
+        return false;
+      }
+
+      // Legacy check: filter out if elementType/elementInfo exists but is empty
       if ('elementType' in el && !el.elementType) {
         return false;
       }

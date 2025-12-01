@@ -223,8 +223,8 @@ export const ProcessEventsStatistics: React.FC = () => {
                 allowClear
                 showSearch
                 options={processorOptions}
-                popupClassName="process-events-statistics-dropdown"
-                dropdownStyle={{ minWidth: '400px' }}
+                classNames={{ popup: { root: 'process-events-statistics-dropdown' } }}
+                styles={{ popup: { root: { minWidth: '400px' } } }}
               />
             </Form.Item>
           </Col>

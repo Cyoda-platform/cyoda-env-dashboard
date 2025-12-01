@@ -149,8 +149,16 @@ export const ModellingItem: React.FC<ModellingItemProps> = ({
   }, [limit, checked, getChecked]);
 
   const allRequestParams = useMemo(() => {
-    return HelperModelling.allRequestParams(reportInfoRow, requestClass);
-  }, [reportInfoRow, requestClass]);
+    const params = HelperModelling.allRequestParams(reportInfoRow, requestClass);
+    if (reportInfoRow.columnName === 'indexedValues') {
+      console.log('[ModellingItem] allRequestParams for indexedValues:', {
+        reportInfoRow,
+        params,
+        isChildAvailable
+      });
+    }
+    return params;
+  }, [reportInfoRow, requestClass, isChildAvailable]);
 
   const getTypes = useMemo(() => {
     const types: string[] = [];

@@ -145,8 +145,8 @@ export const BulkUpdateForm: React.FC<BulkUpdateFormProps> = memo(({
             style={{ width: 220 }}
             aria-label="Select priority for bulk update"
             aria-describedby="bulk-priority-description"
-            popupClassName="bulk-update-form-dropdown"
-            dropdownStyle={{ minWidth: '300px' }}
+            classNames={{ popup: { root: 'bulk-update-form-dropdown' } }}
+            styles={{ popup: { root: { minWidth: '300px' } } }}
           >
             {optionsPriority.map((item: any) => (
               <Option key={item.key} value={item.key}>
@@ -167,8 +167,8 @@ export const BulkUpdateForm: React.FC<BulkUpdateFormProps> = memo(({
             style={{ width: 220 }}
             aria-label="Select assignee for bulk update"
             aria-describedby="bulk-assignee-description"
-            popupClassName="bulk-update-form-dropdown"
-            dropdownStyle={{ minWidth: '300px' }}
+            classNames={{ popup: { root: 'bulk-update-form-dropdown' } }}
+            styles={{ popup: { root: { minWidth: '300px' } } }}
           >
             {optionsAssignee.map((item: any) => (
               <Option key={item.name} value={item.name}>
