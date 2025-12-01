@@ -1,9 +1,26 @@
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => {
+  // Load env file from the workspace root (two levels up from this config file)
+  const envDir = path.resolve(__dirname, '../..');
+  const env = loadEnv(mode, envDir, '');
+
+  // Fail fast if required environment variables are not set
+  if (!env.VITE_APP_BASE_URL) {
+    throw new Error('VITE_APP_BASE_URL is not set in .env file. Please configure your environment variables.');
+  }
+
+  const backendTarget = env.VITE_APP_BASE_URL;
+  // For proxy: if VITE_APP_API_BASE is relative (/ or empty), use backendTarget + /api
+  // For direct: if VITE_APP_API_BASE is absolute URL, use it as-is
+  const apiTarget = (env.VITE_APP_API_BASE === '/' || !env.VITE_APP_API_BASE)
+    ? `${backendTarget}/api`
+    : env.VITE_APP_API_BASE;
+
+  return {
   plugins: [react()],
   define: {
     'global': 'globalThis',
@@ -45,11 +62,12 @@ export default defineConfig({
       ignored: ['!**/node_modules/@cyoda/**'],
     },
     proxy: {
-      // Proxy all /auth requests to real Cyoda backend server
+      // Proxy all /auth requests to backend API
       '/auth': {
-        target: 'https://cyoda-develop.kube3.cyoda.org',
+        target: apiTarget,
         changeOrigin: true,
         secure: false,
+        rewrite: (path) => path.replace(/^\/auth/, '/auth'),
         configure: (proxy, options) => {
           proxy.on('error', (err, req, res) => {
             console.log('Proxy error:', err.message);
@@ -65,7 +83,7 @@ export default defineConfig({
       // Proxy all /platform-processing requests to real Cyoda backend server
       // This must come BEFORE /api to match more specific paths first
       '/platform-processing': {
-        target: 'https://cyoda-develop.kube3.cyoda.org/api',
+        target: apiTarget,
         changeOrigin: true,
         secure: false,
         configure: (proxy, options) => {
@@ -82,7 +100,7 @@ export default defineConfig({
       },
       // Proxy all /platform-common requests to real Cyoda backend server
       '/platform-common': {
-        target: 'https://cyoda-develop.kube3.cyoda.org/api',
+        target: apiTarget,
         changeOrigin: true,
         secure: false,
         configure: (proxy, options) => {
@@ -98,9 +116,8 @@ export default defineConfig({
         },
       },
       // Proxy all /api requests to real Cyoda backend server
-      // CONNECTED TO REAL CYODA INSTANCE: cyoda-develop.kube3.cyoda.org
       '/api': {
-        target: 'https://cyoda-develop.kube3.cyoda.org',
+        target: backendTarget,
         changeOrigin: true,
         secure: false,
         configure: (proxy, options) => {
@@ -117,7 +134,7 @@ export default defineConfig({
       },
       // Proxy all /platform-api requests to real Cyoda backend server
       '/platform-api': {
-        target: 'https://cyoda-develop.kube3.cyoda.org',
+        target: backendTarget,
         changeOrigin: true,
         secure: false,
         configure: (proxy, options) => {
@@ -154,5 +171,6 @@ export default defineConfig({
       },
     },
   },
+  };
 });
 
