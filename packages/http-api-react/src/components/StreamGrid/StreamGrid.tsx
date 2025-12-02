@@ -162,6 +162,7 @@ export const StreamGrid = forwardRef<StreamGridRef, StreamGridProps>(
         <Table
           loading={isLoading}
           dataSource={tableData}
+          bordered
           columns={columns}
           pagination={false}
           scroll={{ x: true, y: 400 }}

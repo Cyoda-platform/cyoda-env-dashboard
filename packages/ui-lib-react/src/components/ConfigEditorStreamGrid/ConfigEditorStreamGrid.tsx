@@ -332,6 +332,7 @@ export const ConfigEditorStreamGrid = forwardRef<ConfigEditorStreamGridRef, Conf
 
         <Table
           rowSelection={isDeleteAvailable ? rowSelection : undefined}
+          bordered
           columns={columns}
           dataSource={tableData}
           loading={isLoading}

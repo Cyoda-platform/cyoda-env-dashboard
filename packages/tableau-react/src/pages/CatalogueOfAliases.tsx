@@ -500,7 +500,8 @@ const CatalogueOfAliases: React.FC = () => {
 
       <Table
         rowKey="id"
-        columns={columns}
+        bordered
+          columns={columns}
         dataSource={tableData}
         loading={isLoading}
         onChange={(pagination, filters, sorter: any) => {

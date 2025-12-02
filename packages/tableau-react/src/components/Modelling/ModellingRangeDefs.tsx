@@ -84,7 +84,8 @@ export const ModellingRangeDefs: React.FC<ModellingRangeDefsProps> = ({
 
       <h2>Selected Range Column:</h2>
       <Table
-        columns={columns}
+        bordered
+          columns={columns}
         dataSource={tableData}
         rowKey="fullPath"
         pagination={false}

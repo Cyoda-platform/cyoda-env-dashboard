@@ -202,7 +202,8 @@ export const ModellingAliases: React.FC<ModellingAliasesProps> = ({ configDefini
       <Table
         rowKey="key"
         rowSelection={readOnly ? undefined : rowSelection}
-        columns={columns}
+        bordered
+          columns={columns}
         dataSource={tableData}
         pagination={false}
       />

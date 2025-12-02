@@ -61,7 +61,8 @@ export const ChatBotFormInfo: React.FC<ChatBotFormInfoProps> = ({
     >
       <Table
         dataSource={tableData}
-        columns={columns}
+        bordered
+          columns={columns}
         rowKey="name"
         pagination={false}
       />

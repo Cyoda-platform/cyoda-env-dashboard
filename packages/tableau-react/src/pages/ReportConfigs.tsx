@@ -817,7 +817,8 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
       />
 
       <Table
-        columns={columns}
+        bordered
+          columns={columns}
         dataSource={tableData}
         rowKey="id"
         loading={isLoading}

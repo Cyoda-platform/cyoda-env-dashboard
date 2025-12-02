@@ -122,7 +122,8 @@ export const UniqueValuesModal: React.FC<UniqueValuesModalProps> = ({
             <div className="no-data">No Data</div>
           ) : (
             <Table
-              columns={columns}
+              bordered
+          columns={columns}
               dataSource={data}
               pagination={false}
               scroll={{ y: 400 }}

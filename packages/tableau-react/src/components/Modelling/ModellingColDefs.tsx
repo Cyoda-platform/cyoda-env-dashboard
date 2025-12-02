@@ -143,7 +143,8 @@ export const ModellingColDefs: React.FC<ModellingColDefsProps> = ({ configDefini
       <h2>Selected Columns:</h2>
       <Table
         rowSelection={readOnly ? undefined : rowSelection}
-        columns={columns}
+        bordered
+          columns={columns}
         dataSource={tableData}
         pagination={false}
       />

@@ -147,6 +147,7 @@ export const ChatBotPrompts = forwardRef<ChatBotPromptsRef, ChatBotPromptsProps>
       >
         <Table
           dataSource={tableData}
+          bordered
           columns={columns}
           rowKey={(record, index) => `${record.type}-${index}`}
           pagination={false}

@@ -323,6 +323,7 @@ export const TasksGrid: React.FC<TasksGridProps> = memo(({ filter, isApplyRealDa
       <div className="wrap-table">
         <Table
           rowSelection={rowSelection}
+          bordered
           columns={columns}
           dataSource={tableData}
           loading={isLoading}
