@@ -66,7 +66,7 @@ export const Resources: React.FC<ResourcesProps> = ({ poolInfo = [] }) => {
   };
 
   return (
-    <Card title="Resources">
+    <Card title="Resources" className="resources-card">
       {poolInfo.map((resource) => (
         <div key={resource.type} className="progress-container">
           <div className="title">{formatResourceName(resource.type)}</div>
@@ -89,4 +89,3 @@ export const Resources: React.FC<ResourcesProps> = ({ poolInfo = [] }) => {
 };
 
 export default Resources;
-
