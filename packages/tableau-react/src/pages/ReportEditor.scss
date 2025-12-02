@@ -325,3 +325,30 @@
   }
 }
 
+
+// Override global tabs styles - make like Reports page
+[data-theme="light"] .report-editor__tabs.ant-tabs-card {
+  .ant-tabs-nav::before {
+    border-bottom: none !important;
+  }
+
+  .ant-tabs-content-holder {
+    border-top: none !important;
+  }
+
+  .ant-tabs-tab.ant-tabs-tab-active {
+    background: #FFFFFF !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    border-bottom: 1px solid #FFFFFF !important;
+  }
+}
+
+[data-theme="dark"] .report-editor__tabs.ant-tabs-card {
+  .ant-tabs-nav::before {
+    border-bottom: none !important;
+  }
+
+  .ant-tabs-content-holder {
+    border-top: none !important;
+  }
+}
