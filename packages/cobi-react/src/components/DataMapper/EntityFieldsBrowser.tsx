@@ -239,7 +239,7 @@ const EntityFieldsBrowser: React.FC<EntityFieldsBrowserProps> = ({
       </div>
 
       <h3 style={{ marginTop: 16, marginBottom: 12 }}>Selected Columns:</h3>
-      <Table
+      <Table bordered
         rowSelection={{
           selectedRowKeys,
           onChange: handleSelectionChange,
