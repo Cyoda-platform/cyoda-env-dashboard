@@ -79,20 +79,21 @@ describe('ReportUISettings', () => {
       expect(container.firstChild).toBeNull();
     });
 
-    it('should not render when columns are undefined', () => {
+    it('should render when columns are undefined (no id column found)', () => {
       const configWithoutColumns: ConfigDefinition = {
         id: 'config-123',
         description: 'Test Config',
       };
 
-      const { container } = renderWithProviders(
+      renderWithProviders(
         <ReportUISettings
           reportDefinitionId="report-123"
           configDefinition={configWithoutColumns}
         />
       );
 
-      expect(container.firstChild).toBeNull();
+      // Should render because there's no "id" column
+      expect(screen.getByText('Settings')).toBeInTheDocument();
     });
   });
 
@@ -242,22 +243,22 @@ describe('ReportUISettings', () => {
   });
 
   describe('Edge Cases', () => {
-    it('should handle empty columns array', () => {
+    it('should render with empty columns array (no id column found)', () => {
       const configWithEmptyColumns: ConfigDefinition = {
         id: 'config-123',
         description: 'Test Config',
         columns: [],
       };
 
-      const { container } = renderWithProviders(
+      renderWithProviders(
         <ReportUISettings
           reportDefinitionId="report-123"
           configDefinition={configWithEmptyColumns}
         />
       );
 
-      // Should NOT render because idFieldList is empty
-      expect(container.firstChild).toBeNull();
+      // Should render because there's no "id" column
+      expect(screen.getByText('Settings')).toBeInTheDocument();
     });
 
     it('should handle columns with missing name property', () => {

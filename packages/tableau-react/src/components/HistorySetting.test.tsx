@@ -11,7 +11,6 @@ import type { HistorySettings } from '../types';
 describe('HistorySetting', () => {
   const mockSettings: HistorySettings = {
     lazyLoading: false,
-    displayGroupType: 'in',
   };
 
   const mockOnChange = vi.fn();
@@ -26,7 +25,7 @@ describe('HistorySetting', () => {
         <HistorySetting settings={mockSettings} onChange={mockOnChange} />
       );
 
-      expect(screen.getByText('Settings')).toBeInTheDocument();
+      expect(screen.getByText('Lazy loading')).toBeInTheDocument();
     });
 
     it('should render lazy loading switch', () => {
@@ -35,16 +34,6 @@ describe('HistorySetting', () => {
       );
 
       expect(screen.getByText('Lazy loading')).toBeInTheDocument();
-    });
-
-    it('should render group display radio buttons', () => {
-      renderWithProviders(
-        <HistorySetting settings={mockSettings} onChange={mockOnChange} />
-      );
-
-      expect(screen.getByText('Group display')).toBeInTheDocument();
-      expect(screen.getByText('In Table')).toBeInTheDocument();
-      expect(screen.getByText('Out Table')).toBeInTheDocument();
     });
   });
 
@@ -80,97 +69,6 @@ describe('HistorySetting', () => {
 
       expect(mockOnChange).toHaveBeenCalledWith({
         lazyLoading: true,
-        displayGroupType: 'in',
-      });
-    });
-  });
-
-  describe('Group Display Radio Buttons', () => {
-    it('should show "In Table" as selected by default', () => {
-      renderWithProviders(
-        <HistorySetting settings={mockSettings} onChange={mockOnChange} />
-      );
-
-      const inButton = screen.getByText('In Table').closest('.ant-radio-button-wrapper');
-      expect(inButton).toHaveClass('ant-radio-button-wrapper-checked');
-    });
-
-    it('should show "Out Table" as selected when displayGroupType is "out"', () => {
-      renderWithProviders(
-        <HistorySetting
-          settings={{ ...mockSettings, displayGroupType: 'out' }}
-          onChange={mockOnChange}
-        />
-      );
-
-      const outButton = screen.getByText('Out Table').closest('.ant-radio-button-wrapper');
-      expect(outButton).toHaveClass('ant-radio-button-wrapper-checked');
-    });
-
-    it('should call onChange when "In Table" is clicked', () => {
-      // Start with 'out' to test clicking 'in'
-      const settingsWithOut: HistorySettings = {
-        lazyLoading: false,
-        displayGroupType: 'out',
-      };
-
-      renderWithProviders(
-        <HistorySetting settings={settingsWithOut} onChange={mockOnChange} />
-      );
-
-      const inButton = screen.getByText('In Table');
-      fireEvent.click(inButton);
-
-      expect(mockOnChange).toHaveBeenCalledWith({
-        lazyLoading: false,
-        displayGroupType: 'in',
-      });
-    });
-
-    it('should call onChange when "Out Table" is clicked', () => {
-      renderWithProviders(
-        <HistorySetting
-          settings={{ ...mockSettings, displayGroupType: 'in' }}
-          onChange={mockOnChange}
-        />
-      );
-
-      const outButton = screen.getByText('Out Table');
-      fireEvent.click(outButton);
-
-      expect(mockOnChange).toHaveBeenCalledWith({
-        lazyLoading: false,
-        displayGroupType: 'out',
-      });
-    });
-  });
-
-  describe('Combined Settings Changes', () => {
-    it('should handle multiple setting changes', () => {
-      const { container, rerender } = renderWithProviders(
-        <HistorySetting settings={mockSettings} onChange={mockOnChange} />
-      );
-
-      // Toggle lazy loading
-      const switchElement = container.querySelector('.ant-switch');
-      fireEvent.click(switchElement!);
-
-      expect(mockOnChange).toHaveBeenCalledWith({
-        lazyLoading: true,
-        displayGroupType: 'in',
-      });
-
-      // Update settings
-      const newSettings = { lazyLoading: true, displayGroupType: 'in' as const };
-      rerender(<HistorySetting settings={newSettings} onChange={mockOnChange} />);
-
-      // Change display group type
-      const outButton = screen.getByText('Out Table');
-      fireEvent.click(outButton);
-
-      expect(mockOnChange).toHaveBeenCalledWith({
-        lazyLoading: true,
-        displayGroupType: 'out',
       });
     });
   });
@@ -185,17 +83,17 @@ describe('HistorySetting', () => {
       expect(() => fireEvent.click(switchElement!)).not.toThrow();
     });
 
-    it('should render with minimal settings', () => {
-      const minimalSettings: HistorySettings = {
-        lazyLoading: false,
-        displayGroupType: 'out',
+    it('should render with lazyLoading true', () => {
+      const settingsWithLazy: HistorySettings = {
+        lazyLoading: true,
       };
 
-      renderWithProviders(
-        <HistorySetting settings={minimalSettings} onChange={mockOnChange} />
+      const { container } = renderWithProviders(
+        <HistorySetting settings={settingsWithLazy} onChange={mockOnChange} />
       );
 
-      expect(screen.getByText('Settings')).toBeInTheDocument();
+      const switchElement = container.querySelector('.ant-switch');
+      expect(switchElement).toHaveClass('ant-switch-checked');
     });
   });
 });

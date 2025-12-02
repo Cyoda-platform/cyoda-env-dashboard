@@ -49,7 +49,6 @@ export interface HistoryFilter {
 
 export interface HistorySettings {
   lazyLoading: boolean;
-  displayGroupType: 'in' | 'out';
 }
 
 export interface ConfigDefinition {

@@ -201,6 +201,17 @@
           background: rgba(0, 212, 170, 0.1) !important;
         }
       }
+
+      // Selected/expanded state for rows with fixed columns
+      .ant-table-tbody > tr.selected-row,
+      .ant-table-tbody > tr.expanded-row {
+        > .ant-table-cell-fix-left,
+        > .ant-table-cell-fix-left-last,
+        > .ant-table-cell-fix-right,
+        > .ant-table-cell-fix-right-first {
+          background: rgba(0, 212, 170, 0.15) !important;
+        }
+      }
     }
   }
 
@@ -260,6 +271,17 @@
         > .ant-table-cell-fix-right,
         > .ant-table-cell-fix-right-first {
           background: rgba(0, 212, 170, 0.05) !important;
+        }
+      }
+
+      // Selected/expanded state for rows with fixed columns
+      .ant-table-tbody > tr.selected-row,
+      .ant-table-tbody > tr.expanded-row {
+        > .ant-table-cell-fix-left,
+        > .ant-table-cell-fix-left-last,
+        > .ant-table-cell-fix-right,
+        > .ant-table-cell-fix-right-first {
+          background: rgba(0, 212, 170, 0.1) !important;
         }
       }
     }

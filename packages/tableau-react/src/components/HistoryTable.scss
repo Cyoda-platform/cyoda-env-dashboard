@@ -8,6 +8,7 @@
 .history-table {
   @include table.table-container-wrapper;
   @include table.resizable-columns;
+  @include table.fixed-columns-background;
 
   // Table styling - Dark Theme
   .ant-table-wrapper .ant-table.ant-table-bordered {
@@ -21,6 +22,18 @@
   .ant-table {
     font-size: 14px;
     background: transparent !important;
+
+    // Override fixed column background for selected/expanded rows
+    .ant-table-tbody > tr.selected-row > .ant-table-cell-fix-right,
+    .ant-table-tbody > tr.selected-row > .ant-table-cell-fix-right-first,
+    .ant-table-tbody > tr.selected-row > .ant-table-cell-fix-left,
+    .ant-table-tbody > tr.selected-row > .ant-table-cell-fix-left-last,
+    .ant-table-tbody > tr.expanded-row > .ant-table-cell-fix-right,
+    .ant-table-tbody > tr.expanded-row > .ant-table-cell-fix-right-first,
+    .ant-table-tbody > tr.expanded-row > .ant-table-cell-fix-left,
+    .ant-table-tbody > tr.expanded-row > .ant-table-cell-fix-left-last {
+      background: rgba(0, 212, 170, 0.15) !important;
+    }
 
     .ant-table-thead > tr > th {
       background: rgba(36, 49, 66, 0.9) !important;
@@ -39,24 +52,36 @@
     .ant-table-tbody {
       background: transparent !important;
 
-      > tr {
+      tr.ant-table-row {
         cursor: pointer;
         transition: background-color 0.2s;
         background: transparent !important;
 
-        > td {
+        td {
           background: transparent !important;
           color: var(--refine-text-primary) !important;
           border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
           border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
         }
 
-        &:hover > td {
-          background: rgba(0, 212, 170, 0.05) !important;
+        &:hover td {
+          background: rgba(0, 212, 170, 0.08) !important;
         }
 
-        &.selected-row > td {
+        &.selected-row td,
+        &.expanded-row td {
           background: rgba(0, 212, 170, 0.15) !important;
+        }
+
+        // Fixed columns need explicit background override
+        &.selected-row,
+        &.expanded-row {
+          > .ant-table-cell-fix-left,
+          > .ant-table-cell-fix-left-last,
+          > .ant-table-cell-fix-right,
+          > .ant-table-cell-fix-right-first {
+            background: rgba(0, 212, 170, 0.15) !important;
+          }
         }
 
         &.row-disabled td {
@@ -97,6 +122,69 @@
   .no-wrap .cell {
     white-space: nowrap !important;
   }
+
+  // Expanded row styles - inline group list
+  .ant-table-expanded-row {
+    > td {
+      padding: 0 !important;
+      background: transparent !important;
+    }
+  }
+
+  .inline-group-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px 8px 8px 40px;
+
+    &.loading {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--refine-text-secondary);
+      font-size: 12px;
+    }
+
+    &.empty {
+      color: var(--refine-text-secondary);
+      font-size: 12px;
+      font-style: italic;
+    }
+
+    .group-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 4px 12px;
+      background: rgba(0, 212, 170, 0.1);
+      border: 1px solid rgba(0, 212, 170, 0.3);
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 13px;
+
+      &:hover {
+        background: rgba(0, 212, 170, 0.2);
+        border-color: rgba(0, 212, 170, 0.5);
+      }
+
+      .group-name {
+        color: var(--refine-text-primary);
+        font-weight: 500;
+      }
+
+      .group-summary {
+        color: var(--refine-text-secondary);
+        font-size: 12px;
+
+        &::before {
+          content: '|';
+          margin-right: 12px;
+          opacity: 0.3;
+        }
+      }
+    }
+  }
 }
 
 // Light theme overrides
@@ -119,26 +207,47 @@
       }
 
       .ant-table-tbody {
-        > tr {
-          > td {
+        tr.ant-table-row {
+          td {
             background: #FFFFFF !important;
             color: #111827 !important;
             border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
             border-right: 1px solid rgba(0, 0, 0, 0.08) !important;
           }
 
-          &:hover > td {
+          &:hover td {
             background: rgba(0, 212, 170, 0.08) !important;
           }
 
-          &.selected-row > td {
-            background: rgba(0, 212, 170, 0.2) !important;
+          &.selected-row td,
+          &.expanded-row td {
+            background: rgba(0, 212, 170, 0.15) !important;
           }
 
           &.row-disabled td {
             opacity: 0.5;
             background-color: #FFFFFF !important;
           }
+        }
+      }
+    }
+
+    .inline-group-list {
+      .group-item {
+        background: rgba(0, 212, 170, 0.08);
+        border-color: rgba(0, 212, 170, 0.25);
+
+        &:hover {
+          background: rgba(0, 212, 170, 0.15);
+          border-color: rgba(0, 212, 170, 0.4);
+        }
+
+        .group-name {
+          color: #111827;
+        }
+
+        .group-summary {
+          color: #6B7280;
         }
       }
     }

@@ -54,19 +54,15 @@ vi.mock('../components/HistorySetting', () => ({
       <button onClick={() => onChange({ ...settings, lazyLoading: !settings.lazyLoading })}>
         Toggle Lazy Loading
       </button>
-      <button onClick={() => onChange({ ...settings, displayGroupType: settings.displayGroupType === 'in' ? 'out' : 'in' })}>
-        Toggle Display Type
-      </button>
     </div>
   ),
 }));
 
 // Mock ReportTableGroup component
 vi.mock('../components/ReportTableGroup', () => ({
-  default: ({ tableLinkGroup, displayGroupType }: any) => (
+  default: ({ lazyLoading }: any) => (
     <div data-testid="report-table-group">
-      <div>Display Type: {displayGroupType}</div>
-      <div>Link: {tableLinkGroup}</div>
+      <div>Lazy Loading: {lazyLoading ? 'true' : 'false'}</div>
     </div>
   ),
 }));
@@ -258,84 +254,6 @@ describe('Reports Page', () => {
       });
     });
 
-    it('should show ReportTableGroup after selecting a report with "in" display type', async () => {
-      const user = userEvent.setup();
-      renderWithProviders(<Reports />);
-
-      // Switch to Reports tab
-      const reportsTab = screen.getByRole('tab', { name: /^Reports$/i });
-      await user.click(reportsTab);
-
-      await waitFor(() => {
-        expect(screen.getByTestId('history-table')).toBeInTheDocument();
-      });
-
-      // Select a report
-      const selectButton = screen.getByRole('button', { name: /Select Report/i });
-      await user.click(selectButton);
-
-      await waitFor(() => {
-        expect(screen.getByTestId('report-table-group')).toBeInTheDocument();
-      });
-
-      // Verify display type is "in"
-      expect(screen.getByText('Display Type: in')).toBeInTheDocument();
-    });
-
-    it('should generate correct tableLinkGroup URL', async () => {
-      const user = userEvent.setup();
-      renderWithProviders(<Reports />);
-
-      // Switch to Reports tab
-      const reportsTab = screen.getByRole('tab', { name: /^Reports$/i });
-      await user.click(reportsTab);
-
-      await waitFor(() => {
-        expect(screen.getByTestId('history-table')).toBeInTheDocument();
-      });
-
-      // Select a report
-      const selectButton = screen.getByRole('button', { name: /Select Report/i });
-      await user.click(selectButton);
-
-      await waitFor(() => {
-        expect(screen.getByText(/Link:.*\/platform-api\/reporting\/report\/report-123\/1\/groups/)).toBeInTheDocument();
-      });
-    });
-  });
-
-  describe('Display Type Toggle', () => {
-    it('should toggle between "in" and "out" display types', async () => {
-      const user = userEvent.setup();
-      renderWithProviders(<Reports />);
-
-      // Switch to Reports tab
-      const reportsTab = screen.getByRole('tab', { name: /^Reports$/i });
-      await user.click(reportsTab);
-
-      await waitFor(() => {
-        expect(screen.getByTestId('history-table')).toBeInTheDocument();
-      });
-
-      // Select a report first
-      const selectButton = screen.getByRole('button', { name: /Select Report/i });
-      await user.click(selectButton);
-
-      await waitFor(() => {
-        expect(screen.getByTestId('report-table-group')).toBeInTheDocument();
-      });
-
-      // Initially should be "in"
-      expect(screen.getByText('Display Type: in')).toBeInTheDocument();
-
-      // Toggle display type
-      const toggleButton = screen.getByRole('button', { name: /Toggle Display Type/i });
-      await user.click(toggleButton);
-
-      await waitFor(() => {
-        expect(screen.getByText('Display Type: out')).toBeInTheDocument();
-      });
-    });
   });
 
   describe('Reset State', () => {

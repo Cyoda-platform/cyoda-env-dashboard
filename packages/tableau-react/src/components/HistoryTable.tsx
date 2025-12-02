@@ -4,29 +4,42 @@
  */
 
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import { Table, notification, Button, Tooltip } from 'antd';
-import { InfoCircleOutlined, EditOutlined } from '@ant-design/icons';
+import { Table, notification, Button, Tooltip, Spin } from 'antd';
+import { InfoCircleOutlined, EditOutlined, RightOutlined, LoadingOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import type { ResizeCallbackData } from 'react-resizable';
 import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
 import { axiosPlatform, useGlobalUiSettingsStore, getReportConfig } from '@cyoda/http-api-react';
 import { HelperStorage } from '@cyoda/ui-lib-react';
 import moment from 'moment';
-import type { ReportHistoryData, TableDataRow, HistorySettings, ConfigDefinition } from '@/types';
+import type { ReportHistoryData, TableDataRow, ConfigDefinition } from '@/types';
 import type { HistoryFilterForm } from '../utils/HelperReportDefinition';
 import { ResizableTitle } from './ResizableTitle';
 import ReportDetailsDialog from './ReportDetailsDialog';
+import type { ColumnData } from './ColumnCollectionsDialog';
+import HelperReportTable from '../utils/HelperReportTable';
 import './HistoryTable.scss';
 
 interface HistoryTableProps {
   filter: HistoryFilterForm | any; // Accept both old and new filter formats
-  onChange: (data: { reportDefinition: ReportHistoryData; configDefinition: ConfigDefinition }) => void;
+  lazyLoading?: boolean;
+  onChange: (data: { reportDefinition: TableDataRow; configDefinition: ConfigDefinition }) => void;
+  onGroupClick?: (row: any) => void;
+  onShowColumnDetail?: (data: ColumnData) => void;
 }
 
-const HistoryTable: React.FC<HistoryTableProps> = ({ filter, onChange }) => {
+const HistoryTable: React.FC<HistoryTableProps> = ({
+  filter,
+  lazyLoading = false,
+  onChange,
+  onGroupClick,
+  onShowColumnDetail,
+}) => {
   const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
+  const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([]);
   const [detailsDialogVisible, setDetailsDialogVisible] = useState(false);
+  // Store config definitions for expanded rows
+  const [rowConfigDefinitions, setRowConfigDefinitions] = useState<Record<string, ConfigDefinition>>({});
   const [selectedReportDetails, setSelectedReportDetails] = useState<{
     id: string;
     config: string;
@@ -34,6 +47,9 @@ const HistoryTable: React.FC<HistoryTableProps> = ({ filter, onChange }) => {
   } | null>(null);
   const [detailsConfigDefinition, setDetailsConfigDefinition] = useState<ConfigDefinition | null>(null);
   const storage = useMemo(() => new HelperStorage(), []);
+
+  // Pagination state
+  const [pageSize, setPageSize] = useState<number>(() => storage.get<number>('historyTable:pageSize', 10) || 10);
 
   // Get global entity type
   const { entityType } = useGlobalUiSettingsStore();
@@ -438,6 +454,122 @@ const HistoryTable: React.FC<HistoryTableProps> = ({ filter, onChange }) => {
     }
   };
 
+  // Handle row expand - fetch config definition for the row
+  const handleRowExpand = useCallback(async (expanded: boolean, record: TableDataRow) => {
+    if (expanded && record.groupingVersion) {
+      // Fetch config definition if not already cached
+      if (!rowConfigDefinitions[record.id]) {
+        try {
+          const { data: configDef } = await axiosPlatform.get(
+            `/api/platform-api/reporting/report/${record.id}/config`
+          );
+          setRowConfigDefinitions(prev => ({
+            ...prev,
+            [record.id]: configDef.content,
+          }));
+        } catch (error) {
+          console.error('Failed to load config for expanded row:', error);
+        }
+      }
+    }
+  }, [rowConfigDefinitions]);
+
+  // Inline Group List component
+  const InlineGroupList: React.FC<{ reportId: string; groupingVersion: string }> = ({ reportId, groupingVersion }) => {
+    const tableLinkGroup = `/platform-api/reporting/report/${reportId}/${groupingVersion}/groups?page=0&size=1000`;
+
+    const { data: groups, isLoading } = useQuery({
+      queryKey: ['reportGroups', tableLinkGroup],
+      queryFn: async () => {
+        const { data } = await axiosPlatform.get(tableLinkGroup);
+        return data;
+      },
+      enabled: !!tableLinkGroup,
+    });
+
+    if (isLoading) {
+      return (
+        <div className="inline-group-list loading">
+          <Spin indicator={<LoadingOutlined style={{ fontSize: 14 }} spin />} size="small" />
+          <span>Loading groups...</span>
+        </div>
+      );
+    }
+
+    if (!groups?._embedded?.wrappedEntityModels?.length) {
+      return <div className="inline-group-list empty">No groups</div>;
+    }
+
+    const groupItems = groups._embedded.wrappedEntityModels.map((model: any) => {
+      const formattedRow = HelperReportTable.formatGroupRow(model);
+      return formattedRow;
+    });
+
+    return (
+      <div className="inline-group-list">
+        {groupItems.map((item: any, index: number) => {
+          // Get summary columns (COUNT, SUM, etc.)
+          const summaryKeys = Object.keys(item).filter(
+            (key) => !['group', '_link_rows', '_link_groups', 'isNext', 'key'].includes(key)
+          );
+
+          return (
+            <div
+              key={index}
+              className="group-item"
+              onClick={() => {
+                if (item._link_rows && onGroupClick) {
+                  onGroupClick(item);
+                }
+              }}
+            >
+              <span className="group-name">{item.group}</span>
+              {summaryKeys.map((key) => (
+                <span key={key} className="group-summary">
+                  {key}: {item[key]}
+                </span>
+              ))}
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
+  // Expanded row render - shows inline group list
+  const expandedRowRender = useCallback((record: TableDataRow) => {
+    if (!record.groupingVersion) {
+      return null;
+    }
+
+    return <InlineGroupList reportId={record.id} groupingVersion={record.groupingVersion} />;
+  }, [onGroupClick]);
+
+  // Custom expand icon
+  const expandIcon = useCallback(({ expanded, onExpand, record }: any) => {
+    // Don't show expand icon if no grouping version
+    if (!record.groupingVersion) {
+      return <span style={{ width: 17, display: 'inline-block' }} />;
+    }
+
+    return (
+      <RightOutlined
+        onClick={(e) => {
+          e.stopPropagation();
+          onExpand(record, e);
+        }}
+        style={{
+          transform: expanded ? 'rotate(90deg)' : 'rotate(0deg)',
+          transition: 'transform 0.2s',
+          cursor: 'pointer',
+          marginRight: 8,
+          fontSize: 10,
+          color: 'var(--refine-text-secondary)',
+        }}
+      />
+    );
+  }, []);
+
   // Merge columns with resize handlers
   const resizableColumns = useMemo(() => {
     return columns.map((col) => ({
@@ -458,8 +590,17 @@ const HistoryTable: React.FC<HistoryTableProps> = ({ filter, onChange }) => {
         rowKey="id"
         bordered
         size="small"
-        scroll={{ x: true, y: 250 }}
-        pagination={false}
+        scroll={{ x: 1100 }}
+        pagination={{
+          pageSize: pageSize,
+          showSizeChanger: true,
+          showTotal: (total) => `Total ${total} items`,
+          className: 'pagination-bar',
+          onShowSizeChange: (current, size) => {
+            setPageSize(size);
+            storage.set('historyTable:pageSize', size);
+          },
+        }}
         onChange={(pagination, filters, sorter: any) => {
           // Handle sorting
           if (sorter && !Array.isArray(sorter)) {
@@ -473,9 +614,22 @@ const HistoryTable: React.FC<HistoryTableProps> = ({ filter, onChange }) => {
             }
           }
         }}
+        expandable={{
+          expandedRowRender,
+          expandedRowKeys,
+          onExpandedRowsChange: (keys) => setExpandedRowKeys(keys as string[]),
+          onExpand: handleRowExpand,
+          expandIcon,
+          rowExpandable: (record) => !!record.groupingVersion,
+        }}
+        rowClassName={(record) => {
+          const isSelected = record.id === selectedRowId;
+          const isExpanded = expandedRowKeys.includes(record.id);
+          console.log('rowClassName:', { recordId: record.id, selectedRowId, isSelected, isExpanded });
+          return `${isSelected ? 'selected-row' : ''} ${isExpanded ? 'expanded-row' : ''}`.trim();
+        }}
         onRow={(record) => ({
           onClick: () => handleRowClick(record),
-          className: record.id === selectedRowId ? 'selected-row' : '',
         })}
         components={{
           header: {

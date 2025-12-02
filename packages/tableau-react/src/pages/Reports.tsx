@@ -4,20 +4,19 @@
  * This is the main Reports page with two tabs: Report Config and Reports
  */
 
-import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import React, { useState, useCallback, useMemo, useRef } from 'react';
 import { Tabs, Button, Divider, Tooltip } from 'antd';
 import { ReloadOutlined } from '@ant-design/icons';
 import HistoryTable from '../components/HistoryTable';
 import HistoryFilter from '../components/HistoryFilter';
 import HistorySetting from '../components/HistorySetting';
-import ReportTableGroup from '../components/ReportTableGroup';
 import ReportResultDialog from '../components/ReportResultDialog';
 import QuickRunReport from '../components/QuickRunReport';
 import ReportUISettings from '../components/ReportUISettings';
 import ColumnCollectionsDialog, { type ColumnCollectionsDialogRef } from '../components/ColumnCollectionsDialog';
 import ReportConfigs from './ReportConfigs';
 import { HelperStorage } from '@cyoda/ui-lib-react';
-import type { ReportHistoryData, ConfigDefinition, HistorySettings } from '../types';
+import type { ReportHistoryData, ConfigDefinition, HistorySettings, TableDataRow } from '../types';
 import type { HistoryFilterForm } from '../utils/HelperReportDefinition';
 import './Reports.scss';
 
@@ -39,27 +38,18 @@ const HistoryReportsTab: React.FC<{ onResetState: () => void }> = ({ onResetStat
 
   const [settings, setSettings] = useState<HistorySettings>({
     lazyLoading: false,
-    displayGroupType: 'in',
   });
 
   const [configDefinition, setConfigDefinition] = useState<ConfigDefinition>({});
-  const [reportDefinition, setReportDefinition] = useState<ReportHistoryData | null>(null);
+  const [reportDefinition, setReportDefinition] = useState<TableDataRow | null>(null);
 
   // Modal state for group results
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [selectedGroupData, setSelectedGroupData] = useState<any>(null);
 
-  // Calculate tableLinkGroup from report definition
-  const tableLinkGroup = useMemo(() => {
-    if (reportDefinition?.id && reportDefinition?.groupingVersion) {
-      return `/platform-api/reporting/report/${reportDefinition.id}/${reportDefinition.groupingVersion}/groups?page=0&size=1000`;
-    }
-    return '';
-  }, [reportDefinition]);
-
   const handleHistoryTableChange = useCallback(
     ({ reportDefinition: newReportDef, configDefinition: newConfigDef }: {
-      reportDefinition: ReportHistoryData;
+      reportDefinition: TableDataRow;
       configDefinition: ConfigDefinition;
     }) => {
       setConfigDefinition(newConfigDef);
@@ -68,14 +58,8 @@ const HistoryReportsTab: React.FC<{ onResetState: () => void }> = ({ onResetStat
     []
   );
 
-  // Handle group row click (for 'out' mode - to select the row)
-  const handleHistoryGroupsChange = useCallback((row: any) => {
-    console.log('Reports: Group row clicked (out mode):', row);
-  }, []);
-
   // Handle group click - open modal with results
   const handleGroupClick = useCallback((row: any) => {
-    console.log('Reports: Opening modal for group:', row);
     setSelectedGroupData({
       linkRows: row._link_rows,
       configDefinition: configDefinition,
@@ -122,62 +106,30 @@ const HistoryReportsTab: React.FC<{ onResetState: () => void }> = ({ onResetStat
         <HistoryFilter value={filter} onChange={handleFilterChange} />
       </div>
 
-      {/* History Settings */}
-      <HistorySetting settings={settings} onChange={handleSettingsChange} />
-
-      {/* Report UI Settings */}
-      {reportDefinition && (
-        <div className="chart-builder flex">
+      {/* History Settings and Report UI Settings */}
+      <div className="settings-row">
+        {reportDefinition && (
           <ReportUISettings
             reportDefinitionId={reportDefinition.id}
             configDefinition={configDefinition}
           />
-        </div>
-      )}
+        )}
+        <HistorySetting settings={settings} onChange={handleSettingsChange} />
+      </div>
 
-      {/* Report Table */}
-      <div className={`report-table ${settings.displayGroupType === 'in' ? 'vertical' : ''}`}>
-        <div
-          className={`wrap-table ${settings.displayGroupType === 'out' ? 'full' : ''}`}
-        >
+      {/* Report Table with expandable groups */}
+      <div className="report-table">
+        <div className="wrap-table full">
           <span className="label">Report</span>
           <HistoryTable
             filter={filter}
-            settings={settings}
-            onChange={handleHistoryTableChange}
-          />
-        </div>
-
-        {settings.displayGroupType === 'out' && tableLinkGroup && (
-          <div className="wrap-group">
-            <span className="label">Group</span>
-            <ReportTableGroup
-              tableLinkGroup={tableLinkGroup}
-              displayGroupType={settings.displayGroupType}
-              lazyLoading={settings.lazyLoading}
-              configDefinition={configDefinition}
-              onRowClick={handleHistoryGroupsChange}
-              onGroupClick={handleGroupClick}
-              onShowColumnDetail={(data) => columnCollectionsDialogRef.current?.showDetail(data)}
-            />
-          </div>
-        )}
-      </div>
-
-      {/* Group Table for "In Table" mode - shown below Report table */}
-      {settings.displayGroupType === 'in' && tableLinkGroup && (
-        <div className="wrap-group-below">
-          <span className="label">Group</span>
-          <ReportTableGroup
-            tableLinkGroup={tableLinkGroup}
-            displayGroupType={settings.displayGroupType}
             lazyLoading={settings.lazyLoading}
-            configDefinition={configDefinition}
+            onChange={handleHistoryTableChange}
             onGroupClick={handleGroupClick}
             onShowColumnDetail={(data) => columnCollectionsDialogRef.current?.showDetail(data)}
           />
         </div>
-      )}
+      </div>
 
       {/* Modal for Group Results */}
       <ReportResultDialog
