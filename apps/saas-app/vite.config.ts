@@ -137,6 +137,7 @@ export default defineConfig(({ mode }) => {
         target: backendTarget,
         changeOrigin: true,
         secure: false,
+        rewrite: (path) => path.replace(/^\/platform-api/, '/api/platform-api'),
         configure: (proxy, options) => {
           proxy.on('error', (err, req, res) => {
             console.log('Proxy error:', err.message);

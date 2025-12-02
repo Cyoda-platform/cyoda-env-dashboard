@@ -68,7 +68,12 @@ const QuickRunReport: React.FC<QuickRunReportProps> = ({
     queryFn: async () => {
       try {
         const response = await getReportingFetchTypes();
-        return response.data || [];
+        // Ensure we always return an array
+        if (Array.isArray(response.data)) {
+          return response.data;
+        }
+        console.warn('getReportingFetchTypes did not return an array, returning empty array');
+        return [];
       } catch (error) {
         console.error('Failed to load entity types:', error);
         return [];
