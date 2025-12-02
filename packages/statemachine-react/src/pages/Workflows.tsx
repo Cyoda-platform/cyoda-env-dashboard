@@ -152,7 +152,8 @@ export const Workflows: React.FC = () => {
     let filtered = workflows
       .map((workflow: Workflow) => {
         // Get short class name (last part after the last dot)
-        const entityShortClassName = workflow.entityClassName.split('.').pop() || workflow.entityClassName;
+        const parts = workflow.entityClassName.split('.');
+        const entityShortClassName = parts.length >= 2 ? parts.slice(-2).join('.') : workflow.entityClassName;
         let entityClassNameLabel = entityShortClassName;
         let entityTypeValue = null;
 

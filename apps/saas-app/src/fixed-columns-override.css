@@ -355,8 +355,7 @@ table.ant-table thead.ant-table-thead tr th.ant-table-cell-fix-right-first {
 
 /* TABLE BORDERS - Light theme - add vertical and horizontal lines like in dark theme */
 [data-theme="light"] .ant-table {
-  border: 1px solid rgba(0, 0, 0, 0.08) !important;
-  border-top: none !important;
+  border: none !important;
 }
 
 [data-theme="light"] .ant-table-thead > tr > th {

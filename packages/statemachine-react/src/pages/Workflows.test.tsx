@@ -218,7 +218,7 @@ describe('Workflows', () => {
     render(<Workflows />, { wrapper: createWrapper() });
 
     // Entity 1 appears twice (2 workflows with this entity class) with type label
-    const entity1Elements = screen.getAllByText(/Entity1.*Business/i);
+    const entity1Elements = screen.getAllByText(/example.Entity1.*Business/i);
     expect(entity1Elements.length).toBeGreaterThanOrEqual(1);
 
     // Entity 2 is PERSISTENCE type, so it's filtered out when entityType is BUSINESS
@@ -409,7 +409,7 @@ describe('Workflows', () => {
 
       // Entity class labels should include type information
       // Use getAllByText because Entity1 appears multiple times in the table
-      const entity1Elements = screen.getAllByText(/Entity1.*Business/i);
+      const entity1Elements = screen.getAllByText(/example.Entity1.*Business/i);
       expect(entity1Elements.length).toBeGreaterThanOrEqual(1);
     });
 
@@ -608,9 +608,9 @@ describe('Workflows', () => {
         render(<Workflows />, { wrapper: createWrapper() });
 
         // Should show entity name without type label (appears twice)
-        const entity1Elements = screen.getAllByText('Entity1');
+        const entity1Elements = screen.getAllByText('example.Entity1');
         expect(entity1Elements.length).toBeGreaterThanOrEqual(1);
-        expect(screen.queryByText(/Entity1.*Business/i)).not.toBeInTheDocument();
+        expect(screen.queryByText(/example.Entity1.*Business/i)).not.toBeInTheDocument();
         expect(screen.queryByText(/Entity1.*Technical/i)).not.toBeInTheDocument();
       });
 
@@ -657,9 +657,9 @@ describe('Workflows', () => {
         render(<Workflows />, { wrapper: createWrapper() });
 
         // Should show short class names without type labels (appears multiple times)
-        const entity1Elements = screen.getAllByText('Entity1');
+        const entity1Elements = screen.getAllByText('example.Entity1');
         expect(entity1Elements.length).toBeGreaterThanOrEqual(1);
-        expect(screen.queryByText(/Entity1.*Business/i)).not.toBeInTheDocument();
+        expect(screen.queryByText(/example.Entity1.*Business/i)).not.toBeInTheDocument();
       });
     });
   });
