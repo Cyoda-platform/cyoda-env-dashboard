@@ -130,7 +130,7 @@
 [data-theme="light"] table.ant-table tbody.ant-table-tbody tr:hover td.ant-table-cell-fix-left-last,
 [data-theme="light"] table.ant-table tbody.ant-table-tbody tr:hover td.ant-table-cell-fix-right,
 [data-theme="light"] table.ant-table tbody.ant-table-tbody tr:hover td.ant-table-cell-fix-right-first {
-  background: rgba(0, 212, 170, 0.05) !important;
+  background: #e0f7f4 !important; /* Solid light teal color */
 }
 
 /* Selected row state - light theme */
