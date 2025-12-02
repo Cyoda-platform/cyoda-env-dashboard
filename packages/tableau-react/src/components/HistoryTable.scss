@@ -10,10 +10,17 @@
   @include table.resizable-columns;
 
   // Table styling - Dark Theme
+  .ant-table-wrapper .ant-table.ant-table-bordered {
+    > .ant-table-container {
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-right: 0;
+      border-bottom: 0;
+    }
+  }
+
   .ant-table {
     font-size: 14px;
     background: transparent !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
 
     .ant-table-thead > tr > th {
       background: rgba(36, 49, 66, 0.9) !important;
@@ -24,7 +31,7 @@
       padding-top: 4px;
       padding-bottom: 4px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
-      border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+      border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
@@ -40,7 +47,8 @@
         > td {
           background: transparent !important;
           color: var(--refine-text-primary) !important;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+          border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
         }
 
         &:hover > td {
@@ -94,14 +102,20 @@
 // Light theme overrides
 [data-theme='light'] {
   .history-table {
-    .ant-table {
-      border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    .ant-table-wrapper .ant-table.ant-table-bordered {
+      > .ant-table-container {
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        border-right: 0;
+        border-bottom: 0;
+      }
+    }
 
+    .ant-table {
       .ant-table-thead > tr > th {
         background: #F3F4F6 !important;
         color: #374151 !important;
         border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
-        border-right: 1px solid rgba(0, 0, 0, 0.05) !important;
+        border-right: 1px solid rgba(0, 0, 0, 0.08) !important;
       }
 
       .ant-table-tbody {
@@ -109,7 +123,8 @@
           > td {
             background: #FFFFFF !important;
             color: #111827 !important;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+            border-right: 1px solid rgba(0, 0, 0, 0.08) !important;
           }
 
           &:hover > td {

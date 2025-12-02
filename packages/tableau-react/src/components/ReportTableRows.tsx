@@ -148,20 +148,15 @@ const ReportTableRows: React.FC<ReportTableRowsProps> = ({
   const setTableDataFromResponse = (data: ReportingReportRows) => {
     if (Object.keys(data).length > 0) {
       let reportRows = data._embedded.reportRows;
-      console.log('ReportTableRows: reportRows:', reportRows);
       if (lazyLoading) {
         reportRows = reportRows.slice(0, pageSize);
       }
       const flattenedData = reportRows.map((el) => {
-        console.log('ReportTableRows: Processing row:', el);
         // Use el.content if it exists, otherwise use el directly
         const rowData = el.content !== undefined ? el.content : el;
-        console.log('ReportTableRows: rowData:', rowData);
         const flattened = flatTableRow(rowData);
-        console.log('ReportTableRows: Flattened result:', flattened);
         return flattened;
       });
-      console.log('ReportTableRows: Final flattenedData:', flattenedData);
       setTableData(flattenedData);
     }
   };
@@ -170,16 +165,13 @@ const ReportTableRows: React.FC<ReportTableRowsProps> = ({
   useEffect(() => {
     const loadData = async () => {
       if (!tableLinkRows) {
-        console.log('ReportTableRows: No tableLinkRows provided');
         return;
       }
 
       try {
         const size = lazyLoading ? pageSize : 100000;
         const url = `${tableLinkRows}?size=${size}`;
-        console.log('ReportTableRows: Loading data from:', url);
         const data = await loadRows(url);
-        console.log('ReportTableRows: Loaded data:', data);
 
         setTableColumnsFromConfig();
         setTableDataFromResponse(data);
@@ -220,9 +212,6 @@ const ReportTableRows: React.FC<ReportTableRowsProps> = ({
 
   // Handle row double click
   const handleRowDoubleClick = (record: any) => {
-    console.log('ReportTableRows: Row double-clicked:', record);
-    console.log('ReportTableRows: configDefinition:', configDefinition);
-    console.log('ReportTableRows: reportDefinitionId:', reportDefinitionId);
     setSelectedRow(record);
     setIsModalVisible(true);
   };
@@ -279,6 +268,7 @@ const ReportTableRows: React.FC<ReportTableRowsProps> = ({
             </span>
           );
         }
+
         // For long text values, add tooltip
         const displayValue = value?.toString() || '';
         return (
