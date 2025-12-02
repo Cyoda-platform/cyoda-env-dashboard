@@ -123,18 +123,8 @@ export const ModellingItemClass: React.FC<ModellingItemClassProps> = ({
   const prevIsOpenAllSelectedRef = useRef(isOpenAllSelected);
 
   useEffect(() => {
-    console.log('ModellingItemClass useEffect', {
-      reportClassComputed,
-      prevIsOpenAllSelected: prevIsOpenAllSelectedRef.current,
-      isOpenAllSelected,
-      getChecked: !!getChecked,
-      isShowGroup,
-      changed: prevIsOpenAllSelectedRef.current !== isOpenAllSelected
-    });
-
     // Only run if isOpenAllSelected actually changed
     if (prevIsOpenAllSelectedRef.current !== isOpenAllSelected) {
-      console.log('isOpenAllSelected CHANGED - running collapse/expand logic');
       prevIsOpenAllSelectedRef.current = isOpenAllSelected;
 
       if (isOpenAllSelected && getChecked) {
@@ -151,13 +141,6 @@ export const ModellingItemClass: React.FC<ModellingItemClassProps> = ({
 
   // Load data with optional form values
   const loadData = async (columnPath: string) => {
-    console.log('[ModellingItemClass] loadData called', {
-      requestClass: requestParam.requestClass,
-      reportClass: requestParam.reportClass,
-      columnPath,
-      onlyRange
-    });
-
     setIsLoading(true);
     try {
       const { data } = await getReportingInfo(
@@ -166,19 +149,8 @@ export const ModellingItemClass: React.FC<ModellingItemClassProps> = ({
         columnPath,
         onlyRange
       );
-      console.log('[ModellingItemClass] loadData response', {
-        reportClass: requestParam.reportClass,
-        dataLength: data?.length,
-        data: JSON.parse(JSON.stringify(data))
-      });
       const filtered = HelperModelling.filterData(data);
       const sorted = HelperModelling.sortData(filtered);
-      console.log('[ModellingItemClass] After filter and sort', {
-        reportClass: requestParam.reportClass,
-        filteredLength: filtered?.length,
-        sortedLength: sorted?.length,
-        sorted
-      });
       setReportingInfoRows(sorted);
     } catch (error) {
       console.error('Failed to load class data:', error);
@@ -194,21 +166,11 @@ export const ModellingItemClass: React.FC<ModellingItemClassProps> = ({
       e.stopPropagation();
     }
 
-    console.log('[ModellingItemClass] handleClick for', reportClassComputed, {
-      reportingInfoRows: reportingInfoRows?.length,
-      isShowGroup,
-      willToggleTo: !isShowGroup,
-      requestParam
-    });
-
     if (!reportingInfoRows) {
-      console.log('[ModellingItemClass] Loading data for', requestParam.columnPath);
       await loadData(requestParam.columnPath);
     }
 
-    const newShowGroup = !isShowGroup;
-    console.log('[ModellingItemClass] Setting isShowGroup to', newShowGroup, 'for', reportClassComputed);
-    setIsShowGroup(newShowGroup);
+    setIsShowGroup(!isShowGroup);
   };
 
   // Handle form change
