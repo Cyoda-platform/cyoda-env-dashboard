@@ -4,6 +4,18 @@
   @include table.table-container-wrapper;
   @include table.resizable-columns;
 
+  .ant-form-item-label {
+    padding-bottom: 4px;
+
+    > label {
+      font-weight: 500;
+      color: var(--refine-text-secondary) !important;
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 0.5px;
+    }
+  }
+
   // Prevent word breaking in table headers
   .ant-table-thead > tr > th {
     word-break: keep-all;

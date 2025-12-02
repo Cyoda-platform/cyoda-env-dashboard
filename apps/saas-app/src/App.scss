@@ -379,6 +379,25 @@ li a {
   }
 }
 
+// Light theme - Card borders
+[data-theme="light"] {
+  .filter-section,
+  .filter-container,
+  [class*="filter"] {
+    .ant-card {
+      border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    }
+  }
+
+  .ant-card {
+    border-color: rgba(0, 0, 0, 0.1) !important;
+
+    .ant-card-head {
+      border-bottom-color: rgba(0, 0, 0, 0.1) !important;
+    }
+  }
+}
+
 // Remove Card body padding for consistent alignment across all pages
 .ant-card-borderless .ant-card-body,
 .ant-card-borderless > .ant-card-body,
