@@ -259,7 +259,9 @@ export const Instances: React.FC = () => {
         let label = type.label || value;
         if (type.type) {
           const typeLabel = entityTypeMapper(type.type);
-          label = `${value} (${typeLabel})`;
+          const parts = value.split(".");
+        const shortName = parts.length >= 2 ? parts.slice(-2).join(".") : value;
+        label = `${shortName} (${typeLabel})`;
         }
 
         return {
