@@ -72,12 +72,14 @@ export default defineConfig(({ mode }) => {
           proxy.on('error', (err, req, res) => {
             console.log('Proxy error:', err.message);
           });
-          proxy.on('proxyReq', (proxyReq, req, res) => {
-            console.log('Proxying:', req.method, req.url, '→', options.target + req.url);
-          });
-          proxy.on('proxyRes', (proxyRes, req, res) => {
-            console.log('Response:', proxyRes.statusCode, req.method, req.url);
-          });
+          if (env.VITE_PROXY_LOG === 'true') {
+            proxy.on('proxyReq', (proxyReq, req, res) => {
+              console.log('Proxying:', req.method, req.url, '→', options.target + req.url);
+            });
+            proxy.on('proxyRes', (proxyRes, req, res) => {
+              console.log('Response:', proxyRes.statusCode, req.method, req.url);
+            });
+          }
         },
       },
       // Proxy all /platform-processing requests to real Cyoda backend server
@@ -90,12 +92,14 @@ export default defineConfig(({ mode }) => {
           proxy.on('error', (err, req, res) => {
             console.log('Proxy error:', err.message);
           });
-          proxy.on('proxyReq', (proxyReq, req, res) => {
-            console.log('Proxying:', req.method, req.url, '→', options.target + req.url);
-          });
-          proxy.on('proxyRes', (proxyRes, req, res) => {
-            console.log('Response:', proxyRes.statusCode, req.method, req.url);
-          });
+          if (env.VITE_PROXY_LOG === 'true') {
+            proxy.on('proxyReq', (proxyReq, req, res) => {
+              console.log('Proxying:', req.method, req.url, '→', options.target + req.url);
+            });
+            proxy.on('proxyRes', (proxyRes, req, res) => {
+              console.log('Response:', proxyRes.statusCode, req.method, req.url);
+            });
+          }
         },
       },
       // Proxy all /platform-common requests to real Cyoda backend server
@@ -107,12 +111,14 @@ export default defineConfig(({ mode }) => {
           proxy.on('error', (err, req, res) => {
             console.log('Proxy error:', err.message);
           });
-          proxy.on('proxyReq', (proxyReq, req, res) => {
-            console.log('Proxying:', req.method, req.url, '→', options.target + req.url);
-          });
-          proxy.on('proxyRes', (proxyRes, req, res) => {
-            console.log('Response:', proxyRes.statusCode, req.method, req.url);
-          });
+          if (env.VITE_PROXY_LOG === 'true') {
+            proxy.on('proxyReq', (proxyReq, req, res) => {
+              console.log('Proxying:', req.method, req.url, '→', options.target + req.url);
+            });
+            proxy.on('proxyRes', (proxyRes, req, res) => {
+              console.log('Response:', proxyRes.statusCode, req.method, req.url);
+            });
+          }
         },
       },
       // Proxy all /api requests to real Cyoda backend server
@@ -124,12 +130,14 @@ export default defineConfig(({ mode }) => {
           proxy.on('error', (err, req, res) => {
             console.log('Proxy error:', err.message);
           });
-          proxy.on('proxyReq', (proxyReq, req, res) => {
-            console.log('Proxying:', req.method, req.url, '→', options.target + req.url);
-          });
-          proxy.on('proxyRes', (proxyRes, req, res) => {
-            console.log('Response:', proxyRes.statusCode, req.method, req.url);
-          });
+          if (env.VITE_PROXY_LOG === 'true') {
+            proxy.on('proxyReq', (proxyReq, req, res) => {
+              console.log('Proxying:', req.method, req.url, '→', options.target + req.url);
+            });
+            proxy.on('proxyRes', (proxyRes, req, res) => {
+              console.log('Response:', proxyRes.statusCode, req.method, req.url);
+            });
+          }
         },
       },
       // Proxy all /platform-api requests to real Cyoda backend server
@@ -142,12 +150,14 @@ export default defineConfig(({ mode }) => {
           proxy.on('error', (err, req, res) => {
             console.log('Proxy error:', err.message);
           });
-          proxy.on('proxyReq', (proxyReq, req, res) => {
-            console.log('Proxying:', req.method, req.url, '→', options.target + req.url);
-          });
-          proxy.on('proxyRes', (proxyRes, req, res) => {
-            console.log('Response:', proxyRes.statusCode, req.method, req.url);
-          });
+          if (env.VITE_PROXY_LOG === 'true') {
+            proxy.on('proxyReq', (proxyReq, req, res) => {
+              console.log('Proxying:', req.method, req.url, '→', options.target + req.url);
+            });
+            proxy.on('proxyRes', (proxyRes, req, res) => {
+              console.log('Response:', proxyRes.statusCode, req.method, req.url);
+            });
+          }
         },
       },
     },
