@@ -138,15 +138,6 @@ export const Workflows: React.FC = () => {
   const deleteWorkflowMutation = useDeleteWorkflow();
   const copyWorkflowMutation = useCopyWorkflow();
 
-  // Helper function to map entity type
-  const entityTypeMapper = (type: string): string => {
-    const map: Record<string, string> = {
-      BUSINESS: 'Business',
-      PERSISTENCE: 'Technical',
-    };
-    return map[type] || type;
-  };
-
   // Table data with filtering and sorting
   const tableData = useMemo<WorkflowTableRow[]>(() => {
     let filtered = workflows
@@ -154,7 +145,7 @@ export const Workflows: React.FC = () => {
         // Get short class name (last part after the last dot)
         const parts = workflow.entityClassName.split('.');
         const entityShortClassName = parts.length >= 2 ? parts.slice(-2).join('.') : workflow.entityClassName;
-        let entityClassNameLabel = entityShortClassName;
+        const entityClassNameLabel = entityShortClassName;
         let entityTypeValue = null;
 
         // Only use entity type info if available (feature flag equivalent)
@@ -165,10 +156,8 @@ export const Workflows: React.FC = () => {
           );
 
           if (entityRow && entityRow.type) {
-            // Append entity type label to the short name
+            // Store entity type for filtering
             entityTypeValue = entityRow.type;
-            const typeLabel = entityTypeMapper(entityRow.type);
-            entityClassNameLabel = `${entityShortClassName} (${typeLabel})`;
           }
         }
 
@@ -329,7 +318,7 @@ export const Workflows: React.FC = () => {
   // Table columns with resizable support
   const columns: ColumnsType<WorkflowTableRow> = useMemo(() => [
     {
-      title: 'Entity',
+      title: entityType === 'BUSINESS' ? 'Business Entity' : 'Technical Entity',
       dataIndex: 'entityClassNameLabel',
       key: 'entityClassNameLabel',
       width: columnWidths.entityClassNameLabel,
@@ -465,7 +454,7 @@ export const Workflows: React.FC = () => {
         onResize: handleResize('operations'),
       }),
     },
-  ], [columnWidths, handleResize, handleViewWorkflow, handleViewInstances, handleCopyWorkflow, handleDeleteWorkflow, copyWorkflowMutation.isPending, deleteWorkflowMutation.isPending]);
+  ], [columnWidths, handleResize, handleViewWorkflow, handleViewInstances, handleCopyWorkflow, handleDeleteWorkflow, copyWorkflowMutation.isPending, deleteWorkflowMutation.isPending, entityType]);
   
   return (
     <div className="workflows-page">

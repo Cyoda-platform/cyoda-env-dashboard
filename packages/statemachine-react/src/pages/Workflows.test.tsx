@@ -217,8 +217,8 @@ describe('Workflows', () => {
   it('should display entity class labels', () => {
     render(<Workflows />, { wrapper: createWrapper() });
 
-    // Entity 1 appears twice (2 workflows with this entity class) with type label
-    const entity1Elements = screen.getAllByText(/example.Entity1.*Business/i);
+    // Entity 1 appears twice (2 workflows with this entity class) without type label
+    const entity1Elements = screen.getAllByText('example.Entity1');
     expect(entity1Elements.length).toBeGreaterThanOrEqual(1);
 
     // Entity 2 is PERSISTENCE type, so it's filtered out when entityType is BUSINESS
@@ -351,6 +351,18 @@ describe('Workflows', () => {
     // Note: Entity type toggle is now in the global header (AppHeader), not on the Workflows page
     // These tests verify that the Workflows page correctly filters based on the global entityType setting
 
+    it('should display Business Entity column header when entityType is BUSINESS', () => {
+      mockEntityType.mockReturnValue('BUSINESS');
+      render(<Workflows />, { wrapper: createWrapper() });
+      expect(screen.getByText('Business Entity')).toBeInTheDocument();
+    });
+
+    it('should display Technical Entity column header when entityType is PERSISTENCE', () => {
+      mockEntityType.mockReturnValue('PERSISTENCE');
+      render(<Workflows />, { wrapper: createWrapper() });
+      expect(screen.getByText('Technical Entity')).toBeInTheDocument();
+    });
+
     it('should filter workflows by BUSINESS entity type', () => {
       mockEntityType.mockReturnValue('BUSINESS');
 
@@ -402,14 +414,14 @@ describe('Workflows', () => {
       expect(screen.queryByText('Another Workflow')).not.toBeInTheDocument();
     });
 
-    it('should display entity type labels in entity class names', () => {
+    it('should display entity class names without type suffix', () => {
       mockEntityType.mockReturnValue('BUSINESS');
 
       render(<Workflows />, { wrapper: createWrapper() });
 
-      // Entity class labels should include type information
+      // Entity class labels should NOT include type information (type is shown in column header)
       // Use getAllByText because Entity1 appears multiple times in the table
-      const entity1Elements = screen.getAllByText(/example.Entity1.*Business/i);
+      const entity1Elements = screen.getAllByText('example.Entity1');
       expect(entity1Elements.length).toBeGreaterThanOrEqual(1);
     });
 
@@ -500,7 +512,7 @@ describe('Workflows', () => {
         });
       });
 
-      it('should display entity type labels with type suffix', () => {
+      it('should display entity names without type suffix', () => {
         mockEntityType.mockReturnValue('BUSINESS');
 
         const workflowsWithTypes = [
@@ -515,8 +527,8 @@ describe('Workflows', () => {
 
         render(<Workflows />, { wrapper: createWrapper() });
 
-        // Should show entity name with type label
-        expect(screen.getByText(/Entity1.*Business/i)).toBeInTheDocument();
+        // Should show entity name without type label (type is shown in column header)
+        expect(screen.getByText('example.Entity1')).toBeInTheDocument();
       });
 
       it('should filter workflows by BUSINESS type', () => {
