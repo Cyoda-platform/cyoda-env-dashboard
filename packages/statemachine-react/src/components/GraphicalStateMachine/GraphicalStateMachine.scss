@@ -326,40 +326,32 @@
       }
 
       &.process {
-        // Create line with rectangle in the middle
+        // Thin gray line touching the heptagon
+        height: 2px;
         background: linear-gradient(to right,
-          #a78bfa 0%,
-          #a78bfa 30%,
-          transparent 30%,
+          #6b7280 0%,
+          #6b7280 70%,
           transparent 70%,
-          #a78bfa 70%,
-          #a78bfa 100%
+          transparent 100%
         );
 
-        // Rectangle shape in the middle
+        // Blue heptagon on the right side
         &::before {
           content: '';
           position: absolute;
-          left: 50%;
-          top: 50%;
-          transform: translate(-50%, -50%);
-          width: 16px;
-          height: 10px;
-          background-color: #0d9488; // Darker teal
-          border: 2px solid #14b8a6; // Neon teal border
-        }
-
-        &::after {
-          content: '';
-          position: absolute;
-          right: -6px;
+          right: 0;
           top: 50%;
           transform: translateY(-50%);
-          width: 0;
-          height: 0;
-          border-left: 8px solid #c084fc; // Lighter purple
-          border-top: 5px solid transparent;
-          border-bottom: 5px solid transparent;
+          width: 16px;
+          height: 16px;
+          background-color: #3b82f6; // Blue
+          border: 2px solid #60a5fa; // Lighter blue border
+          clip-path: polygon(50% 0%, 90% 20%, 100% 60%, 75% 100%, 25% 100%, 0% 60%, 10% 20%);
+        }
+
+        // No arrow
+        &::after {
+          display: none;
         }
       }
     }

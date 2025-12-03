@@ -223,7 +223,8 @@ export const getProcessCompoundPosition = (
   if (positionsMap && positionsMap[processId]) {
     return positionsMap[processId];
   }
-  return { x: endStatePosition.x, y: endStatePosition.y - 100 };
+  // Position processes to the right of the state
+  return { x: endStatePosition.x + 150, y: endStatePosition.y };
 };
 
 export const getProcessesEles = ({

@@ -10,6 +10,8 @@ export const getStyleForTheme = (theme: 'light' | 'dark'): CytoscapeStylesheet[]
   const labelTextColor = theme === 'light' ? '#111827' : '#ffffff';
   const labelBgColor = theme === 'light' ? '#ffffff' : '#1f2937';
   const labelBgOpacity = theme === 'light' ? 0.9 : 0.95;
+  const compoundBgColor = theme === 'light' ? '#e5e7eb' : '#2d3748';
+  const compoundHiddenBgColor = theme === 'light' ? '#d1d5db' : '#4b5563';
 
   return [
     {
@@ -92,23 +94,24 @@ export const getStyleForTheme = (theme: 'light' | 'dark'): CytoscapeStylesheet[]
   {
     selector: '.node-process',
     style: {
-      'background-color': '#8b5cf6', // Neon purple
+      'background-color': '#3b82f6', // Blue
       'border-width': 3,
-      'border-color': '#a78bfa', // Lighter purple glow
+      'border-color': '#60a5fa', // Lighter blue glow
       'shape': 'heptagon',
     },
   },
   {
     selector: '.edge-process',
     style: {
-      'line-color': '#8b5cf6', // Neon purple
+      'line-color': '#6b7280', // Neutral gray
       'curve-style': 'haystack',
+      'width': 2, // Thinner than transitions
     },
   },
   {
     selector: '.compound-processes',
     style: {
-      'background-color': '#2d3748',
+      'background-color': compoundBgColor,
       'background-opacity': '0.8',
       'z-compound-depth': 'orphan',
     },
@@ -116,7 +119,7 @@ export const getStyleForTheme = (theme: 'light' | 'dark'): CytoscapeStylesheet[]
   {
     selector: '.compound-processes-source',
     style: {
-      'background-color': '#8b5cf6', // Neon purple
+      'background-color': '#3b82f6', // Blue
       'width': 10,
       'height': 10,
     },
@@ -124,7 +127,7 @@ export const getStyleForTheme = (theme: 'light' | 'dark'): CytoscapeStylesheet[]
   {
     selector: '.compound-criteria',
     style: {
-      'background-color': '#2d3748',
+      'background-color': compoundBgColor,
       'background-opacity': '0.8',
       'z-compound-depth': 'orphan',
     },
@@ -132,7 +135,7 @@ export const getStyleForTheme = (theme: 'light' | 'dark'): CytoscapeStylesheet[]
   {
     selector: '.compound-criteria-hidden',
     style: {
-      'background-color': '#4b5563',
+      'background-color': compoundHiddenBgColor,
       'background-opacity': 0.4,
       'label': '',
       'padding': 0,

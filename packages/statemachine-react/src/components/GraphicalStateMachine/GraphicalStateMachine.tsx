@@ -69,7 +69,7 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
   const [showCriteria, setShowCriteria] = useState(true);
   const [showTitles, setShowTitles] = useState(true);
   const [showEdgesTitles, setShowEdgesTitles] = useState(false);
-  const [showListOfTransitions, setShowListOfTransitions] = useState(true);
+  const [showListOfTransitions, setShowListOfTransitions] = useState(false);
   const [hiddenTransitions, setHiddenTransitions] = useState<Set<string>>(new Set());
   const [currentTheme, setCurrentTheme] = useState<'light' | 'dark'>('dark');
 
@@ -154,11 +154,11 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
         name: 'breadthfirst',
         directed: true,
         nodeDimensionsIncludeLabels: true,
-        padding: 100, // Increased padding for more spacing
-        spacingFactor: 1.5, // Extra spacing between nodes
+        padding: 150, // Increased padding for more spacing
+        spacingFactor: 2.5, // Extra spacing between nodes
         fit: true,
         avoidOverlap: true, // Prevent nodes from overlapping
-        avoidOverlapPadding: 50, // Minimum distance between nodes
+        avoidOverlapPadding: 100, // Minimum distance between nodes
       },
       zoom: 1,
       pan: { x: 0, y: 0 }, // Start at origin like Vue version
@@ -212,18 +212,13 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
       console.log('[GraphicalStateMachine] Process nodes unlocked:', cy.nodes('.compound-processes').length);
     }
 
-    cy.fit();
-    // Reduce zoom to 40% to avoid overlapping with the transitions table
-    cy.zoom(cy.zoom() * 0.4);
-    // Pan to the right and down to center the graph in the visible area (accounting for the table on the left)
-    const currentPan = cy.pan();
-    cy.pan({ x: currentPan.x + 500, y: currentPan.y + 100 });
-    cy.userZoomingEnabled(false);
+    cy.fit(50);
+    cy.userZoomingEnabled(true);
 
     // Set initialized flag (will be set after layout completes if no positionsMap)
     if (!positionsMap) {
       // Apply initial visibility settings for new layouts
-      cy.nodes().toggleClass('hide-titles', !showTitles);
+      cy.nodes('.node-state').toggleClass('hide-titles', !showTitles);
       cy.edges().toggleClass('hide-titles-edge', !showEdgesTitles);
       cy.nodes('.compound-processes').toggleClass('hidden', !showProcesses);
       cy.edges('.edge-process').toggleClass('hidden', !showProcesses);
@@ -608,7 +603,7 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
   const toggleTitles = useCallback(() => {
     setShowTitles((prev) => !prev);
     if (cyRef.current) {
-      cyRef.current.nodes().toggleClass('hide-titles');
+      cyRef.current.nodes('.node-state').toggleClass('hide-titles');
     }
   }, []);
 

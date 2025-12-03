@@ -13,8 +13,9 @@ export const coreLayout = (name = 'breadthfirst') => ({
   name,
   directed: true,
   nodeDimensionsIncludeLabels: true,
-  padding: 100, // Increased padding for more spacing between nodes
-  spacingFactor: 1.5, // Add extra spacing between nodes (for layouts that support it)
+  padding: 150, // Increased padding for more spacing between nodes
+  spacingFactor: 2.5, // Add extra spacing between nodes (for layouts that support it)
   avoidOverlap: true, // Prevent nodes from overlapping
+  avoidOverlapPadding: 100, // Minimum distance between nodes
 });
 
