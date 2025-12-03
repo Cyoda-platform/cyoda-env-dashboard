@@ -120,7 +120,7 @@ describe('WorkflowForm', () => {
       fireEvent.mouseDown(select);
 
       // Should show BUSINESS entities
-      expect(screen.getByText(/Entity1.*Business/i)).toBeInTheDocument();
+      expect(screen.getByText(/Entity1/i)).toBeInTheDocument();
 
       // Should NOT show PERSISTENCE entities
       expect(screen.queryByText(/Entity2/i)).not.toBeInTheDocument();
@@ -137,7 +137,7 @@ describe('WorkflowForm', () => {
       fireEvent.mouseDown(select);
 
       // Should show PERSISTENCE entities
-      expect(screen.getByText(/Entity2.*Technical/i)).toBeInTheDocument();
+      expect(screen.getByText(/Entity2/i)).toBeInTheDocument();
 
       // Should NOT show BUSINESS entities
       expect(screen.queryByText(/Entity1/i)).not.toBeInTheDocument();
@@ -168,7 +168,7 @@ describe('WorkflowForm', () => {
       fireEvent.mouseDown(select);
 
       // Entity options should include type information
-      expect(screen.getByText(/Entity1.*Business/i)).toBeInTheDocument();
+      expect(screen.getByText(/Entity1/i)).toBeInTheDocument();
     });
   });
 });

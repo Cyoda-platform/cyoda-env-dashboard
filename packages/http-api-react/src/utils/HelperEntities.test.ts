@@ -60,11 +60,11 @@ describe('HelperEntities', () => {
       expect(options).toHaveLength(2);
       expect(options[0]).toEqual({
         value: 'com.cyoda.core.Entity',
-        label: 'com.cyoda.core.Entity (Business)',
+        label: 'com.cyoda.core.Entity',
       });
       expect(options[1]).toEqual({
         value: 'com.cyoda.core.User',
-        label: 'com.cyoda.core.User (Technical)',
+        label: 'com.cyoda.core.User',
       });
     });
 
@@ -77,7 +77,7 @@ describe('HelperEntities', () => {
 
       expect(options).toHaveLength(1);
       expect(options[0].value).toBe('com.cyoda.core.Entity');
-      expect(options[0].label).toBe('com.cyoda.core.Entity (Business)');
+      expect(options[0].label).toBe('com.cyoda.core.Entity');
     });
 
     it('should filter by PERSISTENCE type', () => {
@@ -91,9 +91,9 @@ describe('HelperEntities', () => {
 
       expect(options).toHaveLength(2);
       expect(options[0].value).toBe('com.cyoda.core.constraints.UniqueConstraintOwner');
-      expect(options[0].label).toBe('com.cyoda.core.constraints.UniqueConstraintOwner (Technical)');
+      expect(options[0].label).toBe('com.cyoda.core.constraints.UniqueConstraintOwner');
       expect(options[1].value).toBe('com.cyoda.tdb.model.search.SearchUsageEntity');
-      expect(options[1].label).toBe('com.cyoda.tdb.model.search.SearchUsageEntity (Technical)');
+      expect(options[1].label).toBe('com.cyoda.tdb.model.search.SearchUsageEntity');
     });
 
     it('should return all entities when type filter is null', () => {
@@ -128,19 +128,19 @@ describe('HelperEntities', () => {
   });
 
   describe('getLabel', () => {
-    it('should format label for BUSINESS type', () => {
+    it('should return entity name for BUSINESS type', () => {
       const entity = { name: 'Entity', type: 'BUSINESS' as const };
-      expect(HelperEntities.getLabel(entity)).toBe('Entity (Business)');
+      expect(HelperEntities.getLabel(entity)).toBe('Entity');
     });
 
-    it('should format label for PERSISTENCE type', () => {
+    it('should return entity name for PERSISTENCE type', () => {
       const entity = { name: 'User', type: 'PERSISTENCE' as const };
-      expect(HelperEntities.getLabel(entity)).toBe('User (Technical)');
+      expect(HelperEntities.getLabel(entity)).toBe('User');
     });
 
-    it('should format label for missing type', () => {
+    it('should return entity name for missing type', () => {
       const entity = { name: 'Transaction' };
-      expect(HelperEntities.getLabel(entity)).toBe('Transaction (Missing)');
+      expect(HelperEntities.getLabel(entity)).toBe('Transaction');
     });
   });
 });

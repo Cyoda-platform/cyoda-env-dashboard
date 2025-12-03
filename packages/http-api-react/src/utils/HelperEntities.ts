@@ -58,13 +58,10 @@ export default class HelperEntities {
   }
 
   /**
-   * Get label for entity with type annotation
+   * Get label for entity (type is shown via toggle)
    */
   static getLabel(el: EntityTypeData): string {
-    let type = '(Missing)';
-    if (el.type === 'PERSISTENCE') type = '(Technical)';
-    if (el.type === 'BUSINESS') type = '(Business)';
-    return `${el.name} ${type}`;
+    return el.name;
   }
 
   /**
