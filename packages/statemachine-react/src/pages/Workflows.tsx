@@ -168,8 +168,8 @@ export const Workflows: React.FC = () => {
         version = parts.length >= 2 ? parts[parts.length - 1] : null;
       } else {
         // Technical entities: format is full package name (e.g., "com.cyoda.tdb.model.metadata.EntityModel")
-        // Show last 2 parts as entity name, no version
-        entityClassNameLabel = parts.length >= 2 ? parts.slice(-2).join('.') : workflow.entityClassName;
+        // Show full entity name, no version
+        entityClassNameLabel = workflow.entityClassName;
       }
 
       return {

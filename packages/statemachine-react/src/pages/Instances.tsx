@@ -252,13 +252,18 @@ export const Instances: React.FC = () => {
           return null;
         }
 
-        // If entity has type info, add it to the label
-        let label = type.label || value;
-        if (type.type) {
-          const parts = value.split(".");
-        const shortName = parts.length >= 2 ? parts.slice(-2).join(".") : value;
-        label = shortName;
+      // If entity has type info, set appropriate label
+      let label = type.label || value;
+      if (type.type) {
+        const parts = value.split(".");
+        if (type.type === 'BUSINESS') {
+          // Business entities: show name without version (e.g., "travel" from "travel.1001")
+          label = parts.length >= 2 ? parts.slice(0, -1).join('.') : value;
+        } else {
+          // Technical entities: show full package name
+          label = value;
         }
+      }
 
         return {
           label,
