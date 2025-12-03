@@ -121,7 +121,7 @@ const FilterBuilderGroup: React.FC<FilterBuilderGroupProps> = ({
 
         {level > 0 && (
           <Button
-            type="primary"
+            type="default"
             danger
             shape="circle"
             icon={<DeleteOutlined />}

@@ -1537,7 +1537,7 @@ h1, h2, h3, h4, h5, h6 {
   .ant-tabs {
     .ant-tabs-nav {
       &::before {
-        border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+        border-bottom-color: transparent !important;
       }
     }
 
@@ -1589,7 +1589,7 @@ h1, h2, h3, h4, h5, h6 {
       }
 
       .ant-tabs-content-holder {
-        border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-top: 1px solid transparent !important;
       }
     }
   }
@@ -2461,6 +2461,8 @@ div[class*="sticky-scroll"]::after,
 
 // ============================================
 // CYTOSCAPE CANVAS - FORCE LIGHT BACKGROUND
+
+// Divider styling for light theme
 // ============================================
 .graph-container,
 .graph-container *,
@@ -2477,3 +2479,10 @@ div[class*="sticky-scroll"]::after,
   z-index: 1050 !important;
 }
 
+
+// Divider styling for light theme
+[data-theme="light"] {
+  .ant-divider {
+    border-color: rgba(0, 0, 0, 0.1) !important;
+  }
+}
