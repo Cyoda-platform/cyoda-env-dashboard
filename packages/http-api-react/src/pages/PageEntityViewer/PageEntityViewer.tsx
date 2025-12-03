@@ -42,6 +42,12 @@ export const PageEntityViewer: React.FC = () => {
     loadDataClassOptions();
   }, [onlyDynamic, entityType]);
 
+  // Clear selection when entity type changes
+  useEffect(() => {
+    setRequestClass('');
+    clearEntities();
+  }, [entityType]);
+
   // Watch requestClass changes
   useEffect(() => {
     if (requestClass) {

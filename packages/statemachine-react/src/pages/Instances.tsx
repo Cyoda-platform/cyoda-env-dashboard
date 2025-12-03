@@ -105,7 +105,13 @@ export const Instances: React.FC = () => {
   // Global UI settings
   const { entityType } = useGlobalUiSettingsStore();
 
-  // Check if entity type filtering is enabled via feature flag
+  
+  // Clear selection when entity type changes
+  useEffect(() => {
+    setEntityClassName("");
+    setInstancesData(null);
+  }, [entityType]);
+
   const hasEntityTypeInfo = HelperFeatureFlags.isUseModelsInfo();
 
   // Queries
