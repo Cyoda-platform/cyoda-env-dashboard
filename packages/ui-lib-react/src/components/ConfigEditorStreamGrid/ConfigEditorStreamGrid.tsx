@@ -76,7 +76,7 @@ export const ConfigEditorStreamGrid = forwardRef<ConfigEditorStreamGridRef, Conf
         dataIndex: col.name,
         key: col.name,
         sorter: true,
-        width: 200,
+        width: 150,
         render: (value: any) => {
           if (value === null || value === undefined) return ''
           if (typeof value === 'object') return JSON.stringify(value)
@@ -283,7 +283,7 @@ export const ConfigEditorStreamGrid = forwardRef<ConfigEditorStreamGridRef, Conf
       }
       open={dialogVisible}
       onCancel={handleClose}
-      width="80%"
+      width="95%"
       className={`config-editor-stream-grid ${className}`}
       footer={
         <div className="config-editor-stream-grid__footer">
@@ -332,12 +332,13 @@ export const ConfigEditorStreamGrid = forwardRef<ConfigEditorStreamGridRef, Conf
 
         <Table
           rowSelection={isDeleteAvailable ? rowSelection : undefined}
+          size="small"
           bordered
           columns={columns}
           dataSource={tableData}
           loading={isLoading}
           pagination={false}
-          scroll={{ x: true, y: 400 }}
+          scroll={{ x: true, y: 600 }}
           onRow={(record) => ({
             onDoubleClick: () => handleRowDoubleClick(record)
           })}
