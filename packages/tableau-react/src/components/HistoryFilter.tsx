@@ -6,7 +6,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Form, Select, DatePicker, Row, Col, Input } from 'antd';
 import { useQuery } from '@tanstack/react-query';
-import { axios, useGlobalUiSettingsStore } from '@cyoda/http-api-react';
+import { axios, useGlobalUiSettingsStore, usersList } from '@cyoda/http-api-react';
 import dayjs, { Dayjs } from 'dayjs';
 import type { HistoryFilterForm } from '../utils/HelperReportDefinition';
 import HelperReportDefinition from '../utils/HelperReportDefinition';
@@ -56,18 +56,48 @@ const HistoryFilter: React.FC<HistoryFilterProps> = ({
 
   const [filterForm, setFilterForm] = useState<HistoryFilterForm>(value || initialFilter);
 
-  // Load report definitions to get users and types
+  // Load report definitions to get users and types (same as ReportConfigs)
   const { data: definitions = [] } = useQuery({
-    queryKey: ['reportDefinitions', entityType],
+    queryKey: ['reportDefinitions'],
     queryFn: async () => {
       try {
         const { data } = await axios.get<{ _embedded: { gridConfigFieldsViews: GridConfigFieldsView[] } }>(
           '/platform-api/reporting/definitions',
           {
-            params: { entityType },
+            params: {
+              fields: ['id', 'description', 'type', 'userId', 'creationDate'],
+              size: 999,
+            },
           }
         );
-        return data._embedded?.gridConfigFieldsViews || [];
+        const defs = data._embedded?.gridConfigFieldsViews || [];
+
+        // Get unique user IDs from definitions
+        const userIds = [...new Set(
+          defs
+            .map((def) => def.gridConfigFields.userId)
+            .filter((id): id is string => !!id)
+        )];
+
+        // Load user information if there are user IDs
+        if (userIds.length > 0) {
+          try {
+            const { data: usersData } = await usersList(userIds);
+            // Attach user info to definitions
+            return defs.map((def) => ({
+              ...def,
+              gridConfigFields: {
+                ...def.gridConfigFields,
+                user: usersData.find((user) => user.userId === def.gridConfigFields.userId),
+              },
+            }));
+          } catch (error) {
+            console.error('Failed to load users:', error);
+            return defs;
+          }
+        }
+
+        return defs;
       } catch (error) {
         console.error('Failed to load report definitions:', error);
         return [];
@@ -119,10 +149,22 @@ const HistoryFilter: React.FC<HistoryFilterProps> = ({
     return uniqueUsers;
   }, [definitions, propUsersOptions]);
 
-  // Entity options (use props if provided, otherwise empty)
+  // Entity options - extract from definitions (like ReportConfigs does)
   const entityOptions = useMemo(() => {
-    return propEntityOptions || [];
-  }, [propEntityOptions]);
+    if (propEntityOptions && propEntityOptions.length > 0) {
+      return propEntityOptions;
+    }
+
+    const entities = definitions.map((report) => ({
+      value: report.gridConfigFields.type,
+      label: report.gridConfigFields.type,
+    }));
+
+    // Remove duplicates
+    return Array.from(
+      new Map(entities.map((e) => [e.value, e])).values()
+    );
+  }, [definitions, propEntityOptions]);
 
   // State options
   const stateOptions = useMemo(() => {

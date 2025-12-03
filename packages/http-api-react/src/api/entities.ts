@@ -304,3 +304,21 @@ export function getStreamData(request: any) {
   return axios.post('/platform-api/stream-data/get', request);
 }
 
+/**
+ * User type for usersList response
+ */
+export interface User {
+  userId: string;
+  username: string;
+  email?: string;
+  firstName?: string;
+  lastName?: string;
+}
+
+/**
+ * Get users by their IDs
+ * Used to fetch user information for report definitions
+ */
+export function usersList(userIds: string[]) {
+  return axios.post<User[]>('/platform-api/users/get-by-ids', userIds);
+}
