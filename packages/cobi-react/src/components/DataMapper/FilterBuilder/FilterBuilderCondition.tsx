@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { Row, Col, Select, Input, InputNumber, DatePicker, Button, Modal } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
@@ -30,6 +30,11 @@ const FilterBuilderCondition: React.FC<FilterBuilderConditionProps> = ({
   onRemove,
   onChange,
 }) => {
+  // Local state for text inputs to prevent losing focus
+  const [localValue, setLocalValue] = useState<string>('');
+  const [localFrom, setLocalFrom] = useState<string>('');
+  const [localTo, setLocalTo] = useState<string>('');
+
   // Get selected column
   const selectedCol = useMemo(() => {
     if (condition.fieldName) {
@@ -63,6 +68,25 @@ const FilterBuilderCondition: React.FC<FilterBuilderConditionProps> = ({
   const isChangedTypeCondition = useMemo(() => {
     return ['IS_UNCHANGED', 'IS_CHANGED'].includes(selectedConditionType.key || '');
   }, [selectedConditionType]);
+
+  // Sync local state with condition when it changes externally
+  useEffect(() => {
+    if (selectedType === 'String') {
+      setLocalValue((condition.value?.value as string) || '');
+      setLocalFrom((condition.from?.value as string) || '');
+      setLocalTo((condition.to?.value as string) || '');
+    }
+  }, [condition.fieldName, condition.operation, selectedType]);
+
+  // Update local state when condition.value changes (but not during typing)
+  useEffect(() => {
+    if (selectedType === 'String' && condition.value?.value !== undefined) {
+      const condValue = condition.value.value as string;
+      if (condValue !== localValue && document.activeElement?.tagName !== 'INPUT') {
+        setLocalValue(condValue);
+      }
+    }
+  }, [condition.value?.value]);
 
   // Validation errors
   const isExistErrorFieldName = !condition.fieldName;
@@ -118,6 +142,23 @@ const FilterBuilderCondition: React.FC<FilterBuilderConditionProps> = ({
 
     resetValues();
     onChange();
+  };
+
+  // Handle value change for text inputs (without triggering onChange)
+  const handleTextInputChange = (value: string, field: 'value' | 'from' | 'to') => {
+    if (field === 'value') {
+      setLocalValue(value);
+    } else if (field === 'from') {
+      setLocalFrom(value);
+    } else if (field === 'to') {
+      setLocalTo(value);
+    }
+  };
+
+  // Handle blur for text inputs (trigger onChange)
+  const handleTextInputBlur = (field: 'value' | 'from' | 'to') => {
+    const value = field === 'value' ? localValue : field === 'from' ? localFrom : localTo;
+    handleValueChange(value, field);
   };
 
   // Handle value change
@@ -218,8 +259,10 @@ const FilterBuilderCondition: React.FC<FilterBuilderConditionProps> = ({
     return (
       <Input
         placeholder="Please input"
-        value={value as string}
-        onChange={(e) => handleValueChange(e.target.value, field)}
+        value={field === 'value' ? localValue : field === 'from' ? localFrom : localTo}
+        onChange={(e) => handleTextInputChange(e.target.value, field)}
+        onBlur={() => handleTextInputBlur(field)}
+        onPressEnter={() => handleTextInputBlur(field)}
         disabled={readOnly}
       />
     );

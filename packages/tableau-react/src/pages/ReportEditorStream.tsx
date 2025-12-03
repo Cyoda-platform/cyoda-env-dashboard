@@ -497,7 +497,7 @@ export const ReportEditorStream: React.FC = () => {
                         disableColumn={true}
                         showErrors={showErrorsRange}
                         cols={colsRange}
-                        onChange={(rangeCondition) => handleConfigChange({ rangeCondition })}
+                        onChange={() => handleConfigChange({ rangeCondition: configDefinition.rangeCondition })}
                       />
                     </div>
                   )}
