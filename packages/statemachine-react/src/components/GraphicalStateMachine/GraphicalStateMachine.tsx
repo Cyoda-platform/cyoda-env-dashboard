@@ -213,6 +213,11 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
     }
 
     cy.fit(50);
+    // Limit max zoom for small graphs
+    if (cy.zoom() > 1.2) {
+      cy.zoom(1.2);
+      cy.center();
+    }
     cy.userZoomingEnabled(true);
 
     // Set initialized flag (will be set after layout completes if no positionsMap)
@@ -228,6 +233,11 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
       // If we have saved positions, fit immediately since layout is preset
       setTimeout(() => {
         cy.fit(50);
+        // Limit max zoom for small graphs
+        if (cy.zoom() > 1.2) {
+          cy.zoom(1.2);
+          cy.center();
+        }
       }, 100);
     }
   }, [activeTransitions, positionsMap, currentState, isInitialized, processes, criteria, showTitles, showEdgesTitles, showProcesses, showCriteria, isReadonly]);
