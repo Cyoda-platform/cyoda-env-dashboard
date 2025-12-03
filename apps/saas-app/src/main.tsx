@@ -4,8 +4,6 @@ import App from './App';
 import 'antd/dist/reset.css';
 import './main.scss';
 
-// Import mock API (will auto-enable if previously enabled)
-import './mocks/statemachineMockApi';
 
 // CRITICAL: Import fixed columns override LAST to ensure maximum specificity
 import './fixed-columns-override.css';
