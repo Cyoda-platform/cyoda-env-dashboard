@@ -146,7 +146,7 @@ const HistoryReportsTab: React.FC<{ onResetState: () => void }> = ({ onResetStat
       {/* Report Table with expandable groups */}
       <div className="report-table">
         <div className="wrap-table full">
-          <span className="label">Report</span>
+          <span className="label">Reports History</span>
           <HistoryTable
             filter={filter}
             lazyLoading={settings.lazyLoading}
@@ -196,7 +196,7 @@ const Reports: React.FC = () => {
     },
     {
       key: 'reports',
-      label: 'Reports',
+      label: 'History',
       children: <HistoryReportsTab onResetState={handleResetState} />,
     },
   ];
