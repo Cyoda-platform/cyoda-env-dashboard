@@ -6,7 +6,7 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
-import { Card, Radio, Divider, Space, Button } from 'antd';
+import { Card, Radio, Space, Button } from 'antd';
 import { TableOutlined, ApartmentOutlined, SettingOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import { WorkflowForm } from '../components/WorkflowForm';
 import { TransitionsList } from '../components/TransitionsList';
@@ -118,8 +118,6 @@ export const WorkflowDetail: React.FC = () => {
           {/* Only show layout selector and lists for existing workflows */}
           {!isNew && (
             <>
-              <Divider />
-
               {/* Layout Mode Selector */}
               <div style={{ textAlign: 'center' }}>
                 <Radio.Group
@@ -183,15 +181,11 @@ export const WorkflowDetail: React.FC = () => {
                     entityClassName={entityClassName}
                   />
 
-                  <Divider />
-
                   <ProcessesList
                     workflowId={workflowId!}
                     persistedType={persistedType}
                     entityClassName={entityClassName}
                   />
-
-                  <Divider />
 
                   <CriteriaList
                     workflowId={workflowId!}

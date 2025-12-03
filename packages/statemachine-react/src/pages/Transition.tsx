@@ -97,68 +97,38 @@ export const Transition: React.FC = () => {
     }));
   }, [criteriaList]);
   
-  // Process options - serialize objects to JSON strings for Select
+  // Process options - use simple string ID (like criteria)
   const processOptions = useMemo(() => {
     console.log('[Transition] Processes list:', processesList);
-    const options = processesList.map((process: any) => ({
-      label: process.name,
-      value: JSON.stringify(process.id), // Serialize to string for Select
-      description: process.description,
-      processId: process.id, // Keep original for reference
-    }));
+    const options = processesList.map((process: any) => {
+      // Use persistedId or runtimeId as the simple string value
+      const simpleId = process.id?.persistedId || process.id?.runtimeId;
+      return {
+        label: process.name,
+        value: simpleId,
+        description: process.description,
+      };
+    });
     console.log('[Transition] Process options:', options);
     return options;
   }, [processesList]);
 
-  // Custom tag render for processes to show name instead of JSON
-  const processTagRender = (props: any) => {
-    const { value, closable, onClose } = props;
-    try {
-      const processIdObj = JSON.parse(value);
-      const process = processesList.find((p: any) => {
-        const pId = p.id?.persistedId || p.id?.runtimeId;
-        const selectedId = processIdObj?.persistedId || processIdObj?.runtimeId;
-        return pId === selectedId;
-      });
-
-      return (
-        <span
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            padding: '0 7px',
-            marginRight: '4px',
-            background: 'rgba(255, 255, 255, 0.08)',
-            border: '1px solid rgba(255, 255, 255, 0.2)',
-            borderRadius: '2px',
-            color: '#fff',
-          }}
-        >
-          <span>{process?.name || value}</span>
-          {closable && (
-            <span
-              onClick={onClose}
-              style={{
-                marginLeft: '4px',
-                cursor: 'pointer',
-                fontSize: '12px',
-              }}
-            >
-              ×
-            </span>
-          )}
-        </span>
-      );
-    } catch (e) {
-      return value;
-    }
+  // Helper to get full process ID object from simple ID
+  const getProcessIdObject = (simpleId: string) => {
+    const process = processesList.find((p: any) => {
+      const pId = p.id?.persistedId || p.id?.runtimeId;
+      return pId === simpleId;
+    });
+    return process?.id || null;
   };
   
   // Initialize form when transition data loads
   useEffect(() => {
     if (transition) {
-      // Convert process objects to JSON strings for the form
-      const processIds = (transition.endProcessesIds || []).map((p: any) => JSON.stringify(p));
+      // Convert process ID objects to simple string IDs for the form
+      const processIds = (transition.endProcessesIds || []).map((p: any) =>
+        p?.persistedId || p?.runtimeId
+      );
 
       form.setFieldsValue({
         name: transition.name,
@@ -191,8 +161,10 @@ export const Transition: React.FC = () => {
         finalEndStateId = 'noneState';
       }
 
-      // Convert JSON strings back to objects
-      const endProcessesIds = (values.processIds || []).map((p: string) => JSON.parse(p));
+      // Convert simple string IDs back to full ID objects
+      const endProcessesIds = (values.processIds || [])
+        .map((simpleId: string) => getProcessIdObject(simpleId))
+        .filter(Boolean); // Remove any nulls
 
       console.log('[Transition] Form values.processIds:', values.processIds);
       console.log('[Transition] Converted endProcessesIds:', endProcessesIds);
@@ -396,31 +368,21 @@ export const Transition: React.FC = () => {
 
       const currentProcessIds = form.getFieldValue('processIds') || [];
 
-      // Find the process object by ID in the updated list
-      const process = updatedProcessesList?.find((p: any) => {
-        const pId = p.id?.persistedId || p.id?.runtimeId;
-        const paramId = typeof params.id === 'object' ? params.id.persistedId || params.id.runtimeId : params.id;
-        console.log('[Transition] Comparing process:', { pId, paramId });
-        return pId === paramId;
-      });
+      // Get the simple ID from params
+      const paramId = typeof params.id === 'object'
+        ? params.id.persistedId || params.id.runtimeId
+        : params.id;
 
-      console.log('[Transition] Found process:', process);
+      console.log('[Transition] Adding process with simpleId:', paramId);
 
-      if (process?.id) {
-        const processIdStr = JSON.stringify(process.id);
-        console.log('[Transition] Adding process to form:', processIdStr);
-
-        // Check if not already added
-        if (!currentProcessIds.includes(processIdStr)) {
-          form.setFieldsValue({
-            processIds: [...currentProcessIds, processIdStr],
-          });
-          console.log('[Transition] Process added to form successfully');
-        } else {
-          console.log('[Transition] Process already in the list');
-        }
+      // Check if not already added
+      if (!currentProcessIds.includes(paramId)) {
+        form.setFieldsValue({
+          processIds: [...currentProcessIds, paramId],
+        });
+        console.log('[Transition] Process added to form successfully');
       } else {
-        console.warn('[Transition] Process not found in updated list');
+        console.log('[Transition] Process already in the list');
       }
     } else {
       console.log('[Transition] No process ID in params, just refetching');
@@ -646,7 +608,6 @@ export const Transition: React.FC = () => {
                   disabled={isRuntime}
                   loading={isLoadingProcesses}
                   options={processOptions}
-                  tagRender={processTagRender}
                   showSearch
                   filterOption={(input, option) =>
                     (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
@@ -669,19 +630,15 @@ export const Transition: React.FC = () => {
                         return (
                           <div style={{ marginTop: '5px' }}>
                             <span style={{ fontSize: '16px' }}>Edit: </span>
-                            {selectedProcessIds.map((processIdStr: string, index: number) => {
-                              // Parse the JSON string back to object
-                              const processIdObj = JSON.parse(processIdStr);
+                            {selectedProcessIds.map((simpleId: string, index: number) => {
+                              // Find process by simple ID
                               const process = processesList.find((p: any) => {
                                 const pId = p.id?.persistedId || p.id?.runtimeId;
-                                const selectedId = processIdObj?.persistedId || processIdObj?.runtimeId;
-                                return pId === selectedId;
+                                return pId === simpleId;
                               });
 
-                              const displayId = processIdObj?.persistedId || processIdObj?.runtimeId;
-
                               return (
-                                <span key={processIdStr}>
+                                <span key={simpleId}>
                                   <Popover
                                     content={process?.description || '-'}
                                     title={process?.name}
@@ -689,10 +646,10 @@ export const Transition: React.FC = () => {
                                   >
                                     <Button
                                       type="link"
-                                      onClick={() => handleEditProcess(displayId)}
+                                      onClick={() => handleEditProcess(simpleId)}
                                       style={{ fontSize: '16px', padding: 0 }}
                                     >
-                                      {process?.name || displayId}
+                                      {process?.name || simpleId}
                                     </Button>
                                   </Popover>
                                   {index < selectedProcessIds.length - 1 && <span> | </span>}
