@@ -74,19 +74,26 @@ vi.mock('@cyoda/ui-lib-react', async () => {
   };
 });
 
-// Mock global UI settings store
-const mockSetEntityType = vi.fn();
-const mockEntityType = vi.fn(() => 'BUSINESS');
-const mockIsEnabledTechView = vi.fn(() => true);
+// Mock global UI settings store - use vi.hoisted to ensure variables are available before vi.mock
+const { mockSetEntityType, mockEntityType, mockIsEnabledTechView, mockEntityTypeValue } = vi.hoisted(() => {
+  const mockSetEntityType = vi.fn();
+  const mockEntityTypeValue = { value: 'BUSINESS' };
+  const mockEntityType = vi.fn(() => mockEntityTypeValue.value);
+  const mockIsEnabledTechView = vi.fn(() => true);
+  return { mockSetEntityType, mockEntityType, mockIsEnabledTechView, mockEntityTypeValue };
+});
 
-vi.mock('../stores/globalUiSettingsStore', () => ({
-  useGlobalUiSettingsStore: () => ({
-    entityType: mockEntityType(),
-    isEnabledTechView: mockIsEnabledTechView(),
-    setEntityType: mockSetEntityType,
-  }),
-}));
-
+vi.mock('@cyoda/http-api-react', async () => {
+  const actual = await vi.importActual('@cyoda/http-api-react');
+  return {
+    ...actual,
+    useGlobalUiSettingsStore: () => ({
+      get entityType() { return mockEntityType(); },
+      isEnabledTechView: mockIsEnabledTechView(),
+      setEntityType: mockSetEntityType,
+    }),
+  };
+});
 // Mock RangeCondition component
 vi.mock('../components/RangeCondition', () => ({
   RangeCondition: ({ form, onChange, disabled }: any) => (
@@ -132,7 +139,7 @@ describe('Instances', () => {
     vi.clearAllMocks();
 
     // Reset mock functions
-    mockEntityType.mockReturnValue('BUSINESS');
+    mockEntityTypeValue.value = 'BUSINESS';
     mockIsEnabledTechView.mockReturnValue(true);
 
     // useInstances returns a mutation, not a query
@@ -323,6 +330,18 @@ describe('Instances', () => {
 
       // Component should render with entity select
       expect(container.querySelector('.ant-select')).toBeInTheDocument();
+    });
+
+    it('should display Business Entity column header when entityType is BUSINESS', () => {
+      mockEntityTypeValue.value = 'BUSINESS';
+      render(<Instances />, { wrapper: createWrapper() });
+      expect(screen.getByText('Business Entity')).toBeInTheDocument();
+    });
+
+    it('should display Technical Entity column header when entityType is PERSISTENCE', () => {
+      mockEntityTypeValue.value = 'PERSISTENCE';
+      render(<Instances />, { wrapper: createWrapper() });
+      expect(screen.getByText('Technical Entity')).toBeInTheDocument();
     });
 
   });

@@ -215,15 +215,6 @@ export const Instances: React.FC = () => {
     return `/statemachine/workflow/${record.currentWorkflowId}?persistedType=${persistedType}&entityClassName=${record.entityClassName}`;
   };
 
-  // Helper function to map entity type
-  const entityTypeMapper = (type: string): string => {
-    const map: Record<string, string> = {
-      BUSINESS: 'Business',
-      PERSISTENCE: 'Technical',
-    };
-    return map[type] || type;
-  };
-
   // Entity options - filtered by selected entity type
   const entityOptions = useMemo(() => {
     console.log('[Instances] Building entityOptions from workflowEnabledTypes:', workflowEnabledTypes);
@@ -258,10 +249,9 @@ export const Instances: React.FC = () => {
         // If entity has type info, add it to the label
         let label = type.label || value;
         if (type.type) {
-          const typeLabel = entityTypeMapper(type.type);
           const parts = value.split(".");
         const shortName = parts.length >= 2 ? parts.slice(-2).join(".") : value;
-        label = `${shortName} (${typeLabel})`;
+        label = shortName;
         }
 
         return {
@@ -300,7 +290,7 @@ export const Instances: React.FC = () => {
       }),
     },
     {
-      title: 'Entity Name',
+      title: entityType === 'BUSINESS' ? 'Business Entity' : 'Technical Entity',
       dataIndex: 'entityClassNameLabel',
       key: 'entityClassNameLabel',
       width: columnWidths.entityClassNameLabel,
@@ -365,7 +355,7 @@ export const Instances: React.FC = () => {
         />
       ),
     },
-  ], [columnWidths, handleResize, getWorkflowLink, getWorkflowName, handleViewDetail, navigate]);
+  ], [columnWidths, handleResize, getWorkflowLink, getWorkflowName, handleViewDetail, navigate, entityType]);
   
   // Load instances on mount if entity is selected
   useEffect(() => {
