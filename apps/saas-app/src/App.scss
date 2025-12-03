@@ -370,14 +370,15 @@ li a {
 
   .ant-card {
     background: transparent !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border: none !important;
   }
 }
 
 // White boxes that should be dark
 .ant-card {
   background: transparent !important;
-  border-color: rgba(255, 255, 255, 0.08) !important;
+  border: none !important;
+  box-shadow: none !important;
 
   .ant-card-head {
     background: transparent !important;
@@ -395,18 +396,18 @@ li a {
   }
 }
 
-// Light theme - Card borders
+// Light theme - Card borders (no border to match dark theme)
 [data-theme="light"] {
   .filter-section,
   .filter-container,
   [class*="filter"] {
     .ant-card {
-      border: 1px solid rgba(0, 0, 0, 0.1) !important;
+      border: none !important;
     }
   }
 
   .ant-card {
-    border-color: rgba(0, 0, 0, 0.1) !important;
+    border: none !important;
 
     .ant-card-head {
       border-bottom-color: rgba(0, 0, 0, 0.1) !important;
