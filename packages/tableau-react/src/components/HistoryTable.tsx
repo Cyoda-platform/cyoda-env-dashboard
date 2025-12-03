@@ -519,7 +519,7 @@ const HistoryTable: React.FC<HistoryTableProps> = ({
               className="group-item"
               onClick={() => {
                 if (item._link_rows && onGroupClick) {
-                  onGroupClick(item);
+                  onGroupClick({ ...item, reportId });
                 }
               }}
             >

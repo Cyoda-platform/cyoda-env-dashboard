@@ -77,7 +77,7 @@ describe('HistoryTable', () => {
 
   const mockSettings: HistorySettings = {
     lazyLoading: false,
-    displayGroupType: 'out',
+    
   };
 
   const mockOnChange = vi.fn();
@@ -413,5 +413,92 @@ describe('HistoryTable', () => {
       });
     });
   });
-});
 
+  describe('Expandable Rows', () => {
+    it('should render table with expandable configuration', async () => {
+      mockedAxiosPlatform.get.mockResolvedValueOnce({ data: mockReportHistory });
+
+      const { container } = render(
+        <HistoryTable
+          filter={mockFilter}
+          settings={mockSettings}
+          onChange={mockOnChange}
+        />,
+        { wrapper }
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText('report-1')).toBeInTheDocument();
+      });
+
+      const table = container.querySelector('.ant-table');
+      expect(table).toBeInTheDocument();
+    });
+
+    it('should render rows with groupingVersion data', async () => {
+      mockedAxiosPlatform.get.mockResolvedValueOnce({ data: mockReportHistory });
+
+      const { container } = render(
+        <HistoryTable
+          filter={mockFilter}
+          settings={mockSettings}
+          onChange={mockOnChange}
+        />,
+        { wrapper }
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText('report-1')).toBeInTheDocument();
+      });
+
+      const tableBody = container.querySelector('.ant-table-tbody');
+      expect(tableBody).toBeInTheDocument();
+      
+      const rows = container.querySelectorAll('.ant-table-row');
+      expect(rows.length).toBeGreaterThan(0);
+    });
+
+    it('should handle rows without groupingVersion', async () => {
+      const dataWithoutGrouping = {
+        _embedded: {
+          reportHistoryFieldsViews: [
+            {
+              reportHistoryFields: {
+                id: '3',
+                configName: 'test-config-report-3',
+                createTime: '2025-10-16T12:00:00Z',
+                finishTime: '2025-10-16T12:05:00Z',
+                type: 'Entity3',
+                userId: 'user1',
+                status: 'COMPLETED',
+                totalRowsCount: 100,
+                groupingColumns: [],
+                groupingVersion: '',
+                hierarhyEnable: false,
+                regroupingPossible: false,
+              },
+            },
+          ],
+        },
+      };
+
+      mockedAxiosPlatform.get.mockResolvedValueOnce({ data: dataWithoutGrouping });
+
+      const { container } = render(
+        <HistoryTable
+          filter={mockFilter}
+          settings={mockSettings}
+          onChange={mockOnChange}
+        />,
+        { wrapper }
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText('report-3')).toBeInTheDocument();
+      });
+
+      const table = container.querySelector('.ant-table');
+      expect(table).toBeInTheDocument();
+    });
+  });
+});

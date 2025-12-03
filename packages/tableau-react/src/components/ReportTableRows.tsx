@@ -91,6 +91,9 @@ const ReportTableRows: React.FC<ReportTableRowsProps> = ({
 
   // Set table columns from config definition
   const setTableColumnsFromConfig = () => {
+    console.log('setTableColumnsFromConfig called');
+    console.log('configDefinition:', configDefinition);
+    console.log('configDefinition?.columns:', configDefinition?.columns);
     if (configDefinition && configDefinition.columns) {
       const columns = configDefinition.columns.map((el) => {
         const name = HelperFormat.shortNamePath(el.name);
@@ -99,8 +102,10 @@ const ReportTableRows: React.FC<ReportTableRowsProps> = ({
           prop: getFieldName(name),
         };
       });
+      console.log('Setting columns:', columns);
       setTableColumns(columns);
     } else {
+      console.log('No columns in configDefinition, setting empty');
       setTableColumns([]);
     }
   };
@@ -148,15 +153,29 @@ const ReportTableRows: React.FC<ReportTableRowsProps> = ({
   const setTableDataFromResponse = (data: ReportingReportRows) => {
     if (Object.keys(data).length > 0) {
       let reportRows = data._embedded.reportRows;
+      
       if (lazyLoading) {
         reportRows = reportRows.slice(0, pageSize);
       }
-      const flattenedData = reportRows.map((el) => {
-        // Use el.content if it exists, otherwise use el directly
-        const rowData = el.content !== undefined ? el.content : el;
-        const flattened = flatTableRow(rowData);
-        return flattened;
-      });
+      
+      const flattenedData = reportRows
+        .map((el) => {
+          // Use el.content if it exists and is not null, otherwise use el directly
+          // This handles both cases:
+          // 1. API returns { content: {...} } - use el.content
+          // 2. API returns data directly without content wrapper - use el
+          // 3. API returns { content: null } - use el (to preserve other fields like _links)
+          const rowData = (el.content !== undefined && el.content !== null) ? el.content : el;
+          return flatTableRow(rowData);
+        })
+        .filter((row) => Object.keys(row).length > 0); // Filter out empty rows
+      
+      console.log('setTableData with:', flattenedData);
+      console.log('flattenedData length:', flattenedData.length);
+      if (flattenedData.length > 0) {
+        console.log('flattenedData[0]:', flattenedData[0]);
+        console.log('flattenedData[0] keys:', Object.keys(flattenedData[0]));
+      }
       setTableData(flattenedData);
     }
   };
@@ -182,7 +201,7 @@ const ReportTableRows: React.FC<ReportTableRowsProps> = ({
 
     loadData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tableLinkRows, lazyLoading, pageSize]);
+  }, [tableLinkRows, lazyLoading, pageSize, configDefinition]);
 
   // Send data to Tableau when tableData changes
   useEffect(() => {

@@ -4,8 +4,9 @@
  * Migrated from: .old_project/packages/cyoda-ui-lib/src/components-library/patterns/AdaptableBlotter/AdaptableBlotterColumnCollections.vue
  */
 
-import React, { useState, useEffect, useImperativeHandle, forwardRef } from 'react';
-import { Modal, Button } from 'antd';
+import React, { useState, useMemo, useImperativeHandle, forwardRef } from 'react';
+import { Modal, Button, Table } from 'antd';
+import type { ColumnsType } from 'antd/es/table';
 import './ColumnCollectionsDialog.scss';
 
 export interface ColumnData {
@@ -17,6 +18,12 @@ export interface ColumnData {
 
 export interface ColumnCollectionsDialogRef {
   showDetail: (data: ColumnData) => void;
+}
+
+interface TableRow {
+  key: string;
+  index: string;
+  value: string;
 }
 
 const ColumnCollectionsDialog = forwardRef<ColumnCollectionsDialogRef>((props, ref) => {
@@ -41,6 +48,33 @@ const ColumnCollectionsDialog = forwardRef<ColumnCollectionsDialogRef>((props, r
 
   const title = `Column ${columnData.headerName}`;
 
+  // Convert data to table format
+  const tableData: TableRow[] = useMemo(() => {
+    return Object.keys(columnData.data).map((key) => ({
+      key,
+      index: key,
+      value: typeof columnData.data[key] === 'object'
+        ? JSON.stringify(columnData.data[key])
+        : String(columnData.data[key]),
+    }));
+  }, [columnData.data]);
+
+  // Table columns
+  const columns: ColumnsType<TableRow> = [
+    {
+      title: 'Index',
+      dataIndex: 'index',
+      key: 'index',
+      width: 100,
+    },
+    {
+      title: 'Value',
+      dataIndex: 'value',
+      key: 'value',
+      ellipsis: true,
+    },
+  ];
+
   return (
     <Modal
       title={title}
@@ -54,18 +88,18 @@ const ColumnCollectionsDialog = forwardRef<ColumnCollectionsDialogRef>((props, r
       width={600}
       className="column-collections-dialog"
     >
-      <div className="column-collections-content">
-        {Object.keys(columnData.data).map((key) => (
-          <div key={key} className="sub-row">
-            <div className="sub-row-title">{key}</div>
-            <div className="sub-row-value">
-              {typeof columnData.data[key] === 'object'
-                ? JSON.stringify(columnData.data[key])
-                : String(columnData.data[key])}
-            </div>
-          </div>
-        ))}
-      </div>
+      <Table
+        columns={columns}
+        dataSource={tableData}
+        size="small"
+        pagination={{
+          pageSize: 10,
+          showSizeChanger: true,
+          pageSizeOptions: ['10', '20', '50', '100'],
+          showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
+        }}
+        scroll={{ y: 400 }}
+      />
     </Modal>
   );
 });
@@ -73,4 +107,3 @@ const ColumnCollectionsDialog = forwardRef<ColumnCollectionsDialogRef>((props, r
 ColumnCollectionsDialog.displayName = 'ColumnCollectionsDialog';
 
 export default ColumnCollectionsDialog;
-
