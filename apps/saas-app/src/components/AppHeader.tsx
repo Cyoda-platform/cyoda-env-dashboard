@@ -22,9 +22,11 @@ export const AppHeader: React.FC = () => {
   // Show processing features only on processing-ui routes
   const showProcessingFeatures = location.pathname.startsWith('/processing-ui');
 
-  // Show entity type toggle only on pages that use it (not on processing-ui)
+  // Show entity type toggle only on pages that use it
   // Entity type toggle is used in: Entity Viewer, Reports, Workflows, Instances
-  const showEntityTypeToggle = !location.pathname.startsWith('/processing-ui');
+  // Hidden on: Processing Manager, Trino SQL Schemas
+  const hideEntityTypeToggleRoutes = ['/processing-ui', '/trino'];
+  const showEntityTypeToggle = !hideEntityTypeToggleRoutes.some(route => location.pathname.startsWith(route));
 
   // Polling logic for consistency time lag when live update is enabled
   useEffect(() => {
