@@ -7,9 +7,9 @@
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { Tabs, Button, Dropdown, Spin, Alert, App } from 'antd';
+import { Tabs, Button, Dropdown, Spin, Alert, App, Modal, Input } from 'antd';
 import type { MenuProps } from 'antd';
-import { ArrowLeftOutlined, SaveOutlined, PlayCircleOutlined, StopOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined, SaveOutlined, PlayCircleOutlined, StopOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { axios } from '@cyoda/http-api-react';
 import HelperReportDefinition from '../utils/HelperReportDefinition';
@@ -42,6 +42,13 @@ const ReportEditor: React.FC = () => {
   const [runningReportId, setRunningReportId] = useState<string | null>(null);
   const [reportExecutionTime, setReportExecutionTime] = useState(0);
   const [showScheduling, setShowScheduling] = useState(false);
+  
+  // State for "Existing report" dialog (when 422 error occurs)
+  const [showExistingReportDialog, setShowExistingReportDialog] = useState(false);
+  const [isDeleteAndSaveLoading, setIsDeleteAndSaveLoading] = useState(false);
+  const [isCreateNewLoading, setIsCreateNewLoading] = useState(false);
+  const [showCreateNewDialog, setShowCreateNewDialog] = useState(false);
+  const [newReportName, setNewReportName] = useState('');
 
   // Load report definition
   const { data: reportData, isLoading } = useQuery({
@@ -78,19 +85,27 @@ const ReportEditor: React.FC = () => {
     return `Edit Distributed Report: ${nameParts.join('-')}`;
   }, [id]);
 
+  // Helper function to perform the actual update
+  const performUpdate = useCallback(async (definition: ReportDefinition) => {
+    const { data } = await axios.put(`/platform-api/reporting/definitions/${encodeURIComponent(id!)}`, definition);
+    return data;
+  }, [id]);
+
   // Update report mutation
   const updateReportMutation = useMutation({
-    mutationFn: async (definition: ReportDefinition) => {
-      const { data } = await axios.put(`/platform-api/reporting/definitions/${encodeURIComponent(id!)}`, definition);
-      return data;
-    },
+    mutationFn: performUpdate,
     onSuccess: () => {
       message.success('Report configuration updated successfully');
       queryClient.invalidateQueries({ queryKey: ['reportDefinition', id] });
       queryClient.invalidateQueries({ queryKey: ['reportDefinitions'] });
     },
     onError: (error: any) => {
-      message.error(error.response?.data?.message || 'Failed to update report');
+      // Handle 422 error - show "Existing report" dialog
+      if (error.response?.status === 422) {
+        setShowExistingReportDialog(true);
+      } else {
+        message.error(error.response?.data?.message || 'Failed to update report');
+      }
     },
   });
 
@@ -177,7 +192,67 @@ const ReportEditor: React.FC = () => {
       message.error('Report contains errors. Please check the configuration.');
       setShowErrors(true);
     }
-  }, [configDefinition, updateReportMutation]);
+  }, [configDefinition, updateReportMutation, message]);
+
+  // Handler for "Delete existing reports and save" button
+  const handleDeleteExistingAndSave = useCallback(async () => {
+    setIsDeleteAndSaveLoading(true);
+    try {
+      // Delete existing reports for this definition
+      await axios.delete(`/platform-api/reporting/definitions/${encodeURIComponent(id!)}?mode=reports`);
+      
+      // Now perform the update
+      const copyConfigDefinition = JSON.parse(JSON.stringify(configDefinition));
+      await performUpdate(copyConfigDefinition);
+      
+      message.success('Report configuration updated successfully');
+      queryClient.invalidateQueries({ queryKey: ['reportDefinition', id] });
+      queryClient.invalidateQueries({ queryKey: ['reportDefinitions'] });
+      setShowExistingReportDialog(false);
+    } catch (error: any) {
+      message.error(error.response?.data?.message || 'Failed to delete reports and save');
+    } finally {
+      setIsDeleteAndSaveLoading(false);
+    }
+  }, [id, configDefinition, performUpdate, message, queryClient]);
+
+  // Handler for "Create new report definition" button
+  const handleCreateNewDefinition = useCallback(() => {
+    // Generate default name based on current definition id
+    const defaultName = id ? id.split('-').pop() + '_copy' : 'new_report';
+    setNewReportName(defaultName);
+    setShowCreateNewDialog(true);
+  }, [id]);
+
+  // Handler for confirming new report creation
+  const handleConfirmCreateNew = useCallback(async () => {
+    if (!newReportName.trim()) {
+      message.error('Please enter a name for the new report');
+      return;
+    }
+
+    setIsCreateNewLoading(true);
+    try {
+      const copyConfigDefinition = JSON.parse(JSON.stringify(configDefinition));
+      const { data } = await axios.post(
+        `/platform-api/reporting/definitions?name=${encodeURIComponent(newReportName)}`,
+        copyConfigDefinition
+      );
+      
+      message.success('New report definition created successfully');
+      setShowExistingReportDialog(false);
+      setShowCreateNewDialog(false);
+      
+      // Navigate to the new report
+      if (data.content) {
+        navigate(`/tableau/report-editor/${encodeURIComponent(data.content)}`);
+      }
+    } catch (error: any) {
+      message.error(error.response?.data?.message || 'Failed to create new report definition');
+    } finally {
+      setIsCreateNewLoading(false);
+    }
+  }, [newReportName, configDefinition, message, navigate]);
 
   const handleUpdateAndRun = useCallback((showResult: boolean = false) => {
     setShowErrors(false);
@@ -398,9 +473,58 @@ const ReportEditor: React.FC = () => {
         reportId={id}
         onClose={() => setShowScheduling(false)}
       />
+
+      {/* Existing Report Dialog - shown when 422 error occurs */}
+      <Modal
+        title="Existing report"
+        open={showExistingReportDialog}
+        onCancel={() => setShowExistingReportDialog(false)}
+        footer={null}
+        width={750}
+      >
+        <p>You have configuration with existing reports.</p>
+        <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', marginTop: 24 }}>
+          <Button
+            danger
+            icon={<DeleteOutlined />}
+            loading={isDeleteAndSaveLoading}
+            onClick={handleDeleteExistingAndSave}
+          >
+            Delete existing reports and save
+          </Button>
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            loading={isCreateNewLoading}
+            onClick={handleCreateNewDefinition}
+          >
+            Create new report definition
+          </Button>
+          <Button onClick={() => setShowExistingReportDialog(false)}>
+            Cancel
+          </Button>
+        </div>
+      </Modal>
+
+      {/* Create New Report Name Dialog */}
+      <Modal
+        title="Create new"
+        open={showCreateNewDialog}
+        onOk={handleConfirmCreateNew}
+        onCancel={() => setShowCreateNewDialog(false)}
+        confirmLoading={isCreateNewLoading}
+        okText="OK"
+        cancelText="Cancel"
+      >
+        <p>Please input new name</p>
+        <Input
+          value={newReportName}
+          onChange={(e) => setNewReportName(e.target.value)}
+          placeholder="Enter report name"
+        />
+      </Modal>
     </div>
   );
 };
 
 export default ReportEditor;
-
