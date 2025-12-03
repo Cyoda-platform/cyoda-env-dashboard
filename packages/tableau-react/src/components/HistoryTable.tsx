@@ -72,16 +72,16 @@ const HistoryTable: React.FC<HistoryTableProps> = ({
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>(() => {
     const saved = storage.get('historyTable:columnWidths', {});
 
-    // Default widths in pixels - will be converted to percentages
+    // Default widths in pixels - optimized to fit on screen without horizontal scroll
     const defaultWidths = {
-      createDateTime: 150,
-      config: 200,
-      type: 150,
-      user: 150,
-      status: 120,
-      execution: 120,
-      rows: 100,
-      action: 120,
+      createDateTime: 140,
+      config: 180,
+      type: 130,
+      user: 120,
+      status: 110,
+      execution: 100,
+      rows: 80,
+      action: 100,
     };
 
     // Use saved widths if they exist and are not empty, otherwise use defaults
@@ -390,7 +390,12 @@ const HistoryTable: React.FC<HistoryTableProps> = ({
       title: 'Action',
       key: 'action',
       width: columnWidths.action,
-      fixed: 'right',
+      onCell: (record) => {
+        const isSelected = selectedRowId === record.id || expandedRowKeys.includes(record.id);
+        return {
+          className: isSelected ? 'action-cell-selected' : undefined,
+        };
+      },
       render: (_, record) => (
         <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
           <Tooltip title="View report details">
@@ -420,10 +425,11 @@ const HistoryTable: React.FC<HistoryTableProps> = ({
         </div>
       ),
     },
-  ], [columnWidths, sortField, sortOrder, handleInfoClick, handleEditClick]);
+  ], [columnWidths, sortField, sortOrder, handleInfoClick, handleEditClick, selectedRowId, expandedRowKeys]);
 
   // Handle row click
   const handleRowClick = async (record: TableDataRow) => {
+    console.log('handleRowClick - setting selectedRowId to:', record.id);
     setSelectedRowId(record.id);
 
     // Check if report has 0 rows
@@ -590,7 +596,6 @@ const HistoryTable: React.FC<HistoryTableProps> = ({
         rowKey="id"
         bordered
         size="small"
-        scroll={{ x: 1100 }}
         pagination={{
           pageSize: pageSize,
           showSizeChanger: true,

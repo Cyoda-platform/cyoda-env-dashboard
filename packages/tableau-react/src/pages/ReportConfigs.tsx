@@ -136,12 +136,12 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>(() => {
     const saved = storage.get('reportConfigs:columnWidths', {}) as Record<string, number> | null;
     const defaultWidths: Record<string, number> = {
-      name: 200,
-      description: 250,
-      entityClassNameLabel: 180,
-      username: 120,
-      createdHuman: 150,
-      action: 180,
+      name: 160,
+      description: 220,
+      entityClassNameLabel: 140,
+      username: 100,
+      createdHuman: 160,
+      action: 140,
     };
     // Check if saved has any keys, if not use defaults
     return (saved && Object.keys(saved).length > 0) ? saved : defaultWidths;
@@ -584,12 +584,12 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
     storage.remove('reportConfigs:columnWidths');
     // Reset column widths to defaults
     setColumnWidths({
-      name: 200,
-      description: 250,
-      entityClassNameLabel: 180,
-      username: 120,
-      createdHuman: 150,
-      action: 180,
+      name: 160,
+      description: 220,
+      entityClassNameLabel: 140,
+      username: 100,
+      createdHuman: 160,
+      action: 140,
     });
     refetch();
   }, [storage, refetch]);
@@ -851,7 +851,6 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
           selectComponentClass: undefined,
           onShowSizeChange: (current, size) => setPageSize(size),
         }}
-        scroll={{ x: 1100 }}
         components={{
           header: {
             cell: ResizableTitle,

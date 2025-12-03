@@ -534,7 +534,6 @@ const CatalogueOfAliases: React.FC = () => {
           selectComponentClass: undefined,
           onShowSizeChange: (current, size) => setPageSize(size),
         }}
-        scroll={{ x: 1200 }}
       />
 
       <ModellingPopUpAliasNew
