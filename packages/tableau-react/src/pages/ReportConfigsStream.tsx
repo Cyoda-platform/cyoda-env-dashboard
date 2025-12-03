@@ -662,7 +662,6 @@ export const ReportConfigsStream: React.FC = () => {
         onCancel={() => setCreateDialogVisible(false)}
         onCreate={handleCreateReport}
         title="Create New Stream Data Report Definition"
-        hideFields={{ description: true }}
       />
 
       {/* Report Scheduling Modal */}
