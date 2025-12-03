@@ -15,7 +15,7 @@ const mockWorkflows: Workflow[] = [
   {
     id: 'workflow-1',
     name: 'Test Workflow 1',
-    entityClassName: 'com.example.Entity1',
+    entityClassName: 'travel.1001',
     active: true,
     persisted: true,
     creationDate: 1633024800000,
@@ -23,7 +23,7 @@ const mockWorkflows: Workflow[] = [
   {
     id: 'workflow-2',
     name: 'Test Workflow 2',
-    entityClassName: 'com.example.Entity2',
+    entityClassName: 'com.cyoda.tdb.model.EntityModel',
     active: false,
     persisted: true,
     creationDate: 1633024900000,
@@ -31,7 +31,7 @@ const mockWorkflows: Workflow[] = [
   {
     id: 'workflow-3',
     name: 'Another Workflow',
-    entityClassName: 'com.example.Entity1',
+    entityClassName: 'travel.1001',
     active: true,
     persisted: false,
     creationDate: 1633025000000,
@@ -138,8 +138,8 @@ describe('Workflows', () => {
 
     mockUseWorkflowEnabledTypes.mockReturnValue({
       data: [
-        { name: 'com.example.Entity1', label: 'Entity 1', type: 'BUSINESS' },
-        { name: 'com.example.Entity2', label: 'Entity 2', type: 'PERSISTENCE' },
+        { name: 'travel.1001', label: 'Travel', type: 'BUSINESS' },
+        { name: 'com.cyoda.tdb.model.EntityModel', label: 'EntityModel', type: 'PERSISTENCE' },
       ],
       isLoading: false,
     });
@@ -185,15 +185,15 @@ describe('Workflows', () => {
   });
 
   it('should filter workflows by entity class name', async () => {
-    // This test filters by text "Entity1" which matches the entity class name
-    // Entity1 is BUSINESS type, so it will be visible with default entityType
+    // This test filters by text "travel" which matches the entity class name
+    // travel is BUSINESS type, so it will be visible with default entityType
     render(<Workflows />, { wrapper: createWrapper() });
 
     const filterInput = screen.getByPlaceholderText('Filter workflows');
-    fireEvent.change(filterInput, { target: { value: 'Entity1' } });
+    fireEvent.change(filterInput, { target: { value: 'travel' } });
 
     await waitFor(() => {
-      // Both workflows with Entity1 should be visible
+      // Both workflows with travel should be visible
       expect(screen.getByText('Test Workflow 1')).toBeInTheDocument();
       expect(screen.getByText('Another Workflow')).toBeInTheDocument();
       // Workflow with Entity2 should not be visible
@@ -218,7 +218,7 @@ describe('Workflows', () => {
     render(<Workflows />, { wrapper: createWrapper() });
 
     // Entity 1 appears twice (2 workflows with this entity class) without type label
-    const entity1Elements = screen.getAllByText('example.Entity1');
+    const entity1Elements = screen.getAllByText('travel');
     expect(entity1Elements.length).toBeGreaterThanOrEqual(1);
 
     // Entity 2 is PERSISTENCE type, so it's filtered out when entityType is BUSINESS
@@ -363,14 +363,34 @@ describe('Workflows', () => {
       expect(screen.getByText('Technical Entity')).toBeInTheDocument();
     });
 
+it('should display Version column when entityType is BUSINESS', () => {
+  mockEntityType.mockReturnValue('BUSINESS');
+  render(<Workflows />, { wrapper: createWrapper() });
+  expect(screen.getByText('Version')).toBeInTheDocument();
+});
+
+it('should NOT display Version column when entityType is PERSISTENCE', () => {
+  mockEntityType.mockReturnValue('PERSISTENCE');
+  render(<Workflows />, { wrapper: createWrapper() });
+  expect(screen.queryByText('Version')).not.toBeInTheDocument();
+});
+
+it('should display version value for Business entities', () => {
+  mockEntityType.mockReturnValue('BUSINESS');
+  render(<Workflows />, { wrapper: createWrapper() });
+  // Version is extracted from entityClassName (e.g., travel.1001 -> 1001)
+  const versionElements = screen.getAllByText('1001');
+  expect(versionElements.length).toBeGreaterThanOrEqual(1);
+});
+
     it('should filter workflows by BUSINESS entity type', () => {
       mockEntityType.mockReturnValue('BUSINESS');
 
       // Update workflows to have entity types
       const workflowsWithTypes = [
-        { ...mockWorkflows[0], entityClassName: 'com.example.Entity1' }, // BUSINESS
-        { ...mockWorkflows[1], entityClassName: 'com.example.Entity2' }, // PERSISTENCE
-        { ...mockWorkflows[2], entityClassName: 'com.example.Entity1' }, // BUSINESS
+        { ...mockWorkflows[0], entityClassName: 'travel.1001' }, // BUSINESS
+        { ...mockWorkflows[1], entityClassName: 'com.cyoda.tdb.model.EntityModel' }, // PERSISTENCE
+        { ...mockWorkflows[2], entityClassName: 'travel.1001' }, // BUSINESS
       ];
 
       mockUseWorkflowsList.mockReturnValue({
@@ -393,9 +413,9 @@ describe('Workflows', () => {
       mockEntityType.mockReturnValue('PERSISTENCE');
 
       const workflowsWithTypes = [
-        { ...mockWorkflows[0], entityClassName: 'com.example.Entity1' }, // BUSINESS
-        { ...mockWorkflows[1], entityClassName: 'com.example.Entity2' }, // PERSISTENCE
-        { ...mockWorkflows[2], entityClassName: 'com.example.Entity1' }, // BUSINESS
+        { ...mockWorkflows[0], entityClassName: 'travel.1001' }, // BUSINESS
+        { ...mockWorkflows[1], entityClassName: 'com.cyoda.tdb.model.EntityModel' }, // PERSISTENCE
+        { ...mockWorkflows[2], entityClassName: 'travel.1001' }, // BUSINESS
       ];
 
       mockUseWorkflowsList.mockReturnValue({
@@ -421,7 +441,7 @@ describe('Workflows', () => {
 
       // Entity class labels should NOT include type information (type is shown in column header)
       // Use getAllByText because Entity1 appears multiple times in the table
-      const entity1Elements = screen.getAllByText('example.Entity1');
+      const entity1Elements = screen.getAllByText('travel');
       expect(entity1Elements.length).toBeGreaterThanOrEqual(1);
     });
 
@@ -505,8 +525,8 @@ describe('Workflows', () => {
         // Mock returns objects with type field
         mockUseWorkflowEnabledTypes.mockReturnValue({
           data: [
-            { name: 'com.example.Entity1', label: 'Entity 1', type: 'BUSINESS' },
-            { name: 'com.example.Entity2', label: 'Entity 2', type: 'PERSISTENCE' },
+            { name: 'travel.1001', label: 'Travel', type: 'BUSINESS' },
+            { name: 'com.cyoda.tdb.model.EntityModel', label: 'EntityModel', type: 'PERSISTENCE' },
           ],
           isLoading: false,
         });
@@ -516,7 +536,7 @@ describe('Workflows', () => {
         mockEntityType.mockReturnValue('BUSINESS');
 
         const workflowsWithTypes = [
-          { ...mockWorkflows[0], entityClassName: 'com.example.Entity1' },
+          { ...mockWorkflows[0], entityClassName: 'travel.1001' },
         ];
 
         mockUseWorkflowsList.mockReturnValue({
@@ -528,15 +548,15 @@ describe('Workflows', () => {
         render(<Workflows />, { wrapper: createWrapper() });
 
         // Should show entity name without type label (type is shown in column header)
-        expect(screen.getByText('example.Entity1')).toBeInTheDocument();
+        expect(screen.getByText('travel')).toBeInTheDocument();
       });
 
       it('should filter workflows by BUSINESS type', () => {
         mockEntityType.mockReturnValue('BUSINESS');
 
         const workflowsWithTypes = [
-          { ...mockWorkflows[0], entityClassName: 'com.example.Entity1' }, // BUSINESS
-          { ...mockWorkflows[1], entityClassName: 'com.example.Entity2' }, // PERSISTENCE
+          { ...mockWorkflows[0], entityClassName: 'travel.1001' }, // BUSINESS
+          { ...mockWorkflows[1], entityClassName: 'com.cyoda.tdb.model.EntityModel' }, // PERSISTENCE
         ];
 
         mockUseWorkflowsList.mockReturnValue({
@@ -556,8 +576,8 @@ describe('Workflows', () => {
         mockEntityType.mockReturnValue('PERSISTENCE');
 
         const workflowsWithTypes = [
-          { ...mockWorkflows[0], entityClassName: 'com.example.Entity1' }, // BUSINESS
-          { ...mockWorkflows[1], entityClassName: 'com.example.Entity2' }, // PERSISTENCE
+          { ...mockWorkflows[0], entityClassName: 'travel.1001' }, // BUSINESS
+          { ...mockWorkflows[1], entityClassName: 'com.cyoda.tdb.model.EntityModel' }, // PERSISTENCE
         ];
 
         mockUseWorkflowsList.mockReturnValue({
@@ -577,8 +597,8 @@ describe('Workflows', () => {
         mockEntityType.mockReturnValue('BUSINESS');
 
         const workflowsWithTypes = [
-          { ...mockWorkflows[0], entityClassName: 'com.example.Entity1' }, // BUSINESS
-          { ...mockWorkflows[1], entityClassName: 'com.example.UnknownEntity' }, // Not in enabled types
+          { ...mockWorkflows[0], entityClassName: 'travel.1001' }, // BUSINESS
+          { ...mockWorkflows[1], entityClassName: 'com.cyoda.tdb.model.UnknownEntity' }, // Not in enabled types
         ];
 
         mockUseWorkflowsList.mockReturnValue({
@@ -600,15 +620,15 @@ describe('Workflows', () => {
       beforeEach(() => {
         // Mock returns array of strings (no type field)
         mockUseWorkflowEnabledTypes.mockReturnValue({
-          data: ['com.example.Entity1', 'com.example.Entity2'],
+          data: ['travel.1001', 'com.cyoda.tdb.model.EntityModel'],
           isLoading: false,
         });
       });
 
       it('should display entity names without type suffix', () => {
         const workflowsWithTypes = [
-          { ...mockWorkflows[0], entityClassName: 'com.example.Entity1' },
-          { ...mockWorkflows[2], entityClassName: 'com.example.Entity1' },
+          { ...mockWorkflows[0], entityClassName: 'travel.1001' },
+          { ...mockWorkflows[2], entityClassName: 'travel.1001' },
         ];
 
         mockUseWorkflowsList.mockReturnValue({
@@ -620,9 +640,9 @@ describe('Workflows', () => {
         render(<Workflows />, { wrapper: createWrapper() });
 
         // Should show entity name without type label (appears twice)
-        const entity1Elements = screen.getAllByText('example.Entity1');
+        const entity1Elements = screen.getAllByText('travel.1001');
         expect(entity1Elements.length).toBeGreaterThanOrEqual(1);
-        expect(screen.queryByText(/example.Entity1.*Business/i)).not.toBeInTheDocument();
+        expect(screen.queryByText(/travel.1001.*Business/i)).not.toBeInTheDocument();
         expect(screen.queryByText(/Entity1.*Technical/i)).not.toBeInTheDocument();
       });
 
@@ -630,8 +650,8 @@ describe('Workflows', () => {
         mockEntityType.mockReturnValue('BUSINESS');
 
         const workflowsWithTypes = [
-          { ...mockWorkflows[0], entityClassName: 'com.example.Entity1' },
-          { ...mockWorkflows[1], entityClassName: 'com.example.Entity2' },
+          { ...mockWorkflows[0], entityClassName: 'travel.1001' },
+          { ...mockWorkflows[1], entityClassName: 'com.cyoda.tdb.model.EntityModel' },
         ];
 
         mockUseWorkflowsList.mockReturnValue({
@@ -669,9 +689,9 @@ describe('Workflows', () => {
         render(<Workflows />, { wrapper: createWrapper() });
 
         // Should show short class names without type labels (appears multiple times)
-        const entity1Elements = screen.getAllByText('example.Entity1');
+        const entity1Elements = screen.getAllByText('travel.1001');
         expect(entity1Elements.length).toBeGreaterThanOrEqual(1);
-        expect(screen.queryByText(/example.Entity1.*Business/i)).not.toBeInTheDocument();
+        expect(screen.queryByText(/travel.1001.*Business/i)).not.toBeInTheDocument();
       });
     });
   });

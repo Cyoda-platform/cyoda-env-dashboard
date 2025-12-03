@@ -141,33 +141,45 @@ export const Workflows: React.FC = () => {
   // Table data with filtering and sorting
   const tableData = useMemo<WorkflowTableRow[]>(() => {
     let filtered = workflows
-      .map((workflow: Workflow) => {
-        // Get short class name (last part after the last dot)
-        const parts = workflow.entityClassName.split('.');
-        const entityShortClassName = parts.length >= 2 ? parts.slice(-2).join('.') : workflow.entityClassName;
-        const entityClassNameLabel = entityShortClassName;
-        let entityTypeValue = null;
+    .map((workflow: Workflow) => {
+      const parts = workflow.entityClassName.split('.');
+      let entityClassNameLabel: string;
+      let version: string | null = null;
+      let entityTypeValue = null;
 
-        // Only use entity type info if available (feature flag equivalent)
-        if (hasEntityTypeInfo) {
-          // Find entity type info
-          const entityRow = workflowEnabledTypes.find(
-            (item: any) => item.name === workflow.entityClassName || item.value === workflow.entityClassName
-          );
+      // Only use entity type info if available (feature flag equivalent)
+      if (hasEntityTypeInfo) {
+        // Find entity type info
+        const entityRow = workflowEnabledTypes.find(
+          (item: any) => item.name === workflow.entityClassName || item.value === workflow.entityClassName
+        );
 
-          if (entityRow && entityRow.type) {
-            // Store entity type for filtering
-            entityTypeValue = entityRow.type;
-          }
+        if (entityRow && entityRow.type) {
+          // Store entity type for filtering
+          entityTypeValue = entityRow.type;
         }
+      }
 
-        return {
-          ...workflow,
-          key: workflow.id,
-          entityClassNameLabel,
-          entityType: entityTypeValue,
-        };
-      })
+      // Parse entity name and version based on entity type
+      if (entityTypeValue === 'BUSINESS') {
+        // Business entities: format is "entityName.version" (e.g., "travel.1001")
+        // Entity = everything before last dot, Version = last part
+        entityClassNameLabel = parts.length >= 2 ? parts.slice(0, -1).join('.') : workflow.entityClassName;
+        version = parts.length >= 2 ? parts[parts.length - 1] : null;
+      } else {
+        // Technical entities: format is full package name (e.g., "com.cyoda.tdb.model.metadata.EntityModel")
+        // Show last 2 parts as entity name, no version
+        entityClassNameLabel = parts.length >= 2 ? parts.slice(-2).join('.') : workflow.entityClassName;
+      }
+
+      return {
+        ...workflow,
+        key: workflow.id,
+        entityClassNameLabel,
+        entityType: entityTypeValue,
+        version,
+      };
+    })
       .filter((workflow) => {
         // Filter by entity type only if entity type info is available
         if (hasEntityTypeInfo && workflow.entityType && workflow.entityType !== entityType) {
@@ -328,8 +340,15 @@ export const Workflows: React.FC = () => {
         onResize: handleResize('entityClassNameLabel'),
       }),
     },
-    {
-      title: 'Name',
+  // Version column - only for Business entities
+  ...(entityType === 'BUSINESS' ? [{
+    title: 'Version',
+    dataIndex: 'version',
+    key: 'version',
+    width: 80,
+  }] : []),
+  {
+    title: 'Name',
       dataIndex: 'name',
       key: 'name',
       width: columnWidths.name,
@@ -408,7 +427,7 @@ export const Workflows: React.FC = () => {
     {
       title: 'Actions',
       key: 'actions',
-      width: 260,
+      width: columnWidths.operations,
       render: (_, record) => (
         <Space size="small">
           <Tooltip title="Workflow">
@@ -448,7 +467,6 @@ export const Workflows: React.FC = () => {
           </Tooltip>
         </Space>
       ),
-      width: columnWidths.operations,
       onHeaderCell: () => ({
         width: columnWidths.operations,
         onResize: handleResize('operations'),
