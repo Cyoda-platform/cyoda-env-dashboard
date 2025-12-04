@@ -5,9 +5,15 @@ import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useAuth0 } from '@auth0/auth0-react';
 import * as authApi from '@cyoda/http-api-react/api/auth';
 import { HelperStorage } from '@cyoda/http-api-react/utils/storage';
+import { HelperFeatureFlags } from '@cyoda/http-api-react';
 import './Login.scss';
 
 const helperStorage = new HelperStorage();
+
+// Determine default route based on feature flags
+const getDefaultRoute = () => {
+  return HelperFeatureFlags.isTrinoSqlSchemaEnabled() ? '/trino' : '/tableau/reports';
+};
 
 interface LoginFormValues {
   username: string;
@@ -42,7 +48,7 @@ const Login: React.FC = () => {
           });
 
           message.success('Login successful!');
-          navigate('/trino');
+          navigate(getDefaultRoute());
         } catch (error) {
           console.error('Auth0 authentication error:', error);
           message.error('Authentication failed. Please try again.');
@@ -71,7 +77,7 @@ const Login: React.FC = () => {
       });
 
       message.success('Login successful!');
-      navigate('/trino');
+      navigate(getDefaultRoute());
     } catch (error: any) {
       console.error('Login error:', error);
       const errorMessage = error?.response?.data?.message || 'Login failed. Please check your credentials.';

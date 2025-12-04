@@ -1,6 +1,7 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { AppLayout } from '../components/AppLayout';
+import { HelperFeatureFlags } from '@cyoda/http-api-react';
 
 // Lazy load package components for better performance
 const TrinoIndex = React.lazy(() => import('@cyoda/cyoda-sass-react').then(m => ({ default: m.TrinoIndex })));
@@ -39,6 +40,10 @@ const EventView = React.lazy(() => import('@cyoda/processing-manager-react').the
 const Login = React.lazy(() => import('../pages/Login'));
 
 export const AppRoutes: React.FC = () => {
+  const isTrinoEnabled = HelperFeatureFlags.isTrinoSqlSchemaEnabled();
+  const isTasksEnabled = HelperFeatureFlags.isTasksEnabled();
+  const defaultRoute = isTrinoEnabled ? '/trino' : '/tableau/reports';
+
   return (
     <Routes>
       {/* Login Route */}
@@ -46,13 +51,17 @@ export const AppRoutes: React.FC = () => {
 
       {/* Main App Routes with Layout */}
       <Route path="/" element={<AppLayout />}>
-        {/* Default redirect to Trino */}
-        <Route index element={<Navigate to="/trino" replace />} />
+        {/* Default redirect */}
+        <Route index element={<Navigate to={defaultRoute} replace />} />
 
-        {/* Trino SQL Schemas */}
-        <Route path="trino" element={<TrinoIndex />} />
-        <Route path="trino/schema" element={<TrinoEdit />} />
-        <Route path="trino/schema/:id" element={<TrinoEdit />} />
+        {/* Trino SQL Schemas - conditionally rendered based on feature flag */}
+        {isTrinoEnabled && (
+          <>
+            <Route path="trino" element={<TrinoIndex />} />
+            <Route path="trino/schema" element={<TrinoEdit />} />
+            <Route path="trino/schema/:id" element={<TrinoEdit />} />
+          </>
+        )}
 
         {/* Reporting - Tableau */}
         <Route path="tableau/reports" element={<Reports />} />
@@ -72,9 +81,13 @@ export const AppRoutes: React.FC = () => {
         <Route path="criteria/:criteriaId" element={<Criteria />} />
         <Route path="process/:processId" element={<Process />} />
 
-        {/* Tasks */}
-        <Route path="tasks" element={<Tasks />} />
-        <Route path="tasks/:id" element={<TaskDetail />} />
+        {/* Tasks - conditionally rendered based on feature flag */}
+        {isTasksEnabled && (
+          <>
+            <Route path="tasks" element={<Tasks />} />
+            <Route path="tasks/:id" element={<TaskDetail />} />
+          </>
+        )}
 
         {/* Entity Viewer */}
         <Route path="entity-viewer" element={<PageEntityViewer />} />
@@ -90,8 +103,8 @@ export const AppRoutes: React.FC = () => {
         <Route path="processing-ui/nodes/:name/entity-state-machine" element={<TransitionEntityStateMachine />} />
         <Route path="processing-ui/nodes/:name/event-view" element={<EventView />} />
 
-        {/* Catch all - redirect to Trino */}
-        <Route path="*" element={<Navigate to="/trino" replace />} />
+        {/* Catch all - redirect to default route */}
+        <Route path="*" element={<Navigate to={defaultRoute} replace />} />
       </Route>
     </Routes>
   );

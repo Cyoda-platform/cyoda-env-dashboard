@@ -159,5 +159,65 @@ describe('HelperFeatureFlags', () => {
       expect(result).toBe(false);
     });
   });
+
+  describe('isTrinoSqlSchemaEnabled', () => {
+    it('should return true when VITE_FEATURE_FLAG_TRINO_SQL_SCHEMA is enabled', () => {
+      import.meta.env.VITE_FEATURE_FLAG_TRINO_SQL_SCHEMA = true as any;
+
+      const result = HelperFeatureFlags.isTrinoSqlSchemaEnabled();
+      expect(result).toBe(true);
+    });
+
+    it('should return true when VITE_FEATURE_FLAG_TRINO_SQL_SCHEMA is "true"', () => {
+      import.meta.env.VITE_FEATURE_FLAG_TRINO_SQL_SCHEMA = 'true' as any;
+
+      const result = HelperFeatureFlags.isTrinoSqlSchemaEnabled();
+      expect(result).toBe(true);
+    });
+
+    it('should return false when VITE_FEATURE_FLAG_TRINO_SQL_SCHEMA is disabled', () => {
+      import.meta.env.VITE_FEATURE_FLAG_TRINO_SQL_SCHEMA = false as any;
+
+      const result = HelperFeatureFlags.isTrinoSqlSchemaEnabled();
+      expect(result).toBe(false);
+    });
+
+    it('should return false when VITE_FEATURE_FLAG_TRINO_SQL_SCHEMA is not set', () => {
+      delete (import.meta.env as any).VITE_FEATURE_FLAG_TRINO_SQL_SCHEMA;
+
+      const result = HelperFeatureFlags.isTrinoSqlSchemaEnabled();
+      expect(result).toBe(false);
+    });
+  });
+
+  describe('isTasksEnabled', () => {
+    it('should return true when VITE_FEATURE_FLAG_TASKS is enabled', () => {
+      import.meta.env.VITE_FEATURE_FLAG_TASKS = true as any;
+
+      const result = HelperFeatureFlags.isTasksEnabled();
+      expect(result).toBe(true);
+    });
+
+    it('should return true when VITE_FEATURE_FLAG_TASKS is "true"', () => {
+      import.meta.env.VITE_FEATURE_FLAG_TASKS = 'true' as any;
+
+      const result = HelperFeatureFlags.isTasksEnabled();
+      expect(result).toBe(true);
+    });
+
+    it('should return false when VITE_FEATURE_FLAG_TASKS is disabled', () => {
+      import.meta.env.VITE_FEATURE_FLAG_TASKS = false as any;
+
+      const result = HelperFeatureFlags.isTasksEnabled();
+      expect(result).toBe(false);
+    });
+
+    it('should return false when VITE_FEATURE_FLAG_TASKS is not set', () => {
+      delete (import.meta.env as any).VITE_FEATURE_FLAG_TASKS;
+
+      const result = HelperFeatureFlags.isTasksEnabled();
+      expect(result).toBe(false);
+    });
+  });
 });
 

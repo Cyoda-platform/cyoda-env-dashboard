@@ -21,6 +21,7 @@ import {
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { HelperStorage } from '@cyoda/http-api-react/utils/storage';
+import { HelperFeatureFlags } from '@cyoda/http-api-react';
 import { AppLogo } from '@cyoda/ui-lib-react';
 import { useThemeStore } from '../stores/themeStore';
 import './LeftSideMenu.scss';
@@ -172,13 +173,17 @@ export const LeftSideMenu: React.FC<LeftSideMenuProps> = ({ collapsed, onCollaps
     return false;
   };
 
+  const isTrinoEnabled = HelperFeatureFlags.isTrinoSqlSchemaEnabled();
+  const isTasksEnabled = HelperFeatureFlags.isTasksEnabled();
+
   const menuItems: MenuItem[] = [
-    {
+    // Trino SQL Schemas - conditionally shown based on feature flag
+    ...(isTrinoEnabled ? [{
       key: '/trino',
       icon: <DatabaseOutlined />,
       label: <span data-path="/trino">Trino SQL schemas</span>,
       title: 'Trino SQL schemas',
-    },
+    }] : []),
     {
       key: 'reporting',
       icon: collapsed ? (
@@ -273,12 +278,13 @@ export const LeftSideMenu: React.FC<LeftSideMenuProps> = ({ collapsed, onCollaps
         },
       ],
     },
-    {
+    // Tasks - conditionally shown based on feature flag
+    ...(isTasksEnabled ? [{
       key: '/tasks',
       icon: <CheckSquareOutlined />,
       label: <span data-path="/tasks">Tasks</span>,
       title: 'Tasks',
-    },
+    }] : []),
     {
       key: '/entity-viewer',
       icon: <EyeOutlined />,

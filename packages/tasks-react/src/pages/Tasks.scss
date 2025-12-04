@@ -12,11 +12,17 @@
     margin-bottom: 24px;
     margin-top: 0;
   }
-}
 
-.tasks-actions {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 16px;
+  .tasks-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  .tasks-actions {
+    display: flex;
+    gap: 8px;
+  }
 }
 

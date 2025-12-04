@@ -36,5 +36,19 @@ export default class HelperFeatureFlags {
   static isEntityViewerUseJson(): boolean {
     return this.getFeatureFlagByName('VITE_FEATURE_FLAG_ENTITY_VIEWER_USE_JSON');
   }
+
+  /**
+   * Check if Trino SQL Schema page is enabled
+   */
+  static isTrinoSqlSchemaEnabled(): boolean {
+    return this.getFeatureFlagByName('VITE_FEATURE_FLAG_TRINO_SQL_SCHEMA');
+  }
+
+  /**
+   * Check if Tasks page is enabled
+   */
+  static isTasksEnabled(): boolean {
+    return this.getFeatureFlagByName('VITE_FEATURE_FLAG_TASKS');
+  }
 }
 
