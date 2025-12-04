@@ -107,16 +107,58 @@ const createTestQueryClient = () =>
   });
 
 describe('EntityDetailModal', () => {
-  const mockEntityData = {
-    id: 'entity-123',
-    entityClass: 'com.test.TestEntity',
-    state: 'ACTIVE',
-    version: 1,
-    created: '2024-01-01T10:00:00Z',
-    updated: '2024-01-02T10:00:00Z',
-    customField1: 'Value 1',
-    customField2: 'Value 2',
-  };
+  // Mock data in Entity[] format (as returned by getEntityLoad API)
+  const mockEntityData = [
+    {
+      columnInfo: { columnName: 'id', columnPath: 'id' },
+      type: 'LEAF',
+      value: 'entity-123',
+      decision: '',
+      presented: true,
+    },
+    {
+      columnInfo: { columnName: 'state', columnPath: 'state' },
+      type: 'LEAF',
+      value: 'ACTIVE',
+      decision: '',
+      presented: true,
+    },
+    {
+      columnInfo: { columnName: 'previousTransition', columnPath: 'previousTransition' },
+      type: 'LEAF',
+      value: 'CREATE',
+      decision: '',
+      presented: true,
+    },
+    {
+      columnInfo: { columnName: 'createdDate', columnPath: 'createdDate' },
+      type: 'LEAF',
+      value: '2024-01-01T10:00:00Z',
+      decision: '',
+      presented: true,
+    },
+    {
+      columnInfo: { columnName: 'lastUpdatedDate', columnPath: 'lastUpdatedDate' },
+      type: 'LEAF',
+      value: '2024-01-02T10:00:00Z',
+      decision: '',
+      presented: true,
+    },
+    {
+      columnInfo: { columnName: 'customField1', columnPath: 'customField1' },
+      type: 'LEAF',
+      value: 'Value 1',
+      decision: '',
+      presented: true,
+    },
+    {
+      columnInfo: { columnName: 'customField2', columnPath: 'customField2' },
+      type: 'LEAF',
+      value: 'Value 2',
+      decision: '',
+      presented: true,
+    },
+  ];
 
   const defaultProps = {
     visible: true,
@@ -154,12 +196,11 @@ describe('EntityDetailModal', () => {
       expect(screen.queryByText(/Entity TestEntity/)).not.toBeInTheDocument();
     });
 
-    it('should render all four tabs', async () => {
+    it('should render all three tabs', async () => {
       renderWithQueryClient(<EntityDetailModal {...defaultProps} />);
 
       await waitFor(() => {
         expect(screen.getByText('Details')).toBeInTheDocument();
-        expect(screen.getByText('Transitions')).toBeInTheDocument();
         expect(screen.getByText('Data lineage')).toBeInTheDocument();
         expect(screen.getByText('Audit')).toBeInTheDocument();
       });
@@ -168,8 +209,8 @@ describe('EntityDetailModal', () => {
     it('should display entity class and ID in title', () => {
       renderWithQueryClient(<EntityDetailModal {...defaultProps} />);
 
-      expect(screen.getByText(/TestEntity/)).toBeInTheDocument();
-      expect(screen.getByText(/entity-123/)).toBeInTheDocument();
+      // Check the modal title contains both entity class and ID
+      expect(screen.getByText('Entity TestEntity (entity-123)')).toBeInTheDocument();
     });
   });
 
@@ -196,9 +237,9 @@ describe('EntityDetailModal', () => {
       renderWithQueryClient(<EntityDetailModal {...defaultProps} />);
 
       await waitFor(() => {
-        // Look for fields in descriptions, not in title
-        const descriptions = document.querySelector('.ant-descriptions');
-        expect(descriptions).toBeInTheDocument();
+        // Check for standard fields section header
+        expect(screen.getByText('Standard fields')).toBeInTheDocument();
+        // Check that state field value is displayed
         expect(screen.getByText('ACTIVE')).toBeInTheDocument();
       });
     });
@@ -207,10 +248,11 @@ describe('EntityDetailModal', () => {
       renderWithQueryClient(<EntityDetailModal {...defaultProps} />);
 
       await waitFor(() => {
-        expect(screen.getByText('customField1')).toBeInTheDocument();
-        expect(screen.getByText('Value 1')).toBeInTheDocument();
-        expect(screen.getByText('customField2')).toBeInTheDocument();
-        expect(screen.getByText('Value 2')).toBeInTheDocument();
+      // Custom fields are displayed in EntityDetailTree
+      // Check for the Entity section and custom field values
+      expect(screen.getByText('Entity')).toBeInTheDocument();
+      expect(screen.getByText('Value 1')).toBeInTheDocument();
+      expect(screen.getByText('Value 2')).toBeInTheDocument();
       });
     });
 
@@ -257,31 +299,23 @@ describe('EntityDetailModal', () => {
     });
   });
 
-  describe('Transitions Tab', () => {
-    it('should render transitions component when tab is clicked', async () => {
-      const user = userEvent.setup();
+  describe('Transitions in Details Tab', () => {
+    it('should render transitions component in Details tab', async () => {
       renderWithQueryClient(<EntityDetailModal {...defaultProps} />);
 
-      await waitFor(() => {
-        expect(screen.getByText('Transitions')).toBeInTheDocument();
-      });
-
-      await user.click(screen.getByText('Transitions'));
-
+      // Transitions component should be visible in Details tab by default
       await waitFor(() => {
         expect(screen.getByTestId('entity-transitions')).toBeInTheDocument();
-        expect(screen.getByText('Transitions Diagram')).toBeInTheDocument();
       });
     });
 
-    it('should pass correct props to EntityTransitions', async () => {
-      const user = userEvent.setup();
+    it('should pass correct props to EntityTransitions in Details tab', async () => {
       renderWithQueryClient(<EntityDetailModal {...defaultProps} />);
-
-      await user.click(screen.getByText('Transitions'));
 
       await waitFor(() => {
         const transitionsComponent = screen.getByTestId('entity-transitions');
+        expect(transitionsComponent).toBeInTheDocument();
+        // Check that EntityTransitions receives correct props
         expect(transitionsComponent).toHaveTextContent('Entity Class: com.test.TestEntity');
         expect(transitionsComponent).toHaveTextContent('Entity ID: entity-123');
       });
@@ -364,12 +398,6 @@ describe('EntityDetailModal', () => {
       // Initially on Details tab
       await waitFor(() => {
         expect(screen.getByText('entity-123')).toBeInTheDocument();
-      });
-
-      // Switch to Transitions
-      await user.click(screen.getByText('Transitions'));
-      await waitFor(() => {
-        expect(screen.getByTestId('entity-transitions')).toBeInTheDocument();
       });
 
       // Switch to Data lineage
