@@ -7,11 +7,54 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import EntityDetailModal from './EntityDetailModal';
-import axios from 'axios';
 
-// Mock axios
-vi.mock('axios');
-const mockedAxios = vi.mocked(axios);
+
+// Mock axios with interceptors
+vi.mock('axios', () => {
+  const mockAxiosInstance = {
+    get: vi.fn(),
+    post: vi.fn(),
+    put: vi.fn(),
+    delete: vi.fn(),
+    create: vi.fn(() => mockAxiosInstance),
+    interceptors: {
+      request: { use: vi.fn(), eject: vi.fn() },
+      response: { use: vi.fn(), eject: vi.fn() },
+    },
+  };
+  
+  return {
+    default: mockAxiosInstance,
+  };
+});
+
+// Mock @cyoda/http-api-react
+vi.mock('@cyoda/http-api-react', () => {
+  const mockAxiosInstance = {
+    get: vi.fn(),
+    post: vi.fn(),
+    put: vi.fn(),
+    delete: vi.fn(),
+    interceptors: {
+      request: { use: vi.fn(), eject: vi.fn() },
+      response: { use: vi.fn(), eject: vi.fn() },
+    },
+  };
+
+  return {
+    axios: mockAxiosInstance,
+    axiosPlatform: mockAxiosInstance,
+    axiosPublic: mockAxiosInstance,
+    axiosProcessing: mockAxiosInstance,
+    axiosGrafana: mockAxiosInstance,
+    axiosAI: mockAxiosInstance,
+    getEntityLoad: vi.fn(),
+  };
+});
+import { axios as httpApiAxios, getEntityLoad } from '@cyoda/http-api-react';
+const mockedAxios = vi.mocked(httpApiAxios);
+const mockedGetEntityLoad = vi.mocked(getEntityLoad);
+
 
 // Mock EntityAudit component
 vi.mock('./EntityAudit', () => ({
@@ -85,13 +128,8 @@ describe('EntityDetailModal', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    // Mock API response for entity data
-    mockedAxios.get.mockImplementation((url: string) => {
-      if (url.includes('/platform-api/entity/')) {
-        return Promise.resolve({ data: mockEntityData });
-      }
-      return Promise.reject(new Error('Not found'));
-    });
+  // Mock API response for entity data
+  mockedGetEntityLoad.mockResolvedValue({ data: mockEntityData });
   });
 
   const renderWithQueryClient = (ui: React.ReactElement) => {
@@ -177,7 +215,7 @@ describe('EntityDetailModal', () => {
     });
 
     it('should show error message when fetch fails', async () => {
-      mockedAxios.get.mockRejectedValue(new Error('Failed to fetch'));
+      mockedGetEntityLoad.mockRejectedValue(new Error('Failed to fetch'));
 
       const { container } = renderWithQueryClient(<EntityDetailModal {...defaultProps} />);
 
@@ -359,9 +397,10 @@ describe('EntityDetailModal', () => {
       renderWithQueryClient(<EntityDetailModal {...defaultProps} />);
 
       await waitFor(() => {
-        expect(mockedAxios.get).toHaveBeenCalledWith(
-          expect.stringContaining('/platform-api/entity/com.test.TestEntity/entity-123')
-        );
+      expect(mockedGetEntityLoad).toHaveBeenCalledWith(
+        'entity-123',
+        'com.test.TestEntity'
+      );
       });
     });
 
@@ -370,7 +409,7 @@ describe('EntityDetailModal', () => {
         <EntityDetailModal {...defaultProps} visible={false} />
       );
 
-      expect(mockedAxios.get).not.toHaveBeenCalled();
+      expect(mockedGetEntityLoad).not.toHaveBeenCalled();
     });
 
     it('should refetch data when entityId changes', async () => {
@@ -379,7 +418,7 @@ describe('EntityDetailModal', () => {
       );
 
       await waitFor(() => {
-        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(mockedGetEntityLoad).toHaveBeenCalledTimes(1);
       });
 
       // Change entityId
@@ -391,9 +430,10 @@ describe('EntityDetailModal', () => {
       );
 
       await waitFor(() => {
-        expect(mockedAxios.get).toHaveBeenCalledWith(
-          expect.stringContaining('/platform-api/entity/com.test.TestEntity/entity-456')
-        );
+  expect(mockedGetEntityLoad).toHaveBeenCalledWith(
+    'entity-456',
+    'com.test.TestEntity'
+  );
       });
     });
   });

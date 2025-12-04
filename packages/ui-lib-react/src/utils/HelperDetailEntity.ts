@@ -4,7 +4,7 @@
  */
 
 import { HelperFormat } from './HelperFormat';
-import type { Entity } from '@cyoda/http-api-react/types';
+import type { Entity } from '@cyoda/http-api-react';
 
 export default class HelperDetailEntity {
   /**

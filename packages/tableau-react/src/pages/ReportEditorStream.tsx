@@ -9,8 +9,8 @@ import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { Tabs, Button, Spin, message, Tooltip, Form, Select, Divider, Alert } from 'antd';
 import { ArrowLeftOutlined, SaveOutlined, PlayCircleOutlined } from '@ant-design/icons';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { axios } from '@cyoda/http-api-react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { axios, useStreamDefinition } from '@cyoda/http-api-react';
 import ReportEditorTabModel from '../components/ReportEditorTabModel';
 import ReportEditorTabColumns from '../components/ReportEditorTabColumns';
 import ReportEditorTabJson from '../components/ReportEditorTabJson';
@@ -72,21 +72,9 @@ export const ReportEditorStream: React.FC = () => {
   const streamGridRef = useRef<ConfigEditorStreamGridRef>(null);
 
   // Fetch stream report definition
-  const { data: reportData, isLoading, error } = useQuery({
-    queryKey: ['streamReport', id],
-    queryFn: async () => {
-      console.log('Fetching stream report definition for ID:', id);
-      const url = `${API_BASE}/platform-api/stream-data/config?configId=${encodeURIComponent(id!)}`;
-      console.log('Fetch URL:', url);
-      const { data } = await axios.get(url);
-      console.log('=== FETCHED DATA ===');
-      console.log('Full fetched data:', JSON.stringify(data, null, 2));
-      console.log('data.@bean:', data['@bean']);
-      console.log('data.streamDataDef:', data.streamDataDef);
-      return data;
-    },
-    enabled: !!id,
-  });
+const { data: reportData, isLoading, error } = useStreamDefinition(id || '', {
+  enabled: !!id,
+});
 
   useEffect(() => {
     if (error) {
@@ -94,41 +82,30 @@ export const ReportEditorStream: React.FC = () => {
       message.error('Failed to load stream report');
     }
   }, [error]);
+const updateMutation = useMutation({
+  mutationFn: async () => {
+    // Send the full object with updated streamDataDef (like Vue project does)
+    const saveData = JSON.parse(JSON.stringify(fullReportData));
 
-  // Update mutation
-  const updateMutation = useMutation({
-    mutationFn: async () => {
-      // Send the full object with updated streamDataDef (like Vue project does)
-      // Vue line 250-251: creates copy of full data and sets streamDataDef to current configDefinition
-      const saveData = JSON.parse(JSON.stringify(fullReportData));
+    // Remove rangeColDefs from configDefinition before sending
+    const { rangeColDefs: _, ...streamDataDefToSave } = configDefinition;
+    saveData.streamDataDef = streamDataDefToSave;
 
-      // Remove rangeColDefs from configDefinition before sending
-      // rangeColDefs is only for UI, not part of the server model
-      const { rangeColDefs: _, ...streamDataDefToSave } = configDefinition;
-      saveData.streamDataDef = streamDataDefToSave;
-
-      console.log('=== MUTATION SAVING ===');
-      console.log('Full saveData:', JSON.stringify(saveData, null, 2));
-      console.log('saveData.streamDataDef:', JSON.stringify(saveData.streamDataDef, null, 2));
-      console.log('saveData.@bean:', saveData['@bean']);
-      console.log('saveData.id:', saveData.id);
-      console.log('saveData.name:', saveData.name);
-
-      const { data } = await axios.put(
-        `${API_BASE}/platform-api/stream-data/config?configId=${encodeURIComponent(id!)}`,
-        saveData
-      );
-      return data;
-    },
-    onSuccess: () => {
-      message.success('Stream report updated successfully');
-      queryClient.invalidateQueries({ queryKey: ['streamReport', id] });
-    },
-    onError: (error) => {
-      console.error('Failed to update stream report:', error);
-      message.error('Failed to update stream report');
-    },
-  });
+    const { data } = await axios.put(
+      `${API_BASE}/platform-api/stream-data/config?configId=${encodeURIComponent(id!)}`,
+      saveData
+    );
+    return data;
+  },
+  onSuccess: () => {
+    message.success('Stream report updated successfully');
+    queryClient.invalidateQueries({ queryKey: ['streamReport', id] });
+  },
+  onError: (error) => {
+    console.error('Failed to update stream report:', error);
+    message.error('Failed to update stream report');
+  },
+});
 
   useEffect(() => {
     if (reportData) {
@@ -309,8 +286,6 @@ export const ReportEditorStream: React.FC = () => {
     const configDefinitionLocal = JSON.parse(JSON.stringify(configDefinition));
 
     // Log the data being sent for debugging
-    console.log('=== VALIDATING STREAM REPORT ===');
-    console.log('Config definition:', configDefinitionLocal);
 
     // Validate the configuration (Vue line 245)
     const validate = HelperReportDefinition.validateConfigDefinition(
@@ -363,11 +338,9 @@ export const ReportEditorStream: React.FC = () => {
   // Fetch stream definition
   const handleFetchDefinition = async (definitionId: string) => {
     try {
-      console.log('Fetching stream definition:', definitionId);
       const { data: definition } = await axios.get(
         `${API_BASE}/platform-api/stream-data/config?configId=${encodeURIComponent(definitionId)}`
       );
-      console.log('Fetched stream definition:', definition);
       return definition;
     } catch (error) {
       console.error('Failed to fetch stream definition:', error);
@@ -379,14 +352,12 @@ export const ReportEditorStream: React.FC = () => {
   // Load stream data for the grid
   const handleLoadStreamData = async (request: any) => {
     try {
-      console.log('Loading stream data with request:', request);
 
       const { data: streamData } = await axios.post(
         `${API_BASE}/platform-api/stream-data/get`,
         request
       );
 
-      console.log('Stream data response:', streamData);
       return streamData;
     } catch (error) {
       console.error('Failed to load stream data:', error);

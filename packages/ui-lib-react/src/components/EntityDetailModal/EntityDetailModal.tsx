@@ -6,8 +6,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { Modal, Tabs, Spin, Button, Switch, Divider } from 'antd';
-import { axios, getEntityLoad } from '@cyoda/http-api-react';
-import type { Entity } from '@cyoda/http-api-react/types';
+import { getEntityLoad } from '@cyoda/http-api-react';
+import type { Entity } from '@cyoda/http-api-react';
 import type { ConfigDefinition } from './types';
 import EntityDataLineage from './EntityDataLineage';
 import EntityAudit from './EntityAudit';

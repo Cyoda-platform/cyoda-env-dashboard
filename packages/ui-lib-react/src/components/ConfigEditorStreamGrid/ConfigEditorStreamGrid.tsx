@@ -88,15 +88,12 @@ export const ConfigEditorStreamGrid = forwardRef<ConfigEditorStreamGridRef, Conf
   }, [lastRequest, configDefinitionRequest])
 
   const tableData = useMemo(() => {
-    console.log('ConfigEditorStreamGrid: Computing tableData from lastRequest:', lastRequest)
     if (lastRequest?.rows && lastRequest.rows.length > 0) {
-      console.log('ConfigEditorStreamGrid: First row:', lastRequest.rows[0])
       let data = lastRequest.rows.map((row) => row.columnsValues)
 
       // If onlyUniq is true and there's only one column, filter to unique values
       const keys = Object.keys(data[0] || {})
       if (onlyUniq && keys.length === 1) {
-        console.log('ConfigEditorStreamGrid: Filtering to unique values for column:', keys[0])
         // Use a Set to get unique values based on the single column
         const uniqueValues = new Map()
         data.forEach((row) => {
@@ -107,7 +104,6 @@ export const ConfigEditorStreamGrid = forwardRef<ConfigEditorStreamGridRef, Conf
           }
         })
         data = Array.from(uniqueValues.values())
-        console.log('ConfigEditorStreamGrid: Unique values count:', data.length)
       }
 
       // Add keys for React table
@@ -115,10 +111,8 @@ export const ConfigEditorStreamGrid = forwardRef<ConfigEditorStreamGridRef, Conf
         key: index,
         ...row
       }))
-      console.log('ConfigEditorStreamGrid: Computed tableData:', dataWithKeys)
       return dataWithKeys
     }
-    console.log('ConfigEditorStreamGrid: No rows in lastRequest')
     return []
   }, [lastRequest, onlyUniq])
 
@@ -133,12 +127,9 @@ export const ConfigEditorStreamGrid = forwardRef<ConfigEditorStreamGridRef, Conf
         pointTime: reset ? Date.now() : (lastRequest.pointTime || null)
       }
 
-      console.log('ConfigEditorStreamGrid: Loading page with request:', request)
 
       if (onLoadData) {
         const data = await onLoadData(request)
-        console.log('ConfigEditorStreamGrid: Received data:', data)
-        console.log('ConfigEditorStreamGrid: sdDef from response:', data.sdDef)
 
         // If the response includes sdDef, use it to update configDefinitionRequest
         if (data.sdDef) {
@@ -146,7 +137,6 @@ export const ConfigEditorStreamGrid = forwardRef<ConfigEditorStreamGridRef, Conf
             ...request,
             sdDef: data.sdDef,
           }
-          console.log('ConfigEditorStreamGrid: Updated request with sdDef:', updatedRequest)
           setConfigDefinitionRequest(updatedRequest)
         }
 
@@ -163,7 +153,6 @@ export const ConfigEditorStreamGrid = forwardRef<ConfigEditorStreamGridRef, Conf
   React.useEffect(() => {
     const fetchAndLoadData = async () => {
       if (dialogVisible && definitionId) {
-        console.log('ConfigEditorStreamGrid: Dialog opened with definitionId:', definitionId)
 
         // Reset state
         setPage(0)
@@ -173,19 +162,14 @@ export const ConfigEditorStreamGrid = forwardRef<ConfigEditorStreamGridRef, Conf
         if (onFetchDefinition) {
           try {
             const definition = await onFetchDefinition(definitionId)
-            console.log('ConfigEditorStreamGrid: Fetched definition:', definition)
 
             // Get the stream data definition
             const sdDef = definition.streamDataDef || definition
 
-          console.log("ConfigEditorStreamGrid: sdDef:", JSON.stringify(sdDef, null, 2))
-          console.log("ConfigEditorStreamGrid: rangeCondition:", sdDef.rangeCondition)
-          console.log("ConfigEditorStreamGrid: rangeCondition.fieldName:", sdDef.rangeCondition?.fieldName)
 
             // Fix: If rangeCondition.fieldName is 'id', replace it with 'creationDate'
             // because 'id' field does not support range queries
             if (sdDef.rangeCondition && sdDef.rangeCondition.fieldName === 'id') {
-              console.log('ConfigEditorStreamGrid: Replacing unsupported range field "id" with "creationDate"')
               sdDef.rangeCondition = {
                 '@bean': 'com.cyoda.core.conditions.queryable.GreaterThan',
                 fieldName: 'creationDate',
@@ -206,7 +190,6 @@ export const ConfigEditorStreamGrid = forwardRef<ConfigEditorStreamGridRef, Conf
               length: pageSize,
             }
 
-            console.log('ConfigEditorStreamGrid: Setting configDefinitionRequest:', request)
             setConfigDefinitionRequest(request)
 
             // Load the first page with the request directly
@@ -214,7 +197,6 @@ export const ConfigEditorStreamGrid = forwardRef<ConfigEditorStreamGridRef, Conf
               setIsLoading(true)
               try {
                 const data = await onLoadData(request)
-                console.log('ConfigEditorStreamGrid: Received data:', data)
                 setLastRequest(data)
               } catch (error) {
                 console.error('ConfigEditorStreamGrid: Failed to load data:', error)
@@ -282,7 +264,6 @@ export const ConfigEditorStreamGrid = forwardRef<ConfigEditorStreamGridRef, Conf
   }
 
   const handleRowDoubleClick = (record: any) => {
-    console.log('Row double clicked:', record)
     if (record && record.id) {
       setSelectedRow(record)
       setEntityDetailVisible(true)
