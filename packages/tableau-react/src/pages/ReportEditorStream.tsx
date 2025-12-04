@@ -240,7 +240,14 @@ export const ReportEditorStream: React.FC = () => {
   }, [reportData]);
 
   const conditionTypesKeysAvailable = useMemo(() => {
-    return ['GREATER_THAN', 'LESS_THAN', 'EQUALS', 'NOT_EQUALS', 'BETWEEN'];
+    return [
+      'LESS_THAN',
+      'GREATER_THAN',
+      'GREATER_OR_EQUAL',
+      'LESS_OR_EQUAL',
+      'BETWEEN',
+      'BETWEEN_INCLUSIVE',
+    ];
   }, []);
 
   // Check for duplicate alias names (same logic as Vue ConfigEditorAlertAliasSameName.vue)

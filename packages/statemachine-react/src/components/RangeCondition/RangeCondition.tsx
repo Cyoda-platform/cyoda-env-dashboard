@@ -26,19 +26,19 @@ interface RangeConditionProps {
 }
 
 // Range condition types (from HelperReportDefinition.rangeConditionTypes)
-const RANGE_CONDITION_TYPES = [
-  { key: 'EQUALS', label: 'Equals', '@bean': 'com.cyoda.core.conditions.EqualsCondition' },
-  { key: 'NOT_EQUALS', label: 'Not Equals', '@bean': 'com.cyoda.core.conditions.NotEqualsCondition' },
-  { key: 'GREATER_THAN', label: 'Greater Than', '@bean': 'com.cyoda.core.conditions.GreaterThanCondition' },
-  { key: 'GREATER_THAN_OR_EQUALS', label: 'Greater Than Or Equals', '@bean': 'com.cyoda.core.conditions.GreaterThanOrEqualsCondition' },
-  { key: 'LESS_THAN', label: 'Less Than', '@bean': 'com.cyoda.core.conditions.LessThanCondition' },
-  { key: 'LESS_THAN_OR_EQUALS', label: 'Less Than Or Equals', '@bean': 'com.cyoda.core.conditions.LessThanOrEqualsCondition' },
-  { key: 'IN', label: 'In', '@bean': 'com.cyoda.core.conditions.InCondition' },
-  { key: 'NOT_IN', label: 'Not In', '@bean': 'com.cyoda.core.conditions.NotInCondition' },
-  { key: 'BETWEEN', label: 'Between', '@bean': 'com.cyoda.core.conditions.BetweenCondition', isRange: true },
-  { key: 'IS_NULL', label: 'Is Null', '@bean': 'com.cyoda.core.conditions.IsNullCondition', disableValueField: true },
-  { key: 'IS_NOT_NULL', label: 'Is Not Null', '@bean': 'com.cyoda.core.conditions.IsNotNullCondition', disableValueField: true },
+// Range condition types that work with stream reports
+// Based on HelperReportDefinition.rangeConditionTypes from the old Vue project
+const RANGE_CONDITION_TYPES_KEYS = [
+  'EQUALS',
+  'LESS_THAN',
+  'GREATER_THAN',
+  'GREATER_OR_EQUAL',
+  'BETWEEN',
+  'NOT_EQUAL',
+  'LESS_OR_EQUAL',
+  'BETWEEN_INCLUSIVE',
 ];
+console.log("RANGE_CONDITION_TYPES_KEYS loaded:", RANGE_CONDITION_TYPES_KEYS);
 
 export const RangeCondition: React.FC<RangeConditionProps> = ({
   form,
@@ -200,6 +200,7 @@ export const RangeCondition: React.FC<RangeConditionProps> = ({
                 disableRemove={true}
                 disableColumn={true}
                 readOnly={disabled}
+        conditionTypesKeysAvailable={RANGE_CONDITION_TYPES_KEYS}
                 onRemove={handleConditionRemove}
                 onChange={handleConditionChange}
               />

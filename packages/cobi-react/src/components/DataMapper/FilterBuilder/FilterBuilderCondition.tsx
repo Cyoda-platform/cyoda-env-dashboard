@@ -14,6 +14,7 @@ interface FilterBuilderConditionProps {
   readOnly?: boolean;
   className?: string;
   isLast?: boolean;
+  conditionTypesKeysAvailable?: string[];
   onRemove: () => void;
   onChange: () => void;
 }
@@ -27,6 +28,7 @@ const FilterBuilderCondition: React.FC<FilterBuilderConditionProps> = ({
   readOnly = false,
   className = '',
   isLast = false,
+  conditionTypesKeysAvailable = [],
   onRemove,
   onChange,
 }) => {
@@ -48,17 +50,36 @@ const FilterBuilderCondition: React.FC<FilterBuilderConditionProps> = ({
     return selectedCol?.typeShort || 'String';
   }, [selectedCol]);
 
-  // Filter condition types based on selected field type
+  // First filter by conditionTypesKeysAvailable if provided
+  const conditionTypesAvailable = useMemo(() => {
+    if (conditionTypesKeysAvailable.length === 0) {
+      return CONDITION_TYPES;
+    }
+    return CONDITION_TYPES.filter((ct) => conditionTypesKeysAvailable.includes(ct.key));
+  }, [conditionTypesKeysAvailable]);
+
+  // Then filter by selected field type
   const conditionTypesFiltered = useMemo(() => {
-    const filtered = CONDITION_TYPES.filter((ct) => {
+    const filtered = conditionTypesAvailable.filter((ct) => {
       if (ct.types && ct.types.indexOf(selectedType) !== -1) {
         return true;
       }
       return false;
     });
-    return filtered.length > 0 ? filtered : CONDITION_TYPES;
-  }, [selectedType]);
+    return filtered.length > 0 ? filtered : conditionTypesAvailable;
+  }, [selectedType, conditionTypesAvailable]);
 
+  // DEBUG: Log filter results
+  useEffect(() => {
+    console.log('FilterBuilderCondition DEBUG:', {
+      selectedType,
+      conditionTypesKeysAvailable,
+      availableCount: conditionTypesAvailable.length,
+      filteredCount: conditionTypesFiltered.length,
+      availableKeys: conditionTypesAvailable.map(ct => ct.key),
+      filteredKeys: conditionTypesFiltered.map(ct => ct.key)
+    });
+  }, [selectedType, conditionTypesKeysAvailable, conditionTypesAvailable, conditionTypesFiltered]);
   // Get selected condition type
   const selectedConditionType = useMemo(() => {
     return CONDITION_TYPES.find((ct) => ct.key === condition.operation) || ({} as ConditionType);
