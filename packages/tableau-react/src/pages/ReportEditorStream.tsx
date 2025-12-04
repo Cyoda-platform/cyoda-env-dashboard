@@ -358,7 +358,7 @@ export const ReportEditorStream: React.FC = () => {
     try {
       console.log('Fetching stream definition:', definitionId);
       const { data: definition } = await axios.get(
-        `${API_BASE}/platform-api/reporting/stream-definitions/${definitionId}`
+        `${API_BASE}/platform-api/stream-data/config?configId=${encodeURIComponent(definitionId)}`
       );
       console.log('Fetched stream definition:', definition);
       return definition;
@@ -375,7 +375,7 @@ export const ReportEditorStream: React.FC = () => {
       console.log('Loading stream data with request:', request);
 
       const { data: streamData } = await axios.post(
-        `${API_BASE}/platform-api/streamdata/fetch`,
+        `${API_BASE}/platform-api/stream-data/get`,
         request
       );
 

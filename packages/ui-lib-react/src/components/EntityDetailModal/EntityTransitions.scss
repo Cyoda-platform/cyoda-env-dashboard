@@ -1,0 +1,50 @@
+.entity-transitions {
+  margin-bottom: 0;
+
+  h4 {
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+
+  p {
+    margin-bottom: 0;
+  }
+
+  .ant-form-inline {
+    margin-bottom: 0;
+
+    .ant-form-item {
+      margin-right: 16px;
+      margin-bottom: 0;
+    }
+  }
+
+  // Ensure select dropdown is visible
+  .ant-select {
+    width: 220px;
+  }
+}
+
+// Ensure dropdown appears above modal content
+.ant-select-dropdown {
+  z-index: 1050 !important;
+}
+
+// Light theme overrides
+[data-theme='light'] {
+  .entity-transitions {
+    h4 {
+      color: #111827;
+    }
+
+    p {
+      color: #6B7280;
+    }
+
+    .ant-form-item-label > label {
+      color: #374151;
+    }
+  }
+}
+

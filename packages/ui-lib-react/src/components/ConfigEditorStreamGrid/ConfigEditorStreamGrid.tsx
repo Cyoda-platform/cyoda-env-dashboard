@@ -175,10 +175,32 @@ export const ConfigEditorStreamGrid = forwardRef<ConfigEditorStreamGridRef, Conf
             const definition = await onFetchDefinition(definitionId)
             console.log('ConfigEditorStreamGrid: Fetched definition:', definition)
 
+            // Get the stream data definition
+            const sdDef = definition.streamDataDef || definition
+
+          console.log("ConfigEditorStreamGrid: sdDef:", JSON.stringify(sdDef, null, 2))
+          console.log("ConfigEditorStreamGrid: rangeCondition:", sdDef.rangeCondition)
+          console.log("ConfigEditorStreamGrid: rangeCondition.fieldName:", sdDef.rangeCondition?.fieldName)
+
+            // Fix: If rangeCondition.fieldName is 'id', replace it with 'creationDate'
+            // because 'id' field does not support range queries
+            if (sdDef.rangeCondition && sdDef.rangeCondition.fieldName === 'id') {
+              console.log('ConfigEditorStreamGrid: Replacing unsupported range field "id" with "creationDate"')
+              sdDef.rangeCondition = {
+                '@bean': 'com.cyoda.core.conditions.queryable.GreaterThan',
+                fieldName: 'creationDate',
+                operation: 'GREATER_THAN',
+                value: {
+                  '@type': 'java.util.Date',
+                  value: '1900-01-01T00:00:00.000+03:00',
+                },
+              }
+            }
+
             // Set the config definition request
             const request: ConfigDefinitionRequest = {
               '@bean': 'com.cyoda.core.streamdata.StreamDataRequest',
-              sdDef: definition.streamDataDef || definition,
+              sdDef: sdDef,
               pointTime: Date.now(),
               offset: 0,
               length: pageSize,

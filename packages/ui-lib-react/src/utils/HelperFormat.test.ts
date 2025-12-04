@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import HelperFormat from './HelperFormat';
+import { HelperFormat } from './HelperFormat';
 
 describe('HelperFormat', () => {
   describe('shortNamePath', () => {

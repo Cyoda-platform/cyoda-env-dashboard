@@ -35,6 +35,17 @@ vi.mock('./EntityDataLineage', () => ({
   ),
 }));
 
+// Mock EntityTransitions component
+vi.mock('./EntityTransitions', () => ({
+  default: ({ entityClass, entityId }: any) => (
+    <div data-testid="entity-transitions">
+      <div>Entity Class: {entityClass}</div>
+      <div>Entity ID: {entityId}</div>
+      <div>Transitions Diagram</div>
+    </div>
+  ),
+}));
+
 // Create a test query client
 const createTestQueryClient = () =>
   new QueryClient({
@@ -105,11 +116,12 @@ describe('EntityDetailModal', () => {
       expect(screen.queryByText(/Entity TestEntity/)).not.toBeInTheDocument();
     });
 
-    it('should render all three tabs', async () => {
+    it('should render all four tabs', async () => {
       renderWithQueryClient(<EntityDetailModal {...defaultProps} />);
 
       await waitFor(() => {
         expect(screen.getByText('Details')).toBeInTheDocument();
+        expect(screen.getByText('Transitions')).toBeInTheDocument();
         expect(screen.getByText('Data lineage')).toBeInTheDocument();
         expect(screen.getByText('Audit')).toBeInTheDocument();
       });
@@ -207,6 +219,37 @@ describe('EntityDetailModal', () => {
     });
   });
 
+  describe('Transitions Tab', () => {
+    it('should render transitions component when tab is clicked', async () => {
+      const user = userEvent.setup();
+      renderWithQueryClient(<EntityDetailModal {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Transitions')).toBeInTheDocument();
+      });
+
+      await user.click(screen.getByText('Transitions'));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('entity-transitions')).toBeInTheDocument();
+        expect(screen.getByText('Transitions Diagram')).toBeInTheDocument();
+      });
+    });
+
+    it('should pass correct props to EntityTransitions', async () => {
+      const user = userEvent.setup();
+      renderWithQueryClient(<EntityDetailModal {...defaultProps} />);
+
+      await user.click(screen.getByText('Transitions'));
+
+      await waitFor(() => {
+        const transitionsComponent = screen.getByTestId('entity-transitions');
+        expect(transitionsComponent).toHaveTextContent('Entity Class: com.test.TestEntity');
+        expect(transitionsComponent).toHaveTextContent('Entity ID: entity-123');
+      });
+    });
+  });
+
   describe('Audit Tab', () => {
     it('should render audit component when tab is clicked', async () => {
       const user = userEvent.setup();
@@ -283,6 +326,12 @@ describe('EntityDetailModal', () => {
       // Initially on Details tab
       await waitFor(() => {
         expect(screen.getByText('entity-123')).toBeInTheDocument();
+      });
+
+      // Switch to Transitions
+      await user.click(screen.getByText('Transitions'));
+      await waitFor(() => {
+        expect(screen.getByTestId('entity-transitions')).toBeInTheDocument();
       });
 
       // Switch to Data lineage

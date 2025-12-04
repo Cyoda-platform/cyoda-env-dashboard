@@ -7,7 +7,7 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Tag, Spin } from 'antd';
 import { RightOutlined } from '@ant-design/icons';
-import axios from 'axios';
+import { axiosProcessing } from '@cyoda/http-api-react';
 import './EntityAudit.scss';
 
 interface ChangedFieldValue {
@@ -41,7 +41,7 @@ const EntityAudit: React.FC<EntityAuditProps> = ({ entityClass, entityId }) => {
 
       setLoading(true);
       try {
-        const { data } = await axios.get('/platform-processing/transactions/view/entity-changes', {
+        const { data } = await axiosProcessing.get('/platform-processing/transactions/view/entity-changes', {
           params: { type: entityClass, id: entityId },
         });
         // Ensure data is an array

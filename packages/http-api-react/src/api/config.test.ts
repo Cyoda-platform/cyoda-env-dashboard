@@ -93,13 +93,13 @@ describe('Configuration API', () => {
   });
 
   describe('getStreamDefinitions', () => {
-    it('should call GET /platform-api/streams', async () => {
-      const mockResponse = { data: { _embedded: { streams: [] } } };
+    it('should call GET /platform-api/stream-data/config/list', async () => {
+      const mockResponse = { data: [] };
       vi.mocked(axios.get).mockResolvedValue(mockResponse);
 
       const result = await configApi.getStreamDefinitions();
 
-      expect(axios.get).toHaveBeenCalledWith('/platform-api/streams');
+      expect(axios.get).toHaveBeenCalledWith('/platform-api/stream-data/config/list');
       expect(result).toEqual(mockResponse);
     });
   });

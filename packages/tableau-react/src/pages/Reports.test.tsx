@@ -124,7 +124,7 @@ describe('Reports Page', () => {
       renderWithProviders(<Reports />);
 
       expect(screen.getByRole('tab', { name: /Report Config/i })).toBeInTheDocument();
-      expect(screen.getByRole('tab', { name: /Reports/i })).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /History/i })).toBeInTheDocument();
     });
 
     it('should render Report Config tab by default', () => {
@@ -142,12 +142,12 @@ describe('Reports Page', () => {
   });
 
   describe('Tab Navigation', () => {
-    it('should switch to Reports tab when clicked', async () => {
+    it('should switch to History tab when clicked', async () => {
       const user = userEvent.setup();
       renderWithProviders(<Reports />);
 
-      const reportsTab = screen.getByRole('tab', { name: /^Reports$/i });
-      await user.click(reportsTab);
+      const historyTab = screen.getByRole('tab', { name: /^History$/i });
+      await user.click(historyTab);
 
       await waitFor(() => {
         expect(screen.getByTestId('history-table')).toBeInTheDocument();
@@ -158,9 +158,9 @@ describe('Reports Page', () => {
       const user = userEvent.setup();
       renderWithProviders(<Reports />);
 
-      // Switch to Reports tab
-      const reportsTab = screen.getByRole('tab', { name: /^Reports$/i });
-      await user.click(reportsTab);
+      // Switch to History tab
+      const historyTab = screen.getByRole('tab', { name: /^History$/i });
+      await user.click(historyTab);
 
       await waitFor(() => {
         expect(screen.getByTestId('history-table')).toBeInTheDocument();
@@ -179,8 +179,8 @@ describe('Reports Page', () => {
       const user = userEvent.setup();
       renderWithProviders(<Reports />);
 
-      const reportsTab = screen.getByRole('tab', { name: /^Reports$/i });
-      await user.click(reportsTab);
+      const historyTab = screen.getByRole('tab', { name: /^History$/i });
+      await user.click(historyTab);
 
       // Storage.set should be called when tab changes
       // This is tested indirectly through tab switching behavior
@@ -190,13 +190,13 @@ describe('Reports Page', () => {
     });
   });
 
-  describe('Reports Tab Content', () => {
+  describe('History Tab Content', () => {
     beforeEach(async () => {
       const user = userEvent.setup();
       renderWithProviders(<Reports />);
 
-      const reportsTab = screen.getByRole('tab', { name: /^Reports$/i });
-      await user.click(reportsTab);
+      const historyTab = screen.getByRole('tab', { name: /^History$/i });
+      await user.click(historyTab);
 
       await waitFor(() => {
         expect(screen.getByTestId('history-table')).toBeInTheDocument();
@@ -232,14 +232,14 @@ describe('Reports Page', () => {
     });
   });
 
-  describe('Report Selection in Reports Tab', () => {
+  describe('Report Selection in History Tab', () => {
     it('should show ReportUISettings after selecting a report', async () => {
       const user = userEvent.setup();
       renderWithProviders(<Reports />);
 
-      // Switch to Reports tab
-      const reportsTab = screen.getByRole('tab', { name: /^Reports$/i });
-      await user.click(reportsTab);
+      // Switch to History tab
+      const historyTab = screen.getByRole('tab', { name: /^History$/i });
+      await user.click(historyTab);
 
       await waitFor(() => {
         expect(screen.getByTestId('history-table')).toBeInTheDocument();
@@ -261,9 +261,9 @@ describe('Reports Page', () => {
       const user = userEvent.setup();
       renderWithProviders(<Reports />);
 
-      // Switch to Reports tab
-      const reportsTab = screen.getByRole('tab', { name: /^Reports$/i });
-      await user.click(reportsTab);
+      // Switch to History tab
+      const historyTab = screen.getByRole('tab', { name: /^History$/i });
+      await user.click(historyTab);
 
       await waitFor(() => {
         expect(screen.getByTestId('history-table')).toBeInTheDocument();

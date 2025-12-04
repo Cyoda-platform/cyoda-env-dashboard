@@ -1,7 +1,6 @@
 /**
  * EntityTransitions Component
  * Shows available transitions for an entity with a submit button
- * Migrated from: .old_project/packages/cyoda-ui-lib/src/components-library/patterns/AdaptableBlotter/AdaptableBlotterEntity/DetailTransitions.vue
  */
 
 import React, { useState, useEffect } from 'react';
@@ -25,24 +24,31 @@ const EntityTransitions: React.FC<EntityTransitionsProps> = ({
   const [form] = Form.useForm();
   const [transitions, setTransitions] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Load available transitions
   useEffect(() => {
     const loadTransitions = async () => {
       if (!entityId || !entityClass) return;
 
+      const url = `/platform-api/entity/fetch/transitions?entityId=${encodeURIComponent(entityId)}&entityClass=${encodeURIComponent(entityClass)}`;
+      console.log('EntityTransitions - Loading transitions:', { entityId, entityClass, url });
+
       try {
-        const { data } = await axios.get<string[]>(
-          `/platform-api/entity/fetch/transitions?entityId=${encodeURIComponent(entityId)}&entityClass=${entityClass}`
-        );
-        setTransitions(data);
+        const response = await axios.get<string[]>(url);
+        console.log('EntityTransitions - Response:', response.status, response.data);
+        setTransitions(response.data || []);
+        setError(null);
 
         // Set first transition as default
-        if (data.length > 0) {
-          form.setFieldsValue({ transition: data[0] });
+        if (response.data && response.data.length > 0) {
+          form.setFieldsValue({ transition: response.data[0] });
         }
-      } catch (error) {
-        console.error('Failed to load transitions:', error);
+      } catch (err: any) {
+        console.error('EntityTransitions - Failed to load transitions:', err);
+        console.error('EntityTransitions - Error response:', err.response?.status, err.response?.data);
+        setError(err.response?.data?.message || err.message || 'Failed to load');
+        setTransitions([]);
       }
     };
 
@@ -59,9 +65,8 @@ const EntityTransitions: React.FC<EntityTransitionsProps> = ({
         onOk: async () => {
           setLoading(true);
           try {
-            await axios.post(
-              `/platform-api/entity/${entityClass}/${entityId}/transition/${values.transition}`,
-              { values: [] }
+            await axios.put(
+              `/platform-api/entity/transition?entityId=${encodeURIComponent(entityId)}&entityClass=${encodeURIComponent(entityClass)}&transitionName=${encodeURIComponent(values.transition)}`
             );
 
             notification.success({
@@ -89,9 +94,12 @@ const EntityTransitions: React.FC<EntityTransitionsProps> = ({
   return (
     <div className="entity-transitions">
       <h4>Transition Entity</h4>
-      {transitions.length === 0 ? (
+      {error && (
+        <p style={{ color: '#f5222d', fontSize: '12px' }}>Error: {error}</p>
+      )}
+      {transitions.length === 0 && !error ? (
         <p style={{ color: '#888', fontStyle: 'italic' }}>No transitions available</p>
-      ) : (
+      ) : transitions.length > 0 ? (
         <Form form={form} layout="inline">
           <Form.Item
             label="Attempt"
@@ -115,7 +123,7 @@ const EntityTransitions: React.FC<EntityTransitionsProps> = ({
             </Button>
           </Form.Item>
         </Form>
-      )}
+      ) : null}
     </div>
   );
 };

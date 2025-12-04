@@ -5,11 +5,15 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Modal, Tabs, Descriptions, Spin, Button, Switch } from 'antd';
-import axios from 'axios';
+import { Modal, Tabs, Spin, Button, Switch, Divider } from 'antd';
+import { axios, getEntityLoad } from '@cyoda/http-api-react';
+import type { Entity } from '@cyoda/http-api-react/types';
 import type { ConfigDefinition } from './types';
 import EntityDataLineage from './EntityDataLineage';
 import EntityAudit from './EntityAudit';
+import EntityTransitions from './EntityTransitions';
+import EntityDetailTree from './EntityDetailTree';
+import HelperDetailEntity from '../../utils/HelperDetailEntity';
 import './EntityDetailModal.scss';
 
 interface EntityDetailModalProps {
@@ -27,43 +31,53 @@ const EntityDetailModal: React.FC<EntityDetailModalProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState('details');
   const [loading, setLoading] = useState(false);
-  const [entity, setEntity] = useState<any>(null);
-  const [showEmptyFields, setShowEmptyFields] = useState(true);
+  const [entity, setEntity] = useState<Entity[]>([]);
+  const [showEmptyFields, setShowEmptyFields] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   // Extract entity ID from the row
   const getEntityId = () => {
     return selectedRow?.id || selectedRow?.content_id || null;
   };
 
+  // Get entity class - support both requestClass and entityClass for backwards compatibility
+  const getEntityClass = () => {
+    return configDefinition.requestClass || configDefinition.entityClass || '';
+  };
+
   // Get short entity class name
   const getShortEntityName = () => {
-    if (!configDefinition.entityClass) return '';
-    const parts = configDefinition.entityClass.split('.');
+    const entityClass = getEntityClass();
+    if (!entityClass) return '';
+    const parts = entityClass.split('.');
     return parts[parts.length - 1];
   };
 
-  // Load entity data
+  // Load entity data function
+  const loadEntity = async () => {
+    const entityId = getEntityId();
+    const entityClass = getEntityClass();
+    if (!visible || !entityId || !entityClass) return;
+
+    setLoading(true);
+    try {
+      const { data } = await getEntityLoad(entityId, entityClass);
+      
+      // Filter and sort data using HelperDetailEntity (like in Vue version)
+      const filteredData = HelperDetailEntity.filterData(data);
+      setEntity(filteredData);
+    } catch (error) {
+      console.error('Failed to load entity:', error);
+      setEntity([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Load entity data on mount and when dependencies change
   useEffect(() => {
-    const loadEntity = async () => {
-      const entityId = getEntityId();
-      if (!visible || !entityId || !configDefinition.entityClass) return;
-
-      setLoading(true);
-      try {
-        const { data } = await axios.get(
-          `/platform-api/entity/${configDefinition.entityClass}/${entityId}`
-        );
-        setEntity(data);
-      } catch (error) {
-        console.error('Failed to load entity:', error);
-        setEntity(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     loadEntity();
-  }, [visible, selectedRow, configDefinition.entityClass]);
+  }, [visible, selectedRow, configDefinition.requestClass, configDefinition.entityClass]);
 
   // Reset tab when modal opens
   useEffect(() => {
@@ -72,36 +86,48 @@ const EntityDetailModal: React.FC<EntityDetailModalProps> = ({
     }
   }, [visible]);
 
+  // Helper to get value from entity array by column name
+  const getValueFromColumn = (columnName: string) => {
+    const column = entity.find((el: Entity) => el.columnInfo?.columnName === columnName);
+    return column?.value || '-';
+  };
+
   // Get standard fields
   const getStandardFields = () => {
-    if (!entity) return {};
+    if (!entity || entity.length === 0) return {};
     
     return {
-      id: entity.id || getEntityId(),
-      state: entity.state || 'VALIDATED',
-      previousTransition: entity.previousTransition || '-',
-      createdDate: entity.creationDate || entity.createdDate || '-',
-      lastUpdatedDate: entity.lastUpdateTime || entity.modificationDate || '-',
+      id: getValueFromColumn('id') !== '-' ? getValueFromColumn('id') : getEntityId(),
+      state: getValueFromColumn('state') !== '-' ? getValueFromColumn('state') : '-',
+      previousTransition: getValueFromColumn('previousTransition'),
+      createdDate: getValueFromColumn('creationDate'),
+      lastUpdatedDate: getValueFromColumn('lastUpdateTime'),
     };
   };
 
-  // Filter entity fields (remove standard fields)
+  // Filter entity fields (remove standard fields only)
   const getEntityFields = () => {
-    if (!entity) return {};
+    if (!entity || entity.length === 0) return [];
     
-    const standardKeys = ['id', 'state', 'previousTransition', 'creationDate', 'createdDate', 'lastUpdateTime', 'modificationDate'];
-    const filtered: any = {};
+    // Only these fields go to "Standard fields" section
+    const standardKeys = ['id', 'state', 'previousTransition', 'creationDate', 'createdDate'];
     
-    Object.entries(entity).forEach(([key, value]) => {
-      if (!standardKeys.includes(key)) {
-        // Only show non-empty fields if showEmptyFields is false
-        if (showEmptyFields || (value !== null && value !== undefined && value !== '')) {
-          filtered[key] = value;
+    return entity.filter((el: Entity) => {
+      // Skip standard fields
+      if (standardKeys.includes(el.columnInfo?.columnName || '')) {
+        return false;
+      }
+      
+      // Only filter LEAF type fields by value when showEmptyFields is false
+      // Always show non-LEAF types (LIST, EMBEDDED, MAP)
+      if (!showEmptyFields && el.type === 'LEAF') {
+        if (!el.value || el.value === '' || el.value === '-') {
+          return false;
         }
       }
+      
+      return true;
     });
-    
-    return filtered;
   };
 
   const standardFields = getStandardFields();
@@ -115,14 +141,33 @@ const EntityDetailModal: React.FC<EntityDetailModalProps> = ({
         <div className="entity-detail-tab">
           <div className="entity-detail-section">
             <h4>Standard fields</h4>
-            <Descriptions bordered column={1} size="small">
-              <Descriptions.Item label="Id">{standardFields.id}</Descriptions.Item>
-              <Descriptions.Item label="State">{standardFields.state}</Descriptions.Item>
-              <Descriptions.Item label="Previous Transition">{standardFields.previousTransition}</Descriptions.Item>
-              <Descriptions.Item label="Created Date">{standardFields.createdDate}</Descriptions.Item>
-              <Descriptions.Item label="Last updated date">{standardFields.lastUpdatedDate}</Descriptions.Item>
-            </Descriptions>
+            <div className="standard-fields">
+              <p><span className="field-label">Id:</span> {standardFields.id}</p>
+              <p><span className="field-label">State:</span> {standardFields.state}</p>
+              <p><span className="field-label">Previous Transition:</span> {standardFields.previousTransition}</p>
+              <p><span className="field-label">Created Date:</span> {standardFields.createdDate}</p>
+              <p><span className="field-label">Last updated date:</span> {standardFields.lastUpdatedDate}</p>
+            </div>
           </div>
+
+          <Divider />
+
+          {/* Transition Entity Section */}
+          {getEntityId() && getEntityClass() && (
+            <>
+              <EntityTransitions
+                entityId={getEntityId()!}
+                entityClass={getEntityClass()}
+                onTransitionChange={() => {
+                  // Reload entity data after transition change
+                  loadEntity();
+                  // Trigger refresh for Data lineage tab
+                  setRefreshTrigger(prev => prev + 1);
+                }}
+              />
+              <Divider />
+            </>
+          )}
 
           <div className="entity-detail-section">
             <div className="entity-header">
@@ -135,19 +180,14 @@ const EntityDetailModal: React.FC<EntityDetailModalProps> = ({
                 />
               </div>
             </div>
-            <Descriptions bordered column={1} size="small">
-              {Object.entries(entityFields).map(([key, value]) => (
-                <Descriptions.Item key={key} label={key}>
-                  {typeof value === 'object' ? (
-                    <pre style={{ margin: 0, whiteSpace: 'pre-wrap' }}>
-                      {JSON.stringify(value, null, 2)}
-                    </pre>
-                  ) : (
-                    String(value)
-                  )}
-                </Descriptions.Item>
-              ))}
-            </Descriptions>
+
+            {/* Use EntityDetailTree for better nested field display */}
+            <EntityDetailTree
+              entity={entityFields}
+              showEmpty={showEmptyFields}
+              entityId={getEntityId()}
+              entityClass={getEntityClass()}
+            />
           </div>
         </div>
       ),
@@ -157,9 +197,10 @@ const EntityDetailModal: React.FC<EntityDetailModalProps> = ({
       label: 'Data lineage',
       children: (
         <div className="entity-detail-tab">
-          {visible && getEntityId() && configDefinition.entityClass && (
+          {visible && getEntityId() && getEntityClass() && (
             <EntityDataLineage
-              entityClass={configDefinition.entityClass}
+              key={refreshTrigger}
+              entityClass={getEntityClass()}
               entityId={getEntityId()!}
             />
           )}
@@ -171,9 +212,10 @@ const EntityDetailModal: React.FC<EntityDetailModalProps> = ({
       label: 'Audit',
       children: (
         <div className="entity-detail-tab">
-          {visible && getEntityId() && configDefinition.entityClass && (
+          {visible && getEntityId() && getEntityClass() && (
             <EntityAudit
-              entityClass={configDefinition.entityClass}
+              key={refreshTrigger}
+              entityClass={getEntityClass()}
               entityId={getEntityId()!}
             />
           )}
@@ -195,10 +237,7 @@ const EntityDetailModal: React.FC<EntityDetailModalProps> = ({
           Close
         </Button>,
       ]}
-      afterClose={() => {
-        setActiveTab('details');
-        setEntity(null);
-      }}
+      destroyOnClose
     >
       <Spin spinning={loading}>
         <Tabs
@@ -212,4 +251,3 @@ const EntityDetailModal: React.FC<EntityDetailModalProps> = ({
 };
 
 export default EntityDetailModal;
-

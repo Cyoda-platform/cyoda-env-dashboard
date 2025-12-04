@@ -57,7 +57,7 @@ export function useDefinition(
  */
 export function useStreamDefinitions(
   params?: any,
-  options?: Omit<UseQueryOptions<{ _embedded: { streams: IDefinitionStream[] } }>, 'queryKey' | 'queryFn'>
+  options?: Omit<UseQueryOptions<IDefinitionStream[]>, 'queryKey' | 'queryFn'>
 ) {
   return useQuery({
     queryKey: ['config', 'streams', params],

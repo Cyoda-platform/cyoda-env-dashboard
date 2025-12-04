@@ -59,39 +59,44 @@ export function deleteDefinition(definitionId: string) {
 }
 
 /**
- * Get stream definitions
+ * Get all stream data configurations
+ * Uses /platform-api/stream-data/config/list endpoint
  */
 export function getStreamDefinitions(params?: any) {
-  const query = params ? qs.stringify(params, stringifyOpts) : '';
-  return axios.get<{ _embedded: { streams: IDefinitionStream[] } }>(`/platform-api/streams${query}`);
+  // Note: The new API returns array directly, not wrapped in _embedded
+  return axios.get<IDefinitionStream[]>(`/platform-api/stream-data/config/list`);
 }
 
 /**
- * Get specific stream definition
+ * Get specific stream data configuration by ID
+ * Uses /platform-api/stream-data/config?configId={id} endpoint
  */
 export function getStreamDefinition(streamId: string) {
-  return axios.get<IDefinitionStream>(`/platform-api/streams/${streamId}`);
+  return axios.get<IDefinitionStream>(`/platform-api/stream-data/config?configId=${encodeURIComponent(streamId)}`);
 }
 
 /**
- * Create stream definition
+ * Create stream data configuration
+ * Uses POST /platform-api/stream-data/config endpoint
  */
 export function createStreamDefinition(stream: IDefinitionStream) {
-  return axios.post('/platform-api/streams', stream);
+  return axios.post('/platform-api/stream-data/config', stream);
 }
 
 /**
- * Update stream definition
+ * Update stream data configuration
+ * Uses PUT /platform-api/stream-data/config endpoint
  */
 export function updateStreamDefinition(streamId: string, stream: IDefinitionStream) {
-  return axios.put(`/platform-api/streams/${streamId}`, stream);
+  return axios.put(`/platform-api/stream-data/config`, stream);
 }
 
 /**
- * Delete stream definition
+ * Delete stream data configuration
+ * Uses DELETE /platform-api/stream-data/config?configId={id} endpoint
  */
 export function deleteStreamDefinition(streamId: string) {
-  return axios.delete(`/platform-api/streams/${streamId}`);
+  return axios.delete(`/platform-api/stream-data/config?configId=${encodeURIComponent(streamId)}`);
 }
 
 /**

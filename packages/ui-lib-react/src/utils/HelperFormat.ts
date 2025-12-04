@@ -5,7 +5,7 @@
  * Migrated from: .old_project/packages/cyoda-ui-lib/src/helpers/HelperFormat.ts
  */
 
-export default class HelperFormat {
+export class HelperFormat {
   /**
    * Convert string to lowercase
    */

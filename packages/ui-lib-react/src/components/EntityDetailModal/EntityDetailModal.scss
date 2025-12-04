@@ -17,13 +17,34 @@
 .entity-detail-tab {
   padding: 16px 0;
 
+  // Compact dividers between sections
+  .ant-divider {
+    margin: 16px 0;
+  }
+
   .entity-detail-section {
-    margin-bottom: 24px;
+    margin-bottom: 16px;
 
     h4 {
       font-weight: bold;
       font-size: 16px;
       margin-bottom: 16px;
+    }
+
+    // Standard fields styling - table layout like old project
+    .standard-fields {
+      p {
+        margin-bottom: 4px;
+        line-height: 1.8;
+        display: flex;
+        align-items: flex-start;
+
+        .field-label {
+          font-weight: 500;
+          min-width: 180px;
+          flex-shrink: 0;
+        }
+      }
     }
 
     .entity-header {
@@ -49,6 +70,46 @@
     word-wrap: break-word;
     max-height: 300px;
     overflow-y: auto;
+  }
+}
+
+// Light theme overrides
+[data-theme='light'] {
+  .ant-modal:has(.entity-detail-tab) {
+    // Match active tab background to modal background (light)
+    .ant-tabs-tab.ant-tabs-tab-active {
+      background: #FFFFFF !important;
+    }
+  }
+
+  .entity-detail-tab {
+    .entity-detail-section {
+      h4 {
+        color: #111827;
+      }
+
+      .standard-fields {
+        p {
+          color: #374151;
+
+          .field-label {
+            color: #111827;
+          }
+        }
+      }
+
+      .entity-header {
+        h4 {
+          color: #111827;
+        }
+
+        .entity-controls {
+          span {
+            color: #374151;
+          }
+        }
+      }
+    }
   }
 }
 

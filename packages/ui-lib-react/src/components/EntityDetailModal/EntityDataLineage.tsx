@@ -6,7 +6,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Timeline, Checkbox, Button, DatePicker, Row, Col, Modal, Table, Tag, Spin } from 'antd';
-import axios from 'axios';
+import { axios } from '@cyoda/http-api-react';
 import moment from 'moment';
 import type { CheckboxChangeEvent } from 'antd/es/checkbox';
 import './EntityDataLineage.scss';

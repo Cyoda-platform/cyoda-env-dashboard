@@ -1,0 +1,203 @@
+// Inline field (short LEAF values)
+.detail-tree-item-inline {
+  margin-bottom: 10px;
+  padding: 0;
+  border: 1px solid #1e293b;
+
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+
+  .field-name {
+    font-size: 14px;
+    font-weight: bold;
+    padding: 5px;
+    margin-right: 10px;
+    background: #1e293b;
+    min-width: 200px;
+    color: #e2e8f0;
+  }
+
+  .field-value {
+    flex: 1;
+    padding: 5px;
+    word-break: break-word;
+    color: #cbd5e1;
+  }
+}
+
+// Expandable field (long LEAF values, EMBEDDED, LIST, MAP)
+.detail-tree-item-expandable {
+  margin-bottom: 10px;
+  padding: 0;
+  border: 1px solid #1e293b;
+
+  .detail-tree-collapse {
+    background: transparent;
+
+    .ant-collapse-item {
+      border: none;
+    }
+
+    .ant-collapse-header {
+      padding: 5px 10px !important;
+      font-size: 14px;
+      font-weight: bold;
+      color: #e2e8f0;
+      background: #1e293b;
+      border-radius: 0;
+      cursor: pointer;
+      position: relative;
+
+      &:hover {
+        background: #334155;
+      }
+
+      .ant-collapse-expand-icon {
+        color: #14b8a6;
+      }
+    }
+
+    .ant-collapse-content {
+      background: transparent;
+      border-top: none;
+    }
+
+    .ant-collapse-content-box {
+      padding: 15px;
+    }
+  }
+
+  .field-value-pre {
+    margin: 0;
+    padding: 12px;
+    background: #0f172a;
+    border: 1px solid #1e293b;
+    border-radius: 4px;
+    color: #e2e8f0;
+    font-size: 12px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow-x: auto;
+  }
+
+  .field-value-text {
+    color: #cbd5e1;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  // Syntax highlighting
+  pre[class*="language-"] {
+    margin: 0;
+    padding: 12px;
+    background: #0f172a;
+    border: 1px solid #1e293b;
+    border-radius: 4px;
+    font-size: 12px;
+    overflow-x: auto;
+
+    code {
+      color: #e2e8f0;
+      background: transparent;
+    }
+  }
+
+  // Nested tree (for EMBEDDED, LIST, MAP)
+  .nested-tree {
+    margin-top: 10px;
+  }
+}
+
+// LIST and MAP types (with selector)
+.detail-tree-item-list {
+  margin-bottom: 10px;
+  padding: 0;
+  border: 1px solid #1e293b;
+
+  .list-header {
+    padding: 5px 10px;
+    background: #1e293b;
+
+    .field-name {
+      font-size: 14px;
+      font-weight: bold;
+      color: #e2e8f0;
+    }
+  }
+
+  .list-content {
+    padding: 15px;
+
+    .nested-tree {
+      margin-top: 10px;
+    }
+  }
+}
+
+// Light theme overrides
+[data-theme='light'] {
+  .detail-tree-item-inline {
+    border: 1px solid #e5e7eb;
+
+    .field-name {
+      background: #f3f4f6;
+      color: #374151;
+    }
+
+    .field-value {
+      color: #111827;
+    }
+  }
+
+  .detail-tree-item-expandable {
+    border: 1px solid #e5e7eb;
+
+    .detail-tree-collapse {
+      .ant-collapse-header {
+        color: #374151;
+        background: #f3f4f6;
+
+        &:hover {
+          background: #e5e7eb;
+        }
+
+        .ant-collapse-expand-icon {
+          color: #00B894;
+        }
+      }
+    }
+
+    .field-value-pre {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      color: #111827;
+    }
+
+    .field-value-text {
+      color: #374151;
+    }
+
+    pre[class*="language-"] {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+
+      code {
+        color: #111827;
+      }
+    }
+  }
+
+  .detail-tree-item-list {
+    border: 1px solid #e5e7eb;
+
+    .list-header {
+      background: #f3f4f6;
+
+      .field-name {
+        color: #374151;
+      }
+    }
+  }
+}
+
