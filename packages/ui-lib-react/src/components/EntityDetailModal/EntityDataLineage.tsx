@@ -4,11 +4,12 @@
  * Migrated from: .old_project/packages/cyoda-ui-lib/src/components-library/patterns/DataLineage/DataLineage.vue
  */
 
-import React, { useState, useEffect } from 'react';
-import { Timeline, Checkbox, Button, DatePicker, Row, Col, Modal, Table, Tag, Spin } from 'antd';
+import React, { useState, useEffect, useRef } from 'react';
+import { Timeline, Checkbox, Button, DatePicker, Row, Col, Spin } from 'antd';
 import { axios } from '@cyoda/http-api-react';
 import moment from 'moment';
 import type { CheckboxChangeEvent } from 'antd/es/checkbox';
+import { DataLineageCompare, type DataLineageCompareRef } from '../DataLineageCompare';
 import './EntityDataLineage.scss';
 
 const { RangePicker } = DatePicker;
@@ -44,8 +45,8 @@ const EntityDataLineage: React.FC<EntityDataLineageProps> = ({ entityClass, enti
   const [dateRange, setDateRange] = useState<[moment.Moment | null, moment.Moment | null]>([null, null]);
   const [loading, setLoading] = useState(false);
   const [compareLoading, setCompareLoading] = useState(false);
-  const [compareVisible, setCompareVisible] = useState(false);
   const [compareData, setCompareData] = useState<TransactionDiff | null>(null);
+  const compareRef = useRef<DataLineageCompareRef>(null);
 
   // Load transactions
   useEffect(() => {
@@ -113,6 +114,15 @@ const EntityDataLineage: React.FC<EntityDataLineageProps> = ({ entityClass, enti
     // Sort by timestamp to ensure correct order
     const sorted = sortedSelectedTransactions;
 
+    console.log('🔍 Selected transactions (original order):', selectedTransactions);
+    console.log('🔍 Sorted transactions:', sorted);
+    console.log('🔍 API params:', {
+      firstTx: sorted[0].transactionId,
+      firstTxDate: sorted[0].dateTime,
+      lastTx: sorted[1].transactionId,
+      lastTxDate: sorted[1].dateTime,
+    });
+
     setCompareLoading(true);
     try {
       const { data } = await axios.get('/platform-api/transactions/diff', {
@@ -123,8 +133,11 @@ const EntityDataLineage: React.FC<EntityDataLineageProps> = ({ entityClass, enti
           lastTx: sorted[1].transactionId,
         },
       });
+      console.log('🔍 Compare data from API:', data);
+      console.log('🔍 Changed fields:', data?.changedFields);
       setCompareData(data);
-      setCompareVisible(true);
+      // Open the compare modal
+      compareRef.current?.setDialogVisible(true);
     } catch (error) {
       console.error('Failed to compare transactions:', error);
     } finally {
@@ -136,46 +149,6 @@ const EntityDataLineage: React.FC<EntityDataLineageProps> = ({ entityClass, enti
   const formatDate = (dateTime: string) => {
     return moment(dateTime, 'DD-MM-YYYY HH:mm:ss.SSS').format('DD/MM/YYYY HH:mm:ss');
   };
-
-  // Render value in comparison table
-  const renderValue = (value: any) => {
-    if (value === null || value === undefined) {
-      return <Tag color="default">null</Tag>;
-    }
-    if (typeof value === 'object') {
-      return <pre style={{ margin: 0, fontSize: '12px' }}>{JSON.stringify(value, null, 2)}</pre>;
-    }
-    return String(value);
-  };
-
-  // Comparison modal columns
-  const compareColumns = [
-    {
-      title: 'Field',
-      dataIndex: 'columnPath',
-      key: 'columnPath',
-      width: 200,
-    },
-    {
-      title: 'Old Value',
-      dataIndex: 'prevValue',
-      key: 'prevValue',
-      render: renderValue,
-    },
-    {
-      title: 'New Value',
-      dataIndex: 'currValue',
-      key: 'currValue',
-      render: renderValue,
-    },
-  ];
-
-  const compareTableData = compareData?.changedFields.map((field, index) => ({
-    key: index,
-    columnPath: field.columnPathContainer.shortPath,
-    prevValue: field.columnPathContainer.prevValue,
-    currValue: field.columnPathContainer.currValue,
-  })) || [];
 
   return (
     <div className="entity-data-lineage">
@@ -239,27 +212,19 @@ const EntityDataLineage: React.FC<EntityDataLineageProps> = ({ entityClass, enti
         </Row>
       </Spin>
 
-      {/* Compare Modal */}
-      <Modal
-        title="Compare Versions"
-        open={compareVisible}
-        onCancel={() => setCompareVisible(false)}
-        footer={[
-          <Button key="close" type="primary" onClick={() => setCompareVisible(false)}>
-            Close
-          </Button>,
-        ]}
-        width={800}
-      >
-        <Table
-          columns={compareColumns}
-          dataSource={compareTableData}
-          scroll={{ x: true, y: 400 }}
-          pagination={false}
-          bordered
-          size="small"
-        />
-      </Modal>
+      {/* Compare Modal - using DataLineageCompare component */}
+      <DataLineageCompare
+        ref={compareRef}
+        checkedTransactions={(() => {
+          const mapped = sortedSelectedTransactions.map(tx => ({
+            transactionId: tx.transactionId,
+            dateTime: moment(tx.dateTime, 'DD-MM-YYYY HH:mm:ss.SSS').format('DD-MM-YYYY HH:mm:ss.SSS'),
+          }));
+          console.log('🔍 Passing to DataLineageCompare:', mapped);
+          return mapped;
+        })()}
+        compareData={compareData}
+      />
     </div>
   );
 };
