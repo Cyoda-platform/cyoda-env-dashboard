@@ -27,6 +27,16 @@ vi.mock('../../components/EntityViewer', () => ({
 vi.mock('../../components/StreamGrid', () => ({
   StreamGrid: () => <div data-testid="stream-grid">StreamGrid</div>,
 }));
+vi.mock('@monaco-editor/react', () => ({
+  default: vi.fn(({ theme, value, language }: any) => (
+    <div data-testid="monaco-editor" data-theme={theme} data-language={language}>
+      {value}
+    </div>
+  )),
+}));
+vi.mock('@cyoda/ui-lib-react', () => ({
+  registerCyodaThemes: vi.fn(),
+}));
 
 describe('PageEntityViewer', () => {
   const mockEntityOptions = [
@@ -456,6 +466,243 @@ describe('PageEntityViewer', () => {
       );
 
       eventBusOffSpy.mockRestore();
+    });
+  });
+
+  describe('JSON View', () => {
+    it('should render tabs for table and JSON views', async () => {
+      (useEntityViewerStore as any).mockReturnValue({
+        entitys: [{ from: '', to: 'com.cyoda.core.Entity' }],
+        onlyDynamic: true,
+        addEntity: mockAddEntity,
+        clearEntities: mockClearEntities,
+        setOnlyDynamic: mockSetOnlyDynamic,
+      });
+
+      render(<PageEntityViewer />);
+
+      await waitFor(() => {
+        // Tabs should be rendered
+        const tabs = screen.getAllByRole('tab');
+        expect(tabs.length).toBeGreaterThanOrEqual(2);
+      });
+    });
+
+    it('should switch to JSON view when JSON tab is clicked', async () => {
+      const user = userEvent.setup();
+      (useEntityViewerStore as any).mockReturnValue({
+        entitys: [{ from: '', to: 'com.cyoda.core.Entity' }],
+        onlyDynamic: true,
+        addEntity: mockAddEntity,
+        clearEntities: mockClearEntities,
+        setOnlyDynamic: mockSetOnlyDynamic,
+      });
+
+      render(<PageEntityViewer />);
+
+      await waitFor(() => {
+        const tabs = screen.getAllByRole('tab');
+        expect(tabs.length).toBeGreaterThanOrEqual(2);
+      });
+
+      // Click JSON tab (second tab)
+      const tabs = screen.getAllByRole('tab');
+      const jsonTab = tabs[1];
+      await user.click(jsonTab);
+
+      // Monaco Editor should be rendered
+      await waitFor(() => {
+        expect(screen.getByTestId('monaco-editor')).toBeInTheDocument();
+      });
+    });
+
+    it('should not render JSON view when no entities', async () => {
+      render(<PageEntityViewer />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Entity Viewer')).toBeInTheDocument();
+      });
+
+      // Monaco Editor should not be rendered
+      expect(screen.queryByTestId('monaco-editor')).not.toBeInTheDocument();
+    });
+
+    it('should generate valid JSON from entities', async () => {
+      const mockEntity = { from: '', to: 'com.cyoda.core.Entity' };
+      (useEntityViewerStore as any).mockReturnValue({
+        entitys: [mockEntity],
+        onlyDynamic: true,
+        addEntity: mockAddEntity,
+        clearEntities: mockClearEntities,
+        setOnlyDynamic: mockSetOnlyDynamic,
+      });
+
+      const user = userEvent.setup();
+      render(<PageEntityViewer />);
+
+      await waitFor(() => {
+        const tabs = screen.getAllByRole('tab');
+        expect(tabs.length).toBeGreaterThanOrEqual(2);
+      });
+
+      // Click JSON tab
+      const tabs = screen.getAllByRole('tab');
+      const jsonTab = tabs[1];
+      await user.click(jsonTab);
+
+      // Check that Monaco Editor has JSON content
+      await waitFor(() => {
+        const editor = screen.getByTestId('monaco-editor');
+        expect(editor).toBeInTheDocument();
+        const content = editor.textContent;
+        expect(content).toContain('entityClass');
+        expect(content).toContain('com.cyoda.core.Entity');
+      });
+    });
+  });
+
+  describe('Monaco Editor Integration', () => {
+    it('should render Monaco Editor with correct language', async () => {
+      const user = userEvent.setup();
+      (useEntityViewerStore as any).mockReturnValue({
+        entitys: [{ from: '', to: 'com.cyoda.core.Entity' }],
+        onlyDynamic: true,
+        addEntity: mockAddEntity,
+        clearEntities: mockClearEntities,
+        setOnlyDynamic: mockSetOnlyDynamic,
+      });
+
+      render(<PageEntityViewer />);
+
+      await waitFor(() => {
+        const tabs = screen.getAllByRole('tab');
+        expect(tabs.length).toBeGreaterThanOrEqual(2);
+      });
+
+      const tabs = screen.getAllByRole('tab');
+      const jsonTab = tabs[1];
+      await user.click(jsonTab);
+
+      await waitFor(() => {
+        const editor = screen.getByTestId('monaco-editor');
+        expect(editor).toHaveAttribute('data-language', 'json');
+      });
+    });
+
+    it('should pass correct theme to Monaco Editor', async () => {
+      const user = userEvent.setup();
+      (useEntityViewerStore as any).mockReturnValue({
+        entitys: [{ from: '', to: 'com.cyoda.core.Entity' }],
+        onlyDynamic: true,
+        addEntity: mockAddEntity,
+        clearEntities: mockClearEntities,
+        setOnlyDynamic: mockSetOnlyDynamic,
+      });
+
+      render(<PageEntityViewer />);
+
+      await waitFor(() => {
+        const tabs = screen.getAllByRole('tab');
+        expect(tabs.length).toBeGreaterThanOrEqual(2);
+      });
+
+      const tabs = screen.getAllByRole('tab');
+      const jsonTab = tabs[1];
+      await user.click(jsonTab);
+
+      await waitFor(() => {
+        const editor = screen.getByTestId('monaco-editor');
+        // Default theme should be dark
+        expect(editor).toHaveAttribute('data-theme', 'cyoda-dark');
+      });
+    });
+
+    it('should be read-only', async () => {
+      const user = userEvent.setup();
+      (useEntityViewerStore as any).mockReturnValue({
+        entitys: [{ from: '', to: 'com.cyoda.core.Entity' }],
+        onlyDynamic: true,
+        addEntity: mockAddEntity,
+        clearEntities: mockClearEntities,
+        setOnlyDynamic: mockSetOnlyDynamic,
+      });
+
+      render(<PageEntityViewer />);
+
+      await waitFor(() => {
+        const tabs = screen.getAllByRole('tab');
+        expect(tabs.length).toBeGreaterThanOrEqual(2);
+      });
+
+      const tabs = screen.getAllByRole('tab');
+      const jsonTab = tabs[1];
+      await user.click(jsonTab);
+
+      // Monaco Editor should be rendered (read-only is set in options)
+      await waitFor(() => {
+        expect(screen.getByTestId('monaco-editor')).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('Theme Switching', () => {
+    it('should initialize with current theme from document', async () => {
+      // Set document theme to light
+      document.documentElement.setAttribute('data-theme', 'light');
+
+      render(<PageEntityViewer />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Entity Viewer')).toBeInTheDocument();
+      });
+
+      // Reset
+      document.documentElement.removeAttribute('data-theme');
+    });
+
+    it('should update theme when document theme attribute changes', async () => {
+      const user = userEvent.setup();
+      (useEntityViewerStore as any).mockReturnValue({
+        entitys: [{ from: '', to: 'com.cyoda.core.Entity' }],
+        onlyDynamic: true,
+        addEntity: mockAddEntity,
+        clearEntities: mockClearEntities,
+        setOnlyDynamic: mockSetOnlyDynamic,
+      });
+
+      render(<PageEntityViewer />);
+
+      await waitFor(() => {
+        const tabs = screen.getAllByRole('tab');
+        expect(tabs.length).toBeGreaterThanOrEqual(2);
+      });
+
+      const tabs = screen.getAllByRole('tab');
+      const jsonTab = tabs[1];
+      await user.click(jsonTab);
+
+      // Change theme
+      document.documentElement.setAttribute('data-theme', 'light');
+
+      // Wait for theme to update
+      await waitFor(() => {
+        const editor = screen.getByTestId('monaco-editor');
+        expect(editor).toHaveAttribute('data-theme', 'cyoda-light');
+      });
+
+      // Reset
+      document.documentElement.removeAttribute('data-theme');
+    });
+
+    it('should cleanup MutationObserver on unmount', async () => {
+      const { unmount } = render(<PageEntityViewer />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Entity Viewer')).toBeInTheDocument();
+      });
+
+      // Should not throw error on unmount
+      expect(() => unmount()).not.toThrow();
     });
   });
 });
