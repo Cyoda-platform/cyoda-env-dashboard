@@ -5,9 +5,11 @@
  * Migrated from: .old_project/packages/http-api/src/views/PageEntityViewer.vue
  */
 
-import React, { useState, useEffect, useRef } from 'react';
-import { Select, Checkbox, Alert, Spin, Tooltip } from 'antd';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { Select, Checkbox, Alert, Spin, Tooltip, Tabs } from 'antd';
 import { InfoCircleOutlined, ZoomInOutlined, ZoomOutOutlined, SyncOutlined } from '@ant-design/icons';
+import MonacoEditor, { BeforeMount } from '@monaco-editor/react';
+import { registerCyodaThemes } from '@cyoda/ui-lib-react';
 
 import { EntityViewer, type EntityViewerRef } from '../../components/EntityViewer';
 import { ConfigEditorStreamGrid, type ConfigEditorStreamGridRef } from '@cyoda/ui-lib-react';
@@ -26,8 +28,13 @@ export const PageEntityViewer: React.FC = () => {
   const [requestClassOptionsDynamic, setRequestClassOptionsDynamic] = useState<EntityOption[]>([]);
   const [requestClassOptionsNonDynamic, setRequestClassOptionsNonDynamic] = useState<EntityOption[]>([]);
   const [zoom, setZoom] = useState(1);
+  const [viewMode, setViewMode] = useState<'table' | 'json'>('table');
+  const [entityDataMap, setEntityDataMap] = useState<Map<string, { reportingInfoRows: any[], relatedPaths: any[] }>>(new Map());
   const [isStreamGridAvailable, setIsStreamGridAvailable] = useState(false);
   const [streamGridTitle, setStreamGridTitle] = useState('Report Stream Result');
+  const [currentTheme, setCurrentTheme] = useState<'light' | 'dark'>(
+    document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark'
+  );
 
   const entityViewerRefs = useRef<Map<string, EntityViewerRef>>(new Map());
   const streamGridRef = useRef<ConfigEditorStreamGridRef>(null);
@@ -36,6 +43,39 @@ export const PageEntityViewer: React.FC = () => {
   const { entityType } = useGlobalUiSettingsStore();
 
   const requestClassOptions = onlyDynamic ? requestClassOptionsDynamic : requestClassOptionsNonDynamic;
+
+
+  // Generate JSON data for all entities with full reporting info
+  const entitiesJson = useMemo(() => {
+    if (entitys.length === 0) return '{}';
+    
+    const entitiesData = entitys.map(entity => {
+      const entityData = entityDataMap.get(entity.to);
+      return {
+        entityClass: entity.to,
+        entity: entity,
+        reportingInfoRows: entityData?.reportingInfoRows || [],
+        relatedPaths: entityData?.relatedPaths || [],
+      };
+    });
+    
+    return JSON.stringify(entitiesData, null, 2);
+  }, [entitys, entityDataMap]);
+
+  // Calculate dynamic height for Monaco Editor
+  const jsonHeight = useMemo(() => {
+    const lineCount = entitiesJson.split('\n').length;
+    return Math.min(Math.max(lineCount * 22 + 40, 300), 500);
+  }, [entitiesJson]);
+
+  // Monaco Editor theme setup
+  const handleEditorWillMount: BeforeMount = (monaco) => {
+    // Get current theme from document
+    const currentTheme = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+    // Register Cyoda themes (both light and dark)
+    registerCyodaThemes(monaco, currentTheme);
+  };
+
 
   // Load entity class options
   useEffect(() => {
@@ -84,6 +124,20 @@ export const PageEntityViewer: React.FC = () => {
       eventBus.off('entityInfo:update', handleEntityInfoUpdate);
       eventBus.off('streamGrid:open', handleStreamGridOpen);
     };
+  }, []);
+
+  // Watch for theme changes
+  useEffect(() => {
+    const handleThemeChange = () => {
+      const newTheme = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+      setCurrentTheme(newTheme);
+    };
+
+    // Listen for theme changes on document element
+    const observer = new MutationObserver(handleThemeChange);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+    return () => observer.disconnect();
   }, []);
 
   // Draw lines when entities change
@@ -152,25 +206,37 @@ export const PageEntityViewer: React.FC = () => {
     }
   };
 
-  const handleEntityViewerLoaded = () => {
-    // Adjust container height based on entity viewers
-    setTimeout(() => {
-      const allEntities = document.querySelectorAll('.entity-viewer');
-      const heights = Array.from(allEntities).map((el) => (el as HTMLElement).offsetHeight);
-      const maxHeight = Math.max(...heights, 0);
-      const boxInner = document.querySelector('.wrap-entity-view-box-inner') as HTMLElement;
+const handleEntityViewerLoaded = useCallback((entityClass?: string, reportingInfoRows?: any[], relatedPaths?: any[]) => {
+  // Turn off loading spinner when entity is loaded
+  setIsLoading(false);
 
-      if (boxInner) {
-        const currentHeight = boxInner.offsetHeight - 300;
-        if (currentHeight < maxHeight) {
-          boxInner.style.minHeight = `${maxHeight + 600}px`;
-        }
+  // Store entity data if provided
+  if (entityClass && reportingInfoRows && relatedPaths) {
+    setEntityDataMap(prev => {
+      const newMap = new Map(prev);
+      newMap.set(entityClass, { reportingInfoRows, relatedPaths });
+      return newMap;
+    });
+  }
+
+  // Adjust container height based on entity viewers
+  setTimeout(() => {
+    const allEntities = document.querySelectorAll('.entity-viewer');
+    const heights = Array.from(allEntities).map((el) => (el as HTMLElement).offsetHeight);
+    const maxHeight = Math.max(...heights, 0);
+    const boxInner = document.querySelector('.wrap-entity-view-box-inner') as HTMLElement;
+
+    if (boxInner) {
+      const currentHeight = boxInner.offsetHeight - 300;
+      if (currentHeight < maxHeight) {
+        boxInner.style.minHeight = `${maxHeight + 600}px`;
       }
+    }
 
-      // Draw lines after all entities are loaded and positioned
-      reDrawLines();
-    }, 100);
-  };
+    // Draw lines after all entities are loaded and positioned
+    reDrawLines();
+  }, 100);
+}, []);
 
   const handleResetRequestClass = () => {
     setRequestClass('');
@@ -261,56 +327,114 @@ export const PageEntityViewer: React.FC = () => {
                 style={{ marginBottom: 20 }}
               />
             )}
-
-            <div className="wrap-entity-view-box">
-              <div className="tools">
-                <div className="buttons">
-                  <ZoomInOutlined onClick={handleZoomOut} />
-                  <ZoomOutOutlined onClick={handleZoomIn} />
-                  <SyncOutlined onClick={handleZoomRefresh} />
-                  {zoom !== 1 && (
-                    <>
-                      <span className="delimiter">|</span>
-                      <span>Zoom {zoom}</span>
-                    </>
-                  )}
-                </div>
-              </div>
-
-              <div
-                className="wrap-entity-view-box-inner"
-                style={{ zoom }}
-              >
-                {entitys.map((entity) => (
-                  <EntityViewer
-                    key={entity.to}
-                    ref={(ref) => {
-                      if (ref) {
-                        entityViewerRefs.current.set(entity.to, ref);
-                      } else {
-                        entityViewerRefs.current.delete(entity.to);
-                      }
-                    }}
-                    requestClass={entity.to}
-                    entity={entity}
-                    zoom={zoom}
-                    className={entity.to.split('.').pop() || ''}
-                    dataInfo={JSON.stringify(entity)}
-                    dataName={entity.to.split('.').pop()}
-                    onLoaded={handleEntityViewerLoaded}
-                    onResetRequestClass={handleResetRequestClass}
-                  />
-                ))}
-
-                {entitys.length > 0 && (
-                  <svg className="canvas" width="100%" height="100%">
-                    {/* SVG lines will be drawn here */}
-                  </svg>
-                )}
-              </div>
-            </div>
+        {entitys.length > 0 && (
+          <div className="view-mode-tabs">
+            <Tabs
+              activeKey={viewMode}
+              onChange={(key) => setViewMode(key as 'table' | 'json')}
+              type="card"
+              className="entity-viewer-mode-tabs"
+              items={[
+                {
+                  key: 'table',
+                  label: 'Table',
+                },
+                {
+                  key: 'json',
+                  label: 'JSON',
+                },
+              ]}
+            />
           </div>
-        </Spin>
+        )}
+
+        {/* Table View */}
+        {viewMode === 'table' && (
+        <div className="wrap-entity-view-box">
+        {entitys.length > 0 && (
+        <div className="tools">
+        <div className="buttons">
+        <ZoomInOutlined onClick={handleZoomOut} />
+        <ZoomOutOutlined onClick={handleZoomIn} />
+        <SyncOutlined onClick={handleZoomRefresh} />
+        {zoom !== 1 && (
+        <>
+        <span className="delimiter">|</span>
+        <span>Zoom {zoom}</span>
+        </>
+        )}
+        </div>
+        </div>
+        )}
+
+        <div
+        className="wrap-entity-view-box-inner"
+        style={{ zoom }}
+        >
+        {entitys.map((entity) => (
+        <EntityViewer
+        key={entity.to}
+        ref={(ref) => {
+        if (ref) {
+        entityViewerRefs.current.set(entity.to, ref);
+        } else {
+        entityViewerRefs.current.delete(entity.to);
+        }
+        }}
+        requestClass={entity.to}
+        entity={entity}
+        zoom={zoom}
+        className={entity.to.split('.').pop() || ''}
+        dataInfo={JSON.stringify(entity)}
+        dataName={entity.to.split('.').pop()}
+        onLoaded={handleEntityViewerLoaded}
+        onResetRequestClass={handleResetRequestClass}
+        />
+        ))}
+
+        {entitys.length > 0 && (
+        <svg className="canvas" width="100%" height="100%">
+        {/* SVG lines will be drawn here */}
+        </svg>
+        )}
+        </div>
+        </div>
+        )}
+
+
+        {/* JSON View */}
+        {viewMode === 'json' && entitys.length > 0 && (
+        <div className="wrap-entity-json-view">
+        <MonacoEditor
+        height={`${jsonHeight}px`}
+        language="json"
+        theme={currentTheme === 'light' ? 'cyoda-light' : 'cyoda-dark'}
+        value={entitiesJson}
+        beforeMount={handleEditorWillMount}
+        options={{
+        readOnly: true,
+        minimap: { 
+          enabled: true,
+          renderCharacters: true,
+          maxColumn: 60,
+          scale: 1,
+          showSlider: 'always',
+        },
+        lineNumbers: 'on',
+        scrollBeyondLastLine: false,
+        wordWrap: 'on',
+        automaticLayout: true,
+        fontSize: 13,
+        fontFamily: "'Fira Code', 'Monaco', monospace",
+        stickyScroll: { enabled: false },
+        overviewRulerLanes: 0,
+        hideCursorInOverviewRuler: true,
+        overviewRulerBorder: false,
+        }}
+        />
+        </div>
+        )}
+
 
       {isStreamGridAvailable && (
         <ConfigEditorStreamGrid
@@ -320,6 +444,8 @@ export const PageEntityViewer: React.FC = () => {
         />
       )}
     </div>
+  </Spin>
+</div>
   );
 };
 

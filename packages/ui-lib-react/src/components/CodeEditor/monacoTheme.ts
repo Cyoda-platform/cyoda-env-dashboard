@@ -112,6 +112,10 @@ export const CYODA_DARK_THEME: editor.IStandaloneThemeData = {
     'editor.lineHighlightBackground': '#1e293b',
     'editor.lineHighlightBorder': '#00000000',
 
+    // Hover - subtle highlight
+    'editor.hoverHighlightBackground': '#1e293b40',
+    'editorLineNumber.hoverForeground': '#00D4AA',
+
     // Selection - CYODA Teal
     'editor.selectionBackground': '#00D4AA33',
     'editor.inactiveSelectionBackground': '#00D4AA22',
@@ -135,13 +139,16 @@ export const CYODA_DARK_THEME: editor.IStandaloneThemeData = {
 
     // Scrollbar - CYODA Teal accent
     'scrollbar.shadow': '#00000000',
-    'scrollbarSlider.background': '#374151',
-    'scrollbarSlider.hoverBackground': '#4B5563',
-    'scrollbarSlider.activeBackground': '#00D4AA',
+    'scrollbarSlider.background': '#37415180',
+    'scrollbarSlider.hoverBackground': '#4B556380',
+    'scrollbarSlider.activeBackground': '#00D4AA80',
 
     // Minimap
-    'minimap.background': '#0a0f1a',
+    'minimap.background': '#1a2332',
     'minimap.selectionHighlight': '#00D4AA33',
+    'minimapSlider.background': '#37415140',
+    'minimapSlider.hoverBackground': '#4B556360',
+    'minimapSlider.activeBackground': '#00D4AA40',
 
     // Brackets - CYODA Teal
     'editorBracketMatch.background': '#00D4AA22',
@@ -315,8 +322,12 @@ export const CYODA_LIGHT_THEME: editor.IStandaloneThemeData = {
     'editorLineNumber.activeForeground': '#00B894',
 
     // Current line
-    'editor.lineHighlightBackground': '#F9FAFB',
+    'editor.lineHighlightBackground': '#F3F4F6',
     'editor.lineHighlightBorder': '#00000000',
+
+    // Hover - subtle highlight
+    'editor.hoverHighlightBackground': '#00000000',
+    'editorLineNumber.hoverForeground': '#00B894',
 
     // Selection
     'editor.selectionBackground': '#00B89433',
@@ -344,10 +355,14 @@ export const CYODA_LIGHT_THEME: editor.IStandaloneThemeData = {
     'scrollbarSlider.background': '#E5E7EB',
     'scrollbarSlider.hoverBackground': '#D1D5DB',
     'scrollbarSlider.activeBackground': '#00B894',
+    'editorOverviewRuler.background': '#F9FAFB',
 
-    // Minimap
-    'minimap.background': '#F9FAFB',
-    'minimap.selectionHighlight': '#00B89433',
+    // Minimap - light background, dark theme slider colors
+    'minimap.background': '#F3F4F6',
+    'minimap.selectionHighlight': '#00D4AA33',
+    'minimapSlider.background': '#37415140',
+    'minimapSlider.hoverBackground': '#4B556360',
+    'minimapSlider.activeBackground': '#00D4AA40',
 
     // Brackets
     'editorBracketMatch.background': '#00B89422',

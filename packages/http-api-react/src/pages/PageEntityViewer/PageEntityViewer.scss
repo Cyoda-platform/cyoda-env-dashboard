@@ -117,6 +117,59 @@
     }
   }
 
+
+  // View mode tabs
+  .view-mode-tabs {
+    margin-top: 20px;
+    margin-bottom: 20px;
+
+    .entity-viewer-mode-tabs {
+      border: none !important;
+      border-bottom: none !important;
+
+      &.ant-tabs-top {
+        border: none !important;
+        border-bottom: none !important;
+      }
+
+      &.ant-tabs-card {
+        border: none !important;
+        border-bottom: none !important;
+      }
+
+      .ant-tabs-nav {
+        margin-bottom: 0;
+      }
+
+      .ant-tabs-content {
+        border: none !important;
+        display: none !important; // Hide content area, we only need tabs for switching
+      }
+
+      .ant-tabs-tabpane {
+        border: none !important;
+        padding: 0 !important;
+      }
+
+      .ant-tabs-content-holder {
+        border-top: none !important;
+
+        &::before {
+          display: none !important;
+        }
+      }
+    }
+  }
+
+  // JSON view container
+  .wrap-entity-json-view {
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 8px;
+    background: rgba(30, 42, 58, 0.5);
+    border: 1px solid rgba(0, 212, 170, 0.2);
+  }
+
   .entity-viewer-content {
     // No padding - content aligns with page title
   }
@@ -141,3 +194,138 @@
   }
 }
 
+
+// Light theme overrides
+[data-theme="light"] .page-entity-viewer {
+  .wrap-entity-json-view {
+    background: #F9FAFB;
+    border: 1px solid #E5E7EB;
+  }
+  
+  // Monaco Editor scrollbar in light theme
+  .monaco-editor {
+    .decorationsOverviewRuler {
+      background: #F9FAFB !important;
+    }
+    
+    .monaco-scrollable-element > .scrollbar > .slider {
+      background: #E5E7EB !important;
+    }
+    
+    // Overview ruler (right side minimap)
+    .minimap-decorations-layer,
+    .decorationsOverviewRuler,
+    .editor-scrollable .decorationsOverviewRuler {
+      background-color: #F9FAFB !important;
+    }
+    
+    // All possible dark elements on the right side
+    .monaco-editor-background,
+    .margin-view-overlays,
+    .lines-content,
+    .view-overlays,
+    .minimap,
+    .minimap-slider,
+    .minimap-shadow-visible,
+    .decorationsOverviewRuler,
+    .slider,
+    .scrollbar,
+    .vertical {
+      background: #F9FAFB !important;
+      background-color: #F9FAFB !important;
+    }
+    
+    // Specifically target the vertical scrollbar area
+    .editor-scrollable > .visible.vertical {
+      background: #F9FAFB !important;
+    }
+    
+    // Remove shadows
+    .shadow,
+    .shadow.top,
+    .shadow.left,
+    .shadow.top-left-corner {
+      box-shadow: none !important;
+      background: transparent !important;
+    }
+    
+    // Scrollbar shadow
+    .monaco-scrollable-element > .shadow {
+      display: none !important;
+    }
+    
+    // Sticky widget scrollbar
+    .monaco-editor .sticky-widget,
+    .monaco-editor .sticky-widget .monaco-scrollable-element,
+    .monaco-editor .sticky-widget .scrollbar,
+    .monaco-editor .sticky-widget .slider {
+      background: #F9FAFB !important;
+    }
+    
+    // Sticky scroll widget
+    .monaco-editor .sticky-scroll-widget,
+    .monaco-editor .sticky-scroll-widget .monaco-scrollable-element {
+      background: #F9FAFB !important;
+    }
+  }
+}
+
+// Monaco Editor - hide focus border decorations
+.page-entity-viewer {
+  .monaco-editor {
+    // Hide the decorations (colored lines) that appear on focused/selected lines
+    .lines-decorations {
+      display: none !important;
+    }
+    
+    // Alternative: make decorations transparent
+    .current-line-decorations {
+      background: transparent !important;
+    }
+  }
+}
+
+// Dark theme scrollbar fix
+[data-theme="dark"] .page-entity-viewer {
+  .monaco-editor {
+    // Scrollbar in dark theme
+    .monaco-scrollable-element > .scrollbar > .slider {
+      background: rgba(55, 65, 81, 0.5) !important;
+    }
+    
+    .monaco-scrollable-element > .scrollbar > .slider:hover {
+      background: rgba(75, 85, 99, 0.5) !important;
+    }
+    
+    .monaco-scrollable-element > .scrollbar > .slider.active {
+      background: rgba(0, 212, 170, 0.5) !important;
+    }
+  }
+}
+
+// Minimap styling for light theme
+[data-theme="light"] .page-entity-viewer .monaco-editor {
+  .minimap {
+    background: #F3F4F6 !important;
+  }
+  
+  .minimap > canvas {
+    opacity: 1 !important;
+    mix-blend-mode: multiply !important;
+  }
+}
+
+// Make minimap slider transparent in light theme
+[data-theme="light"] .page-entity-viewer .monaco-editor {
+  .minimap-slider {
+    background: rgba(55, 65, 81, 0.04) !important;
+  }
+  
+  .minimap-slider:hover {
+    background: rgba(75, 85, 99, 0.1) !important;
+  }
+  
+  .minimap-slider.active {
+    background: rgba(0, 212, 170, 0.08) !important;
+  }
+}

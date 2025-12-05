@@ -22,7 +22,7 @@ export interface EntityViewerProps {
   className?: string;
   dataInfo?: string;
   dataName?: string;
-  onLoaded?: () => void;
+  onLoaded?: (entityClass?: string, reportingInfoRows?: any[], relatedPaths?: any[]) => void;
   onResetRequestClass?: () => void;
 }
 
@@ -49,12 +49,14 @@ export const EntityViewer = forwardRef<EntityViewerRef, EntityViewerProps>(
         setIsLoading(true);
         try {
           const { data } = await getReportingInfo(requestClass, '', '', false);
-          setReportingInfoRows(HelperModelling.sortData(HelperModelling.filterData(data)));
+    const sortedRows = HelperModelling.sortData(HelperModelling.filterData(data));
+    setReportingInfoRows(sortedRows);
           
           const { data: relatedData } = await getReportingRelatedPaths(requestClass);
           setRelatedPaths(relatedData);
           
-          onLoaded?.();
+    // Pass data to parent component
+    onLoaded?.(requestClass, sortedRows, relatedData);
         } catch (error) {
           console.error('Failed to load entity:', error);
         } finally {

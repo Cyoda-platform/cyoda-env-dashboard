@@ -69,29 +69,7 @@
   }
 }
 
-// Dark theme
-[data-theme="dark"] .entity-viewer {
-  background: rgba(30, 42, 58, 0.9) !important;
-  border: 1px solid rgba(0, 212, 170, 0.3) !important;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
 
-  .header {
-    background-color: rgba(0, 212, 170, 0.2) !important;
-    color: #14b8a6 !important;
-    border-bottom: 1px solid rgba(0, 212, 170, 0.3) !important;
-
-    .wrap-icon {
-      svg,
-      .anticon {
-        color: #14b8a6 !important;
-      }
-    }
-  }
-
-  .body {
-    color: #e5e7eb !important;
-  }
-}
 
 // Light theme
 [data-theme="light"] .entity-viewer {
