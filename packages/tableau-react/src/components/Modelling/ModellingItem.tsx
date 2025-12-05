@@ -31,6 +31,7 @@ interface ModellingItemProps {
   parentColDef?: any;
   onlyView?: boolean;
   disablePreview?: boolean;
+  autoExpandAll?: boolean;
 }
 
 export const ModellingItem: React.FC<ModellingItemProps> = ({
@@ -46,6 +47,7 @@ export const ModellingItem: React.FC<ModellingItemProps> = ({
   parentColDef = {},
   onlyView = false,
   disablePreview = false,
+  autoExpandAll = false,
 }) => {
   const [isShowGroupClass, setIsShowGroupClass] = useState(false);
   const [isShowJoin, setIsShowJoin] = useState(false);
@@ -238,6 +240,13 @@ export const ModellingItem: React.FC<ModellingItemProps> = ({
       }
     }
   }, [isOpenAllSelected, getChecked]);
+
+  // Auto-expand all items when autoExpandAll is true
+  useEffect(() => {
+    if (autoExpandAll && isChildAvailable) {
+      setIsShowGroupClass(true);
+    }
+  }, [autoExpandAll, isChildAvailable]);
 
   // Handlers
   const handleClick = () => {

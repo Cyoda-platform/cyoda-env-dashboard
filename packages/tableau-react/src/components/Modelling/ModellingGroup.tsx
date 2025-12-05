@@ -23,6 +23,7 @@ interface ModellingGroupProps {
   onlyView?: boolean;
   disablePreview?: boolean;
   className?: string;
+  autoExpandAll?: boolean;
 }
 
 export const ModellingGroup: React.FC<ModellingGroupProps> = ({
@@ -39,6 +40,7 @@ export const ModellingGroup: React.FC<ModellingGroupProps> = ({
   onlyView = false,
   disablePreview = false,
   className = '',
+  autoExpandAll = false,
 }) => {
   return (
     <ul className={`modelling-group ${className}`}>
@@ -57,6 +59,7 @@ export const ModellingGroup: React.FC<ModellingGroupProps> = ({
             parentColDef={parentColDef}
             onlyView={onlyView}
             disablePreview={disablePreview}
+            autoExpandAll={autoExpandAll}
           />
         </li>
       ))}

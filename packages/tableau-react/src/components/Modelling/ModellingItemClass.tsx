@@ -28,6 +28,7 @@ interface ModellingItemClassProps {
   parentColDef?: any;
   onlyView?: boolean;
   disablePreview?: boolean;
+  autoExpand?: boolean;
 }
 
 export const ModellingItemClass: React.FC<ModellingItemClassProps> = ({
@@ -42,6 +43,7 @@ export const ModellingItemClass: React.FC<ModellingItemClassProps> = ({
   parentColDef = {},
   onlyView = false,
   disablePreview = false,
+  autoExpand = false,
 }) => {
   const [reportingInfoRows, setReportingInfoRows] = useState<ReportingInfoRow[] | null>(null);
   const [isShowGroup, setIsShowGroup] = useState(false);
@@ -139,6 +141,21 @@ export const ModellingItemClass: React.FC<ModellingItemClassProps> = ({
     }
   }, [isOpenAllSelected, getChecked, isShowGroup]);
 
+  // Auto-load and auto-expand when component mounts if autoExpand is true
+  useEffect(() => {
+    if (autoExpand && !reportingInfoRows) {
+      // Auto-load data when component mounts
+      loadData(requestParam.columnPath);
+    }
+  }, [autoExpand]);
+
+  // Auto-expand when data is loaded if autoExpand is true
+  useEffect(() => {
+    if (autoExpand && !isShowGroup && reportingInfoRows && reportingInfoRows.length > 0) {
+      setIsShowGroup(true);
+    }
+  }, [autoExpand, reportingInfoRows]);
+
   // Load data with optional form values
   const loadData = async (columnPath: string) => {
     setIsLoading(true);
@@ -188,6 +205,43 @@ export const ModellingItemClass: React.FC<ModellingItemClassProps> = ({
     return null;
   }
 
+  // When autoExpand is true, render only the content without the class header
+  if (autoExpand && reportingInfoRows) {
+    return (
+      <div className="modelling-item-class" style={{ position: 'relative' }}>
+        {/* Form for types (LIST/MAP indices) */}
+        {requestParam.types && requestParam.types.length > 0 && !onlyView && (
+          <ModellingItemClassForm
+            types={requestParam.types}
+            values={formValues}
+            onChange={handleFormChange}
+          />
+        )}
+
+        {reportingInfoRows && (
+          <ModellingGroup
+            reportInfoRows={reportingInfoRows}
+            requestClass={requestParam.requestClass}
+            checked={checked}
+            limit={limit}
+            search={search}
+            isCondenseThePaths={isCondenseThePaths}
+            isOpenAllSelected={isOpenAllSelected}
+            onlyRange={onlyRange}
+            onlyView={onlyView}
+            disablePreview={disablePreview}
+            parentColDef={parentColDef}
+          />
+        )}
+
+        {isLoading && (
+          <Spin style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} />
+        )}
+      </div>
+    );
+  }
+
+  // Normal rendering with class header
   return (
     <div className="modelling-item-class" style={{ position: 'relative' }}>
       <div onClick={handleClick} className="modelling-item-class-header" style={{ display: 'inline-block' }}>

@@ -54,6 +54,7 @@ export const ModellingGroupClass: React.FC<ModellingGroupClassProps> = ({
             parentColDef={parentColDef}
             onlyView={onlyView}
             disablePreview={disablePreview}
+            autoExpand={true}
           />
         </li>
       ))}

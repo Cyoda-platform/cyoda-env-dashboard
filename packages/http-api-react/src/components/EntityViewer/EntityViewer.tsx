@@ -330,6 +330,7 @@ export const EntityViewer = forwardRef<EntityViewerRef, EntityViewerProps>(
               checked={[]}
               onlyView={true}
               isCondenseThePaths={true}
+              autoExpandAll={true}
             />
           </div>
         </Spin>
