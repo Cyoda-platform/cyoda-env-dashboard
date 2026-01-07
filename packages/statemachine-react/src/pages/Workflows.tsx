@@ -263,10 +263,6 @@ export const Workflows: React.FC = () => {
           // Invalidate workflows list to refresh data
           invalidateWorkflowsList();
         } catch (error: any) {
-          console.error('Failed to delete workflow:', error);
-          console.error('Error response:', error?.response);
-          console.error('Error response data:', error?.response?.data);
-
           // Extract error message from different possible locations in the response
           const responseData = error?.response?.data;
           let errorMessage = '';
@@ -285,9 +281,6 @@ export const Workflows: React.FC = () => {
           if (!errorMessage) {
             errorMessage = error?.message || '';
           }
-
-          console.log('Extracted error code:', errorCode);
-          console.log('Extracted error message:', errorMessage);
 
           // Check for specific error codes and provide user-friendly messages
           if (errorCode === 'ILLEGAL_DELETE_TRANSITIONS_NOT_EMPTY' || errorMessage.includes('ILLEGAL_DELETE_TRANSITIONS_NOT_EMPTY') || errorMessage.includes('transitionIds')) {

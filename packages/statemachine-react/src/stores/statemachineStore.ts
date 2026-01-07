@@ -99,21 +99,16 @@ export const useStatemachineStore = create<StatemachineState>()(
       getWorkflowEnabledTypes: async () => {
         // Check feature flag to determine which endpoint to use
         const useModelsInfo = HelperFeatureFlags.isUseModelsInfo();
-        console.log('[statemachineStore] isUseModelsInfo:', useModelsInfo);
 
         if (useModelsInfo) {
           // When feature flag is enabled, use models-info endpoint which returns entity type info
-          console.log('[statemachineStore] Calling /platform-api/entity-info/fetch/models-info');
           const response = await axios.get('/platform-api/entity-info/fetch/models-info', {
             params: { stateEnabled: true }
           });
-          console.log('[statemachineStore] models-info response:', response.data);
           return response;
         }
         // Otherwise use the basic workflow-enabled-types endpoint (returns just strings)
-        console.log('[statemachineStore] Calling /platform-api/statemachine/workflow-enabled-types');
         const response = await axios.get('/platform-api/statemachine/workflow-enabled-types');
-        console.log('[statemachineStore] workflow-enabled-types response:', response.data);
         return response;
       },
       
@@ -136,8 +131,6 @@ export const useStatemachineStore = create<StatemachineState>()(
       
       deleteWorkflow: async (workflowId) => {
         const url = `/platform-api/statemachine/persisted/workflows/${encodeURIComponent(workflowId)}`;
-        console.log('[statemachineStore] deleteWorkflow URL:', url);
-        console.log('[statemachineStore] deleteWorkflow workflowId:', workflowId);
         // Mute global error handler - we'll handle errors in the component
         return axios.delete(url, { muteErrors: true } as any);
       },
@@ -313,11 +306,6 @@ export const useStatemachineStore = create<StatemachineState>()(
       },
       
       postProcesses: async (persistedType, form) => {
-        console.log('🌐 API Call - POST processes:', {
-          url: `/platform-api/statemachine/${persistedType}/processes`,
-          payload: form
-        });
-        console.log('📦 Payload JSON:', JSON.stringify(form, null, 2));
         return axios.post(`/platform-api/statemachine/${persistedType}/processes`, form);
       },
       
@@ -356,9 +344,7 @@ export const useStatemachineStore = create<StatemachineState>()(
 
       // Instance API Methods
       postInstances: async (data) => {
-        console.log('[statemachineStore] postInstances called with data:', data);
         const response = await axios.post('/platform-api/statemachine/instances', data);
-        console.log('[statemachineStore] postInstances response:', response);
         return response;
       },
       

@@ -35,13 +35,9 @@ export function useEntityLoad(
         throw new Error('instanceId and entityClassName are required');
       }
 
-      console.log('[useEntityLoad] Loading entity data:', { instanceId, entityClassName });
-      
       const { data } = await getEntityLoad(instanceId, entityClassName);
       const filtered = HelperDetailEntity.filterData(data);
-      
-      console.log('[useEntityLoad] Loaded entity data:', filtered);
-      
+
       return filtered;
     },
     enabled: enabled && !!instanceId && !!entityClassName,

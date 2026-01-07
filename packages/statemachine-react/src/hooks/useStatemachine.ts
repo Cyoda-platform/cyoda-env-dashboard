@@ -76,7 +76,6 @@ export function useWorkflowsList(entityClassName?: string) {
       if (Array.isArray(data)) {
         return data;
       }
-      console.error('Workflows API returned non-array data:', data);
       return [];
     },
   });
@@ -665,10 +664,7 @@ export function useInstances() {
 
   return useMutation({
     mutationFn: async (data: InstancesRequest) => {
-      console.log('[useInstances] Calling postInstances with data:', data);
       const response = await store.postInstances(data);
-      console.log('[useInstances] Response from postInstances:', response);
-      console.log('[useInstances] Response.data:', response.data);
       return response.data;
     },
   });

@@ -39,7 +39,7 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({
       }
       onClose();
     } catch (error) {
-      console.error('Export failed:', error);
+      // Export failed
     }
   };
 

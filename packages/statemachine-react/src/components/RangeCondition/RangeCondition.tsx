@@ -38,7 +38,6 @@ const RANGE_CONDITION_TYPES_KEYS = [
   'LESS_OR_EQUAL',
   'BETWEEN_INCLUSIVE',
 ];
-console.log("RANGE_CONDITION_TYPES_KEYS loaded:", RANGE_CONDITION_TYPES_KEYS);
 
 export const RangeCondition: React.FC<RangeConditionProps> = ({
   form,

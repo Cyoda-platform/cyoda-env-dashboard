@@ -307,7 +307,7 @@ const DetailJsonView: React.FC<{
         const { data } = await axios.get(`/platform-api/entity/${entityClassName}/${instanceId}`);
         setJsonData(data);
       } catch (error) {
-        console.error('Failed to load entity data:', error);
+        // Failed to load entity data
       } finally {
         setLoading(false);
       }
