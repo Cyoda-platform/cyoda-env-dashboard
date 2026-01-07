@@ -197,10 +197,8 @@ export function useCachesList() {
   return useQuery({
     queryKey: platformCommonKeys.caches(),
     queryFn: async () => {
-      console.log('useCachesList: Fetching caches list...');
       try {
         const { data } = await getCachesList();
-        console.log('useCachesList: Received data:', data);
         // Ensure data is always an array
         return Array.isArray(data) ? data : [];
       } catch (error) {
@@ -343,10 +341,8 @@ export function useCqlExecStatsTables() {
   return useQuery({
     queryKey: platformCommonKeys.cqlExecStatsTables(),
     queryFn: async () => {
-      console.log('useCqlExecStatsTables: Fetching tracked tables list...');
       try {
         const { data } = await getCqlExecStatsTables();
-        console.log('useCqlExecStatsTables: Received data:', data);
         return Array.isArray(data) ? data : [];
       } catch (error) {
         console.error('useCqlExecStatsTables: Error fetching tables:', error);
@@ -364,10 +360,8 @@ export function useCqlExecStatsAllTables() {
   return useQuery({
     queryKey: platformCommonKeys.cqlExecStatsAllTables(),
     queryFn: async () => {
-      console.log('useCqlExecStatsAllTables: Fetching all tables full stats...');
       try {
         const { data } = await getCqlExecStatsAllTables();
-        console.log('useCqlExecStatsAllTables: Received data:', data);
         return Array.isArray(data) ? data : [];
       } catch (error) {
         console.error('useCqlExecStatsAllTables: Error fetching stats:', error);
@@ -385,10 +379,8 @@ export function useCqlExecStatsAllTablesBrief() {
   return useQuery({
     queryKey: platformCommonKeys.cqlExecStats(),
     queryFn: async () => {
-      console.log('useCqlExecStatsAllTablesBrief: Fetching all tables brief...');
       try {
         const { data } = await getCqlExecStatsAllTablesBrief();
-        console.log('useCqlExecStatsAllTablesBrief: Received data:', data);
         // Ensure data is always an array
         return Array.isArray(data) ? data : [];
       } catch (error) {
@@ -408,10 +400,8 @@ export function useCqlExecStatsTable(table?: string) {
     queryKey: platformCommonKeys.cqlExecStatsTable(table || ''),
     queryFn: async () => {
       if (!table) return null;
-      console.log('useCqlExecStatsTable: Fetching stats for table:', table);
       try {
         const { data } = await getCqlExecStatsTable(table);
-        console.log('useCqlExecStatsTable: Received data:', data);
         return data;
       } catch (error) {
         console.error('useCqlExecStatsTable: Error fetching table stats:', error);
@@ -430,12 +420,10 @@ export function useClearCqlExecStats() {
 
   return useMutation({
     mutationFn: async () => {
-      console.log('useClearCqlExecStats: Clearing CQL execution stats...');
       const { data } = await getCqlExecStatsClear();
       return data;
     },
     onSuccess: () => {
-      console.log('useClearCqlExecStats: Successfully cleared stats, invalidating queries');
       queryClient.invalidateQueries({ queryKey: platformCommonKeys.cqlExecStats() });
     },
   });

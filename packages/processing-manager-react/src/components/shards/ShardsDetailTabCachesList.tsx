@@ -30,7 +30,6 @@ interface CacheItemWithKeys extends CacheItem {
 }
 
 export const ShardsDetailTabCachesList: React.FC = () => {
-  console.log('ShardsDetailTabCachesList: Component mounted');
 
   const [expandedRowKeys, setExpandedRowKeys] = useState<React.Key[]>([]);
   const [cacheKeysData, setCacheKeysData] = useState<Record<string, string[]>>({});
@@ -39,7 +38,6 @@ export const ShardsDetailTabCachesList: React.FC = () => {
   // Fetch caches list
   const { data: cachesData = [], isLoading: cachesLoading, error: cachesError, refetch } = useCachesList();
 
-  console.log('ShardsDetailTabCachesList: cachesData =', cachesData, 'isLoading =', cachesLoading, 'error =', cachesError);
 
   // Invalidate cache mutation
   const invalidateMutation = useInvalidateCache();
@@ -109,7 +107,6 @@ export const ShardsDetailTabCachesList: React.FC = () => {
   };
 
   const columns: ColumnsType<CacheItem> = useMemo(() => {
-    console.log('COLUMNS VERSION: v4 - no scroll, balanced widths');
     return [
     {
       title: 'Cache',

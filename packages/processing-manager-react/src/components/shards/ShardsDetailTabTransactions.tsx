@@ -15,7 +15,6 @@ export const ShardsDetailTabTransactions: React.FC = () => {
 
   const handleClear = () => {
     // TODO: Implement clear functionality
-    console.log('Clear transactions');
   };
 
   const tabItems = [

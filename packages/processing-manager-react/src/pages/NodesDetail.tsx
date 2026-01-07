@@ -43,7 +43,6 @@ export default function NodesDetail() {
       setNode(name);
       // Set selectedNode in processingStore for hooks that depend on it (e.g., useSiftLogger)
       setSelectedNode(name as any); // Type assertion needed as selectedNode expects PmNode
-      console.log('🔧 Set node in appStore and processingStore:', name);
     }
   }, [name, setNode, setSelectedNode]);
 

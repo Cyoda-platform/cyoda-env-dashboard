@@ -49,7 +49,6 @@ export default function Header() {
 
   const handleLogout = async (clearData: boolean) => {
     // In production, this would call the actual logout function
-    console.log('Logout clicked, clearData:', clearData);
     navigate('/login');
   };
 

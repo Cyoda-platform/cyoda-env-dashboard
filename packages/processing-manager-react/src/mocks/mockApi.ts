@@ -59,7 +59,6 @@ let axiosResponseInterceptorId: number | null = null;
 export function enableMockApi() {
   if (mockEnabled) return;
 
-  console.log('🧪 Mock API enabled for Processing Manager testing');
   mockEnabled = true;
 
   // Persist to localStorage
@@ -85,7 +84,6 @@ export function enableMockApi() {
 export function disableMockApi() {
   if (!mockEnabled) return;
 
-  console.log('🧪 Mock API disabled');
   mockEnabled = false;
 
   // Remove from localStorage
@@ -122,7 +120,6 @@ function setupMockInterceptors(axios: AxiosInstance) {
   requestInterceptorId = axios.interceptors.request.use(
     (config) => {
       if (mockEnabled) {
-        console.log('🧪 Mock API Request:', config.method?.toUpperCase(), config.url);
       }
       return config;
     },
@@ -138,92 +135,77 @@ function setupMockInterceptors(axios: AxiosInstance) {
       
       // Cluster stats
       if (url.includes('/pm-cluster-stats-full.do')) {
-        console.log('🧪 Returning mock cluster stats');
         return { ...response, data: mockClusterStats };
       }
 
       // Summary
       if (url.includes('/platform-processing/summary')) {
-        console.log('🧪 Returning mock summary');
         return { ...response, data: mockSummary };
       }
 
       // Shards
       if (url.includes('/platform-processing/shards')) {
-        console.log('🧪 Returning mock shards');
         return { ...response, data: mockShards };
       }
 
       // Cassandra stats
       if (url.includes('/platform-processing/cassandra/stats')) {
-        console.log('🧪 Returning mock Cassandra stats');
         return { ...response, data: mockCassandraStats };
       }
 
       // Process events statistics
       if (url.includes('/platform-processing/stats/process-events')) {
-        console.log('🧪 Returning mock process events stats');
         return { ...response, data: mockProcessEventsStats };
       }
 
       // Processing queues list (MUST come before /processing-queue/events)
       if (url.includes('/platform-processing/processing-queue/queues.do')) {
-        console.log('🧪 Returning mock processing queues:', mockProcessingQueues);
         return { ...response, data: mockProcessingQueues };
       }
 
       // Processing queue events error
       if (url.includes('/platform-processing/processing-queue/events/error.json')) {
-        console.log('🧪 Returning mock processing queue events error');
         return { ...response, data: mockProcessingQueueEventsError };
       }
 
       // Processing queue entities error list
       if (url.includes('/platform-processing/processing-queue/entities-error-list.json')) {
-        console.log('🧪 Returning mock processing queue entities error list');
         return { ...response, data: mockProcessingQueueEntitiesErrorList };
       }
 
       // Processing queue events
       if (url.includes('/platform-processing/processing-queue/events')) {
-        console.log('🧪 Returning mock processing queue events');
         return { ...response, data: mockProcessingEvents };
       }
 
       // Polling info
       if (url.includes('/platform-processing/polling-info-json.do')) {
-        console.log('🧪 Returning mock polling info');
         return { ...response, data: mockPollingInfo };
       }
 
       // Time statistics
       if (url.includes('/platform-processing/stats/time')) {
-        console.log('🧪 Returning mock time stats');
         return { ...response, data: mockTimeStats };
       }
 
       // Count statistics
       if (url.includes('/platform-processing/stats/count')) {
-        console.log('🧪 Returning mock count stats');
         return { ...response, data: mockCountStats };
       }
 
       // Transactions entities list (must come before /transactions/view)
       if (url.includes('/platform-processing/transactions/entities-list')) {
-        console.log('🧪 Returning mock transactions entities list');
         return { ...response, data: mockTransactionsEntitiesList };
       }
 
       // Transactions
       if (url.includes('/platform-processing/transactions/view') ||
           url.includes('/platform-processing/exec-transactions-info-json.do')) {
-        console.log('🧪 Returning mock transactions');
         return { ...response, data: mockTransactions };
       }
 
       // Transaction statuses
       if (url.includes('/platform-processing/transactions/statuses')) {
-        console.log('🧪 Returning mock transaction statuses');
         return { 
           ...response, 
           data: ['PENDING', 'IN_PROGRESS', 'COMPLETED', 'FAILED', 'CANCELLED']
@@ -232,7 +214,6 @@ function setupMockInterceptors(axios: AxiosInstance) {
 
       // Transaction event status filters
       if (url.includes('/platform-processing/transactions/event-ref-status-filters')) {
-        console.log('🧪 Returning mock event status filters');
         return {
           ...response,
           data: ['PENDING', 'PROCESSING', 'COMPLETED', 'FAILED']
@@ -241,32 +222,27 @@ function setupMockInterceptors(axios: AxiosInstance) {
 
       // Execution monitors info
       if (url.includes('/platform-processing/exec-monitors-info-json.do')) {
-        console.log('🧪 Returning mock execution monitors info');
         return { ...response, data: mockExecMonitorsInfo };
       }
 
       // Service processes stats
       if (url.includes('/platform-processing/service-processes/service-processes-stats.do') ||
           url.includes('/platform-processing/service-processes-stats-json.do')) {
-        console.log('🧪 Returning mock service processes stats');
         return { ...response, data: mockServiceProcessesStats };
       }
 
       // Runnable components (PM components)
       if (url.includes('/platform-processing/runnable-components.do')) {
-        console.log('🧪 Returning mock runnable components');
         return { ...response, data: mockRunnableComponents };
       }
 
       // SIFT Logger
       if (url.includes('/platform-api/sift-logger/')) {
-        console.log('🧪 Returning mock SIFT logger');
         return { ...response, data: mockSiftLogger };
       }
 
       // Entity types (for composite indexes dropdown)
       if (url.includes('/platform-api/entity-info/fetch/types')) {
-        console.log('🧪 Returning mock entity types');
         return {
           ...response,
           data: [
@@ -283,7 +259,6 @@ function setupMockInterceptors(axios: AxiosInstance) {
       // Composite indexes
       if (url.includes('/platform-processing/composite-indexes') ||
           url.includes('/platform-common/composite-indexes')) {
-        console.log('🧪 Returning mock composite indexes');
 
         // Extract entityClass from URL query params
         const urlObj = new URL(url, 'http://localhost');
@@ -294,59 +269,49 @@ function setupMockInterceptors(axios: AxiosInstance) {
           ? mockCompositeIndexes.filter(idx => idx.entityClass === entityClass)
           : mockCompositeIndexes;
 
-        console.log(`🧪 Filtered ${filteredIndexes.length} indexes for entity: ${entityClass || 'all'}`);
         return { ...response, data: filteredIndexes };
       }
 
       // Caches list
       if (url.includes('/platform-processing/caches') ||
           url.includes('/platform-common/caches-list')) {
-        console.log('🧪 Returning mock caches');
         return { ...response, data: mockCachesList };
       }
 
       // Network info
       if (url.includes('/platform-common/net-info')) {
-        console.log('🧪 Returning mock network info');
         return { ...response, data: mockNetworkInfo };
       }
 
       // Entities list possible
       if (url.includes('/platform-processing/transactions/entities-list/possible')) {
-        console.log('🧪 Returning mock entities list possible');
         return { ...response, data: mockEntitiesListPossible };
       }
 
       // ZooKeeper info
       if (url.includes('/platform-common/zk-info/curr-node-info')) {
-        console.log('🧪 Returning mock ZK current node info');
         return { ...response, data: mockZkCurrNodeInfo };
       }
 
       if (url.includes('/platform-common/zk-info/loaded-online-nodes')) {
-        console.log('🧪 Returning mock ZK online nodes');
         return { ...response, data: mockZkOnlineNodes };
       }
 
       if (url.includes('/platform-common/zk-info/loaded-shards-distribution')) {
-        console.log('🧪 Returning mock ZK shards distribution');
         return { ...response, data: mockZkShardsDistribution };
       }
 
       if (url.includes('/platform-common/zk-info/cluster-state')) {
-        console.log('🧪 Returning mock ZK cluster state');
         return { ...response, data: mockZkClusterState };
       }
 
       // Polling info
       if (url.includes('/platform-processing/polling-info-json.do')) {
-        console.log('🧪 Returning mock polling info');
         return { ...response, data: mockPollingInfo };
       }
 
       // Execution monitors
       if (url.includes('/platform-processing/exec-monitors-info-json.do')) {
-        console.log('🧪 Returning mock execution monitors');
         return {
           ...response,
           data: [
@@ -370,7 +335,6 @@ function setupMockInterceptors(axios: AxiosInstance) {
 
       // Sift logger
       if (url.includes('/platform-processing/processing-queue/sift-logger.do')) {
-        console.log('🧪 Returning mock sift logger');
         return {
           ...response,
           data: {
@@ -383,7 +347,6 @@ function setupMockInterceptors(axios: AxiosInstance) {
 
       // Polling info
       if (url.includes('/platform-processing/polling-info')) {
-        console.log('🧪 Returning mock polling info');
         return { ...response, data: mockServerSummary };
       }
 
@@ -415,7 +378,6 @@ function setupMockInterceptorsForDefaultAxios(axiosInstance: AxiosInstance) {
   axiosRequestInterceptorId = axiosInstance.interceptors.request.use(
     (config) => {
       if (mockEnabled) {
-        console.log('🧪 Mock API Request (default axios):', config.method?.toUpperCase(), config.url);
       }
       return config;
     },
@@ -439,7 +401,6 @@ function setupMockInterceptorsForDefaultAxios(axiosInstance: AxiosInstance) {
       // Composite indexes
       if (url.includes('/platform-processing/composite-indexes') ||
           url.includes('/platform-common/composite-indexes')) {
-        console.log('🧪 Returning mock composite indexes (default axios)');
 
         const urlObj = new URL(url, 'http://localhost');
         const entityClass = urlObj.searchParams.get('entityClass');
@@ -448,51 +409,42 @@ function setupMockInterceptorsForDefaultAxios(axiosInstance: AxiosInstance) {
           ? mockCompositeIndexes.filter(idx => idx.entityClass === entityClass)
           : mockCompositeIndexes;
 
-        console.log(`🧪 Filtered ${filteredIndexes.length} indexes for entity: ${entityClass || 'all'}`);
         return { ...response, data: filteredIndexes };
       }
 
       // Caches list
       if (url.includes('/platform-common/cache-info/caches-list')) {
-        console.log('🧪 Returning mock caches (default axios)');
         return { ...response, data: mockCachesList };
       }
 
       // Network info
       if (url.includes('/platform-common/net-info/server')) {
-        console.log('🧪 Returning mock network server info (default axios)');
         return { ...response, data: mockNetworkInfo.server };
       }
 
       if (url.includes('/platform-common/net-info/clients')) {
-        console.log('🧪 Returning mock network clients info (default axios)');
         return { ...response, data: mockNetworkInfo.clients };
       }
 
       // ZooKeeper info
       if (url.includes('/platform-common/zk-info/curr-node-info')) {
-        console.log('🧪 Returning mock ZK current node info (default axios)');
         return { ...response, data: mockZkCurrNodeInfo };
       }
 
       if (url.includes('/platform-common/zk-info/loaded-online-nodes')) {
-        console.log('🧪 Returning mock ZK online nodes (default axios)');
         return { ...response, data: mockZkOnlineNodes };
       }
 
       if (url.includes('/platform-common/zk-info/loaded-shards-distribution')) {
-        console.log('🧪 Returning mock ZK shards distribution (default axios)');
         return { ...response, data: mockZkShardsDistribution };
       }
 
       if (url.includes('/platform-common/zk-info/cluster-state')) {
-        console.log('🧪 Returning mock ZK cluster state (default axios)');
         return { ...response, data: mockZkClusterState };
       }
 
       // Entity types (for composite indexes dropdown)
       if (url.includes('/platform-api/entity-info/fetch/types')) {
-        console.log('🧪 Returning mock entity types (default axios)');
         return {
           ...response,
           data: [
@@ -535,7 +487,6 @@ export function toggleMockApi(): boolean {
 if (mockEnabled) {
   setupMockInterceptors(axiosProcessing);
   setupMockInterceptorsForDefaultAxios(axios);
-  console.log('🧪 Mock API auto-enabled from previous session');
 }
 
 // Make functions available globally for testing
