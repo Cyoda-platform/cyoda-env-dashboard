@@ -59,7 +59,7 @@ const HistoryTable: React.FC<HistoryTableProps> = ({
     queryKey: ['entityTypes'],
     queryFn: async () => {
       try {
-        const { data } = await axios.get('/platform-api/entity/types');
+        const { data } = await axiosPlatform.get('/api/platform-api/entity/types');
         return data._embedded?.entityTypes || [];
       } catch (error) {
         console.error('Failed to load entity types:', error);
@@ -223,6 +223,12 @@ const HistoryTable: React.FC<HistoryTableProps> = ({
           return reports as ReportHistoryData[];
         }
 
+        // Handle case where API returns empty results
+        if (data.page && typeof data.page === 'object') {
+          console.warn('Report history API returned empty results:', data.page);
+          return [];
+        }
+
         console.warn('Unexpected report history response format:', data);
         return [];
       } catch (error) {
@@ -263,15 +269,18 @@ const HistoryTable: React.FC<HistoryTableProps> = ({
       // Find entity type info
       const reportType = report.type || '';
       const entityTypeInfo = entityTypesData.find((et: any) => {
-        if (typeof et === 'object') {
+        if (typeof et === 'object' && et.name) {
           // Extract short class name from full class name
           // e.g., 'com.cyoda.tdb.model.search.SearchUsageEntity' -> 'SearchUsageEntity'
           const shortName = et.name.split('.').pop();
-          return shortName === reportType;
+          // Also try matching full name
+          return shortName === reportType || et.name === reportType;
         }
         return et === reportType;
       });
-      const entityTypeValue = typeof entityTypeInfo === 'object' ? entityTypeInfo.type : null;
+      const entityTypeValue = typeof entityTypeInfo === 'object' && entityTypeInfo?.type
+        ? entityTypeInfo.type
+        : null;
 
       return {
         id: report.id,
@@ -296,12 +305,9 @@ const HistoryTable: React.FC<HistoryTableProps> = ({
     // Filter by entity type from global toggle
     if (entityTypesData.length > 0 && entityTypesData.some((et: any) => typeof et === 'object' && et.type)) {
       data = data.filter((item: any) => {
-        // If entity has type info, filter by it
-        if (item.entityType) {
-          return item.entityType === entityType;
-        }
-        // If no type info, show in both modes (backward compatibility)
-        return true;
+        // Only show items that match the current entity type
+        // Items without entityType are hidden (they need proper type mapping)
+        return item.entityType === entityType;
       });
     }
 
