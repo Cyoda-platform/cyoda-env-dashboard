@@ -22,10 +22,10 @@ export const ModellingPopUp = React.forwardRef<ModellingPopUpRef, ModellingPopUp
     // Mock implementation
     React.useImperativeHandle(ref, () => ({
       open: () => {
-        console.log('ModellingPopUp.open() called');
+        // Mock open
       },
       close: () => {
-        console.log('ModellingPopUp.close() called');
+        // Mock close
       },
     }));
 

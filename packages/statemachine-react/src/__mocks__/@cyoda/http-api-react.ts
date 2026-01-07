@@ -24,18 +24,10 @@ function loadMockData(): MockData {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
       const data = JSON.parse(stored);
-      console.log('📦 Loaded mock data from localStorage:', {
-        workflows: data.workflows?.length || 0,
-        states: data.states?.length || 0,
-        transitions: data.transitions?.length || 0,
-        criteria: data.criteria?.length || 0,
-        processes: data.processes?.length || 0,
-        instances: data.instances?.length || 0,
-      });
       return data;
     }
   } catch (error) {
-    console.warn('Failed to load mock data from localStorage:', error);
+    // Silently ignore localStorage errors
   }
   return getDefaultMockData();
 }
@@ -52,9 +44,8 @@ function saveMockData() {
       instances: mockInstances,
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    console.log('💾 Saved mock data to localStorage');
   } catch (error) {
-    console.warn('Failed to save mock data to localStorage:', error);
+    // Silently ignore localStorage errors
   }
 }
 
@@ -74,7 +65,6 @@ function resetMockData() {
   mockInstances.length = 0;
   mockInstances.push(...data.instances);
   saveMockData();
-  console.log('🔄 Reset mock data to defaults');
 }
 
 // Make reset function available globally
@@ -479,8 +469,6 @@ const mockEntityClasses = [
 
 const axios = {
   get: async (url: string, config?: any) => {
-    console.log('Mock GET:', url, config?.params);
-
     // Workflow endpoints
     if (url === '/platform-api/statemachine/workflow-enabled-types') {
       return { data: mockEntityClasses, status: 200 };
@@ -491,10 +479,6 @@ const axios = {
       const filtered = entityClassName
         ? mockWorkflows.filter(w => w.entityClassName === entityClassName)
         : mockWorkflows;
-      console.log(`📋 GET workflows (entityClassName: ${entityClassName})`);
-      console.log(`   Total in mockWorkflows array: ${mockWorkflows.length}`);
-      console.log(`   Returning ${filtered.length} workflows:`, filtered.map(w => `${w.id}: ${w.name}`));
-      console.log(`   Full mockWorkflows:`, mockWorkflows.map(w => `${w.id}: ${w.name}`));
       return { data: filtered, status: 200 };
     }
 
@@ -684,18 +668,14 @@ const axios = {
 
     // Export workflows
     if (url.includes('/platform-api/statemachine/export')) {
-      console.log('📤 Export request received');
-
       // Parse includeIds from query string
       const urlObj = new URL(url, 'http://localhost');
       const includeIds = urlObj.searchParams.getAll('includeIds');
-      console.log('   includeIds:', includeIds);
 
       // Filter workflows by IDs
       const workflowsToExport = includeIds.length > 0
         ? mockWorkflows.filter(w => includeIds.includes(w.id))
         : mockWorkflows;
-      console.log(`   Exporting ${workflowsToExport.length} workflows:`, workflowsToExport.map(w => w.name));
 
       // Get related states and transitions
       const workflowIds = workflowsToExport.map(w => w.id);
@@ -714,13 +694,6 @@ const axios = {
       const criteriaToExport = mockCriteria.filter(c => criteriaIds.has(c.id));
       const processesToExport = mockProcesses.filter(p => processIds.has(p.id));
 
-      console.log(`   Export summary:`);
-      console.log(`     - Workflows: ${workflowsToExport.length}`);
-      console.log(`     - States: ${statesToExport.length}`);
-      console.log(`     - Transitions: ${transitionsToExport.length}`);
-      console.log(`     - Criteria: ${criteriaToExport.length}`);
-      console.log(`     - Processes: ${processesToExport.length}`);
-
       // Return in the expected format
       const exportData = {
         workflow: workflowsToExport,
@@ -734,12 +707,10 @@ const axios = {
     }
 
     // Default response
-    console.warn('Mock API: No handler for URL:', url);
     return { data: [], status: 200 };
   },
 
   post: async (url: string, data: any) => {
-    console.log('Mock POST:', url, data);
 
     // Create workflow
     if (url.match(/\/platform-api\/statemachine\/(draft|published|persisted|transient)\/workflows$/)) {
@@ -759,7 +730,6 @@ const axios = {
       };
       mockWorkflows.push(newWorkflow);
       saveMockData();
-      console.log(`✅ Created workflow: ${newWorkflow.name} (${newWorkflow.id})`);
       return { data: newWorkflow, status: 200 };
     }
 
@@ -833,7 +803,6 @@ const axios = {
         };
         mockWorkflows.push(newWorkflow);
         saveMockData();
-        console.log(`✅ Copied workflow: ${newWorkflow.name} (${newWorkflow.id})`);
         return { data: newId, status: 200 };
       }
     }
@@ -890,18 +859,8 @@ const axios = {
 
     // Import workflows
     if (url.includes('/platform-api/statemachine/import')) {
-      console.log('📥 Import request received');
-      console.log('   Data structure:', {
-        hasWorkflow: !!data.workflow,
-        isWorkflowArray: Array.isArray(data.workflow),
-        workflowCount: data.workflow?.length,
-        hasState: !!data.state,
-        hasTransition: !!data.transition,
-      });
-
       const urlObj = new URL(url, 'http://localhost');
       const needRewrite = urlObj.searchParams.get('needRewrite') === 'true';
-      console.log('   needRewrite:', needRewrite);
 
       // Import workflows from data
       if (data.workflow && Array.isArray(data.workflow)) {
@@ -915,55 +874,39 @@ const axios = {
             // Overwrite existing workflow
             mockWorkflows[existingIndex] = workflow;
             importedWorkflows.push(workflow.id);
-            console.log(`   ✅ Overwritten workflow: ${workflow.name} (${workflow.id})`);
           } else if (existingIndex === -1) {
             // Add new workflow
             mockWorkflows.push(workflow);
             importedWorkflows.push(workflow.id);
-            console.log(`   ✅ Added new workflow: ${workflow.name} (${workflow.id})`);
           } else {
             // Skip existing workflow
             skippedWorkflows.push(workflow.id);
-            console.log(`   ⏭️  Skipped existing workflow: ${workflow.name} (${workflow.id})`);
           }
         }
 
         // Import states
         if (data.state && Array.isArray(data.state)) {
-          let statesAdded = 0;
-          let statesUpdated = 0;
           for (const state of data.state) {
             const existingIndex = mockStates.findIndex(s => s.id === state.id);
             if (existingIndex !== -1 && needRewrite) {
               mockStates[existingIndex] = state;
-              statesUpdated++;
             } else if (existingIndex === -1) {
               mockStates.push(state);
-              statesAdded++;
             }
           }
-          console.log(`   States: ${statesAdded} added, ${statesUpdated} updated`);
         }
 
         // Import transitions
         if (data.transition && Array.isArray(data.transition)) {
-          let transitionsAdded = 0;
-          let transitionsUpdated = 0;
           for (const transition of data.transition) {
             const existingIndex = mockTransitions.findIndex(t => t.id === transition.id);
             if (existingIndex !== -1 && needRewrite) {
               mockTransitions[existingIndex] = transition;
-              transitionsUpdated++;
             } else if (existingIndex === -1) {
               mockTransitions.push(transition);
-              transitionsAdded++;
             }
           }
-          console.log(`   Transitions: ${transitionsAdded} added, ${transitionsUpdated} updated`);
         }
-
-        console.log(`✅ Import complete: ${importedWorkflows.length} workflows imported, ${skippedWorkflows.length} skipped`);
-        console.log(`   Total workflows now: ${mockWorkflows.length}`);
 
         // Save to localStorage
         saveMockData();
@@ -979,7 +922,6 @@ const axios = {
       }
 
       console.error('❌ Import failed: Invalid data structure');
-      console.log('   Received data:', data);
       return { data: { success: false, error: 'Invalid import data' }, status: 400 };
     }
 
@@ -987,7 +929,6 @@ const axios = {
   },
 
   put: async (url: string, data: any) => {
-    console.log('Mock PUT:', url, data);
 
     // Update workflow
     if (url.match(/\/platform-api\/statemachine\/(draft|published|persisted|transient)\/workflows\/([\w-]+)$/)) {
@@ -1000,7 +941,6 @@ const axios = {
           id: workflowId, // Preserve the ID
         };
         saveMockData();
-        console.log(`✅ Updated workflow: ${mockWorkflows[index].name} (${workflowId})`);
         return { data: mockWorkflows[index], status: 200 };
       }
     }
@@ -1077,25 +1017,14 @@ const axios = {
   },
 
   delete: async (url: string) => {
-    console.log('Mock DELETE:', url);
-
     // Delete workflow
     if (url.includes('/platform-api/statemachine/persisted/workflows/') ||
         url.includes('/platform-api/statemachine/transient/workflows/')) {
       const workflowId = decodeURIComponent(url.split('/').pop() || '');
-      console.log(`🗑️  DELETE workflow request: ${workflowId}`);
-      console.log(`   Current workflows BEFORE delete (${mockWorkflows.length}):`, mockWorkflows.map(w => `${w.id}: ${w.name}`));
       const index = mockWorkflows.findIndex(w => w.id === workflowId);
-      console.log(`   Found at index: ${index}`);
       if (index !== -1) {
-        const deleted = mockWorkflows.splice(index, 1);
-        console.log(`   Array after splice (${mockWorkflows.length}):`, mockWorkflows.map(w => `${w.id}: ${w.name}`));
+        mockWorkflows.splice(index, 1);
         saveMockData();
-        console.log(`✅ Deleted workflow ${workflowId}:`, deleted[0].name);
-        console.log(`   Remaining workflows (${mockWorkflows.length}):`, mockWorkflows.map(w => `${w.id}: ${w.name}`));
-      } else {
-        console.log(`❌ Workflow ${workflowId} not found in mock data`);
-        console.log(`   Available IDs:`, mockWorkflows.map(w => w.id));
       }
       return { data: null, status: 200 };
     }
@@ -1107,9 +1036,6 @@ const axios = {
       if (index !== -1) {
         mockStates.splice(index, 1);
         saveMockData();
-        console.log(`✅ Deleted state ${stateId}`);
-      } else {
-        console.log(`❌ State ${stateId} not found`);
       }
       return { data: null, status: 200 };
     }
@@ -1121,14 +1047,10 @@ const axios = {
       if (index !== -1) {
         mockTransitions.splice(index, 1);
         saveMockData();
-        console.log(`✅ Deleted transition ${transitionId}`);
-      } else {
-        console.log(`❌ Transition ${transitionId} not found`);
       }
       return { data: null, status: 200 };
     }
 
-    console.warn('Mock DELETE: No handler for URL:', url);
     return { data: null, status: 200 };
   },
 };
