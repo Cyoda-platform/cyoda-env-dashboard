@@ -231,7 +231,6 @@ export const ModellingAliases: React.FC<ModellingAliasesProps> = ({ configDefini
         allowConfigFile={false}
         aliasEditType="report"
         onCreated={(aliasDef) => {
-          console.log('Alias created, adding to report:', aliasDef);
           handleAliasSelected(aliasDef);
           setEditingIndex(null);
         }}
@@ -250,7 +249,6 @@ export const ModellingAliases: React.FC<ModellingAliasesProps> = ({ configDefini
             // If name changed, update references in other parts of the config
             if (oldName !== updatedAliasDef.name) {
               // TODO: Update alias references in colDefs, conditions, etc.
-              console.log('Alias name changed from', oldName, 'to', updatedAliasDef.name);
             }
 
             message.success('Alias updated successfully');

@@ -69,17 +69,6 @@ const FilterBuilderCondition: React.FC<FilterBuilderConditionProps> = ({
     return filtered.length > 0 ? filtered : conditionTypesAvailable;
   }, [selectedType, conditionTypesAvailable]);
 
-  // DEBUG: Log filter results
-  useEffect(() => {
-    console.log('FilterBuilderCondition DEBUG:', {
-      selectedType,
-      conditionTypesKeysAvailable,
-      availableCount: conditionTypesAvailable.length,
-      filteredCount: conditionTypesFiltered.length,
-      availableKeys: conditionTypesAvailable.map(ct => ct.key),
-      filteredKeys: conditionTypesFiltered.map(ct => ct.key)
-    });
-  }, [selectedType, conditionTypesKeysAvailable, conditionTypesAvailable, conditionTypesFiltered]);
   // Get selected condition type
   const selectedConditionType = useMemo(() => {
     return CONDITION_TYPES.find((ct) => ct.key === condition.operation) || ({} as ConditionType);

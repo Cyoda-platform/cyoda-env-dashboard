@@ -62,7 +62,6 @@ const HistoryTable: React.FC<HistoryTableProps> = ({
         const { data } = await axiosPlatform.get('/api/platform-api/entity/types');
         return data._embedded?.entityTypes || [];
       } catch (error) {
-        console.error('Failed to load entity types:', error);
         return [];
       }
     },
@@ -195,11 +194,6 @@ const HistoryTable: React.FC<HistoryTableProps> = ({
             view.reportHistoryFields
           );
 
-          // Debug: Log first report to see structure
-          if (reports.length > 0) {
-            console.log('Sample report data:', reports[0]);
-          }
-
           // Fetch user data for all unique user IDs
           const userIds = [...new Set(reports.map((r: any) => r.userId).filter(Boolean))];
           if (userIds.length > 0) {
@@ -211,7 +205,6 @@ const HistoryTable: React.FC<HistoryTableProps> = ({
                 user: users.find((u: any) => u.userId === report.userId) || { username: report.userId },
               })) as ReportHistoryData[];
             } catch (error) {
-              console.error('Failed to fetch users:', error);
               // Return reports with userId as username fallback
               return reports.map((report: any) => ({
                 ...report,
@@ -225,14 +218,11 @@ const HistoryTable: React.FC<HistoryTableProps> = ({
 
         // Handle case where API returns empty results
         if (data.page && typeof data.page === 'object') {
-          console.warn('Report history API returned empty results:', data.page);
           return [];
         }
 
-        console.warn('Unexpected report history response format:', data);
         return [];
       } catch (error) {
-        console.error('Failed to fetch report history:', error);
         return [];
       }
     },
@@ -328,7 +318,6 @@ const HistoryTable: React.FC<HistoryTableProps> = ({
       setDetailsConfigDefinition(configDef.content || configDef);
       setDetailsDialogVisible(true);
     } catch (error) {
-      console.error('Failed to load report details:', error);
       notification.error({
         message: 'Error',
         description: 'Failed to load report configuration details',
@@ -435,7 +424,6 @@ const HistoryTable: React.FC<HistoryTableProps> = ({
 
   // Handle row click
   const handleRowClick = async (record: TableDataRow) => {
-    console.log('handleRowClick - setting selectedRowId to:', record.id);
     setSelectedRowId(record.id);
 
     // Check if report has 0 rows
@@ -480,7 +468,7 @@ const HistoryTable: React.FC<HistoryTableProps> = ({
             [record.id]: configDef.content,
           }));
         } catch (error) {
-          console.error('Failed to load config for expanded row:', error);
+          // Failed to load config for expanded row
         }
       }
     }
@@ -636,7 +624,6 @@ const HistoryTable: React.FC<HistoryTableProps> = ({
         rowClassName={(record) => {
           const isSelected = record.id === selectedRowId;
           const isExpanded = expandedRowKeys.includes(record.id);
-          console.log('rowClassName:', { recordId: record.id, selectedRowId, isSelected, isExpanded });
           return `${isSelected ? 'selected-row' : ''} ${isExpanded ? 'expanded-row' : ''}`.trim();
         }}
         onRow={(record) => ({

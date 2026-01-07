@@ -65,7 +65,6 @@ const ReportEditorTabJson: React.FC<ReportEditorTabJsonProps> = ({
       setJsonString(formatted);
       setIsValid(true);
     } catch (error) {
-      console.error('Error formatting JSON:', error);
       setIsValid(false);
     }
   }, [configDefinition]);
@@ -239,28 +238,10 @@ const ReportEditorTabJson: React.FC<ReportEditorTabJsonProps> = ({
       const bgColor = currentTheme === 'light' ? '#FFFFFF' : '#1E2A3A';
       const textColor = currentTheme === 'light' ? '#1F2937' : '#E0E0E0';
 
-      // DEBUG: Log sticky scroll structure
-      console.log('=== STICKY SCROLL DEBUG ===');
-      console.log('Theme:', currentTheme);
-      console.log('Text color:', textColor);
-      console.log('BG color:', bgColor);
-
       // Find the sticky-widget div (the actual container)
       const stickyWidgets = editorDom.querySelectorAll('.sticky-widget');
-      console.log('Found sticky widgets:', stickyWidgets.length);
 
       stickyWidgets.forEach((widget: any, widgetIndex: number) => {
-        console.log(`Widget ${widgetIndex}:`, widget);
-        console.log(`Widget ${widgetIndex} innerHTML:`, widget.innerHTML);
-        console.log(`Widget ${widgetIndex} children:`, widget.children);
-
-        // Log ALL elements inside widget
-        const allElements = widget.querySelectorAll('*');
-        console.log(`Widget ${widgetIndex} has ${allElements.length} total elements`);
-        allElements.forEach((el: any, i: number) => {
-          console.log(`  Element ${i}: ${el.tagName}.${el.className} - "${el.textContent?.substring(0, 50)}"`);
-        });
-
         // Add custom class for higher CSS specificity
         widget.classList.add('sticky-widget-custom');
 
@@ -280,7 +261,6 @@ const ReportEditorTabJson: React.FC<ReportEditorTabJsonProps> = ({
         // CRITICAL: Apply styles to ALL elements inside widget
         // BUT: Don't override Monaco's syntax highlighting colors (mtk* classes)
         const allWidgetElements = widget.querySelectorAll('*');
-        console.log(`Applying styles to ${allWidgetElements.length} elements in widget`);
         allWidgetElements.forEach((el: any) => {
           // Check if element has mtk* class (Monaco Token Kit - syntax highlighting)
           const hasMtkClass = el.className && el.className.toString().includes('mtk');

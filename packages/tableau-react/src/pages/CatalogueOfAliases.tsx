@@ -129,7 +129,6 @@ const CatalogueOfAliases: React.FC = () => {
         const { data } = await getReportingFetchTypes();
         return Array.isArray(data) ? data : [];
       } catch (error) {
-        console.warn('Failed to load entity types:', error);
         return [];
       }
     },

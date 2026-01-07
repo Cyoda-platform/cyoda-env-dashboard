@@ -100,16 +100,13 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
       queryFn: async () => {
         try {
           const { data } = await getReportingFetchTypes(false);
-          console.log('Entity classes loaded:', data);
           // Ensure we always return an array
           if (!Array.isArray(data)) {
-            console.warn('API returned non-array data, using empty list');
             return [];
           }
           // Extract just the class names from the entity data
           return data.map((entity: any) => entity.name || entity);
         } catch (error) {
-          console.error('Failed to load entity classes:', error);
           return [];
         }
       },
@@ -192,10 +189,8 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
       queryFn: async () => {
         try {
           const { data } = await getMappers();
-          console.log('All mappers loaded:', data);
           return Array.isArray(data) ? data : [];
         } catch (error) {
-          console.error('Failed to load mappers:', error);
           return [];
         }
       },
@@ -219,7 +214,7 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
             setIsVisibleGroup(false);
             setTimeout(() => setIsVisibleGroup(true), 0);
           } catch (error) {
-            console.error('Failed to load entity model:', error);
+            // Error loading entity model
           }
         };
         loadEntityModel();
@@ -295,14 +290,12 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
           if (result.status === 'fulfilled') {
             mappersByTypeObj[key] = result.value.data || [];
           } else {
-            console.warn(`Failed to load mappers for type ${type}:`, result.reason);
             mappersByTypeObj[key] = [];
           }
         });
 
         setMappersByType(mappersByTypeObj);
       } catch (error) {
-        console.error('Failed to load mappers by type:', error);
         setMappersByType({});
       }
     };
@@ -542,7 +535,6 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
           message.success(editItem ? 'Alias updated successfully' : 'Alias created successfully');
         }
       } catch (error) {
-        console.error('Error in handleFinish:', error);
         message.error('Failed to save alias');
       }
     };
