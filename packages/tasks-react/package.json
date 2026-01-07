@@ -27,7 +27,7 @@
     "@cyoda/ui-lib-react": "^1.0.0",
     "@tanstack/react-query": "^5.62.11",
     "@tanstack/react-query-devtools": "^5.62.11",
-    "antd": "^5.20.0",
+    "antd": "^5.29.3",
     "axios": "^1.7.9",
     "dayjs": "^1.11.13",
     "lodash": "^4.17.21",

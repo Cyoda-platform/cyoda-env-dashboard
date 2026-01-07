@@ -529,7 +529,7 @@ __metadata:
     "@types/react": "npm:^18.3.18"
     "@types/react-dom": "npm:^18.3.5"
     "@vitejs/plugin-react": "npm:^4.3.4"
-    antd: "npm:^5.22.6"
+    antd: "npm:^5.29.3"
     axios: "npm:^1.7.9"
     blockly: "npm:^11.2.1"
     buffer: "npm:^6.0.3"
@@ -589,7 +589,7 @@ __metadata:
     "@types/uuid": "npm:^10.0.0"
     "@vitejs/plugin-react": "npm:^4.3.3"
     "@vitest/ui": "npm:^3.0.3"
-    antd: "npm:^5.22.6"
+    antd: "npm:^5.29.3"
     axios: "npm:^1.7.9"
     file-saver: "npm:^2.0.5"
     jsdom: "npm:^27.0.1"
@@ -613,8 +613,9 @@ __metadata:
 
 "@cyoda/http-api-react@file:../http-api-react::locator=%40cyoda%2Fprocessing-manager-react%40workspace%3Apackages%2Fprocessing-manager-react":
   version: 1.0.0
-  resolution: "@cyoda/http-api-react@file:../http-api-react#../http-api-react::hash=7cc8b5&locator=%40cyoda%2Fprocessing-manager-react%40workspace%3Apackages%2Fprocessing-manager-react"
+  resolution: "@cyoda/http-api-react@file:../http-api-react#../http-api-react::hash=ae62cc&locator=%40cyoda%2Fprocessing-manager-react%40workspace%3Apackages%2Fprocessing-manager-react"
   dependencies:
+    "@monaco-editor/react": "npm:^4.7.0"
     "@tanstack/react-query": "npm:^5.62.11"
     "@tanstack/react-query-devtools": "npm:^5.62.11"
     axios: "npm:^1.7.9"
@@ -624,14 +625,15 @@ __metadata:
   peerDependencies:
     react: ^18.3.1
     react-dom: ^18.3.1
-  checksum: 10c0/d747d04280b56d27be865857f01916dcc6d9a13f7e18d1935f20c5505792d62876b9525d37d79922634dc13c878b1cc3f8d8e997b27962a2627aa1dbda56eb32
+  checksum: 10c0/f59d2528172b5039770f94de21b180925705bf992813a938abf7acec44a77ceea114bc8fd8e6c0f8cf94c05bb50ebb9155e6b2ada55b51a13441a4f2ca5b58c2
   languageName: node
   linkType: hard
 
 "@cyoda/http-api-react@file:../http-api-react::locator=%40cyoda%2Fsource-configuration-react%40workspace%3Apackages%2Fsource-configuration-react":
   version: 1.0.0
-  resolution: "@cyoda/http-api-react@file:../http-api-react#../http-api-react::hash=7cc8b5&locator=%40cyoda%2Fsource-configuration-react%40workspace%3Apackages%2Fsource-configuration-react"
+  resolution: "@cyoda/http-api-react@file:../http-api-react#../http-api-react::hash=ae62cc&locator=%40cyoda%2Fsource-configuration-react%40workspace%3Apackages%2Fsource-configuration-react"
   dependencies:
+    "@monaco-editor/react": "npm:^4.7.0"
     "@tanstack/react-query": "npm:^5.62.11"
     "@tanstack/react-query-devtools": "npm:^5.62.11"
     axios: "npm:^1.7.9"
@@ -641,7 +643,7 @@ __metadata:
   peerDependencies:
     react: ^18.3.1
     react-dom: ^18.3.1
-  checksum: 10c0/d747d04280b56d27be865857f01916dcc6d9a13f7e18d1935f20c5505792d62876b9525d37d79922634dc13c878b1cc3f8d8e997b27962a2627aa1dbda56eb32
+  checksum: 10c0/f59d2528172b5039770f94de21b180925705bf992813a938abf7acec44a77ceea114bc8fd8e6c0f8cf94c05bb50ebb9155e6b2ada55b51a13441a4f2ca5b58c2
   languageName: node
   linkType: hard
 
@@ -649,6 +651,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@cyoda/http-api-react@workspace:packages/http-api-react"
   dependencies:
+    "@monaco-editor/react": "npm:^4.7.0"
     "@tanstack/react-query": "npm:^5.62.11"
     "@tanstack/react-query-devtools": "npm:^5.62.11"
     "@testing-library/jest-dom": "npm:^6.4.8"
@@ -661,7 +664,7 @@ __metadata:
     "@typescript-eslint/parser": "npm:^8.0.0"
     "@vitejs/plugin-react": "npm:^4.3.1"
     "@vitest/ui": "npm:^3.0.3"
-    antd: "npm:^5.20.0"
+    antd: "npm:^5.29.3"
     axios: "npm:^1.7.9"
     eslint: "npm:^9.18.0"
     eslint-plugin-react-hooks: "npm:^5.0.0"
@@ -697,7 +700,7 @@ __metadata:
     "@types/react-dom": "npm:^18.3.5"
     "@types/react-syntax-highlighter": "npm:^15.5.13"
     "@vitejs/plugin-react": "npm:^4.3.4"
-    antd: "npm:^5.22.6"
+    antd: "npm:^5.29.3"
     axios: "npm:^1.7.9"
     chart.js: "npm:^4.4.7"
     chartjs-adapter-date-fns: "npm:^3.0.0"
@@ -738,7 +741,7 @@ __metadata:
     "@types/react": "npm:^18.3.12"
     "@types/react-dom": "npm:^18.3.1"
     "@vitejs/plugin-react": "npm:^4.3.4"
-    antd: "npm:^5.21.6"
+    antd: "npm:^5.29.3"
     axios: "npm:^1.7.9"
     playwright: "npm:^1.49.1"
     react: "npm:^18.3.1"
@@ -766,7 +769,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": "npm:^8.20.0"
     "@typescript-eslint/parser": "npm:^8.20.0"
     "@vitejs/plugin-react": "npm:^4.3.4"
-    antd: "npm:^5.22.5"
+    antd: "npm:^5.29.3"
     axios: "npm:^1.7.9"
     eslint: "npm:^9.18.0"
     eslint-plugin-react-hooks: "npm:^5.1.0"
@@ -809,7 +812,7 @@ __metadata:
     "@types/react-dom": "npm:^18.3.1"
     "@vitejs/plugin-react": "npm:^4.3.4"
     "@xyflow/react": "npm:^12.9.1"
-    antd: "npm:^5.20.0"
+    antd: "npm:^5.29.3"
     axios: "npm:^1.7.9"
     buffer: "npm:^6.0.3"
     cytoscape: "npm:^3.31.0"
@@ -831,13 +834,13 @@ __metadata:
 
 "@cyoda/tableau-react@file:../tableau-react::locator=%40cyoda%2Fprocessing-manager-react%40workspace%3Apackages%2Fprocessing-manager-react":
   version: 1.0.0
-  resolution: "@cyoda/tableau-react@file:../tableau-react#../tableau-react::hash=9e41aa&locator=%40cyoda%2Fprocessing-manager-react%40workspace%3Apackages%2Fprocessing-manager-react"
+  resolution: "@cyoda/tableau-react@file:../tableau-react#../tableau-react::hash=38c5ed&locator=%40cyoda%2Fprocessing-manager-react%40workspace%3Apackages%2Fprocessing-manager-react"
   dependencies:
     "@cyoda/http-api-react": "npm:1.0.0"
     "@cyoda/ui-lib-react": "npm:1.0.0"
     "@monaco-editor/react": "npm:^4.7.0"
     "@tanstack/react-query": "npm:^5.62.11"
-    antd: "npm:^5.22.6"
+    antd: "npm:^5.29.3"
     axios: "npm:^1.7.9"
     buffer: "npm:^6.0.3"
     cors: "npm:^2.8.5"
@@ -853,7 +856,7 @@ __metadata:
   peerDependencies:
     react: ^18.3.1
     react-dom: ^18.3.1
-  checksum: 10c0/d977aaddc8fc511562f9a209433889222436a36e5e15490b3a2d5b6c045a6b280ab3cd93b97deadd0b7e6d885957b07c5ce70986fe4ff0d44c4e813eaf2d17a6
+  checksum: 10c0/0ab1af01098724753675ad6b0bf6c58de2137b3207deadaa0cd2145bba9166b3805e4095e4cbb532761392596495e9742fde9803158d167d815563caa5ead028
   languageName: node
   linkType: hard
 
@@ -873,7 +876,7 @@ __metadata:
     "@types/react-dom": "npm:^18.3.5"
     "@types/react-resizable": "npm:^3.0.8"
     "@vitejs/plugin-react": "npm:^4.3.4"
-    antd: "npm:^5.22.6"
+    antd: "npm:^5.29.3"
     axios: "npm:^1.7.9"
     buffer: "npm:^6.0.3"
     cors: "npm:^2.8.5"
@@ -914,7 +917,7 @@ __metadata:
     "@typescript-eslint/parser": "npm:^8.0.0"
     "@vitejs/plugin-react": "npm:^4.3.1"
     "@vitest/ui": "npm:^3.0.3"
-    antd: "npm:^5.20.0"
+    antd: "npm:^5.29.3"
     axios: "npm:^1.7.9"
     buffer: "npm:^6.0.3"
     dayjs: "npm:^1.11.13"
@@ -935,11 +938,11 @@ __metadata:
 
 "@cyoda/ui-lib-react@file:../ui-lib-react::locator=%40cyoda%2Fprocessing-manager-react%40workspace%3Apackages%2Fprocessing-manager-react":
   version: 1.0.0
-  resolution: "@cyoda/ui-lib-react@file:../ui-lib-react#../ui-lib-react::hash=f67c0d&locator=%40cyoda%2Fprocessing-manager-react%40workspace%3Apackages%2Fprocessing-manager-react"
+  resolution: "@cyoda/ui-lib-react@file:../ui-lib-react#../ui-lib-react::hash=9e6bdc&locator=%40cyoda%2Fprocessing-manager-react%40workspace%3Apackages%2Fprocessing-manager-react"
   dependencies:
     "@ant-design/icons": "npm:^6.1.0"
     "@types/sortablejs": "npm:^1.15.8"
-    antd: "npm:^5.20.0"
+    antd: "npm:^5.29.3"
     axios: "npm:^1.7.9"
     classnames: "npm:^2.5.1"
     lodash: "npm:^4.17.21"
@@ -953,17 +956,17 @@ __metadata:
   peerDependencies:
     react: ^18.3.1
     react-dom: ^18.3.1
-  checksum: 10c0/ad1feb5837f331cbc7e758703a27d09dd167b7d1a9979cc5c4f5bf3ad383dc2045a3a38595ab5e17cef89e5c7af4626731b8e45a64ee8c4e514991f11c3bad12
+  checksum: 10c0/ed69b393a9f7749d793372f582c242585d23d323ab0c57a011d2247ea89e1576ff35cea76494634492201b104fa5337d3e097c7b80f70091f91d30ba45ca6587
   languageName: node
   linkType: hard
 
 "@cyoda/ui-lib-react@file:../ui-lib-react::locator=%40cyoda%2Fsource-configuration-react%40workspace%3Apackages%2Fsource-configuration-react":
   version: 1.0.0
-  resolution: "@cyoda/ui-lib-react@file:../ui-lib-react#../ui-lib-react::hash=f67c0d&locator=%40cyoda%2Fsource-configuration-react%40workspace%3Apackages%2Fsource-configuration-react"
+  resolution: "@cyoda/ui-lib-react@file:../ui-lib-react#../ui-lib-react::hash=9e6bdc&locator=%40cyoda%2Fsource-configuration-react%40workspace%3Apackages%2Fsource-configuration-react"
   dependencies:
     "@ant-design/icons": "npm:^6.1.0"
     "@types/sortablejs": "npm:^1.15.8"
-    antd: "npm:^5.20.0"
+    antd: "npm:^5.29.3"
     axios: "npm:^1.7.9"
     classnames: "npm:^2.5.1"
     lodash: "npm:^4.17.21"
@@ -977,7 +980,7 @@ __metadata:
   peerDependencies:
     react: ^18.3.1
     react-dom: ^18.3.1
-  checksum: 10c0/ad1feb5837f331cbc7e758703a27d09dd167b7d1a9979cc5c4f5bf3ad383dc2045a3a38595ab5e17cef89e5c7af4626731b8e45a64ee8c4e514991f11c3bad12
+  checksum: 10c0/ed69b393a9f7749d793372f582c242585d23d323ab0c57a011d2247ea89e1576ff35cea76494634492201b104fa5337d3e097c7b80f70091f91d30ba45ca6587
   languageName: node
   linkType: hard
 
@@ -997,7 +1000,7 @@ __metadata:
     "@typescript-eslint/parser": "npm:^8.0.0"
     "@vitejs/plugin-react": "npm:^4.3.1"
     "@vitest/ui": "npm:^3.0.3"
-    antd: "npm:^5.20.0"
+    antd: "npm:^5.29.3"
     axios: "npm:^1.7.9"
     classnames: "npm:^2.5.1"
     eslint: "npm:^9.18.0"
@@ -2207,16 +2210,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rc-component/qrcode@npm:~1.0.1":
-  version: 1.0.1
-  resolution: "@rc-component/qrcode@npm:1.0.1"
+"@rc-component/qrcode@npm:~1.1.0":
+  version: 1.1.1
+  resolution: "@rc-component/qrcode@npm:1.1.1"
   dependencies:
     "@babel/runtime": "npm:^7.24.7"
-    classnames: "npm:^2.3.2"
   peerDependencies:
     react: ">=16.9.0"
     react-dom: ">=16.9.0"
-  checksum: 10c0/9d1f8fdf10c1c6774fd8500ccab4c386c21ef9f2f8ce40c5eef59c7c4ff6e296df9b4ebdf6949c2d7a734ac58a4407e7a434fd844f0f951e2000c44c3326828a
+  checksum: 10c0/8b7f38b2f1b319322a7b1b75ce2766789035cdf61d31ee45d0ca9e3570ee7345760c9fc1d51bb9ff9c65d8d7a823d90abd31b1ff4f207480c54ed04479fb8b25
   languageName: node
   linkType: hard
 
@@ -3509,9 +3511,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"antd@npm:^5.20.0, antd@npm:^5.21.6, antd@npm:^5.22.5, antd@npm:^5.22.6":
-  version: 5.27.6
-  resolution: "antd@npm:5.27.6"
+"antd@npm:^5.29.3":
+  version: 5.29.3
+  resolution: "antd@npm:5.29.3"
   dependencies:
     "@ant-design/colors": "npm:^7.2.1"
     "@ant-design/cssinjs": "npm:^1.23.0"
@@ -3522,7 +3524,7 @@ __metadata:
     "@babel/runtime": "npm:^7.26.0"
     "@rc-component/color-picker": "npm:~2.0.1"
     "@rc-component/mutate-observer": "npm:^1.1.0"
-    "@rc-component/qrcode": "npm:~1.0.1"
+    "@rc-component/qrcode": "npm:~1.1.0"
     "@rc-component/tour": "npm:~1.15.1"
     "@rc-component/trigger": "npm:^2.3.0"
     classnames: "npm:^2.5.1"
@@ -3534,7 +3536,7 @@ __metadata:
     rc-dialog: "npm:~9.6.0"
     rc-drawer: "npm:~7.3.0"
     rc-dropdown: "npm:~4.2.1"
-    rc-field-form: "npm:~2.7.0"
+    rc-field-form: "npm:~2.7.1"
     rc-image: "npm:~7.12.0"
     rc-input: "npm:~1.8.0"
     rc-input-number: "npm:~9.5.0"
@@ -3558,14 +3560,14 @@ __metadata:
     rc-tooltip: "npm:~6.4.0"
     rc-tree: "npm:~5.13.1"
     rc-tree-select: "npm:~5.27.0"
-    rc-upload: "npm:~4.9.2"
+    rc-upload: "npm:~4.11.0"
     rc-util: "npm:^5.44.4"
     scroll-into-view-if-needed: "npm:^3.1.0"
     throttle-debounce: "npm:^5.0.2"
   peerDependencies:
     react: ">=16.9.0"
     react-dom: ">=16.9.0"
-  checksum: 10c0/2b3b30ac9c39c7fd374a9a81de64bb032c6e6cda1b9ac26ce5a099775f8e5851ea97cee429ff03eeb41ad1e9a0e1947fa969c90b9d8c73713ec57168c5b4a3d9
+  checksum: 10c0/e2e488dfd51f0a7c1e5ef2aa51ab6809b0015151d338dcdd27a7bef6f7ac9f7644e73693b37d0213089f6aa02718090ceba957966c76c387b258c789b3ca28fd
   languageName: node
   linkType: hard
 
@@ -7514,9 +7516,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rc-field-form@npm:~2.7.0":
-  version: 2.7.0
-  resolution: "rc-field-form@npm:2.7.0"
+"rc-field-form@npm:~2.7.1":
+  version: 2.7.1
+  resolution: "rc-field-form@npm:2.7.1"
   dependencies:
     "@babel/runtime": "npm:^7.18.0"
     "@rc-component/async-validator": "npm:^5.0.3"
@@ -7524,7 +7526,7 @@ __metadata:
   peerDependencies:
     react: ">=16.9.0"
     react-dom: ">=16.9.0"
-  checksum: 10c0/8b5ba3d4ef2680751235797710da822b96225ba1fd1a0098d4c9b7723ac1e0a8eb07c70a6ca216c0b2f8f45f1035f849b924f13c6386e215ec1d854927a504a2
+  checksum: 10c0/2493cb9f26e69e17d55f32ad689da103a325e613d9222bfb332c2dcbdc96d44ce7dc4c8642a9b89a932ad2c2573508c997a4685e7fe6de2e951a027d2837403a
   languageName: node
   linkType: hard
 
@@ -7914,9 +7916,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rc-upload@npm:~4.9.2":
-  version: 4.9.2
-  resolution: "rc-upload@npm:4.9.2"
+"rc-upload@npm:~4.11.0":
+  version: 4.11.0
+  resolution: "rc-upload@npm:4.11.0"
   dependencies:
     "@babel/runtime": "npm:^7.18.3"
     classnames: "npm:^2.2.5"
@@ -7924,7 +7926,7 @@ __metadata:
   peerDependencies:
     react: ">=16.9.0"
     react-dom: ">=16.9.0"
-  checksum: 10c0/2299f4a3d8fa87449178761fcdc3c574b21e34d2f6816ecb6c08729f699e67b23d1284f4077b9ceceb1cc8502d7c350311bc2d1dfacec7f6780d2bf9691888cb
+  checksum: 10c0/9ce59e22e0f9839e482fd37e63d8489e1a9d418113bfe39cd4d2b1e88f59236d4f7c60a3bb5928d2d85781d6f4cf8c30b6085863c802de605ef339fa415903d3
   languageName: node
   linkType: hard
 

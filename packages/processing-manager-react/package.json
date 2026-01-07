@@ -35,7 +35,7 @@
     "@cyoda/tableau-react": "file:../tableau-react",
     "@cyoda/ui-lib-react": "file:../ui-lib-react",
     "@tanstack/react-query": "^5.62.11",
-    "antd": "^5.22.6",
+    "antd": "^5.29.3",
     "axios": "^1.7.9",
     "chart.js": "^4.4.7",
     "chartjs-adapter-date-fns": "^3.0.0",

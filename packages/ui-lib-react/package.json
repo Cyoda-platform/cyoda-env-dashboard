@@ -31,7 +31,7 @@
   "dependencies": {
     "@ant-design/icons": "^6.1.0",
     "@types/sortablejs": "^1.15.8",
-    "antd": "^5.20.0",
+    "antd": "^5.29.3",
     "axios": "^1.7.9",
     "classnames": "^2.5.1",
     "lodash": "^4.17.21",
