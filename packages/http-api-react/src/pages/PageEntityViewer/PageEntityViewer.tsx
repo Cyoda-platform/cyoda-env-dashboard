@@ -196,9 +196,7 @@ export const PageEntityViewer: React.FC = () => {
 
   const handleLoadStreamData = async (request: any) => {
     try {
-      console.log('Loading stream data with request:', request);
       const { data } = await getStreamData(request);
-      console.log('Stream data response:', data);
       return data;
     } catch (error) {
       console.error('Failed to load stream data:', error);
