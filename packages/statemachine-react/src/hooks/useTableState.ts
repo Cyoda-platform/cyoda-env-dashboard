@@ -85,7 +85,7 @@ export function useTableState(options: UseTableStateOptions) {
         return JSON.parse(stored);
       }
     } catch (error) {
-      console.warn('Failed to load table state from localStorage:', error);
+      // Silently ignore localStorage errors
     }
 
     // Return default state
@@ -105,7 +105,7 @@ export function useTableState(options: UseTableStateOptions) {
     try {
       localStorage.setItem(`tableSaveState:${storageKey}`, JSON.stringify(state));
     } catch (error) {
-      console.warn('Failed to save table state to localStorage:', error);
+      // Silently ignore localStorage errors
     }
   }, [storageKey]);
 

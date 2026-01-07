@@ -99,7 +99,6 @@ export const Transition: React.FC = () => {
   
   // Process options - use simple string ID (like criteria)
   const processOptions = useMemo(() => {
-    console.log('[Transition] Processes list:', processesList);
     const options = processesList.map((process: any) => {
       // Use persistedId or runtimeId as the simple string value
       const simpleId = process.id?.persistedId || process.id?.runtimeId;
@@ -109,7 +108,6 @@ export const Transition: React.FC = () => {
         description: process.description,
       };
     });
-    console.log('[Transition] Process options:', options);
     return options;
   }, [processesList]);
 
@@ -166,9 +164,6 @@ export const Transition: React.FC = () => {
         .map((simpleId: string) => getProcessIdObject(simpleId))
         .filter(Boolean); // Remove any nulls
 
-      console.log('[Transition] Form values.processIds:', values.processIds);
-      console.log('[Transition] Converted endProcessesIds:', endProcessesIds);
-
       // Build the form data
       // For updates, include all fields from the original transition (like Vue project does)
       const formData: TransitionFormType = isNew
@@ -202,8 +197,6 @@ export const Transition: React.FC = () => {
             entityClassName,
           };
 
-      console.log('=== Transition Form Data ===', formData);
-
       if (isNew) {
         const result = await createTransitionMutation.mutateAsync({
           persistedType,
@@ -213,7 +206,6 @@ export const Transition: React.FC = () => {
 
         // Extract transition ID from result
         const transitionId = (result as any)?.Data?.id;
-        console.log('=== Transition created ===', { transitionId });
 
         // Create new state if needed (after transition is created)
         if (isAddNewState && newStateName && transitionId) {
@@ -229,9 +221,6 @@ export const Transition: React.FC = () => {
             transitionId,
             form: newStateData,
           });
-
-          console.log('=== Created new state ===', stateResult);
-          console.log('=== State ID ===', stateResult?.id || stateResult?.Data?.id);
 
           // The postState API automatically updates the transition's endStateId on the backend
           // Refresh states list only (don't refetch transition for new transitions to avoid 500 error)
@@ -279,8 +268,6 @@ export const Transition: React.FC = () => {
             transitionId,
             form: newStateData,
           });
-
-          console.log('=== Created new state ===', stateResult);
 
           // The postState API automatically updates the transition's endStateId on the backend
           // Refresh states list and transition (to get updated endStateId)
@@ -358,13 +345,9 @@ export const Transition: React.FC = () => {
   const handleProcessSubmitted = async (params: any) => {
     setIsProcessModalVisible(false);
 
-    console.log('[Transition] Process submitted with params:', params);
-
     if (params?.id) {
       // Refetch processes to get the latest list including the newly created process
       const { data: updatedProcessesList } = await refetchProcesses();
-
-      console.log('[Transition] Updated processes list:', updatedProcessesList);
 
       const currentProcessIds = form.getFieldValue('processIds') || [];
 
@@ -373,19 +356,13 @@ export const Transition: React.FC = () => {
         ? params.id.persistedId || params.id.runtimeId
         : params.id;
 
-      console.log('[Transition] Adding process with simpleId:', paramId);
-
       // Check if not already added
       if (!currentProcessIds.includes(paramId)) {
         form.setFieldsValue({
           processIds: [...currentProcessIds, paramId],
         });
-        console.log('[Transition] Process added to form successfully');
-      } else {
-        console.log('[Transition] Process already in the list');
       }
     } else {
-      console.log('[Transition] No process ID in params, just refetching');
       await refetchProcesses();
     }
   };

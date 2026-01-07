@@ -188,7 +188,6 @@ export const getProcessesChildEles = ({
     }
 
     if (!process) {
-      console.warn(`Couldn't find process`, processId);
       return result;
     }
 
@@ -326,7 +325,6 @@ export const getCriteriaChildrenEles = ({
     }
 
     if (!criteria) {
-      console.warn(`Couldn't find criteria`, criteriaId);
       return result;
     }
 

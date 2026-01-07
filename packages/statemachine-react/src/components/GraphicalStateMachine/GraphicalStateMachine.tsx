@@ -105,7 +105,6 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
   // Initialize Cytoscape
   const init = useCallback(() => {
     if (isInitialized || !containerRef.current) {
-      console.log('[GraphicalStateMachine] Skipping init - already initialized or no container');
       return;
     }
 
@@ -114,10 +113,6 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
     const containerHeight = containerRef.current.offsetHeight;
 
     if (containerWidth === 0 || containerHeight === 0) {
-      console.warn('[GraphicalStateMachine] Container has no dimensions, retrying...', {
-        width: containerWidth,
-        height: containerHeight
-      });
       // Retry after a short delay
       setTimeout(() => {
         setIsInitialized(false);
@@ -125,24 +120,6 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
       }, 100);
       return;
     }
-
-    console.log('[GraphicalStateMachine] Initializing with:', {
-      transitions: transitions.length,
-      activeTransitions: activeTransitions.length,
-      processes: processes.length,
-      criteria: criteria.length,
-      positionsMap,
-    });
-
-    console.log('[GraphicalStateMachine] Active transitions data:', activeTransitions.map(t => ({
-      id: t.id,
-      name: t.name,
-      startStateId: t.startStateId,
-      startStateName: t.startStateName,
-      endStateId: t.endStateId,
-      endStateName: t.endStateName,
-      active: t.active,
-    })));
 
     const elements = getStatesTransitionsEles(activeTransitions, positionsMap, currentState);
 
@@ -199,17 +176,12 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
     cy.on('tap', onTapBackground);
 
     // Enable/disable dragging based on readonly mode (matching Vue implementation)
-    console.log('[GraphicalStateMachine] isReadonly:', isReadonly);
     if (isReadonly) {
-      console.log('[GraphicalStateMachine] Locking nodes');
       cy.nodes('.compound-processes').lock();
       cy.nodes('.node-state').lock();
     } else {
-      console.log('[GraphicalStateMachine] Unlocking nodes');
       cy.nodes('.compound-processes').unlock();
       cy.nodes('.node-state').unlock();
-      console.log('[GraphicalStateMachine] State nodes unlocked:', cy.nodes('.node-state').length);
-      console.log('[GraphicalStateMachine] Process nodes unlocked:', cy.nodes('.compound-processes').length);
     }
 
     cy.fit(50);
@@ -355,7 +327,6 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
           }
         } catch (error) {
           // Silently ignore errors during criteria positioning
-          console.warn('Error positioning criteria:', error);
         }
       }, 0);
 
@@ -431,7 +402,6 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
 
   // Handle drag end
   const onDragFree = useCallback((event: any) => {
-    console.log('[GraphicalStateMachine] onDragFree triggered!', event.target.id());
     if (!cyRef.current) return;
 
     const cy = cyRef.current;
@@ -632,7 +602,6 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
   useEffect(() => {
     // Only initialize if we have transitions data
     if (transitions.length > 0 && !isInitialized) {
-      console.log('[GraphicalStateMachine] useEffect - calling init');
       init();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -643,7 +612,6 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
     // Cleanup function runs when workflowId changes or component unmounts
     return () => {
       if (cyRef.current) {
-        console.log('[GraphicalStateMachine] Cleanup - destroying cytoscape');
         cyRef.current.destroy();
         cyRef.current = null;
         setIsInitialized(false);

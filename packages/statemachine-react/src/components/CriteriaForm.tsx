@@ -109,9 +109,7 @@ export const CriteriaForm: React.FC<CriteriaFormProps> = ({
 
   // Build cols for FilterBuilder from configDefinition (colDefs + aliasDefs)
   const cols = useMemo(() => {
-    console.log('CriteriaForm - configDefinition:', configDefinition);
     const builtCols = HelperReportDefinition.buildCols(configDefinition);
-    console.log('CriteriaForm - built cols:', builtCols);
     return builtCols;
   }, [configDefinition]);
 

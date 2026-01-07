@@ -70,9 +70,6 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
       // Extract documentLink from metaData if it exists
       const documentLink = (workflow as any).metaData?.documentLink || '';
 
-      console.log('[WorkflowForm] Loading workflow:', workflow);
-      console.log('[WorkflowForm] criteriaIds:', workflow.criteriaIds);
-
       form.setFieldsValue({
         entityClassName: workflow.entityClassName,
         name: workflow.name,
@@ -218,8 +215,6 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
           transitionIds: (latestWorkflow as any)?.transitionIds || [],
           stateIds: (latestWorkflow as any)?.stateIds || [],
         };
-
-        console.log('[WorkflowForm] Saving workflow with data:', formData);
 
         await updateWorkflowMutation.mutateAsync(formData);
         message.success('Workflow updated successfully');

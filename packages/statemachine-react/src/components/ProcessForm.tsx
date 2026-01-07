@@ -38,8 +38,6 @@ export const ProcessForm: React.FC<ProcessFormProps> = ({
   const isNew = !processId || processId === 'new';
   const isRuntime = persistedType === 'transient';
 
-  console.log('ProcessForm - Props:', { entityClassName, processId, persistedType });
-
   // Queries
   const { data: process, isLoading: isLoadingProcess } = useProcess(
     persistedType,
@@ -49,12 +47,6 @@ export const ProcessForm: React.FC<ProcessFormProps> = ({
   );
   const { data: processorsList = [], isLoading: isLoadingProcessors } = useProcessorsList();
   const { data: entityParentClasses = [], isLoading: isLoadingParentClasses } = useEntityParentClasses(entityClassName);
-
-  console.log('ProcessForm - Data loaded:', {
-    processorsListLength: processorsList?.length,
-    entityParentClasses,
-    isLoadingParentClasses,
-  });
 
   // Mutations
   const createProcessMutation = useCreateProcess();
@@ -69,13 +61,6 @@ export const ProcessForm: React.FC<ProcessFormProps> = ({
     // Build list of all classes (parent classes + current entity class)
     const allClasses = [...entityParentClasses, entityClassName];
 
-    console.log('ProcessForm - Filtering processors:', {
-      entityClassName,
-      entityParentClasses,
-      allClasses,
-      processorsCount: processorsList.length,
-    });
-
     // Filter processors by entity class and map to options
     const filtered = processorsList
       .filter((processor: any) => {
@@ -86,11 +71,6 @@ export const ProcessForm: React.FC<ProcessFormProps> = ({
         }
         // Object format with entityClass - filter by class hierarchy
         const matches = processor.entityClass && allClasses.includes(processor.entityClass);
-        console.log('Processor filter:', {
-          name: processor.name,
-          entityClass: processor.entityClass,
-          matches,
-        });
         return matches;
       })
       .map((processor: any) => {
@@ -110,7 +90,6 @@ export const ProcessForm: React.FC<ProcessFormProps> = ({
         };
       });
 
-    console.log('ProcessForm - Filtered processors:', filtered);
     return filtered;
   }, [processorsList, entityParentClasses, entityClassName]);
 
@@ -160,11 +139,6 @@ export const ProcessForm: React.FC<ProcessFormProps> = ({
   React.useEffect(() => {
     if (selectedProcessor && selectedProcessor !== lastProcessorRef.current) {
       const newParams = getProcessorParameters(selectedProcessor);
-      console.log('ProcessForm - Processor changed, updating parameters:', {
-        processor: selectedProcessor,
-        parameters: newParams,
-        isNew,
-      });
 
       lastProcessorRef.current = selectedProcessor;
 
@@ -220,18 +194,10 @@ export const ProcessForm: React.FC<ProcessFormProps> = ({
       // Get all form values (including untouched fields with default values)
       const values = form.getFieldsValue(true);
 
-      console.log('🔍 ProcessForm - Form values after validation:', values);
-
       // Process parameters - convert integer values
       const processedParameters = processParameters.map((param) => {
         const paramValue = values[`param_${param.name}`];
         const processedParam = { ...param };
-
-        console.log('Processing parameter:', {
-          name: param.name,
-          type: param.value['@type'],
-          rawValue: paramValue,
-        });
 
         if (paramValue !== undefined && paramValue !== null && paramValue !== '') {
           processedParam.value = {
@@ -257,22 +223,12 @@ export const ProcessForm: React.FC<ProcessFormProps> = ({
         entityClassName,
       };
 
-      console.log('🔍 ProcessForm - Submitting data:', {
-        persistedType,
-        formData,
-        isNew,
-        entityClassName,
-        processParameters,
-        processedParameters,
-      });
-
       let resultId;
       if (isNew) {
         const result = await createProcessMutation.mutateAsync({
           persistedType,
           form: formData,
         });
-        console.log('✅ ProcessForm - Create result:', result);
         resultId = result?.id?.persistedId || result?.id || result?.Data?.id;
         message.success('Process created successfully');
       } else {
@@ -289,7 +245,6 @@ export const ProcessForm: React.FC<ProcessFormProps> = ({
         onSubmitted({ id: resultId });
       }
     } catch (error: any) {
-      console.error('❌ ProcessForm - Error saving process:', error);
       const errorMessage = error?.response?.data?.message || error?.message || 'Failed to save process';
       message.error(`Failed to save process: ${errorMessage}`);
     }

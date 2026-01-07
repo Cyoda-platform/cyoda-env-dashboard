@@ -57,13 +57,6 @@ export const Process: React.FC = () => {
     // Build list of all classes (parent classes + current entity class)
     const allClasses = [...entityParentClasses, entityClassName];
 
-    console.log('Process page - Filtering processors:', {
-      entityClassName,
-      entityParentClasses,
-      allClasses,
-      processorsCount: processors.length,
-    });
-
     // Filter processors by entity class and map to options
     return processors
       .filter((processor: any) => {
@@ -74,11 +67,6 @@ export const Process: React.FC = () => {
         }
         // Object format with entityClass - filter by class hierarchy
         const matches = processor.entityClass && allClasses.includes(processor.entityClass);
-        console.log('Processor filter:', {
-          name: processor.name,
-          entityClass: processor.entityClass,
-          matches,
-        });
         return matches;
       })
       .map((processor: any) => {
