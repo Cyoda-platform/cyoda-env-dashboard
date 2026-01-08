@@ -123,11 +123,18 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
 
     const elements = getStatesTransitionsEles(activeTransitions, positionsMap, currentState);
 
+    // Check if ALL elements have positions in the map
+    // If even one element is missing a position, we should use breadthfirst layout
+    const allElementsHavePositions = positionsMap && elements.every(el => {
+      const hasPosition = el.position && typeof el.position.x === 'number' && typeof el.position.y === 'number';
+      return hasPosition;
+    });
+
     const cy = cytoscape({
       container: containerRef.current,
       elements,
       style: getStyleForTheme(currentTheme),
-      layout: positionsMap ? { name: 'preset' } : {
+      layout: allElementsHavePositions ? { name: 'preset' } : {
         name: 'breadthfirst',
         directed: true,
         nodeDimensionsIncludeLabels: true,
