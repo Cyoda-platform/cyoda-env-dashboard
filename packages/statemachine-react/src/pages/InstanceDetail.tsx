@@ -58,10 +58,8 @@ export const InstanceDetail: React.FC = () => {
 
   // Determine if we should show JSON view
   const isShowDetailJson = () => {
-    const entityRow = workflowEnabledTypes.find(
-      (item: any) => item.name === entityClassName
-    );
-    return entityRow?.type === 'BUSINESS';
+    // Always show structured DetailView instead of JSON view
+    return false;
   };
 
   const modelName = entityClassName.split('.').pop();

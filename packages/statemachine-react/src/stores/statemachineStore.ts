@@ -102,14 +102,12 @@ export const useStatemachineStore = create<StatemachineState>()(
 
         if (useModelsInfo) {
           // When feature flag is enabled, use models-info endpoint which returns entity type info
-          const response = await axios.get('/platform-api/entity-info/fetch/models-info', {
+          return await axios.get('/platform-api/entity-info/fetch/models-info', {
             params: { stateEnabled: true }
           });
-          return response;
         }
         // Otherwise use the basic workflow-enabled-types endpoint (returns just strings)
-        const response = await axios.get('/platform-api/statemachine/workflow-enabled-types');
-        return response;
+        return await axios.get('/platform-api/statemachine/workflow-enabled-types');
       },
       
       getAllWorkflowsList: async (entityClassName) => {
