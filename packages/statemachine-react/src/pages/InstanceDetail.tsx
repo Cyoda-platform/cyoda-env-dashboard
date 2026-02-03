@@ -6,7 +6,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
-import { Tabs, Card, Spin, Typography, Space, Alert, Descriptions, Button, Switch, Divider } from 'antd';
+import { Tabs, Card, Spin, Typography, Space, Alert, Descriptions, Button, Switch, Divider, theme } from 'antd';
 import type { TabsProps } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useQueryClient } from '@tanstack/react-query';
@@ -297,6 +297,7 @@ const DetailJsonView: React.FC<{
   instanceId: string;
   entityClassName: string;
 }> = ({ instanceId, entityClassName }) => {
+  const { token } = theme.useToken();
   const [jsonData, setJsonData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
@@ -333,14 +334,25 @@ const DetailJsonView: React.FC<{
     );
   }
 
+  // Use appropriate background color based on theme
+  const isDark = token.colorBgContainer === '#141414' || token.colorBgContainer === '#000000';
+  const bgColor = isDark ? '#1e293b' : '#f5f5f5';
+  const textColor = isDark ? '#e2e8f0' : '#1f2937';
+  const borderColor = isDark ? '#334155' : '#d1d5db';
+
   return (
     <div>
       <pre style={{
-        background: '#f5f5f5',
+        background: bgColor,
+        color: textColor,
         padding: '16px',
-        borderRadius: '4px',
+        borderRadius: token.borderRadius,
         overflow: 'auto',
-        maxHeight: '600px'
+        maxHeight: '600px',
+        border: `1px solid ${borderColor}`,
+        fontFamily: 'monospace',
+        fontSize: '13px',
+        lineHeight: '1.6'
       }}>
         {JSON.stringify(jsonData, null, 2)}
       </pre>
