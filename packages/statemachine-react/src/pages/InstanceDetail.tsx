@@ -4,7 +4,7 @@
  * Migrated from: .old_project/packages/statemachine/src/views/InstancesDetailView.vue
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { Tabs, Card, Spin, Typography, Space, Alert, Descriptions, Button, Switch, Divider, theme } from 'antd';
 import type { TabsProps } from 'antd';
@@ -16,8 +16,8 @@ import {
 } from '../hooks/useStatemachine';
 import { useEntityLoad } from '../hooks/useEntity';
 import type { Entity } from '@cyoda/http-api-react';
+import { axiosPlatform } from '@cyoda/http-api-react';
 import type { PersistedType } from '../types';
-import axios from 'axios';
 import {
   HelperDetailEntity,
   EntityDetailTree,
@@ -303,7 +303,7 @@ const DetailJsonView: React.FC<{
     const loadData = async () => {
       try {
         setLoading(true);
-        const { data } = await axios.get(`/platform-api/entity/${entityClassName}/${instanceId}`);
+        const { data } = await axiosPlatform.get(`/platform-api/entity/${entityClassName}/${instanceId}`);
         setJsonData(data);
       } catch (error) {
         // Failed to load entity data
