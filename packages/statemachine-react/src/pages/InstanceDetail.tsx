@@ -112,6 +112,16 @@ export const InstanceDetail: React.FC = () => {
           />
         ),
       },
+      {
+        key: 'json',
+        label: 'JSON',
+        children: (
+          <DetailJsonView
+            instanceId={instanceId!}
+            entityClassName={entityClassName}
+          />
+        ),
+      },
     ];
 
     // Add Workflow tab conditionally
@@ -298,15 +308,21 @@ const DetailJsonView: React.FC<{
   const { token } = theme.useToken();
   const [jsonData, setJsonData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
       try {
         setLoading(true);
-        const { data } = await axiosPlatform.get(`/platform-api/entity/${entityClassName}/${instanceId}`);
+        setError(null);
+        // Use entity-info/fetch/lazy endpoint which works without 404 errors
+        const { data } = await axiosPlatform.get(
+          `/platform-api/entity-info/fetch/lazy?entityClass=${entityClassName}&entityId=${encodeURIComponent(instanceId)}`
+        );
         setJsonData(data);
-      } catch (error) {
-        // Failed to load entity data
+      } catch (err: any) {
+        console.error('[DetailJsonView] Failed to load entity data:', err);
+        setError(err.message || 'Failed to load entity data');
       } finally {
         setLoading(false);
       }
@@ -321,11 +337,11 @@ const DetailJsonView: React.FC<{
     return <Spin />;
   }
 
-  if (!jsonData) {
+  if (error || !jsonData) {
     return (
       <Alert
         message="No Data"
-        description="No entity data available for this instance."
+        description={error || "No entity data available for this instance."}
         type="warning"
         showIcon
       />
