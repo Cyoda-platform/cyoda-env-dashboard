@@ -12,15 +12,25 @@ import './TransitionStateMachineForm.scss';
 interface TransitionStateMachineFormProps {
   possibleTransitions: string[];
   onUpdated?: () => void;
+  /** Entity class/type - if not provided, falls back to URL param 'type' */
+  entityClass?: string;
+  /** Entity ID - if not provided, falls back to URL param 'entityId' */
+  entityId?: string;
 }
 
 export const TransitionStateMachineForm: React.FC<TransitionStateMachineFormProps> = ({
   possibleTransitions = [],
   onUpdated,
+  entityClass: entityClassProp,
+  entityId: entityIdProp,
 }) => {
   const [state, setState] = useState<string>('');
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
+
+  // Use props if provided, otherwise fall back to URL params
+  const entityClass = entityClassProp || queryParams.get('type') || '';
+  const entityId = entityIdProp || queryParams.get('entityId') || '';
 
   const { mutate: doManualTransition, isLoading } = useDoManualTransition({
     onSuccess: () => {
@@ -36,8 +46,8 @@ export const TransitionStateMachineForm: React.FC<TransitionStateMachineFormProp
 
   const handleSubmit = () => {
     doManualTransition({
-      entityClass: queryParams.get('type') || '',
-      entityId: queryParams.get('entityId') || '',
+      entityClass,
+      entityId,
       transition: state,
       transactional: false,
       async: false,

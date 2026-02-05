@@ -65,6 +65,8 @@ export const EntityStateMachineModal: React.FC<EntityStateMachineModalProps> = (
               <TransitionStateMachineForm
                 possibleTransitions={possibleTransitions}
                 onUpdated={handleUpdated}
+                entityClass={entityType}
+                entityId={entityId}
               />
               <div style={{ marginTop: 16 }}>
                 <TransitionStateMachineTable stateMachineEvents={stateMachineEvents} />
