@@ -1,0 +1,860 @@
+openapi: 3.1.0
+info:
+  title: Cyoda Cloud Audit API
+  version: 1.0.0
+  description: |
+    API for Cyoda Cloud audit events providing access to audit events search.
+
+    ## Audit Event Types
+
+    The API provides access to three main categories of audit events:
+
+    - **EntityChange**: Tracks data modifications to entities including creation, updates, and deletions.
+      Each event captures the before/after state of the entity, enabling full change history reconstruction
+      and data lineage tracking.
+
+    - **StateMachine**: Records workflow execution events as entities progress through their lifecycle states.
+      Includes workflow discovery, state transitions, processor execution results, and completion status.
+      Useful for debugging workflow behavior and understanding entity processing history.
+
+    - **System**: Captures low-level platform operations such as transaction processing, queue operations,
+      and shard activity. These events contain technical details primarily useful for platform diagnostics.
+      Note: System events are excluded from queries by default due to their volume and specialized nature.
+  contact:
+    name: Cyoda Support
+    url: https://cyoda.com/support
+
+security:
+  - bearerAuth: [ ]
+
+paths:
+  /audit/entity/{entityId}:
+    get:
+      summary: Search audit events for entity
+      description: |
+        Retrieves audit events for a specific entity with cursor-based pagination.
+        Results are ordered by event utc time (newest first).
+        Maximum search period is 180 days. Default period is 10 days when one of the boundaries is not defined.
+      operationId: searchEntityAuditEvents
+      tags:
+        - Entity, Audit
+      parameters:
+        - name: entityId
+          in: path
+          required: true
+          description: Identifier of the entity to retrieve audit events for
+          schema:
+            type: string
+            format: uuid
+        - name: eventType
+          in: query
+          required: false
+          description: |
+            Filter by specific audit event types. If not specified, defaults to all event types except System.
+            Note: Including System events may increase latency and load on the system. Use System events filtering with caution.
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/AuditEventType'
+        - name: severity
+          in: query
+          required: false
+          description: Filter by event severity level
+          schema:
+            $ref: '#/components/schemas/AuditEventSeverity'
+        - name: fromUtcTime
+          in: query
+          required: false
+          description: Filter events from this timestamp (inclusive)
+          schema:
+            type: string
+            format: date-time
+        - name: toUtcTime
+          in: query
+          required: false
+          description: Filter events until this timestamp (exclusive)
+          schema:
+            type: string
+            format: date-time
+        - name: transactionId
+          in: query
+          required: false
+          description: Filter by transaction identifier
+          schema:
+            type: string
+        - name: cursor
+          in: query
+          required: false
+          description: |
+            Cursor for pagination. Use the `nextCursor` value from the previous response
+            to fetch the next page of results. Omit for the first page.
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          description: Maximum number of audit events to return per page
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+            default: 100
+      responses:
+        '200':
+          description: Audit events retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntityAuditEventsResponse'
+              examples:
+                AuditEventsWithPagination:
+                  summary: Audit events with pagination
+                  description: Example response showing audit events with cursor for next page
+                  value: |
+                    {
+                      "pagination" : {
+                        "hasNext" : false
+                      },
+                      "items" : [ {
+                        "auditEventType" : "System",
+                        "severity" : "INFO",
+                        "utcTime" : "2026-02-06T21:11:19.934Z",
+                        "microsTime" : 1770412279934000,
+                        "doneTime" : "2026-02-06T21:11:19.941Z",
+                        "queueName" : "TRANSACTION_EXEC_1_PHASE_VERSION_CHECK",
+                        "shardId" : "6",
+                        "status" : "PROCESSED",
+                        "data" : {
+                          "core" : {
+                            "userId" : "5f50884a-03a0-11f1-a2ff-ae468cd3ed16",
+                            "processIds" : [ {
+                              "directProcessKey" : 11,
+                              "type" : "DIRECT"
+                            } ],
+                            "transactionId" : null,
+                            "workflowExecId" : null,
+                            "workflowStackDepth" : 0,
+                            "resubmitMetaInfo" : null,
+                            "submittedTransactionId" : "6202fe10-03a0-11f1-a2ff-ae468cd3ed16",
+                            "entitiesCountInTransaction" : 1,
+                            "transactionConsistencyTime" : "61a91e36-03a0-11f1-7f7f-7f7f7f7f7f7f",
+                            "transactionSubmitTime" : "6204d2d0-03a0-11f1-a2ff-ae468cd3ed16",
+                            "parentTransactionsIds" : [ ],
+                            "currentExpectedEntityVersion" : null,
+                            "transEntityClassIndex" : 1190,
+                            "transEntityIdSerialized" : "B/ZOUCLTEbKgqq7WNXjmVA==",
+                            "actionType" : "UPDATE",
+                            "eventTypeIndex" : 7
+                          },
+                          "client" : {
+                            "traceId" : -7561544248689871273,
+                            "traceIdHigh" : 7603862840665887685
+                          }
+                        },
+                        "entityId" : "07f64e50-22d3-11b2-a0aa-aed63578e654",
+                        "entityModel" : "User.1",
+                        "actor" : {
+                          "id" : "00000866-0000-1000-8080-808080808080",
+                          "legalId" : "SYSTEM",
+                          "name" : "SYSTEM"
+                        },
+                        "system" : true
+                      }, {
+                        "auditEventType" : "EntityChange",
+                        "changeType" : "CREATED",
+                        "severity" : "INFO",
+                        "utcTime" : "2026-02-06T21:11:19.933Z",
+                        "microsTime" : 1770412279933000,
+                        "changes" : {
+                          "after" : {
+                            "name" : "Alice",
+                            "age" : 30,
+                            "active" : false
+                          }
+                        },
+                        "consistencyTime" : "2026-02-06T21:11:19.331Z",
+                        "entityId" : "07f64e50-22d3-11b2-a0aa-aed63578e654",
+                        "entityModel" : "User.1",
+                        "transactionId" : "6202fe10-03a0-11f1-a2ff-ae468cd3ed16",
+                        "actor" : {
+                          "id" : "5f50884a-03a0-11f1-a2ff-ae468cd3ed16",
+                          "legalId" : "TEST",
+                          "name" : "TEST_USER"
+                        }
+                      }, {
+                        "auditEventType" : "StateMachine",
+                        "state" : "CREATED",
+                        "eventType" : "FINISHED",
+                        "severity" : "INFO",
+                        "utcTime" : "2026-02-06T21:11:19.928004Z",
+                        "microsTime" : 1770412279928004,
+                        "data" : {
+                          "eventType" : "FINISHED",
+                          "success" : true
+                        },
+                        "consistencyTime" : "2026-02-06T21:11:19.331Z",
+                        "entityId" : "07f64e50-22d3-11b2-a0aa-aed63578e654",
+                        "entityModel" : "User.1",
+                        "transactionId" : "6202fe10-03a0-11f1-a2ff-ae468cd3ed16",
+                        "actor" : {
+                          "id" : "5f50884a-03a0-11f1-a2ff-ae468cd3ed16",
+                          "legalId" : "TEST",
+                          "name" : "TEST_USER"
+                        }
+                      }, {
+                        "auditEventType" : "StateMachine",
+                        "state" : "CREATED",
+                        "eventType" : "TRANSITION_NOT_FOUND",
+                        "severity" : "DEBUG",
+                        "utcTime" : "2026-02-06T21:11:19.928003Z",
+                        "microsTime" : 1770412279928003,
+                        "data" : {
+                          "eventType" : "TRANSITION_NOT_FOUND",
+                          "workflowName" : "Default for 'User.1'",
+                          "transition" : ""
+                        },
+                        "consistencyTime" : "2026-02-06T21:11:19.331Z",
+                        "entityId" : "07f64e50-22d3-11b2-a0aa-aed63578e654",
+                        "entityModel" : "User.1",
+                        "transactionId" : "6202fe10-03a0-11f1-a2ff-ae468cd3ed16",
+                        "actor" : {
+                          "id" : "5f50884a-03a0-11f1-a2ff-ae468cd3ed16",
+                          "legalId" : "TEST",
+                          "name" : "TEST_USER"
+                        }
+                      }, {
+                        "auditEventType" : "StateMachine",
+                        "state" : "None",
+                        "eventType" : "TRANSITION_MADE",
+                        "severity" : "DEBUG",
+                        "utcTime" : "2026-02-06T21:11:19.928002Z",
+                        "microsTime" : 1770412279928002,
+                        "data" : {
+                          "eventType" : "TRANSITION_MADE",
+                          "workflowName" : "Default for 'User.1'",
+                          "transition" : "NEW",
+                          "newState" : "CREATED"
+                        },
+                        "consistencyTime" : "2026-02-06T21:11:19.331Z",
+                        "entityId" : "07f64e50-22d3-11b2-a0aa-aed63578e654",
+                        "entityModel" : "User.1",
+                        "transactionId" : "6202fe10-03a0-11f1-a2ff-ae468cd3ed16",
+                        "actor" : {
+                          "id" : "5f50884a-03a0-11f1-a2ff-ae468cd3ed16",
+                          "legalId" : "TEST",
+                          "name" : "TEST_USER"
+                        }
+                      }, {
+                        "auditEventType" : "StateMachine",
+                        "state" : "None",
+                        "eventType" : "TRANSITION_MADE",
+                        "severity" : "DEBUG",
+                        "utcTime" : "2026-02-06T21:11:19.928001Z",
+                        "microsTime" : 1770412279928001,
+                        "data" : {
+                          "eventType" : "TRANSITION_MADE",
+                          "workflowName" : "Default for 'User.1'",
+                          "transition" : "LOOPBACK",
+                          "newState" : "None"
+                        },
+                        "consistencyTime" : "2026-02-06T21:11:19.331Z",
+                        "entityId" : "07f64e50-22d3-11b2-a0aa-aed63578e654",
+                        "entityModel" : "User.1",
+                        "transactionId" : "6202fe10-03a0-11f1-a2ff-ae468cd3ed16",
+                        "actor" : {
+                          "id" : "5f50884a-03a0-11f1-a2ff-ae468cd3ed16",
+                          "legalId" : "TEST",
+                          "name" : "TEST_USER"
+                        }
+                      }, {
+                        "auditEventType" : "StateMachine",
+                        "state" : "None",
+                        "eventType" : "WORKFLOW_FOUND",
+                        "severity" : "DEBUG",
+                        "utcTime" : "2026-02-06T21:11:19.928Z",
+                        "microsTime" : 1770412279928000,
+                        "data" : {
+                          "eventType" : "WORKFLOW_FOUND",
+                          "workflowName" : "Default for 'User.1'"
+                        },
+                        "consistencyTime" : "2026-02-06T21:11:19.331Z",
+                        "entityId" : "07f64e50-22d3-11b2-a0aa-aed63578e654",
+                        "entityModel" : "User.1",
+                        "transactionId" : "6202fe10-03a0-11f1-a2ff-ae468cd3ed16",
+                        "actor" : {
+                          "id" : "5f50884a-03a0-11f1-a2ff-ae468cd3ed16",
+                          "legalId" : "TEST",
+                          "name" : "TEST_USER"
+                        }
+                      }, {
+                        "auditEventType" : "StateMachine",
+                        "state" : "None",
+                        "eventType" : "STARTED",
+                        "severity" : "INFO",
+                        "utcTime" : "2026-02-06T21:11:19.924001Z",
+                        "microsTime" : 1770412279924001,
+                        "data" : {
+                          "eventType" : "STARTED",
+                          "state" : "None"
+                        },
+                        "consistencyTime" : "2026-02-06T21:11:19.331Z",
+                        "entityId" : "07f64e50-22d3-11b2-a0aa-aed63578e654",
+                        "entityModel" : "User.1",
+                        "transactionId" : "6202fe10-03a0-11f1-a2ff-ae468cd3ed16",
+                        "actor" : {
+                          "id" : "5f50884a-03a0-11f1-a2ff-ae468cd3ed16",
+                          "legalId" : "TEST",
+                          "name" : "TEST_USER"
+                        }
+                      } ]
+                    }
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/ErrorResponse'
+        '403':
+          $ref: '#/components/responses/ErrorResponse'
+        '404':
+          $ref: '#/components/responses/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+
+components:
+  responses:
+    ErrorResponse:
+      description: Error response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from the authentication endpoint
+
+  schemas:
+    # ErrorResponse schema - same object as defined in the main openapi.yml
+    ErrorResponse:
+      $ref: './openapi.yml#/components/schemas/ErrorResponse'
+
+    CursorPaginationInfo:
+      type: object
+      description: Pagination information for cursor-based pagination
+      properties:
+        hasNext:
+          type: boolean
+          description: Indicates whether there are more results available
+        nextCursor:
+          type: string
+          nullable: true
+          description: |
+            Cursor to use for fetching the next page of results.
+            Can be omit when hasNext is false.
+      required:
+        - hasNext
+
+    EntityAuditEventsResponse:
+      type: object
+      description: Response with entity audit events
+      properties:
+        items:
+          type: array
+          description: Audit events for the entity
+          items:
+            $ref: '#/components/schemas/AuditEvent'
+        pagination:
+          $ref: '#/components/schemas/CursorPaginationInfo'
+      required:
+        - pagination
+
+    AuditEventType:
+      type: string
+      description: Type of audit event indicating the source or category of the event
+      enum:
+        - StateMachine
+        - EntityChange
+        - System
+
+    AuditEventSeverity:
+      type: string
+      description: Severity level of an audit event
+      enum:
+        - ERROR
+        - INFO
+        - WARN
+        - DEBUG
+
+    AuditSearchFilter:
+      type: object
+      description: Filter criteria for searching audit events
+      properties:
+        entityId:
+          description: Identifier of the entity to retrieve audit events for
+          type: string
+          format: uuid
+        entityModel:
+          type: string
+          description: Type of the entity related to this event (model.version)
+        eventType:
+          type: array
+          description: Filter by specific audit event types
+          items:
+            $ref: '#/components/schemas/AuditEventType'
+        severity:
+          $ref: '#/components/schemas/AuditEventSeverity'
+          description: Filter by event severity level
+        fromUtcTime:
+          type: string
+          format: date-time
+          description: Filter events from this timestamp (inclusive)
+        toUtcTime:
+          type: string
+          format: date-time
+          description: Filter events until this timestamp (exclusive)
+        transactionId:
+          type: string
+          description: Filter by transaction identifier
+
+
+    AuditActorInfo:
+      type: object
+      description: Actor related to this event
+      properties:
+        id:
+          type: string
+          description: Identifier of the actor
+        legalId:
+          type: string
+          description: Legal entity identifier of the actor
+        name:
+          type: string
+          description: Name of the actor
+      required:
+        - id
+        - legalId
+
+    AuditEvent:
+      type: object
+      description: Base audit event information common for all types of the event
+      discriminator:
+        propertyName: auditEventType
+        mapping:
+          StateMachine: '#/components/schemas/StateMachineAuditEvent'
+          EntityChange: '#/components/schemas/EntityChangeAuditEvent'
+          System: '#/components/schemas/SystemAuditEvent'
+      properties:
+        auditEventType:
+          $ref: '#/components/schemas/AuditEventType'
+          description: Type of the audit event, used as discriminator for inherited types
+        severity:
+          $ref: '#/components/schemas/AuditEventSeverity'
+          description: Severity level of the event
+        consistencyTime:
+          type: string
+          format: date-time
+          description: Cyoda consistency time
+        utcTime:
+          type: string
+          format: date-time
+          description: UTC time when the event occurred
+        microsTime:
+          type: integer
+          format: int64
+          description: time in microseconds when the event occurred
+        entityId:
+          type: string
+          description: Identifier of the entity related to this event
+        entityModel:
+          type: string
+          description: Type of the entity related to this event (model.version)
+        transactionId:
+          type: string
+          description: Transaction identifier related to this event
+        actor:
+          $ref: '#/components/schemas/AuditActorInfo'
+          description: Actor related to this event
+        details:
+          type: string
+          description: Details of the event
+        system:
+          type: boolean
+          description: Flag indicating whether this is a system-level event
+      required:
+        - auditEventType
+        - severity
+        - utcTime
+        - microsTime
+
+    StateMachineAuditEvent:
+      description: |
+        Audit event for state machine operations.
+
+        The 'details' field inherited from AuditEvent contains the structured eventDescription object
+        from the state machine event, providing detailed context about the operation that occurred.
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/AuditEvent'
+        - type: object
+          properties:
+            state:
+              type: string
+              description: State of the entity where the event occurred within the state machine
+            eventType:
+              type: string
+              description: Type of the state machine event
+              enum:
+                - STARTED
+                - FINISHED
+                - CANCELLED
+                - FORCED_SUCCESS
+                - WORKFLOW_FOUND
+                - WORKFLOW_NOT_FOUND
+                - WORKFLOW_SKIPPED
+                - TRANSITION_MADE
+                - TRANSITION_NOT_FOUND
+                - TRANSITION_CRITERION_NOT_MATCHED
+                - PROCESS_CRITERION_NOT_MATCHED
+                - PROCESSING_PAUSED
+                - STATE_PROCESS_RESULT
+            data:
+              $ref: '#/components/schemas/StateMachineEvent'
+          required:
+            - state
+            - eventType
+
+    EntityChangeAuditEvent:
+      description: Audit event for entity changes
+      allOf:
+        - $ref: '#/components/schemas/AuditEvent'
+        - type: object
+          properties:
+            changeType:
+              type: string
+              description: Type of change that occurred
+              enum:
+                - CREATED
+                - UPDATED
+                - DELETED
+            changes:
+              $ref: '#/components/schemas/EntityChanges'
+              description: Changes made to the entity
+          required:
+            - changeType
+
+    EntityChanges:
+      type: object
+      description: Changes made to the entity
+      properties:
+        before:
+          type: object
+          description: Entity before changes
+        after:
+          type: object
+          description: Entity after changes
+
+    SystemAuditEvent:
+      description: System audit event
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/AuditEvent'
+        - type: object
+          properties:
+            errorTime:
+              type: string
+              format: date-time
+              description: Time when an error occurred, if applicable
+            doneTime:
+              type: string
+              format: date-time
+              description: Time when the operation completed, if applicable
+            queueName:
+              type: string
+              description: Name of the queue involved in the operation, if applicable
+            shardId:
+              type: string
+              description: Identifier of the shard involved in the operation, if applicable
+            status:
+              type: string
+              description: Status of the system operation, if applicable
+            data:
+              type: object
+              description: Object containing specific event data with technical information
+
+    # State Machine Event Types
+    StateMachineEventType:
+      type: string
+      description: Type of state machine event for polymorphic discriminator
+      enum:
+        - STARTED
+        - FINISHED
+        - CANCELLED
+        - FORCED_SUCCESS
+        - WORKFLOW_FOUND
+        - WORKFLOW_NOT_FOUND
+        - WORKFLOW_SKIPPED
+        - TRANSITION_MADE
+        - TRANSITION_NOT_FOUND
+        - TRANSITION_CRITERION_NOT_MATCHED
+        - PROCESS_CRITERION_NOT_MATCHED
+        - PROCESSING_PAUSED
+        - STATE_PROCESS_RESULT
+
+    StateMachineEvent:
+      type: object
+      description: Base type for state machine event using polymorphic discrimination
+      discriminator:
+        propertyName: eventType
+        mapping:
+          STARTED: '#/components/schemas/StateMachineStarted'
+          FINISHED: '#/components/schemas/StateMachineFinished'
+          CANCELLED: '#/components/schemas/StateMachineCancelled'
+          FORCED_SUCCESS: '#/components/schemas/StateMachineForcedSuccess'
+          WORKFLOW_FOUND: '#/components/schemas/StateMachineWorkflowFound'
+          WORKFLOW_NOT_FOUND: '#/components/schemas/StateMachineWorkflowNotFound'
+          WORKFLOW_SKIPPED: '#/components/schemas/StateMachineWorkflowSkipped'
+          TRANSITION_MADE: '#/components/schemas/StateMachineTransitionMade'
+          TRANSITION_NOT_FOUND: '#/components/schemas/StateMachineTransitionNotFound'
+          TRANSITION_CRITERION_NOT_MATCHED: '#/components/schemas/StateMachineTransitionCriterionNotMatched'
+          PROCESS_CRITERION_NOT_MATCHED: '#/components/schemas/StateMachineProcessCriterionNotMatched'
+          PROCESSING_PAUSED: '#/components/schemas/StateMachineProcessingPaused'
+          STATE_PROCESS_RESULT: '#/components/schemas/StateMachineStateProcessResult'
+      properties:
+        eventType:
+          $ref: '#/components/schemas/StateMachineEventType'
+      required:
+        - eventType
+
+    StateMachineStarted:
+      type: object
+      description: State machine started event
+      allOf:
+        - $ref: '#/components/schemas/StateMachineEvent'
+      properties:
+        state:
+          type: string
+          description: The state of the entity when the state machine flow was started
+      required:
+        - state
+
+    StateMachineFinished:
+      description: State machine finished event
+      allOf:
+        - $ref: '#/components/schemas/StateMachineEvent'
+        - type: object
+          properties:
+            success:
+              type: boolean
+              description: Whether the state machine execution was successful
+          required:
+            - success
+
+    StateMachineCancelled:
+      description: State machine cancelled event
+      allOf:
+        - $ref: '#/components/schemas/StateMachineEvent'
+        - type: object
+          properties:
+            reason:
+              type: string
+              description: Reason for cancellation
+          required:
+            - reason
+
+    StateMachineForcedSuccess:
+      description: State machine forced success event
+      allOf:
+        - $ref: '#/components/schemas/StateMachineEvent'
+
+    StateMachineWorkflowFound:
+      description: Workflow found event
+      allOf:
+        - $ref: '#/components/schemas/StateMachineEvent'
+        - type: object
+          properties:
+            workflowName:
+              type: string
+              description: Name of the workflow that was found
+          required:
+            - workflowName
+
+    StateMachineWorkflowNotFound:
+      description: Workflow not found event
+      allOf:
+        - $ref: '#/components/schemas/StateMachineEvent'
+
+    StateMachineWorkflowSkipped:
+      description: Workflow skipped event
+      allOf:
+        - $ref: '#/components/schemas/StateMachineEvent'
+        - type: object
+          properties:
+            workflowName:
+              type: string
+              description: Name of the workflow that was skipped
+            reason:
+              type: string
+              description: Reason for skipping the workflow
+          required:
+            - workflowName
+            - reason
+
+    StateMachineTransitionMade:
+      description: Transition made event
+      allOf:
+        - $ref: '#/components/schemas/StateMachineEvent'
+        - type: object
+          properties:
+            workflowName:
+              type: string
+              description: Name of the workflow
+            transition:
+              type: string
+              description: Name of the transition that was made
+            newState:
+              type: string
+              description: New state after the transition
+          required:
+            - workflowName
+            - transition
+            - newState
+
+    StateMachineTransitionNotFound:
+      description: Transition not found event
+      allOf:
+        - $ref: '#/components/schemas/StateMachineEvent'
+        - type: object
+          properties:
+            workflowName:
+              type: string
+              description: Name of the workflow
+            transition:
+              type: string
+              description: Name of the transition that was not found
+              nullable: true
+          required:
+            - workflowName
+
+    StateMachineTransitionCriterionNotMatched:
+      description: Transition criterion not matched event
+      allOf:
+        - $ref: '#/components/schemas/StateMachineEvent'
+        - type: object
+          properties:
+            workflowName:
+              type: string
+              description: Name of the workflow
+            transition:
+              type: string
+              description: Name of the transition
+            criterion:
+              type: string
+              description: Name of the criterion that was not matched
+            reason:
+              type: string
+              description: Reason why the criterion was not matched
+              nullable: true
+          required:
+            - workflowName
+            - transition
+            - criterion
+
+    StateMachineProcessCriterionNotMatched:
+      description: Process criterion not matched event
+      allOf:
+        - $ref: '#/components/schemas/StateMachineEvent'
+        - type: object
+          properties:
+            workflowName:
+              type: string
+              description: Name of the workflow
+            processorClassName:
+              type: string
+              description: Fully qualified class name of the processor
+            criterion:
+              type: string
+              description: Name of the criterion that was not matched
+            reason:
+              type: string
+              description: Reason why the criterion was not matched
+              nullable: true
+          required:
+            - workflowName
+            - processorClassName
+            - criterion
+
+    StateMachineProcessingPaused:
+      description: Processing paused event
+      allOf:
+        - $ref: '#/components/schemas/StateMachineEvent'
+        - type: object
+          properties:
+            workflowName:
+              type: string
+              description: Name of the workflow
+            transition:
+              type: string
+              description: Name of the transition
+            processNames:
+              type: array
+              description: List of process names that are paused
+              items:
+                type: string
+          required:
+            - workflowName
+            - transition
+            - processNames
+
+    StateMachineStateProcessResult:
+      description: State process result event
+      allOf:
+        - $ref: '#/components/schemas/StateMachineEvent'
+        - type: object
+          properties:
+            stateProcessId:
+              $ref: '#/components/schemas/StateProcessId'
+            stateProcessClassName:
+              type: string
+              description: Fully qualified class name of the state process
+            stateProcessType:
+              $ref: '#/components/schemas/StateProcessResultType'
+            failReason:
+              type: string
+              description: Reason for failure, if applicable
+              nullable: true
+          required:
+            - stateProcessId
+            - stateProcessClassName
+            - stateProcessType
+
+    StateProcessId:
+      type: object
+      description: Identifier for a state process
+      properties:
+        persisted:
+          type: boolean
+          description: Whether the process is persisted
+          default: false
+        persistedId:
+          type: string
+          format: uuid
+          description: Persisted identifier, if applicable
+          nullable: true
+        runtimeId:
+          type: integer
+          description: Runtime identifier
+          default: 0
+      required:
+        - persisted
+        - runtimeId
+
+    StateProcessResultType:
+      type: string
+      description: Type of state process result
+      enum:
+        - SUCCESS
+        - FAIL
+        - RESUBMIT
+        - UNKNOWN
