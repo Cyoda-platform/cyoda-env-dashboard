@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react'
-import { Table, Tag, Modal, Button, Space, Spin } from 'antd'
+import { Table, Tag, Modal, Button, Space, Spin, Tooltip } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
-import { RightOutlined, SearchOutlined } from '@ant-design/icons'
+import { RightOutlined, SearchOutlined, BranchesOutlined, ThunderboltOutlined, DiffOutlined } from '@ant-design/icons'
 import { Link } from 'react-router-dom'
-import { axiosProcessing, getCyodaCloudEntity, HelperFeatureFlags } from '@cyoda/http-api-react'
+import { axiosProcessing, getCyodaCloudEntity, HelperFeatureFlags, isTreeNodeEntity } from '@cyoda/http-api-react'
+import type { AuditEventType } from '@cyoda/http-api-react'
 import Prism from 'prismjs'
 import 'prismjs/themes/prism.css'
+import { AuditEventViewer } from '../AuditEventViewers'
 import './TransitionChangesTable.scss'
 
 export interface ChangedFieldValue {
@@ -57,10 +59,23 @@ export const TransitionChangesTable: React.FC<TransitionChangesTableProps> = ({
 
   // Cyoda Cloud mode state for viewing entity at transaction
   const isCyodaCloud = HelperFeatureFlags.isCyodaCloud()
+  const showAuditFeatures = isCyodaCloud && isTreeNodeEntity(type)
   const [jsonModalVisible, setJsonModalVisible] = useState(false)
   const [jsonModalData, setJsonModalData] = useState<Record<string, unknown> | null>(null)
   const [jsonModalLoading, setJsonModalLoading] = useState(false)
   const [jsonModalTransactionId, setJsonModalTransactionId] = useState<string>('')
+
+  // Audit event viewer state
+  const [auditViewerVisible, setAuditViewerVisible] = useState(false)
+  const [auditViewerEventType, setAuditViewerEventType] = useState<AuditEventType>('StateMachine')
+  const [auditViewerTransactionId, setAuditViewerTransactionId] = useState<string>('')
+
+  // Handler for opening audit event viewer
+  const handleOpenAuditViewer = (transactionId: string, eventType: AuditEventType) => {
+    setAuditViewerTransactionId(transactionId)
+    setAuditViewerEventType(eventType)
+    setAuditViewerVisible(true)
+  }
 
   useEffect(() => {
     loadData()
@@ -225,11 +240,17 @@ export const TransitionChangesTable: React.FC<TransitionChangesTableProps> = ({
       title: 'CHANGE TYPE',
       dataIndex: 'operation',
       key: 'operation',
-      width: isCyodaCloud ? 160 : 120,
-      render: (operation: string, record: TransitionChange) => (
-        <Space>
-          {renderOperation(operation)}
-          {isCyodaCloud && entityId && (
+      width: 120,
+      render: (operation: string) => renderOperation(operation)
+    },
+    // Details column - only shown when Cyoda Cloud is enabled
+    ...(isCyodaCloud && entityId ? [{
+      title: 'DETAILS',
+      key: 'details',
+      width: showAuditFeatures ? 180 : 60,
+      render: (_: unknown, record: TransitionChange) => (
+        <Space size="small">
+          <Tooltip title="View entity at this transaction">
             <Button
               type="text"
               size="small"
@@ -238,12 +259,48 @@ export const TransitionChangesTable: React.FC<TransitionChangesTableProps> = ({
                 e.stopPropagation()
                 handleViewEntityAtTransaction(record.transactionId)
               }}
-              title="View entity at this transaction"
             />
+          </Tooltip>
+          {showAuditFeatures && (
+            <>
+              <Tooltip title="State Machine Audit">
+                <Button
+                  type="text"
+                  size="small"
+                  icon={<BranchesOutlined />}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleOpenAuditViewer(record.transactionId, 'StateMachine')
+                  }}
+                />
+              </Tooltip>
+              <Tooltip title="Entity Change Audit">
+                <Button
+                  type="text"
+                  size="small"
+                  icon={<DiffOutlined />}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleOpenAuditViewer(record.transactionId, 'EntityChange')
+                  }}
+                />
+              </Tooltip>
+              <Tooltip title="System Events">
+                <Button
+                  type="text"
+                  size="small"
+                  icon={<ThunderboltOutlined />}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleOpenAuditViewer(record.transactionId, 'System')
+                  }}
+                />
+              </Tooltip>
+            </>
           )}
         </Space>
       )
-    }
+    }] : [])
   ]
 
   return (
@@ -316,6 +373,17 @@ export const TransitionChangesTable: React.FC<TransitionChangesTableProps> = ({
             </div>
           )}
         </Modal>
+      )}
+
+      {/* Audit Event Viewer Modal */}
+      {showAuditFeatures && entityId && (
+        <AuditEventViewer
+          visible={auditViewerVisible}
+          onClose={() => setAuditViewerVisible(false)}
+          entityId={entityId}
+          transactionId={auditViewerTransactionId}
+          eventType={auditViewerEventType}
+        />
       )}
     </div>
   )

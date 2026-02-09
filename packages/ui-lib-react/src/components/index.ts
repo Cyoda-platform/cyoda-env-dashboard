@@ -116,6 +116,9 @@ export * from './ConfigEditorStreamGrid'
 // Entity Detail
 export * from './EntityDetailModal'
 
+// Audit Event Viewers
+export * from './AuditEventViewers'
+
 // Templates
 export * from './BaseLayout'
 export * from './LoginLayout'

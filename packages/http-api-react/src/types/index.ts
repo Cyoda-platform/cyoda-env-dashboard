@@ -600,3 +600,124 @@ export interface IGetGroupsPathParams {
   reportId: string;
 }
 
+// ============================================================================
+// Cyoda Cloud Audit Types
+// ============================================================================
+
+/**
+ * Suffix used to identify TreeNodeEntity types
+ * Only TreeNodeEntity types support the full audit feature in Processing UI
+ */
+export const TREE_NODE_ENTITY_SUFFIX = 'TreeNodeEntity';
+
+/**
+ * Check if an entity type is a TreeNodeEntity
+ * @param entityType - The full entity type path (e.g., "com.cyoda.treenode.TreeNodeEntity")
+ * @returns true if the entity type ends with TreeNodeEntity
+ */
+export function isTreeNodeEntity(entityType: string): boolean {
+  return entityType.endsWith(TREE_NODE_ENTITY_SUFFIX);
+}
+
+/** Audit event types */
+export type AuditEventType = 'StateMachine' | 'EntityChange' | 'System';
+
+/** Audit event severity levels */
+export type AuditEventSeverity = 'ERROR' | 'INFO' | 'WARN' | 'DEBUG';
+
+/** Actor information for audit events */
+export interface AuditActorInfo {
+  id: string;
+  legalId: string;
+  name?: string;
+}
+
+/** Base audit event structure */
+export interface AuditEventBase {
+  auditEventType: AuditEventType;
+  severity: AuditEventSeverity;
+  utcTime: string;
+  microsTime: number;
+  consistencyTime?: string;
+  entityId?: string;
+  entityModel?: string;
+  transactionId?: string;
+  actor?: AuditActorInfo;
+  details?: string;
+  system?: boolean;
+}
+
+/** State machine audit event */
+export interface StateMachineAuditEvent extends AuditEventBase {
+  auditEventType: 'StateMachine';
+  state: string;
+  eventType: string;
+  data?: {
+    eventType: string;
+    workflowName?: string;
+    transition?: string;
+    newState?: string;
+    state?: string;
+    success?: boolean;
+    reason?: string;
+    criterion?: string;
+    processorClassName?: string;
+    stateProcessId?: {
+      persisted: boolean;
+      persistedId?: string;
+      runtimeId: number;
+    };
+    stateProcessClassName?: string;
+    stateProcessType?: string;
+    failReason?: string;
+  };
+}
+
+/** Entity change audit event */
+export interface EntityChangeAuditEvent extends AuditEventBase {
+  auditEventType: 'EntityChange';
+  changeType: 'CREATED' | 'UPDATED' | 'DELETED';
+  changes?: {
+    before?: Record<string, unknown>;
+    after?: Record<string, unknown>;
+  };
+}
+
+/** System audit event */
+export interface SystemAuditEvent extends AuditEventBase {
+  auditEventType: 'System';
+  errorTime?: string;
+  doneTime?: string;
+  queueName?: string;
+  shardId?: string;
+  status?: string;
+  data?: Record<string, unknown>;
+}
+
+/** Union type for all audit events */
+export type AuditEvent = StateMachineAuditEvent | EntityChangeAuditEvent | SystemAuditEvent;
+
+/** Pagination info for audit events response */
+export interface AuditPaginationInfo {
+  hasNext: boolean;
+  nextCursor?: string;
+}
+
+/** Response from entity audit events API */
+export interface EntityAuditEventsResponse {
+  items: AuditEvent[];
+  pagination: AuditPaginationInfo;
+}
+
+/** Parameters for fetching entity audit events */
+export interface GetEntityAuditEventsParams {
+  entityId: string;
+  eventType?: AuditEventType[];
+  severity?: AuditEventSeverity;
+  fromUtcTime?: string;
+  toUtcTime?: string;
+  transactionId?: string;
+  cursor?: string;
+  limit?: number;
+}
+

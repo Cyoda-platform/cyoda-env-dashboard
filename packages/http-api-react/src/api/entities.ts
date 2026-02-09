@@ -390,3 +390,82 @@ export function parseModelNameVersion(modelName: string): { entityName: string; 
 
   return { entityName, modelVersion };
 }
+
+/**
+ * Get entity audit events (Cyoda Cloud API)
+ * Used when VITE_FEATURE_FLAG_IS_CYODA_CLOUD is enabled
+ * Returns audit events for a specific entity with optional filtering
+ *
+ * @param params - Parameters for filtering audit events
+ * @returns Paginated list of audit events
+ */
+export function getEntityAuditEvents(params: {
+  entityId: string;
+  eventType?: ('StateMachine' | 'EntityChange' | 'System')[];
+  severity?: 'ERROR' | 'INFO' | 'WARN' | 'DEBUG';
+  fromUtcTime?: string;
+  toUtcTime?: string;
+  transactionId?: string;
+  cursor?: string;
+  limit?: number;
+}) {
+  const { entityId, ...queryParams } = params;
+
+  // Build query parameters, handling array for eventType
+  const searchParams = new URLSearchParams();
+
+  if (queryParams.eventType && queryParams.eventType.length > 0) {
+    queryParams.eventType.forEach(type => searchParams.append('eventType', type));
+  }
+  if (queryParams.severity) {
+    searchParams.append('severity', queryParams.severity);
+  }
+  if (queryParams.fromUtcTime) {
+    searchParams.append('fromUtcTime', queryParams.fromUtcTime);
+  }
+  if (queryParams.toUtcTime) {
+    searchParams.append('toUtcTime', queryParams.toUtcTime);
+  }
+  if (queryParams.transactionId) {
+    searchParams.append('transactionId', queryParams.transactionId);
+  }
+  if (queryParams.cursor) {
+    searchParams.append('cursor', queryParams.cursor);
+  }
+  if (queryParams.limit) {
+    searchParams.append('limit', queryParams.limit.toString());
+  }
+
+  const queryString = searchParams.toString();
+  const url = `/audit/entity/${encodeURIComponent(entityId)}${queryString ? `?${queryString}` : ''}`;
+
+  return axios.get<{
+    items: Array<{
+      auditEventType: 'StateMachine' | 'EntityChange' | 'System';
+      severity: 'ERROR' | 'INFO' | 'WARN' | 'DEBUG';
+      utcTime: string;
+      microsTime: number;
+      consistencyTime?: string;
+      entityId?: string;
+      entityModel?: string;
+      transactionId?: string;
+      actor?: { id: string; legalId: string; name?: string };
+      details?: string;
+      system?: boolean;
+      // StateMachine specific
+      state?: string;
+      eventType?: string;
+      data?: Record<string, unknown>;
+      // EntityChange specific
+      changeType?: 'CREATED' | 'UPDATED' | 'DELETED';
+      changes?: { before?: Record<string, unknown>; after?: Record<string, unknown> };
+      // System specific
+      errorTime?: string;
+      doneTime?: string;
+      queueName?: string;
+      shardId?: string;
+      status?: string;
+    }>;
+    pagination: { hasNext: boolean; nextCursor?: string };
+  }>(url);
+}

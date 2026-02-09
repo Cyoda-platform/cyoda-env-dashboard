@@ -5,11 +5,13 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Table, Tag, Spin, Modal, Button, Space } from 'antd';
-import { RightOutlined, SearchOutlined } from '@ant-design/icons';
+import { Table, Tag, Spin, Modal, Button, Space, Tooltip } from 'antd';
+import { RightOutlined, SearchOutlined, BranchesOutlined, ThunderboltOutlined, DiffOutlined } from '@ant-design/icons';
 import { axios, getCyodaCloudEntity, HelperFeatureFlags } from '@cyoda/http-api-react';
+import type { AuditEventType } from '@cyoda/http-api-react';
 import Prism from 'prismjs';
 import 'prismjs/themes/prism.css';
+import { AuditEventViewer } from '@cyoda/ui-lib-react';
 import './EntityAudit.scss';
 
 interface ChangedFieldValue {
@@ -42,6 +44,18 @@ const EntityAudit: React.FC<EntityAuditProps> = ({ entityClass, entityId }) => {
   const [jsonModalData, setJsonModalData] = useState<Record<string, unknown> | null>(null);
   const [jsonModalLoading, setJsonModalLoading] = useState(false);
   const [jsonModalTransactionId, setJsonModalTransactionId] = useState<string>('');
+
+  // Audit event viewer state
+  const [auditViewerVisible, setAuditViewerVisible] = useState(false);
+  const [auditViewerEventType, setAuditViewerEventType] = useState<AuditEventType>('StateMachine');
+  const [auditViewerTransactionId, setAuditViewerTransactionId] = useState<string>('');
+
+  // Handler for opening audit event viewer
+  const handleOpenAuditViewer = (transactionId: string, eventType: AuditEventType) => {
+    setAuditViewerTransactionId(transactionId);
+    setAuditViewerEventType(eventType);
+    setAuditViewerVisible(true);
+  };
 
   // Load entity changes
   useEffect(() => {
@@ -174,11 +188,17 @@ const EntityAudit: React.FC<EntityAuditProps> = ({ entityClass, entityId }) => {
       title: 'Change Type',
       dataIndex: 'operation',
       key: 'operation',
-      width: isCyodaCloud ? 160 : 120,
-      render: (operation: string, record: EntityChange) => (
-        <Space>
-          {renderOperation(operation)}
-          {isCyodaCloud && (
+      width: 120,
+      render: (operation: string) => renderOperation(operation),
+    },
+    // Details column - only shown when Cyoda Cloud is enabled
+    ...(isCyodaCloud ? [{
+      title: 'Details',
+      key: 'details',
+      width: 180,
+      render: (_: unknown, record: EntityChange) => (
+        <Space size="small">
+          <Tooltip title="View entity at this transaction">
             <Button
               type="text"
               size="small"
@@ -187,12 +207,44 @@ const EntityAudit: React.FC<EntityAuditProps> = ({ entityClass, entityId }) => {
                 e.stopPropagation();
                 handleViewEntityAtTransaction(record.transactionId);
               }}
-              title="View entity at this transaction"
             />
-          )}
+          </Tooltip>
+          <Tooltip title="State Machine Audit">
+            <Button
+              type="text"
+              size="small"
+              icon={<BranchesOutlined />}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleOpenAuditViewer(record.transactionId, 'StateMachine');
+              }}
+            />
+          </Tooltip>
+          <Tooltip title="Entity Change Audit">
+            <Button
+              type="text"
+              size="small"
+              icon={<DiffOutlined />}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleOpenAuditViewer(record.transactionId, 'EntityChange');
+              }}
+            />
+          </Tooltip>
+          <Tooltip title="System Events">
+            <Button
+              type="text"
+              size="small"
+              icon={<ThunderboltOutlined />}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleOpenAuditViewer(record.transactionId, 'System');
+              }}
+            />
+          </Tooltip>
         </Space>
       ),
-    },
+    }] : []),
   ];
 
   return (
@@ -271,6 +323,17 @@ const EntityAudit: React.FC<EntityAuditProps> = ({ entityClass, entityId }) => {
             </div>
           )}
         </Modal>
+      )}
+
+      {/* Audit Event Viewer Modal */}
+      {isCyodaCloud && (
+        <AuditEventViewer
+          visible={auditViewerVisible}
+          onClose={() => setAuditViewerVisible(false)}
+          entityId={entityId}
+          transactionId={auditViewerTransactionId}
+          eventType={auditViewerEventType}
+        />
       )}
     </div>
   );
