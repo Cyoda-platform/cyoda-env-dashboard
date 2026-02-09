@@ -288,8 +288,8 @@ export const LeftSideMenu: React.FC<LeftSideMenuProps> = ({ collapsed, onCollaps
     {
       key: '/entity-viewer',
       icon: <EyeOutlined />,
-      label: <span data-path="/entity-viewer">Entity viewer</span>,
-      title: 'Entity viewer',
+      label: <span data-path="/entity-viewer">Entity Model Viewer</span>,
+      title: 'Entity Model Viewer',
     },
     {
       key: '/processing-ui',

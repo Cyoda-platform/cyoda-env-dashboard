@@ -346,6 +346,85 @@ describe('Instances', () => {
 
   });
 
+  describe('Entity Options Display', () => {
+    it('should display full entity name including version for business entities', async () => {
+      mockEntityTypeValue.value = 'BUSINESS';
+      // Mock data with version numbers (e.g., travel.1001)
+      mockUseWorkflowEnabledTypes.mockReturnValue({
+        data: [
+          { value: 'travel.1001', name: 'travel.1001', type: 'BUSINESS' },
+          { value: 'booking.1002', name: 'booking.1002', type: 'BUSINESS' },
+        ],
+        isLoading: false,
+      });
+
+      const { container } = render(<Instances />, { wrapper: createWrapper() });
+
+      // Open the select dropdown
+      const select = container.querySelector('.ant-select-selector');
+      expect(select).toBeInTheDocument();
+      fireEvent.mouseDown(select!);
+
+      // Wait for dropdown to open and check options display full name with version
+      await waitFor(() => {
+        expect(screen.getByText('travel.1001')).toBeInTheDocument();
+        expect(screen.getByText('booking.1002')).toBeInTheDocument();
+      });
+    });
+
+    it('should sort entity options alphabetically', async () => {
+      mockEntityTypeValue.value = 'BUSINESS';
+      // Mock data in non-alphabetical order
+      mockUseWorkflowEnabledTypes.mockReturnValue({
+        data: [
+          { value: 'zebra.1001', name: 'zebra.1001', type: 'BUSINESS' },
+          { value: 'alpha.1002', name: 'alpha.1002', type: 'BUSINESS' },
+          { value: 'middle.1003', name: 'middle.1003', type: 'BUSINESS' },
+        ],
+        isLoading: false,
+      });
+
+      const { container } = render(<Instances />, { wrapper: createWrapper() });
+
+      // Open the select dropdown
+      const select = container.querySelector('.ant-select-selector');
+      expect(select).toBeInTheDocument();
+      fireEvent.mouseDown(select!);
+
+      // Wait for dropdown to open
+      await waitFor(() => {
+        const options = screen.getAllByRole('option');
+        expect(options.length).toBe(3);
+        // Options should be sorted alphabetically: alpha, middle, zebra
+        expect(options[0]).toHaveTextContent('alpha.1002');
+        expect(options[1]).toHaveTextContent('middle.1003');
+        expect(options[2]).toHaveTextContent('zebra.1001');
+      });
+    });
+
+    it('should display full package name for technical entities', async () => {
+      mockEntityTypeValue.value = 'PERSISTENCE';
+      mockUseWorkflowEnabledTypes.mockReturnValue({
+        data: [
+          { value: 'com.cyoda.tdb.model.TreeNodeEntity', name: 'com.cyoda.tdb.model.TreeNodeEntity', type: 'PERSISTENCE' },
+        ],
+        isLoading: false,
+      });
+
+      const { container } = render(<Instances />, { wrapper: createWrapper() });
+
+      // Open the select dropdown
+      const select = container.querySelector('.ant-select-selector');
+      expect(select).toBeInTheDocument();
+      fireEvent.mouseDown(select!);
+
+      // Wait for dropdown to open and check full package name is displayed
+      await waitFor(() => {
+        expect(screen.getByText('com.cyoda.tdb.model.TreeNodeEntity')).toBeInTheDocument();
+      });
+    });
+  });
+
   describe('Advanced Filtering', () => {
     it('should render Advanced button', () => {
       render(<Instances />, { wrapper: createWrapper() });

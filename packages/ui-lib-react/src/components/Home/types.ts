@@ -12,9 +12,9 @@ export interface MenuItem {
 
 export const defaultMenuItems: MenuItem[] = [
   {
-    name: 'Entity Viewer',
+    name: 'Entity Model Viewer',
     link: '/http-api/entity-viewer',
-    description: 'Display entity',
+    description: 'Display entity model',
     localhostLink: 'http://localhost:3007/http-api/entity-viewer',
     isRouterLink: false,
   },

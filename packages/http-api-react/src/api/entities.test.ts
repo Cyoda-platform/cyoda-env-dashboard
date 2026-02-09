@@ -358,5 +358,52 @@ describe('Entities API', () => {
       expect(result).toEqual(mockResponse);
     });
   });
+
+  describe('getCyodaCloudEntity', () => {
+    it('should call GET /entity/{entityId} without transactionId', async () => {
+      const mockResponse = { data: { id: '123', name: 'Test Entity', field: 'value' } };
+      vi.mocked(axios.get).mockResolvedValue(mockResponse);
+
+      const result = await entitiesApi.getCyodaCloudEntity('entity-uuid-123');
+
+      expect(axios.get).toHaveBeenCalledWith('/entity/entity-uuid-123', { params: undefined });
+      expect(result).toEqual(mockResponse);
+    });
+
+    it('should call GET /entity/{entityId} with transactionId when provided', async () => {
+      const mockResponse = { data: { id: '123', name: 'Test Entity at Transaction' } };
+      vi.mocked(axios.get).mockResolvedValue(mockResponse);
+
+      const result = await entitiesApi.getCyodaCloudEntity('entity-uuid-123', 'txn-456');
+
+      expect(axios.get).toHaveBeenCalledWith('/entity/entity-uuid-123', { params: { transactionId: 'txn-456' } });
+      expect(result).toEqual(mockResponse);
+    });
+
+    it('should encode entityId in URL', async () => {
+      const mockResponse = { data: { id: 'special/id' } };
+      vi.mocked(axios.get).mockResolvedValue(mockResponse);
+
+      await entitiesApi.getCyodaCloudEntity('special/id');
+
+      expect(axios.get).toHaveBeenCalledWith('/entity/special%2Fid', { params: undefined });
+    });
+
+    it('should return entity data as Record<string, unknown>', async () => {
+      const mockEntityData = {
+        id: '123',
+        name: 'Test Entity',
+        nested: { field: 'value' },
+        array: [1, 2, 3],
+      };
+      vi.mocked(axios.get).mockResolvedValue({ data: mockEntityData });
+
+      const result = await entitiesApi.getCyodaCloudEntity('entity-uuid-123');
+
+      expect(result.data).toEqual(mockEntityData);
+      expect(result.data).toHaveProperty('nested');
+      expect(result.data).toHaveProperty('array');
+    });
+  });
 });
 

@@ -1,0 +1,28 @@
+.audit-event-viewer-modal {
+  .ant-modal-body {
+    max-height: 80vh;
+    overflow: auto;
+  }
+
+  .audit-event-details {
+    padding: 12px;
+    background: #fafafa;
+    border-radius: 4px;
+
+    .ant-descriptions {
+      margin-bottom: 0;
+    }
+  }
+
+  .language-javascript {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+}
+

@@ -105,7 +105,7 @@ export const Instances: React.FC = () => {
   // Global UI settings
   const { entityType } = useGlobalUiSettingsStore();
 
-  
+
   // Clear selection when entity type changes
   useEffect(() => {
     setEntityClassName("");
@@ -118,7 +118,7 @@ export const Instances: React.FC = () => {
   const { data: workflowEnabledTypes = [], isLoading: isLoadingEntities } = useWorkflowEnabledTypes();
   const { data: workflows = [] } = useWorkflowsList(entityClassName);
   const instancesMutation = useInstances();
-  
+
   // Update rangeConditionForm when entityClassName changes
   useEffect(() => {
     setRangeConditionForm(prev => ({
@@ -164,7 +164,7 @@ export const Instances: React.FC = () => {
       message.error('Failed to load instances');
     }
   };
-  
+
   // Handlers
   const handleEntityChange = (value: string) => {
     setEntityClassName(value);
@@ -184,40 +184,40 @@ export const Instances: React.FC = () => {
   const handleRangeConditionChange = (form: RangeConditionForm) => {
     setRangeConditionForm(form);
   };
-  
+
   const handlePrevPage = () => {
     const newPage = currentPage - 1;
     const newOffset = (newPage - 1) * PAGE_SIZE;
     setCurrentPage(newPage);
     loadInstances(newOffset);
   };
-  
+
   const handleNextPage = () => {
     const newPage = currentPage + 1;
     const newOffset = (newPage - 1) * PAGE_SIZE;
     setCurrentPage(newPage);
     loadInstances(newOffset);
   };
-  
+
   const handleViewDetail = (record: InstanceTableRow) => {
     navigate(
       `/instances/${record.entityId}?entityClassName=${record.entityClassName}`
     );
   };
-  
+
   const getWorkflowName = (record: Instance) => {
     if (!record.currentWorkflowId) return '';
     const workflow = workflows.find((w: any) => w.id === record.currentWorkflowId);
     return workflow ? workflow.name : record.currentWorkflowId;
   };
-  
+
   const getWorkflowLink = (record: Instance) => {
     if (!record.currentWorkflowId) return '';
     const persistedType = 'persisted'; // Default to persisted
     return `/statemachine/workflow/${record.currentWorkflowId}?persistedType=${persistedType}&entityClassName=${record.entityClassName}`;
   };
 
-  // Entity options - filtered by selected entity type
+  // Entity options - filtered by selected entity type and sorted alphabetically
   const entityOptions = useMemo(() => {
     const options = workflowEnabledTypes
       .filter((type: any) => {
@@ -243,36 +243,28 @@ export const Instances: React.FC = () => {
           return null;
         }
 
-      // If entity has type info, set appropriate label
-      let label = type.label || value;
-      if (type.type) {
-        const parts = value.split(".");
-        if (type.type === 'BUSINESS') {
-          // Business entities: show name without version (e.g., "travel" from "travel.1001")
-          label = parts.length >= 2 ? parts.slice(0, -1).join('.') : value;
-        } else {
-          // Technical entities: show full package name
-          label = value;
-        }
-      }
+        // Use the value as the label (shows full name including version for business entities)
+        // e.g., "travel.1001" for business entities, full package name for technical entities
+        const label = value;
 
         return {
           label,
           value,
         };
       })
-      .filter(Boolean); // Remove any null entries
+      .filter(Boolean) // Remove any null entries
+      .sort((a: any, b: any) => a.label.localeCompare(b.label)); // Sort alphabetically
 
     return options;
   }, [workflowEnabledTypes, entityType, hasEntityTypeInfo]);
-  
+
   // Table data
   const tableData: InstanceTableRow[] = (instancesData?.items || []).map((instance) => ({
     ...instance,
     key: instance.entityId,
     entityClassNameLabel: entityOptions.find((opt) => opt.value === instance.entityClassName)?.label || instance.entityClassName,
   }));
-  
+
   // Table columns with resizable support
   const columns: ColumnsType<InstanceTableRow> = useMemo(() => [
     {
@@ -357,17 +349,17 @@ export const Instances: React.FC = () => {
       ),
     },
   ], [columnWidths, handleResize, getWorkflowLink, getWorkflowName, handleViewDetail, navigate, entityType]);
-  
+
   // Load instances on mount if entity is selected
   useEffect(() => {
     if (entityClassName) {
       loadInstances(0);
     }
   }, [entityClassName]);
-  
+
   const hasMore = instancesData?.hasMore || false;
   const hasPrev = currentPage > 1;
-  
+
   return (
     <div className="instances-page">
       {/* Header */}
