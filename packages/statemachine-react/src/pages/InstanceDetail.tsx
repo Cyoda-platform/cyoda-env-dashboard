@@ -16,7 +16,7 @@ import {
 } from '../hooks/useStatemachine';
 import { useEntityLoad } from '../hooks/useEntity';
 import type { Entity } from '@cyoda/http-api-react';
-import { axiosPlatform } from '@cyoda/http-api-react';
+import { axiosPlatform, getCyodaCloudEntity, HelperFeatureFlags } from '@cyoda/http-api-react';
 import type { PersistedType } from '../types';
 import {
   HelperDetailEntity,
@@ -315,11 +315,18 @@ const DetailJsonView: React.FC<{
       try {
         setLoading(true);
         setError(null);
-        // Use entity-info/fetch/lazy endpoint which works without 404 errors
-        const { data } = await axiosPlatform.get(
-          `/platform-api/entity-info/fetch/lazy?entityClass=${entityClassName}&entityId=${encodeURIComponent(instanceId)}`
-        );
-        setJsonData(data);
+
+        // Use Cyoda Cloud endpoint when flag is enabled
+        if (HelperFeatureFlags.isCyodaCloud()) {
+          const { data } = await getCyodaCloudEntity(instanceId);
+          setJsonData(data);
+        } else {
+          // Use entity-info/fetch/lazy endpoint which works without 404 errors
+          const { data } = await axiosPlatform.get(
+            `/platform-api/entity-info/fetch/lazy?entityClass=${entityClassName}&entityId=${encodeURIComponent(instanceId)}`
+          );
+          setJsonData(data);
+        }
       } catch (err: any) {
         console.error('[DetailJsonView] Failed to load entity data:', err);
         setError(err.message || 'Failed to load entity data');

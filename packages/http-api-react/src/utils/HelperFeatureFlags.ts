@@ -10,8 +10,8 @@ export default class HelperFeatureFlags {
    * Get feature flag value by name from environment variables
    */
   static getFeatureFlagByName(name: string): boolean {
-    const value = import.meta.env[name];
-    return [true, 1, 'true', '1'].includes(value);
+    const value = (import.meta.env as Record<string, unknown>)[name];
+    return [true, 1, 'true', '1'].includes(value as string | boolean | number);
   }
 
   /**
@@ -49,6 +49,16 @@ export default class HelperFeatureFlags {
    */
   static isTasksEnabled(): boolean {
     return this.getFeatureFlagByName('VITE_FEATURE_FLAG_TASKS');
+  }
+
+  /**
+   * Check if Cyoda Cloud mode is enabled
+   * When enabled, uses Cyoda Cloud API endpoints:
+   * - /model/export/SIMPLE_VIEW/{entityName}/{modelVersion} for entity models
+   * - /entity/{entityId} for entity data
+   */
+  static isCyodaCloud(): boolean {
+    return this.getFeatureFlagByName('VITE_FEATURE_FLAG_IS_CYODA_CLOUD');
   }
 }
 

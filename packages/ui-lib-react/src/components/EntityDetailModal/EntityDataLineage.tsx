@@ -224,6 +224,7 @@ const EntityDataLineage: React.FC<EntityDataLineageProps> = ({ entityClass, enti
           return mapped;
         })()}
         compareData={compareData}
+        entityId={entityId}
       />
     </div>
   );

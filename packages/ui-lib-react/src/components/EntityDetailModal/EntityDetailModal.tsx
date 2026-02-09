@@ -5,8 +5,8 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Modal, Tabs, Spin, Button, Switch, Divider } from 'antd';
-import { getEntityLoad } from '@cyoda/http-api-react';
+import { Modal, Tabs, Spin, Button, Switch, Divider, theme } from 'antd';
+import { getEntityLoad, getCyodaCloudEntity, HelperFeatureFlags } from '@cyoda/http-api-react';
 import type { Entity } from '@cyoda/http-api-react';
 import type { ConfigDefinition } from './types';
 import EntityDataLineage from './EntityDataLineage';
@@ -29,11 +29,16 @@ const EntityDetailModal: React.FC<EntityDetailModalProps> = ({
   configDefinition,
   onClose,
 }) => {
+  const { token } = theme.useToken();
   const [activeTab, setActiveTab] = useState('details');
   const [loading, setLoading] = useState(false);
   const [entity, setEntity] = useState<Entity[]>([]);
+  const [cyodaCloudEntity, setCyodaCloudEntity] = useState<Record<string, unknown> | null>(null);
   const [showEmptyFields, setShowEmptyFields] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  // Check if Cyoda Cloud mode is enabled
+  const isCyodaCloudMode = HelperFeatureFlags.isCyodaCloud();
 
   // Extract entity ID from the row
   const getEntityId = () => {
@@ -61,14 +66,23 @@ const EntityDetailModal: React.FC<EntityDetailModalProps> = ({
 
     setLoading(true);
     try {
-      const { data } = await getEntityLoad(entityId, entityClass);
-      
-      // Filter and sort data using HelperDetailEntity (like in Vue version)
-      const filteredData = HelperDetailEntity.filterData(data);
-      setEntity(filteredData);
+      if (isCyodaCloudMode) {
+        // Use Cyoda Cloud endpoint for entity data
+        const { data } = await getCyodaCloudEntity(entityId);
+        setCyodaCloudEntity(data);
+        setEntity([]); // Clear structured entity data
+      } else {
+        // Use standard endpoint
+        const { data } = await getEntityLoad(entityId, entityClass);
+        // Filter and sort data using HelperDetailEntity (like in Vue version)
+        const filteredData = HelperDetailEntity.filterData(data);
+        setEntity(filteredData);
+        setCyodaCloudEntity(null); // Clear Cyoda Cloud data
+      }
     } catch (error) {
       console.error('Failed to load entity:', error);
       setEntity([]);
+      setCyodaCloudEntity(null);
     } finally {
       setLoading(false);
     }
@@ -82,9 +96,10 @@ const EntityDetailModal: React.FC<EntityDetailModalProps> = ({
   // Reset tab when modal opens
   useEffect(() => {
     if (visible) {
-      setActiveTab('details');
+      // Set default tab based on mode
+      setActiveTab(isCyodaCloudMode ? 'json' : 'details');
     }
-  }, [visible]);
+  }, [visible, isCyodaCloudMode]);
 
   // Helper to get value from entity array by column name
   const getValueFromColumn = (columnName: string) => {
@@ -95,7 +110,7 @@ const EntityDetailModal: React.FC<EntityDetailModalProps> = ({
   // Get standard fields
   const getStandardFields = () => {
     if (!entity || entity.length === 0) return {};
-    
+
     return {
       id: getValueFromColumn('id') !== '-' ? getValueFromColumn('id') : getEntityId(),
       state: getValueFromColumn('state') !== '-' ? getValueFromColumn('state') : '-',
@@ -108,16 +123,16 @@ const EntityDetailModal: React.FC<EntityDetailModalProps> = ({
   // Filter entity fields (remove standard fields only)
   const getEntityFields = () => {
     if (!entity || entity.length === 0) return [];
-    
+
     // Only these fields go to "Standard fields" section
     const standardKeys = ['id', 'state', 'previousTransition', 'creationDate', 'createdDate'];
-    
+
     return entity.filter((el: Entity) => {
       // Skip standard fields
       if (standardKeys.includes(el.columnInfo?.columnName || '')) {
         return false;
       }
-      
+
       // Only filter LEAF type fields by value when showEmptyFields is false
       // Always show non-LEAF types (LIST, EMBEDDED, MAP)
       if (!showEmptyFields && el.type === 'LEAF') {
@@ -125,7 +140,7 @@ const EntityDetailModal: React.FC<EntityDetailModalProps> = ({
           return false;
         }
       }
-      
+
       return true;
     });
   };
@@ -133,96 +148,162 @@ const EntityDetailModal: React.FC<EntityDetailModalProps> = ({
   const standardFields = getStandardFields();
   const entityFields = getEntityFields();
 
-  const tabItems = [
-    {
-      key: 'details',
-      label: 'Details',
-      children: (
-        <div className="entity-detail-tab">
-          <div className="entity-detail-section">
-            <h4>Standard fields</h4>
-            <div className="standard-fields">
-              <p><span className="field-label">Id:</span> {standardFields.id}</p>
-              <p><span className="field-label">State:</span> {standardFields.state}</p>
-              <p><span className="field-label">Previous Transition:</span> {standardFields.previousTransition}</p>
-              <p><span className="field-label">Created Date:</span> {standardFields.createdDate}</p>
-              <p><span className="field-label">Last updated date:</span> {standardFields.lastUpdatedDate}</p>
+  // Theme-aware colors for JSON view
+  const isDark = token.colorBgContainer === '#141414' || token.colorBgContainer === '#000000';
+  const bgColor = isDark ? '#1e293b' : '#f5f5f5';
+  const textColor = isDark ? '#e2e8f0' : '#1f2937';
+  const borderColor = isDark ? '#334155' : '#d1d5db';
+
+  // Build tab items based on mode
+  const tabItems = isCyodaCloudMode
+    ? [
+        {
+          key: 'json',
+          label: 'JSON',
+          children: (
+            <div className="entity-detail-tab">
+              {cyodaCloudEntity ? (
+                <pre style={{
+                  background: bgColor,
+                  color: textColor,
+                  padding: '16px',
+                  borderRadius: token.borderRadius,
+                  overflow: 'auto',
+                  maxHeight: '600px',
+                  border: `1px solid ${borderColor}`,
+                  fontFamily: 'monospace',
+                  fontSize: '13px',
+                  lineHeight: '1.6'
+                }}>
+                  {JSON.stringify(cyodaCloudEntity, null, 2)}
+                </pre>
+              ) : (
+                <p>No entity data available.</p>
+              )}
             </div>
-          </div>
+          ),
+        },
+        {
+          key: 'dataLineage',
+          label: 'Data lineage',
+          children: (
+            <div className="entity-detail-tab">
+              {visible && getEntityId() && getEntityClass() && (
+                <EntityDataLineage
+                  key={refreshTrigger}
+                  entityClass={getEntityClass()}
+                  entityId={getEntityId()!}
+                />
+              )}
+            </div>
+          ),
+        },
+        {
+          key: 'audit',
+          label: 'Audit',
+          children: (
+            <div className="entity-detail-tab">
+              {visible && getEntityId() && getEntityClass() && (
+                <EntityAudit
+                  key={refreshTrigger}
+                  entityClass={getEntityClass()}
+                  entityId={getEntityId()!}
+                />
+              )}
+            </div>
+          ),
+        },
+      ]
+    : [
+        {
+          key: 'details',
+          label: 'Details',
+          children: (
+            <div className="entity-detail-tab">
+              <div className="entity-detail-section">
+                <h4>Standard fields</h4>
+                <div className="standard-fields">
+                  <p><span className="field-label">Id:</span> {standardFields.id}</p>
+                  <p><span className="field-label">State:</span> {standardFields.state}</p>
+                  <p><span className="field-label">Previous Transition:</span> {standardFields.previousTransition}</p>
+                  <p><span className="field-label">Created Date:</span> {standardFields.createdDate}</p>
+                  <p><span className="field-label">Last updated date:</span> {standardFields.lastUpdatedDate}</p>
+                </div>
+              </div>
 
-          <Divider />
-
-          {/* Transition Entity Section */}
-          {getEntityId() && getEntityClass() && (
-            <>
-              <EntityTransitions
-                entityId={getEntityId()!}
-                entityClass={getEntityClass()}
-                onTransitionChange={() => {
-                  // Reload entity data after transition change
-                  loadEntity();
-                  // Trigger refresh for Data lineage tab
-                  setRefreshTrigger(prev => prev + 1);
-                }}
-              />
               <Divider />
-            </>
-          )}
 
-          <div className="entity-detail-section">
-            <div className="entity-header">
-              <h4>Entity</h4>
-              <div className="entity-controls">
-                <span style={{ marginRight: 8 }}>Show Empty Fields</span>
-                <Switch 
-                  checked={showEmptyFields} 
-                  onChange={setShowEmptyFields}
+              {/* Transition Entity Section */}
+              {getEntityId() && getEntityClass() && (
+                <>
+                  <EntityTransitions
+                    entityId={getEntityId()!}
+                    entityClass={getEntityClass()}
+                    onTransitionChange={() => {
+                      // Reload entity data after transition change
+                      loadEntity();
+                      // Trigger refresh for Data lineage tab
+                      setRefreshTrigger(prev => prev + 1);
+                    }}
+                  />
+                  <Divider />
+                </>
+              )}
+
+              <div className="entity-detail-section">
+                <div className="entity-header">
+                  <h4>Entity</h4>
+                  <div className="entity-controls">
+                    <span style={{ marginRight: 8 }}>Show Empty Fields</span>
+                    <Switch
+                      checked={showEmptyFields}
+                      onChange={setShowEmptyFields}
+                    />
+                  </div>
+                </div>
+
+                {/* Use EntityDetailTree for better nested field display */}
+                <EntityDetailTree
+                  entity={entityFields}
+                  showEmpty={showEmptyFields}
+                  entityId={getEntityId()}
+                  entityClass={getEntityClass()}
                 />
               </div>
             </div>
-
-            {/* Use EntityDetailTree for better nested field display */}
-            <EntityDetailTree
-              entity={entityFields}
-              showEmpty={showEmptyFields}
-              entityId={getEntityId()}
-              entityClass={getEntityClass()}
-            />
-          </div>
-        </div>
-      ),
-    },
-    {
-      key: 'dataLineage',
-      label: 'Data lineage',
-      children: (
-        <div className="entity-detail-tab">
-          {visible && getEntityId() && getEntityClass() && (
-            <EntityDataLineage
-              key={refreshTrigger}
-              entityClass={getEntityClass()}
-              entityId={getEntityId()!}
-            />
-          )}
-        </div>
-      ),
-    },
-    {
-      key: 'audit',
-      label: 'Audit',
-      children: (
-        <div className="entity-detail-tab">
-          {visible && getEntityId() && getEntityClass() && (
-            <EntityAudit
-              key={refreshTrigger}
-              entityClass={getEntityClass()}
-              entityId={getEntityId()!}
-            />
-          )}
-        </div>
-      ),
-    },
-  ];
+          ),
+        },
+        {
+          key: 'dataLineage',
+          label: 'Data lineage',
+          children: (
+            <div className="entity-detail-tab">
+              {visible && getEntityId() && getEntityClass() && (
+                <EntityDataLineage
+                  key={refreshTrigger}
+                  entityClass={getEntityClass()}
+                  entityId={getEntityId()!}
+                />
+              )}
+            </div>
+          ),
+        },
+        {
+          key: 'audit',
+          label: 'Audit',
+          children: (
+            <div className="entity-detail-tab">
+              {visible && getEntityId() && getEntityClass() && (
+                <EntityAudit
+                  key={refreshTrigger}
+                  entityClass={getEntityClass()}
+                  entityId={getEntityId()!}
+                />
+              )}
+            </div>
+          ),
+        },
+      ];
 
   const title = `Entity ${getShortEntityName()} (${getEntityId()})`;
 

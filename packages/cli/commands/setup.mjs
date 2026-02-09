@@ -23,7 +23,7 @@ program
     console.log("\n");
     console.log("Welcome to Cyoda UI setup utility. This utility will help you correctly setup the React UI and check functionality");
     console.log("-------");
-    
+
     const inquirerResult = await inquirer.prompt([
       {
         type: "message",
@@ -118,6 +118,15 @@ program
       },
       {
         type: "confirm",
+        message: "FF: Use Cyoda Cloud?",
+        name: "VITE_FEATURE_FLAG_IS_CYODA_CLOUD",
+        default: () => envExist.VITE_FEATURE_FLAG_IS_CYODA_CLOUD || false,
+        when: function (answers) {
+          return answers.confirmFeatureFlags;
+        },
+      },
+      {
+        type: "confirm",
         message: "Do you want to set Auth0 settings?",
         name: "confirmAuth0"
       },
@@ -193,10 +202,10 @@ program
 
     const envContent = stringify(env);
     fs.writeFileSync(envTypes[inquirerResult.envType], envContent);
-    
+
     console.log('\n-----------');
     console.log(`File "${envTypes[inquirerResult.envType].replace('./', '')}" was created. Now run:\n`);
-    
+
     if (inquirerResult.envType === 'DEV_LOCAL') {
       console.log(`  ${chalk.green.bold(`npm run dev`)}\n`);
     } else if (inquirerResult.envType === 'PROD') {
@@ -216,7 +225,7 @@ function displayEnvInTable(data) {
   Object.keys(data).forEach((key) => {
     table.push([key, data[key]]);
   });
-  
+
   console.log(table.toString());
 }
 

@@ -1,7 +1,7 @@
 /**
  * PageEntityViewer
  * Main page for Entity Viewer functionality
- * 
+ *
  * Migrated from: .old_project/packages/http-api/src/views/PageEntityViewer.vue
  */
 
@@ -15,8 +15,8 @@ import { EntityViewer, type EntityViewerRef } from '../../components/EntityViewe
 import { ConfigEditorStreamGrid, type ConfigEditorStreamGridRef } from '@cyoda/ui-lib-react';
 import { useEntityViewerStore } from '../../stores/entityViewerStore';
 import { useGlobalUiSettingsStore } from '../../stores/globalUiSettingsStore';
-import { getReportingFetchTypes, getStreamData } from '../../api/entities';
-import { HelperEntities, eventBus } from '../../utils';
+import { getReportingFetchTypes, getStreamData, getEntityModelExport, parseModelNameVersion, type SimpleViewModel } from '../../api/entities';
+import { HelperEntities, HelperFeatureFlags, eventBus } from '../../utils';
 import type { EntityOption } from '../../utils/HelperEntities';
 import './PageEntityViewer.scss';
 
@@ -30,6 +30,7 @@ export const PageEntityViewer: React.FC = () => {
   const [zoom, setZoom] = useState(1);
   const [viewMode, setViewMode] = useState<'table' | 'json'>('table');
   const [entityDataMap, setEntityDataMap] = useState<Map<string, { reportingInfoRows: any[], relatedPaths: any[] }>>(new Map());
+  const [cyodaCloudModelMap, setCyodaCloudModelMap] = useState<Map<string, SimpleViewModel>>(new Map());
   const [isStreamGridAvailable, setIsStreamGridAvailable] = useState(false);
   const [streamGridTitle, setStreamGridTitle] = useState('Report Stream Result');
   const [currentTheme, setCurrentTheme] = useState<'light' | 'dark'>(
@@ -44,11 +45,26 @@ export const PageEntityViewer: React.FC = () => {
 
   const requestClassOptions = onlyDynamic ? requestClassOptionsDynamic : requestClassOptionsNonDynamic;
 
+  // Check if Cyoda Cloud mode should be used for JSON view
+  const isCyodaCloudMode = HelperFeatureFlags.isCyodaCloud() && entityType === 'BUSINESS';
 
-  // Generate JSON data for all entities with full reporting info
+  // Generate JSON data for all entities
   const entitiesJson = useMemo(() => {
     if (entitys.length === 0) return '{}';
-    
+
+    // When Cyoda Cloud mode is enabled, show the SIMPLE_VIEW model data
+    if (isCyodaCloudMode) {
+      const modelsData = entitys.map(entity => {
+        const modelData = cyodaCloudModelMap.get(entity.to);
+        return {
+          entityClass: entity.to,
+          ...modelData,
+        };
+      });
+      return JSON.stringify(modelsData, null, 2);
+    }
+
+    // Default: show reportingInfoRows and relatedPaths
     const entitiesData = entitys.map(entity => {
       const entityData = entityDataMap.get(entity.to);
       return {
@@ -58,9 +74,9 @@ export const PageEntityViewer: React.FC = () => {
         relatedPaths: entityData?.relatedPaths || [],
       };
     });
-    
+
     return JSON.stringify(entitiesData, null, 2);
-  }, [entitys, entityDataMap]);
+  }, [entitys, entityDataMap, cyodaCloudModelMap, isCyodaCloudMode]);
 
   // Calculate dynamic height for Monaco Editor
   const jsonHeight = useMemo(() => {
@@ -149,6 +165,51 @@ export const PageEntityViewer: React.FC = () => {
       }, 300);
     }
   }, [entitys.length]);
+
+  // Fetch Cyoda Cloud model data when JSON view is selected in Cyoda Cloud mode
+  useEffect(() => {
+    const fetchCyodaCloudModels = async () => {
+      if (!isCyodaCloudMode || viewMode !== 'json' || entitys.length === 0) {
+        return;
+      }
+
+      // Check which entities need to be fetched
+      const entitiesToFetch = entitys.filter(entity => !cyodaCloudModelMap.has(entity.to));
+      if (entitiesToFetch.length === 0) {
+        return;
+      }
+
+      setIsLoading(true);
+      try {
+        const newModelMap = new Map(cyodaCloudModelMap);
+
+        for (const entity of entitiesToFetch) {
+          try {
+            // Parse entity name and version from the entity class name
+            // The requestClass comes from models-info which returns names in format "entityName.version"
+            const { entityName, modelVersion } = parseModelNameVersion(entity.to);
+            const { data } = await getEntityModelExport(entityName, modelVersion);
+            newModelMap.set(entity.to, data);
+          } catch (error) {
+            console.error(`Failed to fetch Cyoda Cloud model for ${entity.to}:`, error);
+            // Store an error placeholder so we don't retry
+            newModelMap.set(entity.to, { currentState: 'ERROR', model: {} });
+          }
+        }
+
+        setCyodaCloudModelMap(newModelMap);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCyodaCloudModels();
+  }, [isCyodaCloudMode, viewMode, entitys, cyodaCloudModelMap]);
+
+  // Clear Cyoda Cloud model cache when entity type changes
+  useEffect(() => {
+    setCyodaCloudModelMap(new Map());
+  }, [entityType]);
 
   const loadDataClassOptions = async () => {
     setIsLoading(true);
@@ -275,7 +336,7 @@ const handleEntityViewerLoaded = useCallback((entityClass?: string, reportingInf
 
   return (
     <div className="page-entity-viewer">
-      <h1 className="page-title">Entity Viewer</h1>
+      <h1 className="page-title">Entity Model Viewer</h1>
       <Spin spinning={isLoading}>
         <div className="entity-viewer-content">
           <div className="wrap-entity-select">
@@ -411,7 +472,7 @@ const handleEntityViewerLoaded = useCallback((entityClass?: string, reportingInf
         beforeMount={handleEditorWillMount}
         options={{
         readOnly: true,
-        minimap: { 
+        minimap: {
           enabled: true,
           renderCharacters: true,
           maxColumn: 60,

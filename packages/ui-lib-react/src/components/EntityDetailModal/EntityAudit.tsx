@@ -5,9 +5,11 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Table, Tag, Spin } from 'antd';
-import { RightOutlined } from '@ant-design/icons';
-import { axiosProcessing } from '@cyoda/http-api-react';
+import { Table, Tag, Spin, Modal, Button, Space } from 'antd';
+import { RightOutlined, SearchOutlined } from '@ant-design/icons';
+import { axiosProcessing, getCyodaCloudEntity, HelperFeatureFlags } from '@cyoda/http-api-react';
+import Prism from 'prismjs';
+import 'prismjs/themes/prism.css';
 import './EntityAudit.scss';
 
 interface ChangedFieldValue {
@@ -33,6 +35,13 @@ interface EntityAuditProps {
 const EntityAudit: React.FC<EntityAuditProps> = ({ entityClass, entityId }) => {
   const [changes, setChanges] = useState<EntityChange[]>([]);
   const [loading, setLoading] = useState(false);
+
+  // Cyoda Cloud mode state for viewing entity at transaction
+  const isCyodaCloud = HelperFeatureFlags.isCyodaCloud();
+  const [jsonModalVisible, setJsonModalVisible] = useState(false);
+  const [jsonModalData, setJsonModalData] = useState<Record<string, unknown> | null>(null);
+  const [jsonModalLoading, setJsonModalLoading] = useState(false);
+  const [jsonModalTransactionId, setJsonModalTransactionId] = useState<string>('');
 
   // Load entity changes
   useEffect(() => {
@@ -83,6 +92,24 @@ const EntityAudit: React.FC<EntityAuditProps> = ({ entityClass, entityId }) => {
       DELETE: 'red',
     };
     return <Tag color={colorMap[operation] || 'default'}>{operation}</Tag>;
+  };
+
+  // Handle viewing entity at a specific transaction (Cyoda Cloud mode)
+  const handleViewEntityAtTransaction = async (transactionId: string) => {
+    setJsonModalTransactionId(transactionId);
+    setJsonModalVisible(true);
+    setJsonModalLoading(true);
+    setJsonModalData(null);
+
+    try {
+      const { data } = await getCyodaCloudEntity(entityId, transactionId);
+      setJsonModalData(data);
+    } catch (error) {
+      console.error('Failed to load entity at transaction:', error);
+      setJsonModalData(null);
+    } finally {
+      setJsonModalLoading(false);
+    }
   };
 
   // Expanded row columns
@@ -147,8 +174,24 @@ const EntityAudit: React.FC<EntityAuditProps> = ({ entityClass, entityId }) => {
       title: 'Change Type',
       dataIndex: 'operation',
       key: 'operation',
-      width: 120,
-      render: renderOperation,
+      width: isCyodaCloud ? 160 : 120,
+      render: (operation: string, record: EntityChange) => (
+        <Space>
+          {renderOperation(operation)}
+          {isCyodaCloud && (
+            <Button
+              type="text"
+              size="small"
+              icon={<SearchOutlined />}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleViewEntityAtTransaction(record.transactionId);
+              }}
+              title="View entity at this transaction"
+            />
+          )}
+        </Space>
+      ),
     },
   ];
 
@@ -192,6 +235,44 @@ const EntityAudit: React.FC<EntityAuditProps> = ({ entityClass, entityId }) => {
           size="small"
         />
       </Spin>
+
+      {/* Modal for viewing entity JSON at transaction (Cyoda Cloud mode) */}
+      {isCyodaCloud && (
+        <Modal
+          title={`Entity at Transaction: ${jsonModalTransactionId}`}
+          open={jsonModalVisible}
+          onCancel={() => setJsonModalVisible(false)}
+          footer={null}
+          width="80%"
+          style={{ top: 20 }}
+        >
+          {jsonModalLoading ? (
+            <div style={{ textAlign: 'center', padding: '40px' }}>
+              <Spin size="large" />
+            </div>
+          ) : jsonModalData ? (
+            <pre
+              className="language-javascript"
+              style={{ maxHeight: '70vh', overflow: 'auto', margin: 0, padding: '16px', background: '#f5f5f5', borderRadius: '4px' }}
+            >
+              <code
+                className="language-javascript"
+                dangerouslySetInnerHTML={{
+                  __html: Prism.highlight(
+                    JSON.stringify(jsonModalData, null, 2),
+                    Prism.languages.javascript,
+                    'javascript'
+                  )
+                }}
+              />
+            </pre>
+          ) : (
+            <div style={{ textAlign: 'center', padding: '40px', color: '#999' }}>
+              No data available
+            </div>
+          )}
+        </Modal>
+      )}
     </div>
   );
 };
