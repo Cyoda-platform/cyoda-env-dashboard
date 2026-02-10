@@ -755,15 +755,21 @@ export function useForceMarkProcessed() {
 
 /**
  * Do manual transition
+ * Uses transactional=true to ensure atomic execution of the transition
  */
 export function useManualTransition() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (params: any) => {
+      // transactional must be in the request body, not as a query parameter
+      const requestBody = {
+        ...params,
+        transactional: params.transactional ?? true,
+      };
       const { data } = await axiosProcessing.put(
         HelperUrl.getLinkToServer('/platform-api/entity'),
-        params
+        requestBody
       );
       return data;
     },

@@ -2,6 +2,8 @@
  * EntityTransitions Component
  * Shows available transitions for an entity with a submit button
  * Migrated from: .old_project/packages/cyoda-ui-lib/src/components-library/patterns/AdaptableBlotter/AdaptableBlotterEntity/DetailTransitions.vue
+ *
+ * Uses the transactional PUT /platform-api/entity endpoint for transitions.
  */
 
 import React, { useState, useEffect } from 'react';
@@ -54,20 +56,35 @@ const EntityTransitions: React.FC<EntityTransitionsProps> = ({
       const values = await form.validateFields();
 
       Modal.confirm({
-        title: 'Confirm',
+        title: 'Confirm Transition',
         content: 'Do you really want to attempt the new Transition?',
+        okText: 'Confirm',
         onOk: async () => {
           setLoading(true);
           try {
-            await axios.post(
-              `/platform-api/entity/${entityClass}/${entityId}/transition/${values.transition}`,
-              { values: [] }
-            );
+            // Use transactional updateEntity endpoint
+            await axios.put(`/platform-api/entity/${entityClass}/${entityId}`, {
+              entityClass,
+              entityId,
+              transition: values.transition,
+              transactional: true,
+              async: false,
+              values: [],
+            });
 
             notification.success({
               message: 'Success',
-              description: 'Transition is changed',
+              description: 'Transition completed successfully',
             });
+
+            // Reload transitions after successful transition
+            const { data } = await axios.get<string[]>(
+              `/platform-api/entity/fetch/transitions?entityId=${encodeURIComponent(entityId)}&entityClass=${encodeURIComponent(entityClass)}`
+            );
+            setTransitions(data);
+            if (data.length > 0) {
+              form.setFieldsValue({ transition: data[0] });
+            }
 
             onTransitionChange?.();
           } catch (error) {

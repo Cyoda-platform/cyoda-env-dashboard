@@ -1,11 +1,12 @@
 /**
  * Catalogue Alias Change State Dialog Component
  * Migrated from: .old_project/packages/http-api/src/components/CatalogOfAliasesChangeState/CatalogOfAliasesChangeState.vue
- * 
+ *
  * Dialog for changing the state of an alias catalog item
+ * Uses the transactional PUT /platform-api/entity endpoint for transitions.
  */
 
-import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
+import React, { useState, forwardRef, useImperativeHandle } from 'react';
 import { Modal, Form, Select, message } from 'antd';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { getEntityTransitions, executeEntityTransition } from '@cyoda/http-api-react';
@@ -85,6 +86,7 @@ export const CatalogueAliasChangeStateDialog = forwardRef<
       onCancel={() => setVisible(false)}
       className="catalogue-alias-change-state-dialog"
       onOk={handleConfirm}
+      okText="Confirm"
       confirmLoading={transitionMutation.isPending}
       width={500}
     >

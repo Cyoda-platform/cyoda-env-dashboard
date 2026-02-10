@@ -49,7 +49,7 @@ export const TransitionStateMachineForm: React.FC<TransitionStateMachineFormProp
       entityClass,
       entityId,
       transition: state,
-      transactional: false,
+      transactional: true,
       async: false,
       values: [],
     });

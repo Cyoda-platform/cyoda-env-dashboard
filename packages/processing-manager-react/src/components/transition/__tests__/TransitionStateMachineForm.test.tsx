@@ -31,15 +31,15 @@ describe('TransitionStateMachineForm', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     const mockSearchParams = new URLSearchParams('type=Order&entityId=123');
     mockUseSearchParams.mockReturnValue([mockSearchParams, vi.fn()]);
-    
+
     (hooks.useManualTransition as any).mockReturnValue({
       mutateAsync: mockMutateAsync,
       isPending: false,
     });
-    
+
     mockMutateAsync.mockResolvedValue({});
   });
 
@@ -58,7 +58,7 @@ describe('TransitionStateMachineForm', () => {
         <TransitionStateMachineForm possibleTransitions={[]} />
       </BrowserRouter>
     );
-    
+
     expect(screen.getByText('Form')).toBeInTheDocument();
   });
 
@@ -68,7 +68,7 @@ describe('TransitionStateMachineForm', () => {
         <TransitionStateMachineForm possibleTransitions={[]} />
       </BrowserRouter>
     );
-    
+
     const card = container.querySelector('.transition-state-machine-form');
     expect(card).toBeInTheDocument();
   });
@@ -79,7 +79,7 @@ describe('TransitionStateMachineForm', () => {
         <TransitionStateMachineForm possibleTransitions={[]} />
       </BrowserRouter>
     );
-    
+
     const form = container.querySelector('.ant-form-inline');
     expect(form).toBeInTheDocument();
   });
@@ -90,7 +90,7 @@ describe('TransitionStateMachineForm', () => {
         <TransitionStateMachineForm possibleTransitions={[]} />
       </BrowserRouter>
     );
-    
+
     expect(screen.getByText('Try transition')).toBeInTheDocument();
   });
 
@@ -100,7 +100,7 @@ describe('TransitionStateMachineForm', () => {
         <TransitionStateMachineForm possibleTransitions={[]} />
       </BrowserRouter>
     );
-    
+
     expect(screen.getByText('Select state')).toBeInTheDocument();
   });
 
@@ -110,7 +110,7 @@ describe('TransitionStateMachineForm', () => {
         <TransitionStateMachineForm possibleTransitions={[]} />
       </BrowserRouter>
     );
-    
+
     expect(screen.getByRole('button', { name: 'Submit' })).toBeInTheDocument();
   });
 
@@ -120,7 +120,7 @@ describe('TransitionStateMachineForm', () => {
         <TransitionStateMachineForm possibleTransitions={mockPossibleTransitions} />
       </BrowserRouter>
     );
-    
+
     const submitButton = screen.getByRole('button', { name: 'Submit' });
     expect(submitButton).toBeDisabled();
   });
@@ -204,7 +204,7 @@ describe('TransitionStateMachineForm', () => {
         entityClass: 'Order',
         entityId: '123',
         transition: 'APPROVED',
-        transactional: false,
+        transactional: true,
         async: false,
         values: [],
       });
@@ -293,7 +293,7 @@ describe('TransitionStateMachineForm', () => {
         <TransitionStateMachineForm possibleTransitions={[]} />
       </BrowserRouter>
     );
-    
+
     expect(screen.getByText('Select state')).toBeInTheDocument();
   });
 

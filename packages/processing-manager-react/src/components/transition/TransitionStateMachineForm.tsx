@@ -36,7 +36,7 @@ export const TransitionStateMachineForm: React.FC<TransitionStateMachineFormProp
         entityClass: searchParams.get('type'),
         entityId: searchParams.get('entityId'),
         transition: selectedState,
-        transactional: false,
+        transactional: true,
         async: false,
         values: [],
       });

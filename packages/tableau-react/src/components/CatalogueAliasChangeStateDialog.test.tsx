@@ -236,9 +236,9 @@ describe('CatalogueAliasChangeStateDialog', () => {
       expect(httpApiReact.getEntityTransitions).toHaveBeenCalled();
     });
 
-    // Verify OK button exists
-    const okButton = screen.getByRole('button', { name: /ok/i });
-    expect(okButton).toBeInTheDocument();
+    // Verify Confirm button exists
+    const confirmButton = screen.getByRole('button', { name: /confirm/i });
+    expect(confirmButton).toBeInTheDocument();
   });
 
   it('should call onStateChanged after successful transition', async () => {
@@ -313,10 +313,10 @@ describe('CatalogueAliasChangeStateDialog', () => {
       expect(screen.getByText('State')).toBeInTheDocument();
     });
 
-    const okButton = screen.getByRole('button', { name: /ok/i });
-    expect(okButton).not.toBeDisabled();
+    const confirmButton = screen.getByRole('button', { name: /confirm/i });
+    expect(confirmButton).not.toBeDisabled();
 
-    await user.click(okButton);
+    await user.click(confirmButton);
 
     // Should show validation error or warning
     await waitFor(() => {

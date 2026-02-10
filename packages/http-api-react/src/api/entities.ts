@@ -5,7 +5,7 @@
 import axios from '../config/axios';
 import qs from 'qs';
 import HelperFeatureFlags from '../utils/HelperFeatureFlags';
-import type { Entity, EntityRequest, Transaction, TransactionDiff, RelatedPath } from '../types';
+import type { Entity, EntityRequest, EntityValueRequest, Transaction, TransactionDiff, RelatedPath } from '../types';
 
 const stringifyOpts = {
   addQueryPrefix: true,
@@ -61,9 +61,16 @@ export function createEntity(entityRequest: EntityRequest) {
 
 /**
  * Update entity
+ * The transactional flag is set to true by default in the request body to ensure atomic execution.
+ * The transactional flag is part of the EntityRequest body, not a query parameter.
  */
 export function updateEntity(entityClass: string, entityId: string, entityRequest: EntityRequest) {
-  return axios.put(`/platform-api/entity/${entityClass}/${entityId}`, entityRequest);
+  const requestBody: EntityRequest = {
+    ...entityRequest,
+    transactional: entityRequest.transactional ?? true,
+  };
+
+  return axios.put(`/platform-api/entity/${entityClass}/${entityId}`, requestBody);
 }
 
 /**
@@ -139,24 +146,35 @@ export function getEntityClasses() {
 }
 
 /**
- * Execute entity transition
+ * Execute entity transition using the transactional updateEntity endpoint.
+ * This replaces the old non-transactional /platform-api/entity/transition endpoint.
+ * After the transition completes, call getEntityTransitions to get the updated list.
  */
 export function executeEntityTransition(
   entityClass: string,
   entityId: string,
   transition: string,
-  values?: any[]
+  values?: EntityValueRequest[]
 ) {
-  return axios.post(`/platform-api/entity/${entityClass}/${entityId}/transition/${transition}`, {
-    values,
-  });
+  const requestBody: EntityRequest = {
+    entityClass,
+    entityId,
+    transition,
+    transactional: true,
+    async: false,
+    values: values || [],
+  };
+  return axios.put(`/platform-api/entity/${entityClass}/${entityId}`, requestBody);
 }
 
 /**
  * Get available transitions for entity
+ * Uses query parameters: entityId, entityClass
  */
 export function getEntityTransitions(entityClass: string, entityId: string) {
-  return axios.get<string[]>(`/platform-api/entity/${entityClass}/${entityId}/transitions`);
+  return axios.get<string[]>(
+    `/platform-api/entity/fetch/transitions?entityId=${encodeURIComponent(entityId)}&entityClass=${encodeURIComponent(entityClass)}`
+  );
 }
 
 /**

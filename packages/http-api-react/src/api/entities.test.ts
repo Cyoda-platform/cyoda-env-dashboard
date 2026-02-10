@@ -76,13 +76,52 @@ describe('Entities API', () => {
   });
 
   describe('updateEntity', () => {
-    it('should call PUT /platform-api/entity/{entityClass}/{entityId}', async () => {
+    it('should always set transactional=true by default in request body', async () => {
       const mockResponse = { data: { id: '123', name: 'Updated Entity' } };
-      const entityRequest = { entityClass: 'TestClass', id: '123', values: { name: 'Updated Entity' } } as any;
+      const entityRequest = { entityClass: 'TestClass', entityId: '123', values: [{ columnPath: 'name', value: 'Updated Entity' }] } as any;
       vi.mocked(axios.put).mockResolvedValue(mockResponse);
 
       const result = await entitiesApi.updateEntity('TestClass', '123', entityRequest);
 
+      expect(axios.put).toHaveBeenCalledWith('/platform-api/entity/TestClass/123', {
+        ...entityRequest,
+        transactional: true,
+      });
+      expect(result).toEqual(mockResponse);
+    });
+
+    it('should set transactional=true in request body when entity has a transition', async () => {
+      const mockResponse = { data: { id: '123', name: 'Updated Entity' } };
+      const entityRequest = {
+        entityClass: 'TestClass',
+        entityId: '123',
+        transition: 'APPROVE',
+        values: [{ columnPath: 'name', value: 'Updated Entity' }]
+      } as any;
+      vi.mocked(axios.put).mockResolvedValue(mockResponse);
+
+      const result = await entitiesApi.updateEntity('TestClass', '123', entityRequest);
+
+      expect(axios.put).toHaveBeenCalledWith('/platform-api/entity/TestClass/123', {
+        ...entityRequest,
+        transactional: true,
+      });
+      expect(result).toEqual(mockResponse);
+    });
+
+    it('should respect explicit transactional=false in request body', async () => {
+      const mockResponse = { data: { id: '123', name: 'Updated Entity' } };
+      const entityRequest = {
+        entityClass: 'TestClass',
+        entityId: '123',
+        transactional: false,
+        values: [{ columnPath: 'name', value: 'Updated Entity' }]
+      } as any;
+      vi.mocked(axios.put).mockResolvedValue(mockResponse);
+
+      const result = await entitiesApi.updateEntity('TestClass', '123', entityRequest);
+
+      // transactional=false should be preserved in the request body
       expect(axios.put).toHaveBeenCalledWith('/platform-api/entity/TestClass/123', entityRequest);
       expect(result).toEqual(mockResponse);
     });
@@ -138,28 +177,42 @@ describe('Entities API', () => {
   });
 
   describe('executeEntityTransition', () => {
-    it('should call POST /platform-api/entity/{entityClass}/{entityId}/transition/{transition}', async () => {
+    it('should call PUT /platform-api/entity/{entityClass}/{entityId} with transactional request body', async () => {
       const mockResponse = { data: { success: true } };
-      vi.mocked(axios.post).mockResolvedValue(mockResponse);
+      vi.mocked(axios.put).mockResolvedValue(mockResponse);
 
-      const result = await entitiesApi.executeEntityTransition('TestClass', '123', 'approve', ['value1']);
+      const result = await entitiesApi.executeEntityTransition('TestClass', '123', 'approve', [{ columnPath: 'field', value: 'value1' }]);
 
-      expect(axios.post).toHaveBeenCalledWith(
-        '/platform-api/entity/TestClass/123/transition/approve',
-        { values: ['value1'] }
+      expect(axios.put).toHaveBeenCalledWith(
+        '/platform-api/entity/TestClass/123',
+        {
+          entityClass: 'TestClass',
+          entityId: '123',
+          transition: 'approve',
+          transactional: true,
+          async: false,
+          values: [{ columnPath: 'field', value: 'value1' }],
+        }
       );
       expect(result).toEqual(mockResponse);
     });
 
     it('should work without values', async () => {
       const mockResponse = { data: { success: true } };
-      vi.mocked(axios.post).mockResolvedValue(mockResponse);
+      vi.mocked(axios.put).mockResolvedValue(mockResponse);
 
       await entitiesApi.executeEntityTransition('TestClass', '123', 'approve');
 
-      expect(axios.post).toHaveBeenCalledWith(
-        '/platform-api/entity/TestClass/123/transition/approve',
-        { values: undefined }
+      expect(axios.put).toHaveBeenCalledWith(
+        '/platform-api/entity/TestClass/123',
+        {
+          entityClass: 'TestClass',
+          entityId: '123',
+          transition: 'approve',
+          transactional: true,
+          async: false,
+          values: [],
+        }
       );
     });
   });

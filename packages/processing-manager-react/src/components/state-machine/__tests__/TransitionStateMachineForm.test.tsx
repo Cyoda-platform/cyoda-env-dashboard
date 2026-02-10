@@ -31,7 +31,7 @@ describe('TransitionStateMachineForm (state-machine)', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     mockUseLocation.mockReturnValue({
       pathname: '/test',
       search: '?type=Article&entityId=456',
@@ -39,7 +39,7 @@ describe('TransitionStateMachineForm (state-machine)', () => {
       state: null,
       key: 'default',
     });
-    
+
     (hooks.useDoManualTransition as any).mockReturnValue({
       mutate: mockMutate,
       isLoading: false,
@@ -73,7 +73,7 @@ describe('TransitionStateMachineForm (state-machine)', () => {
         <TransitionStateMachineForm possibleTransitions={[]} />
       </BrowserRouter>
     );
-    
+
     const card = container.querySelector('.transition-state-machine-form');
     expect(card).toBeInTheDocument();
   });
@@ -84,7 +84,7 @@ describe('TransitionStateMachineForm (state-machine)', () => {
         <TransitionStateMachineForm possibleTransitions={[]} />
       </BrowserRouter>
     );
-    
+
     const form = container.querySelector('.ant-form-inline');
     expect(form).toBeInTheDocument();
   });
@@ -95,7 +95,7 @@ describe('TransitionStateMachineForm (state-machine)', () => {
         <TransitionStateMachineForm possibleTransitions={[]} />
       </BrowserRouter>
     );
-    
+
     expect(screen.getByText('Try transition')).toBeInTheDocument();
   });
 
@@ -116,7 +116,7 @@ describe('TransitionStateMachineForm (state-machine)', () => {
         <TransitionStateMachineForm possibleTransitions={[]} />
       </BrowserRouter>
     );
-    
+
     expect(screen.getByRole('button', { name: 'Submit' })).toBeInTheDocument();
   });
 
@@ -126,7 +126,7 @@ describe('TransitionStateMachineForm (state-machine)', () => {
         <TransitionStateMachineForm possibleTransitions={mockPossibleTransitions} />
       </BrowserRouter>
     );
-    
+
     const submitButton = screen.getByRole('button', { name: 'Submit' });
     expect(submitButton).toBeDisabled();
   });
@@ -175,7 +175,7 @@ describe('TransitionStateMachineForm (state-machine)', () => {
 
     const draftOptions = screen.getAllByText('DRAFT');
     await user.click(draftOptions[draftOptions.length - 1]);
-    
+
     const submitButton = screen.getByRole('button', { name: 'Submit' });
     expect(submitButton).not.toBeDisabled();
   });
@@ -202,15 +202,15 @@ describe('TransitionStateMachineForm (state-machine)', () => {
 
     const reviewOptions = screen.getAllByText('REVIEW');
     await user.click(reviewOptions[reviewOptions.length - 1]);
-    
+
     const submitButton = screen.getByRole('button', { name: 'Submit' });
     await user.click(submitButton);
-    
+
     expect(mockMutate).toHaveBeenCalledWith({
       entityClass: 'Article',
       entityId: '456',
       transition: 'REVIEW',
-      transactional: false,
+      transactional: true,
       async: false,
       values: [],
     });
@@ -247,10 +247,10 @@ describe('TransitionStateMachineForm (state-machine)', () => {
 
     const publishedOptions = screen.getAllByText('PUBLISHED');
     await user.click(publishedOptions[publishedOptions.length - 1]);
-    
+
     const submitButton = screen.getByRole('button', { name: 'Submit' });
     await user.click(submitButton);
-    
+
     expect(mockOnUpdated).toHaveBeenCalled();
   });
 
@@ -284,10 +284,10 @@ describe('TransitionStateMachineForm (state-machine)', () => {
 
     const archivedOptions = screen.getAllByText('ARCHIVED');
     await user.click(archivedOptions[archivedOptions.length - 1]);
-    
+
     const submitButton = screen.getByRole('button', { name: 'Submit' });
     await user.click(submitButton);
-    
+
     await waitFor(() => {
       expect(submitButton).toBeDisabled();
     });
@@ -373,15 +373,15 @@ describe('TransitionStateMachineForm (state-machine)', () => {
 
     const draftOptions = screen.getAllByText('DRAFT');
     await user.click(draftOptions[draftOptions.length - 1]);
-    
+
     const submitButton = screen.getByRole('button', { name: 'Submit' });
     await user.click(submitButton);
-    
+
     expect(mockMutate).toHaveBeenCalledWith({
       entityClass: 'CustomEntity',
       entityId: '999',
       transition: 'DRAFT',
-      transactional: false,
+      transactional: true,
       async: false,
       values: [],
     });
@@ -414,15 +414,15 @@ describe('TransitionStateMachineForm (state-machine)', () => {
 
     const draftOptions = screen.getAllByText('DRAFT');
     await user.click(draftOptions[draftOptions.length - 1]);
-    
+
     const submitButton = screen.getByRole('button', { name: 'Submit' });
     await user.click(submitButton);
-    
+
     expect(mockMutate).toHaveBeenCalledWith({
       entityClass: '',
       entityId: '',
       transition: 'DRAFT',
-      transactional: false,
+      transactional: true,
       async: false,
       values: [],
     });
