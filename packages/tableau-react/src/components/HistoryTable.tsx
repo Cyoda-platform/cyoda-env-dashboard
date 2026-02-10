@@ -23,6 +23,8 @@ import './HistoryTable.scss';
 interface HistoryTableProps {
   filter: HistoryFilterForm | any; // Accept both old and new filter formats
   lazyLoading?: boolean;
+  hideUnknownConfigs?: boolean;
+  selectedConfigId?: string | null; // Filter by specific report config from QuickRunReport
   onChange: (data: { reportDefinition: TableDataRow; configDefinition: ConfigDefinition }) => void;
   onGroupClick?: (row: any) => void;
   onShowColumnDetail?: (data: ColumnData) => void;
@@ -31,6 +33,8 @@ interface HistoryTableProps {
 const HistoryTable: React.FC<HistoryTableProps> = ({
   filter,
   lazyLoading = false,
+  hideUnknownConfigs = true,
+  selectedConfigId = null,
   onChange,
   onGroupClick,
   onShowColumnDetail,
@@ -301,8 +305,48 @@ const HistoryTable: React.FC<HistoryTableProps> = ({
       });
     }
 
+    // Filter out reports with "Unknown" config if hideUnknownConfigs is enabled
+    if (hideUnknownConfigs) {
+      data = data.filter((item: any) => {
+        return item.config !== 'Unknown';
+      });
+    }
+
+    // Filter by selected config from QuickRunReport dropdown
+    if (selectedConfigId) {
+      data = data.filter((item: any) => {
+        // The configName in report history contains the full config ID
+        // Match against the original configName from the report data
+        const report = reportHistoryData.find((r: any) => r.id === item.id);
+        return report?.configName === selectedConfigId;
+      });
+    }
+
+    // Apply entity filter from HistoryFilter (filter by report type/entity class)
+    if (filter.entities && filter.entities.length > 0) {
+      data = data.filter((item: any) => {
+        return filter.entities.includes(item.type);
+      });
+    }
+
+    // Apply author filter from HistoryFilter
+    if (filter.authors && filter.authors.length > 0) {
+      data = data.filter((item: any) => {
+        return filter.authors.includes(item.user);
+      });
+    }
+
+    // Apply status filter from HistoryFilter
+    if (filter.states && filter.states.length > 0) {
+      data = data.filter((item: any) => {
+        return filter.states.some((state: string) =>
+          item.status?.toLowerCase() === state.toLowerCase()
+        );
+      });
+    }
+
     return data;
-  }, [reportHistoryData, entityTypesData, entityType]);
+  }, [reportHistoryData, entityTypesData, entityType, filter, hideUnknownConfigs, selectedConfigId]);
 
   // Handle info button click - shows report details modal
   const handleInfoClick = useCallback(async (record: TableDataRow) => {

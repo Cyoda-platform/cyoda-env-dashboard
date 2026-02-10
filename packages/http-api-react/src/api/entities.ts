@@ -491,3 +491,85 @@ export function getEntityAuditEvents(params: {
     pagination: { hasNext: boolean; nextCursor?: string };
   }>(url);
 }
+
+/**
+ * Response type for Cyoda Cloud entity update operations
+ */
+export interface EntityTransactionResponse {
+  transactionId: string;
+  entityIds: string[];
+}
+
+/**
+ * Options for Cyoda Cloud entity update operations
+ */
+export interface CyodaCloudUpdateOptions {
+  /** Maximum time in milliseconds allowed for transaction completion. Default: 10000 */
+  transactionTimeoutMillis?: number;
+  /** If true, waits for consistency time before responding. Default: true for human-triggered actions */
+  waitForConsistencyAfter?: boolean;
+}
+
+/**
+ * Update entity with a specific transition (Cyoda Cloud API)
+ * Used when VITE_FEATURE_FLAG_IS_CYODA_CLOUD is enabled
+ *
+ * Endpoint: PUT /entity/{format}/{entityId}/{transition}
+ *
+ * @param entityId - The entity UUID
+ * @param transition - The transition to apply (e.g., 'UPDATE', 'PUBLISH')
+ * @param entityData - The entity JSON data
+ * @param options - Optional query parameters for timeout and consistency
+ * @returns Transaction response with transactionId and entityIds
+ */
+export function updateCyodaCloudEntityWithTransition(
+  entityId: string,
+  transition: string,
+  entityData: Record<string, unknown>,
+  options: CyodaCloudUpdateOptions = {}
+) {
+  const {
+    transactionTimeoutMillis = 10000,
+    waitForConsistencyAfter = true,
+  } = options;
+
+  const params = new URLSearchParams();
+  params.append('transactionTimeoutMillis', transactionTimeoutMillis.toString());
+  params.append('waitForConsistencyAfter', waitForConsistencyAfter.toString());
+
+  return axios.put<EntityTransactionResponse>(
+    `/entity/JSON/${encodeURIComponent(entityId)}/${encodeURIComponent(transition)}?${params.toString()}`,
+    entityData
+  );
+}
+
+/**
+ * Update entity with a loopback transition (save without explicit transition) (Cyoda Cloud API)
+ * Used when VITE_FEATURE_FLAG_IS_CYODA_CLOUD is enabled
+ *
+ * Endpoint: PUT /entity/{format}/{entityId}
+ *
+ * @param entityId - The entity UUID
+ * @param entityData - The entity JSON data
+ * @param options - Optional query parameters for timeout and consistency
+ * @returns Transaction response with transactionId and entityIds
+ */
+export function updateCyodaCloudEntityLoopback(
+  entityId: string,
+  entityData: Record<string, unknown>,
+  options: CyodaCloudUpdateOptions = {}
+) {
+  const {
+    transactionTimeoutMillis = 10000,
+    waitForConsistencyAfter = true,
+  } = options;
+
+  const params = new URLSearchParams();
+  params.append('transactionTimeoutMillis', transactionTimeoutMillis.toString());
+  params.append('waitForConsistencyAfter', waitForConsistencyAfter.toString());
+
+  return axios.put<EntityTransactionResponse>(
+    `/entity/JSON/${encodeURIComponent(entityId)}?${params.toString()}`,
+    entityData
+  );
+}

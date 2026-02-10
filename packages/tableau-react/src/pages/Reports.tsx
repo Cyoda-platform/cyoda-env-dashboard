@@ -39,6 +39,7 @@ const HistoryReportsTab: React.FC<{ onResetState: () => void }> = ({ onResetStat
 
   const [settings, setSettings] = useState<HistorySettings>({
     lazyLoading: false,
+    hideUnknownConfigs: true, // Default to hiding unknown configs
   });
 
   const [configDefinition, setConfigDefinition] = useState<ConfigDefinition>({});
@@ -47,6 +48,9 @@ const HistoryReportsTab: React.FC<{ onResetState: () => void }> = ({ onResetStat
   // Modal state for group results
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [selectedGroupData, setSelectedGroupData] = useState<any>(null);
+
+  // Selected config from QuickRunReport dropdown
+  const [selectedQuickRunConfig, setSelectedQuickRunConfig] = useState<{ id: string } | null>(null);
 
   const handleHistoryTableChange = useCallback(
     ({ reportDefinition: newReportDef, configDefinition: newConfigDef }: {
@@ -116,7 +120,7 @@ const HistoryReportsTab: React.FC<{ onResetState: () => void }> = ({ onResetStat
       {/* Quick Run Report Section */}
       <div className="history-report-quick-run-flex">
         <div className="history-report-quick-run">
-          <QuickRunReport />
+          <QuickRunReport onChange={setSelectedQuickRunConfig} />
         </div>
         <div className="button-box">
           <Tooltip title="Reset state: filters, table settings, etc." placement="top">
@@ -150,6 +154,8 @@ const HistoryReportsTab: React.FC<{ onResetState: () => void }> = ({ onResetStat
           <HistoryTable
             filter={filter}
             lazyLoading={settings.lazyLoading}
+            hideUnknownConfigs={settings.hideUnknownConfigs}
+            selectedConfigId={selectedQuickRunConfig?.id || null}
             onChange={handleHistoryTableChange}
             onGroupClick={handleGroupClick}
             onShowColumnDetail={(data) => columnCollectionsDialogRef.current?.showDetail(data)}

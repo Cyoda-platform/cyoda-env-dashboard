@@ -22,6 +22,13 @@ const HistorySetting: React.FC<HistorySettingProps> = ({ settings, onChange }) =
     });
   };
 
+  const handleHideUnknownConfigsChange = (checked: boolean) => {
+    onChange({
+      ...settings,
+      hideUnknownConfigs: checked,
+    });
+  };
+
   return (
     <div className="history-setting">
       <Form layout="inline">
@@ -29,6 +36,12 @@ const HistorySetting: React.FC<HistorySettingProps> = ({ settings, onChange }) =
           <Switch
             checked={settings.lazyLoading}
             onChange={handleLazyLoadingChange}
+          />
+        </Form.Item>
+        <Form.Item label="Hide unknown configs">
+          <Switch
+            checked={settings.hideUnknownConfigs}
+            onChange={handleHideUnknownConfigsChange}
           />
         </Form.Item>
       </Form>

@@ -115,8 +115,8 @@ const ReportEditor: React.FC = () => {
       // First update the report
       await axios.put(`/platform-api/reporting/definitions/${encodeURIComponent(id!)}`, definition);
 
-      // Then run it
-      const { data } = await axios.post(`/platform-api/reporting/report/${encodeURIComponent(id!)}/run`);
+      // Then run it using the correct endpoint for predefined configs
+      const { data } = await axios.post(`/platform-api/reporting/pre?gridConfig=${encodeURIComponent(id!)}`);
       return data;
     },
     onSuccess: (data) => {

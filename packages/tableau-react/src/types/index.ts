@@ -49,6 +49,7 @@ export interface HistoryFilter {
 
 export interface HistorySettings {
   lazyLoading: boolean;
+  hideUnknownConfigs: boolean;
 }
 
 export interface ConfigDefinition {
