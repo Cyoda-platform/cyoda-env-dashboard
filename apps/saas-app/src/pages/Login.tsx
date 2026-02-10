@@ -29,44 +29,41 @@ const Login: React.FC = () => {
   // Handle Auth0 authentication success
   useEffect(() => {
     const handleAuth0Success = async () => {
-      if (isAuthenticated && user) {
-        try {
-          const token = await getAccessTokenSilently();
+      if (auth0Loading || !isAuthenticated || !user) {
+        return;
+      }
 
-          // Call backend Auth0 login endpoint
-          const response = await authApi.loginAuth0(token);
-          const authData = response.data;
+      try {
+        const token = await getAccessTokenSilently();
 
-          // Store auth token from backend using HelperStorage
-          helperStorage.set('auth', {
-            token: authData.token,
-            refreshToken: authData.refreshToken,
-            user: authData.username,
-            userId: authData.userId,
-            legalEntityId: authData.legalEntityId,
-            type: 'auth0'
-          });
+        // Store the Auth0 token directly for API calls via Authorization header
+        const authPayload = {
+          token: token,
+          refreshToken: '',
+          user: user.email || user.name || 'auth0-user',
+          userId: user.sub || '',
+          legalEntityId: '',
+          type: 'auth0' as const
+        };
+        helperStorage.set('auth', authPayload);
 
-          message.success('Login successful!');
-          navigate(getDefaultRoute());
-        } catch (error) {
-          console.error('Auth0 authentication error:', error);
-          message.error('Authentication failed. Please try again.');
-        }
+        message.success('Login successful!');
+        navigate(getDefaultRoute());
+      } catch (error: any) {
+        console.error('Auth0 login failed:', error);
+        message.error('Authentication failed. Please try again.');
       }
     };
 
     handleAuth0Success();
-  }, [isAuthenticated, user, getAccessTokenSilently, message, navigate]);
+  }, [isAuthenticated, user, auth0Loading, getAccessTokenSilently, message, navigate]);
 
   const onFinish = async (values: LoginFormValues) => {
     setLoading(true);
     try {
-      // Call backend login endpoint
       const response = await authApi.login(values.username, values.password);
       const authData = response.data;
 
-      // Store auth token from backend using HelperStorage
       helperStorage.set('auth', {
         token: authData.token,
         refreshToken: authData.refreshToken,
@@ -88,7 +85,11 @@ const Login: React.FC = () => {
   };
 
   const handleAuth0Login = () => {
-    loginWithRedirect();
+    loginWithRedirect({
+      appState: {
+        returnTo: window.location.pathname,
+      },
+    });
   };
 
   return (
@@ -103,7 +104,7 @@ const Login: React.FC = () => {
             />
           </div>
         </div>
-        
+
         <Card className="login-card" variant="borderless">
           <Form
             name="login"
@@ -160,7 +161,7 @@ const Login: React.FC = () => {
             </Button>
           </Form>
         </Card>
-        
+
         <div className="login-footer">
           <p>&copy; {new Date().getFullYear()} Cyoda. All rights reserved.</p>
         </div>

@@ -50,19 +50,6 @@ export function useAuth() {
     },
   });
 
-  // Login with Auth0 mutation
-  const loginAuth0Mutation = useMutation({
-    mutationFn: async (token: string) => {
-      const response = await authApi.loginAuth0(token);
-      return response.data;
-    },
-    onSuccess: (data: AuthResponse) => {
-      helperStorage.set('auth', data);
-      setIsAuthenticated(true);
-      queryClient.invalidateQueries({ queryKey: ['auth'] });
-    },
-  });
-
   // Logout mutation
   const logoutMutation = useMutation({
     mutationFn: async () => {
@@ -145,8 +132,6 @@ export function useAuth() {
     // Actions
     login: loginMutation.mutate,
     loginAsync: loginMutation.mutateAsync,
-    loginAuth0: loginAuth0Mutation.mutate,
-    loginAuth0Async: loginAuth0Mutation.mutateAsync,
     logout: logoutMutation.mutate,
     logoutAsync: logoutMutation.mutateAsync,
     changePassword: changePasswordMutation.mutate,

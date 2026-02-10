@@ -1,6 +1,7 @@
 import type { DataProvider } from '@refinedev/core';
 import axios from 'axios';
 import { HelperStorage } from '@cyoda/http-api-react/utils/storage';
+import { isAuth0Session, refreshAuth0Token } from '../utils/auth0TokenManager';
 
 const API_URL = '/platform-api';
 const helperStorage = new HelperStorage();
@@ -22,20 +23,49 @@ axiosInstance.interceptors.request.use(
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
-// Add response interceptor for 401 handling
+// Track ongoing token refresh to prevent multiple simultaneous refreshes
+let refreshPromise: Promise<string> | null = null;
+
+// Add response interceptor for 401 handling with Auth0 token refresh
 axiosInstance.interceptors.response.use(
   (response) => response,
-  (error) => {
-    // Handle 401 Unauthorized - redirect to login
-    if (error.response?.status === 401) {
+  async (error) => {
+    const originalRequest = error.config;
+
+    // Handle 401 Unauthorized
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      // If Auth0 session, try to refresh the token
+      if (isAuth0Session()) {
+        try {
+          // Prevent multiple simultaneous refresh attempts
+          if (!refreshPromise) {
+            refreshPromise = refreshAuth0Token();
+          }
+          const newToken = await refreshPromise;
+          refreshPromise = null;
+
+          // Retry the original request with new token
+          originalRequest.headers.Authorization = `Bearer ${newToken}`;
+          return axiosInstance(originalRequest);
+        } catch (refreshError) {
+          refreshPromise = null;
+          // Refresh failed, redirect to login
+          helperStorage.remove('auth');
+          window.location.href = '/login';
+          return Promise.reject(refreshError);
+        }
+      }
+
+      // Not Auth0 session, redirect to login
       helperStorage.remove('auth');
       window.location.href = '/login';
     }
+
     return Promise.reject(error);
   }
 );

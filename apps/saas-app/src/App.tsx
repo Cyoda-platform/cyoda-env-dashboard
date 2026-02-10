@@ -6,6 +6,7 @@ import { Auth0Provider } from '@auth0/auth0-react';
 import { AppRoutes } from './routes';
 import { auth0Config } from './config/auth0';
 import ErrorBoundary from './components/ErrorBoundary';
+import { Auth0TokenInitializer } from './components/Auth0TokenInitializer';
 import { useThemeStore } from './stores/themeStore';
 import './App.scss';
 
@@ -289,24 +290,26 @@ function App() {
         cacheLocation={auth0Config.cacheLocation}
         useRefreshTokens={auth0Config.useRefreshTokens}
       >
-        <ConfigProvider theme={theme}>
-          <AntdApp>
-            <QueryClientProvider client={queryClient}>
-              <BrowserRouter
-                future={{
-                  v7_startTransition: true,
-                  v7_relativeSplatPath: true,
-                }}
-              >
-                <Suspense fallback={<LoadingFallback />}>
-                  <ErrorBoundary>
-                    <AppRoutes />
-                  </ErrorBoundary>
-                </Suspense>
-              </BrowserRouter>
-            </QueryClientProvider>
-          </AntdApp>
-        </ConfigProvider>
+        <Auth0TokenInitializer>
+          <ConfigProvider theme={theme}>
+            <AntdApp>
+              <QueryClientProvider client={queryClient}>
+                <BrowserRouter
+                  future={{
+                    v7_startTransition: true,
+                    v7_relativeSplatPath: true,
+                  }}
+                >
+                  <Suspense fallback={<LoadingFallback />}>
+                    <ErrorBoundary>
+                      <AppRoutes />
+                    </ErrorBoundary>
+                  </Suspense>
+                </BrowserRouter>
+              </QueryClientProvider>
+            </AntdApp>
+          </ConfigProvider>
+        </Auth0TokenInitializer>
       </Auth0Provider>
     </ErrorBoundary>
   );

@@ -41,20 +41,6 @@ describe('Authentication API', () => {
     });
   });
 
-  describe('loginAuth0', () => {
-    it('should call POST /platform-api/auth/auth0 with token', async () => {
-      const mockResponse = { data: { token: 'test-token', user: { id: '1', username: 'test' } } };
-      vi.mocked(axiosPublic.post).mockResolvedValue(mockResponse);
-
-      const result = await authApi.loginAuth0('auth0-token');
-
-      expect(axiosPublic.post).toHaveBeenCalledWith('/auth/auth0', {
-        token: 'auth0-token',
-      });
-      expect(result).toEqual(mockResponse);
-    });
-  });
-
   describe('refreshToken', () => {
     it('should call GET /auth/token with refresh token in Authorization header', async () => {
       const mockResponse = { data: { token: 'new-token' } };

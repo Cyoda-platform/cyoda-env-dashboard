@@ -17,15 +17,6 @@ export function login(username: string, password: string) {
 }
 
 /**
- * Login with Auth0
- */
-export function loginAuth0(token: string) {
-  return axiosPublic.post<AuthResponse>('/auth/auth0', {
-    token,
-  });
-}
-
-/**
  * Refresh access token
  * Migrated from Vue: .old_project/packages/cyoda-ui-lib/src/stores/auth.ts
  */

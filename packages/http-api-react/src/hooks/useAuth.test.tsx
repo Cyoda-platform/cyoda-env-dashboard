@@ -16,7 +16,6 @@ vi.mock('../api/auth', () => ({
   logout: vi.fn(),
   getCurrentUser: vi.fn(),
   getUserPermissions: vi.fn(),
-  loginAuth0: vi.fn(),
   changePassword: vi.fn(),
   requestPasswordReset: vi.fn(),
   resetPassword: vi.fn(),
