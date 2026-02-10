@@ -36,8 +36,8 @@ const TransitionChanges = React.lazy(() => import('@cyoda/processing-manager-rea
 const TransitionEntityStateMachine = React.lazy(() => import('@cyoda/processing-manager-react').then(m => ({ default: m.TransitionEntityStateMachine })));
 const EventView = React.lazy(() => import('@cyoda/processing-manager-react').then(m => ({ default: m.EventView })));
 
-// Login page (simple placeholder for now)
-const Login = React.lazy(() => import('../pages/Login'));
+// Login page - not lazy-loaded to avoid flash on initial load
+import Login from '../pages/Login';
 
 export const AppRoutes: React.FC = () => {
   const isTrinoEnabled = HelperFeatureFlags.isTrinoSqlSchemaEnabled();

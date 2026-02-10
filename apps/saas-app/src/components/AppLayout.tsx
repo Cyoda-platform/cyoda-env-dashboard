@@ -18,16 +18,11 @@ export const AppLayout: React.FC = () => {
   const navigate = useNavigate();
 
   // Check authentication on mount and location change
+  // Note: Auth0TokenInitializer already handles Auth0 loading state and token saving,
+  // so by the time we get here, if user is Auth0-authenticated, token is already in storage.
   useEffect(() => {
     const authData = helperStorage.get('auth');
-    if (!authData) {
-      // No auth data, redirect to login
-      navigate('/login', { replace: true });
-      return;
-    }
-
-    if (!authData.token) {
-      // No token, redirect to login
+    if (!authData || !authData.token) {
       navigate('/login', { replace: true });
     }
   }, [location.pathname, navigate]);

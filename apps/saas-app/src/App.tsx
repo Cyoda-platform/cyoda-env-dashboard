@@ -272,7 +272,8 @@ const LoadingFallback: React.FC = () => (
   </div>
 );
 
-function App() {
+// Inner component for theme management
+const ThemedApp: React.FC = () => {
   const mode = useThemeStore((state) => state.mode);
   const theme = mode === 'dark' ? getDarkTheme() : getLightTheme();
 
@@ -281,6 +282,37 @@ function App() {
     document.documentElement.setAttribute('data-theme', mode);
   }, [mode]);
 
+  return (
+    <ConfigProvider theme={theme}>
+      <AntdApp>
+        <QueryClientProvider client={queryClient}>
+          <BrowserRouter
+            future={{
+              v7_startTransition: true,
+              v7_relativeSplatPath: true,
+            }}
+          >
+            <Suspense fallback={<LoadingFallback />}>
+              <ErrorBoundary>
+                <AppRoutes />
+              </ErrorBoundary>
+            </Suspense>
+          </BrowserRouter>
+        </QueryClientProvider>
+      </AntdApp>
+    </ConfigProvider>
+  );
+};
+
+/**
+ * Main App Component
+ *
+ * Structure follows the Vue project pattern:
+ * - Auth0Provider at the top level (initialized once, never re-mounts)
+ * - No onRedirectCallback - Auth0 SDK handles redirect automatically
+ * - Auth0TokenInitializer sets up token refresh capability
+ */
+function App() {
   return (
     <ErrorBoundary>
       <Auth0Provider
@@ -291,24 +323,7 @@ function App() {
         useRefreshTokens={auth0Config.useRefreshTokens}
       >
         <Auth0TokenInitializer>
-          <ConfigProvider theme={theme}>
-            <AntdApp>
-              <QueryClientProvider client={queryClient}>
-                <BrowserRouter
-                  future={{
-                    v7_startTransition: true,
-                    v7_relativeSplatPath: true,
-                  }}
-                >
-                  <Suspense fallback={<LoadingFallback />}>
-                    <ErrorBoundary>
-                      <AppRoutes />
-                    </ErrorBoundary>
-                  </Suspense>
-                </BrowserRouter>
-              </QueryClientProvider>
-            </AntdApp>
-          </ConfigProvider>
+          <ThemedApp />
         </Auth0TokenInitializer>
       </Auth0Provider>
     </ErrorBoundary>

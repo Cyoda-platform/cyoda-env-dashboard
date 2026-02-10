@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Form, Input, Button, Card, App, Divider } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
@@ -24,40 +24,27 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const { message } = App.useApp();
-  const { loginWithRedirect, isAuthenticated, isLoading: auth0Loading, user, getAccessTokenSilently } = useAuth0();
+  const { loginWithRedirect, isAuthenticated, isLoading: auth0Loading } = useAuth0();
 
-  // Handle Auth0 authentication success
+  // Track if we've already handled Auth0 login to prevent duplicate redirects
+  const hasHandledAuth0Login = useRef(false);
+
+  /**
+   * Handle Auth0 authentication redirect.
+   * Token saving is handled by Auth0TokenInitializer at the app level.
+   * This effect just handles navigation after successful auth.
+   */
   useEffect(() => {
-    const handleAuth0Success = async () => {
-      if (auth0Loading || !isAuthenticated || !user) {
-        return;
-      }
+    // Skip if Auth0 is still initializing, not authenticated, or already handled
+    if (auth0Loading || !isAuthenticated || hasHandledAuth0Login.current) {
+      return;
+    }
 
-      try {
-        const token = await getAccessTokenSilently();
+    hasHandledAuth0Login.current = true;
+    navigate(getDefaultRoute(), { replace: true });
+  }, [isAuthenticated, auth0Loading, navigate]);
 
-        // Store the Auth0 token directly for API calls via Authorization header
-        const authPayload = {
-          token: token,
-          refreshToken: '',
-          user: user.email || user.name || 'auth0-user',
-          userId: user.sub || '',
-          legalEntityId: '',
-          type: 'auth0' as const
-        };
-        helperStorage.set('auth', authPayload);
-
-        message.success('Login successful!');
-        navigate(getDefaultRoute());
-      } catch (error: any) {
-        console.error('Auth0 login failed:', error);
-        message.error('Authentication failed. Please try again.');
-      }
-    };
-
-    handleAuth0Success();
-  }, [isAuthenticated, user, auth0Loading, getAccessTokenSilently, message, navigate]);
-
+  // Standard username/password login
   const onFinish = async (values: LoginFormValues) => {
     setLoading(true);
     try {
@@ -73,7 +60,6 @@ const Login: React.FC = () => {
         type: 'standard'
       });
 
-      message.success('Login successful!');
       navigate(getDefaultRoute());
     } catch (error: any) {
       console.error('Login error:', error);
@@ -84,12 +70,9 @@ const Login: React.FC = () => {
     }
   };
 
+  // Auth0 login - just redirect, the useEffect handles the callback
   const handleAuth0Login = () => {
-    loginWithRedirect({
-      appState: {
-        returnTo: window.location.pathname,
-      },
-    });
+    loginWithRedirect();
   };
 
   return (
