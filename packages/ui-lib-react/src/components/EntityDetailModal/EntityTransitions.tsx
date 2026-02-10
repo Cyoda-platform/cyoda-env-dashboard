@@ -68,8 +68,8 @@ const EntityTransitions: React.FC<EntityTransitionsProps> = ({
         onOk: async () => {
           setLoading(true);
           try {
-            // Use transactional updateEntity endpoint
-            await axios.put(`/platform-api/entity/${entityClass}/${entityId}`, {
+            // entityClass and entityId are only in the request body, not in the URL path
+            await axios.put('/platform-api/entity', {
               entityClass,
               entityId,
               transition: values.transition,

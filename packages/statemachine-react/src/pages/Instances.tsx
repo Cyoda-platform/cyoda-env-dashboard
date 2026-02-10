@@ -200,9 +200,17 @@ export const Instances: React.FC = () => {
   };
 
   const handleViewDetail = (record: InstanceTableRow) => {
-    navigate(
-      `/instances/${record.entityId}?entityClassName=${record.entityClassName}`
-    );
+    const params = new URLSearchParams();
+    params.set('entityClassName', record.entityClassName);
+    if (record.currentWorkflowId) {
+      params.set('currentWorkflowId', record.currentWorkflowId);
+    }
+    // Default to 'persisted' as the most common case
+    // The old Vue code used record.persisted to determine this, but that field
+    // is not available in the current API response
+    params.set('persistedType', 'persisted');
+
+    navigate(`/instances/${record.entityId}?${params.toString()}`);
   };
 
   const getWorkflowName = (record: Instance) => {

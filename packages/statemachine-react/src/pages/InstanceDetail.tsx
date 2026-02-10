@@ -6,14 +6,20 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
-import { Tabs, Card, Spin, Typography, Space, Alert, Descriptions, Button, Switch, Divider, theme } from 'antd';
+import { Tabs, Card, Spin, Typography, Space, Alert, Button, Switch, Divider, theme } from 'antd';
 import type { TabsProps } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   useWorkflow,
   useWorkflowEnabledTypes,
+  useTransitions,
+  useProcesses,
+  useCriteriaForWorkflow,
+  useStatesList,
 } from '../hooks/useStatemachine';
+import { useGraphicalStatemachineStore } from '../stores/graphicalStatemachineStore';
+import { GraphicalStateMachine } from '../components/GraphicalStateMachine';
 import { useEntityLoad } from '../hooks/useEntity';
 import type { Entity } from '@cyoda/http-api-react';
 import { axiosPlatform, getCyodaCloudEntity, HelperFeatureFlags } from '@cyoda/http-api-react';
@@ -136,6 +142,12 @@ export const InstanceDetail: React.FC = () => {
             instanceId={instanceId!}
             persistedType={persistedType}
             entityData={entityData}
+            onTransitionChange={() => {
+              // Invalidate entity data cache to reload
+              queryClient.invalidateQueries({ queryKey: ['entity-load', instanceId, entityClassName] });
+              // Trigger refresh for other tabs
+              setRefreshTrigger(prev => prev + 1);
+            }}
           />
         ),
       });
@@ -387,36 +399,73 @@ const WorkflowView: React.FC<{
   instanceId: string;
   persistedType: PersistedType;
   entityData: any;
-}> = ({ workflowId, entityClassName, instanceId, persistedType, entityData }) => {
+  onTransitionChange?: () => void;
+}> = ({ workflowId, entityClassName, instanceId, persistedType, entityData, onTransitionChange }) => {
   // Extract state from entity data array
   const stateItem = Array.isArray(entityData)
     ? entityData.find((item: any) => item.columnInfo?.columnName === 'state')
     : null;
   const currentState = stateItem?.value || 'Unknown';
 
+  // Fetch workflow data for graphical view
+  const { data: transitions = [] } = useTransitions(persistedType, workflowId, !!workflowId);
+  const { data: processes = [] } = useProcesses(persistedType, workflowId, entityClassName, !!workflowId);
+  const { data: criteria = [] } = useCriteriaForWorkflow(persistedType, workflowId, entityClassName, !!workflowId);
+  const { data: states = [] } = useStatesList(persistedType, workflowId, !!workflowId);
+
+  // Graphical state machine store
+  const { positionsMap, updatePositionsMap } = useGraphicalStatemachineStore();
+
+  // Create a map of state IDs to state names for quick lookup
+  const statesMap = useMemo(() => {
+    const map = new Map<string, string>();
+    states.forEach((state: any) => {
+      map.set(state.id, state.name);
+    });
+    return map;
+  }, [states]);
+
+  // Enrich transitions with state names
+  const enrichedTransitions = useMemo(() => {
+    return transitions.map((transition: any) => {
+      const startStateId = transition.startStateId || transition.fromState;
+      const endStateId = transition.endStateId || transition.toState;
+
+      return {
+        ...transition,
+        startStateName: transition.startStateName ||
+          (startStateId === 'noneState' ? 'None' : statesMap.get(startStateId)) ||
+          'None',
+        endStateName: transition.endStateName ||
+          statesMap.get(endStateId) ||
+          'None',
+      };
+    });
+  }, [transitions, statesMap]);
+
   return (
     <div>
-      <Space direction="vertical" size="large" style={{ width: '100%' }}>
-        {/* Current State */}
-        <Card title="Current State" size="small">
-          <Descriptions column={2} size="small">
-            <Descriptions.Item label="State">{currentState}</Descriptions.Item>
-            <Descriptions.Item label="Workflow ID">{workflowId}</Descriptions.Item>
-            <Descriptions.Item label="Entity Class">{entityClassName}</Descriptions.Item>
-            <Descriptions.Item label="Instance ID">{instanceId}</Descriptions.Item>
-          </Descriptions>
-        </Card>
+      {/* Transition Entity Section */}
+      <EntityTransitions
+        entityId={instanceId}
+        entityClass={entityClassName}
+        onTransitionChange={onTransitionChange}
+      />
 
-        {/* Available Transitions */}
-        <Card title="Available Transitions" size="small">
-          <Alert
-            message="Transition Actions"
-            description="This section will display available workflow transitions that can be executed on this instance. Implementation requires integration with workflow transition execution API."
-            type="info"
-            showIcon
-          />
-        </Card>
-      </Space>
+      <Divider />
+
+      {/* Graphical State Machine */}
+      <GraphicalStateMachine
+        workflowId={workflowId}
+        transitions={enrichedTransitions}
+        processes={processes}
+        criteria={criteria}
+        positionsMap={positionsMap}
+        onUpdatePositionsMap={updatePositionsMap}
+        currentState={currentState}
+        isReadonly={true}
+        minHeight="500px"
+      />
     </div>
   );
 };

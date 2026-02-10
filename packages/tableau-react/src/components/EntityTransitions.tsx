@@ -6,10 +6,18 @@
  * Uses the transactional PUT /platform-api/entity endpoint for transitions.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Form, Select, Button, Modal, notification } from 'antd';
-import { axios } from '@cyoda/http-api-react';
+import { axios, HelperFeatureFlags } from '@cyoda/http-api-react';
 import './EntityTransitions.scss';
+
+/**
+ * The Java class name for TreeNodeEntity used in Cyoda Cloud mode.
+ * When VITE_FEATURE_FLAG_IS_CYODA_CLOUD=true, the entityClassName from the backend
+ * is in the format <entityModelName>.<modelVersion> (e.g., "Dataset.1"),
+ * but the API endpoints require the actual Java class name.
+ */
+const CYODA_CLOUD_ENTITY_CLASS = 'com.cyoda.tdb.model.treenode.TreeNodeEntity';
 
 interface EntityTransitionsProps {
   entityId: string;
@@ -28,7 +36,18 @@ const EntityTransitions: React.FC<EntityTransitionsProps> = ({
   const [transitions, setTransitions] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // Load available transitions
+  // In Cyoda Cloud mode, use the TreeNodeEntity class for entity UPDATE calls only.
+  // The entityClass prop may be in format "ModelName.Version" (e.g., "Dataset.1")
+  // but the entity update API requires the actual Java class name.
+  // Note: fetch/transitions endpoint accepts the Cloud entity class format.
+  const apiEntityClass = useMemo(() => {
+    if (HelperFeatureFlags.isCyodaCloud()) {
+      return CYODA_CLOUD_ENTITY_CLASS;
+    }
+    return entityClass;
+  }, [entityClass]);
+
+  // Load available transitions (uses original entityClass, works with Cloud format)
   useEffect(() => {
     const loadTransitions = async () => {
       if (!entityId || !entityClass) return;
@@ -62,9 +81,10 @@ const EntityTransitions: React.FC<EntityTransitionsProps> = ({
         onOk: async () => {
           setLoading(true);
           try {
-            // Use transactional updateEntity endpoint
-            await axios.put(`/platform-api/entity/${entityClass}/${entityId}`, {
-              entityClass,
+            // entityClass and entityId are only in the request body, not in the URL path.
+            // In Cyoda Cloud mode, use TreeNodeEntity class name for the update.
+            await axios.put('/platform-api/entity', {
+              entityClass: apiEntityClass,
               entityId,
               transition: values.transition,
               transactional: true,
@@ -77,7 +97,7 @@ const EntityTransitions: React.FC<EntityTransitionsProps> = ({
               description: 'Transition completed successfully',
             });
 
-            // Reload transitions after successful transition
+            // Reload transitions after successful transition (uses original entityClass)
             const { data } = await axios.get<string[]>(
               `/platform-api/entity/fetch/transitions?entityId=${encodeURIComponent(entityId)}&entityClass=${encodeURIComponent(entityClass)}`
             );

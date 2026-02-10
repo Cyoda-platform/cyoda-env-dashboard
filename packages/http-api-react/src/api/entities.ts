@@ -63,14 +63,17 @@ export function createEntity(entityRequest: EntityRequest) {
  * Update entity
  * The transactional flag is set to true by default in the request body to ensure atomic execution.
  * The transactional flag is part of the EntityRequest body, not a query parameter.
+ * entityClass and entityId are only in the request body, not in the URL path.
  */
 export function updateEntity(entityClass: string, entityId: string, entityRequest: EntityRequest) {
   const requestBody: EntityRequest = {
     ...entityRequest,
+    entityClass,
+    entityId,
     transactional: entityRequest.transactional ?? true,
   };
 
-  return axios.put(`/platform-api/entity/${entityClass}/${entityId}`, requestBody);
+  return axios.put('/platform-api/entity', requestBody);
 }
 
 /**
@@ -149,6 +152,7 @@ export function getEntityClasses() {
  * Execute entity transition using the transactional updateEntity endpoint.
  * This replaces the old non-transactional /platform-api/entity/transition endpoint.
  * After the transition completes, call getEntityTransitions to get the updated list.
+ * entityClass and entityId are only in the request body, not in the URL path.
  */
 export function executeEntityTransition(
   entityClass: string,
@@ -164,7 +168,7 @@ export function executeEntityTransition(
     async: false,
     values: values || [],
   };
-  return axios.put(`/platform-api/entity/${entityClass}/${entityId}`, requestBody);
+  return axios.put('/platform-api/entity', requestBody);
 }
 
 /**
