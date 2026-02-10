@@ -12,8 +12,8 @@ async function login(page: any) {
   await page.goto('/login');
   const usernameInput = page.locator('input[placeholder*="username" i], input[placeholder*="Username" i]').first();
   const passwordInput = page.locator('input[placeholder*="password" i], input[placeholder*="Password" i]').first();
-  await usernameInput.fill('demo.user');
-  await passwordInput.fill('k33pS8fe!!');
+  await usernameInput.fill(process.env.TEST_ENV_USER || 'demo.user');
+  await passwordInput.fill(process.env.TEST_ENV_SECRET || 'password');
   await page.locator('button[type="submit"], button:has-text("Log in"), button:has-text("Sign in")').first().click();
   await page.waitForURL(/^(?!.*login).*$/, { timeout: 30000 });
 }

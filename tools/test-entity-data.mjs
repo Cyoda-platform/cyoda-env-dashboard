@@ -29,10 +29,12 @@ async function testEntityData() {
   try {
     // Step 1: Login
     console.log('\n=== STEP 1: LOGIN ===');
+    const testUser = process.env.TEST_ENV_USER || 'demo.user';
+    const testSecret = process.env.TEST_ENV_SECRET || 'password';
     await page.goto('http://localhost:3000', { waitUntil: 'networkidle' });
     await page.waitForSelector('input[type="text"]', { timeout: 10000 });
-    await page.locator('input[type="text"]').first().fill('demo.user');
-    await page.locator('input[type="password"]').first().fill('k33pS8fe!!');
+    await page.locator('input[type="text"]').first().fill(testUser);
+    await page.locator('input[type="password"]').first().fill(testSecret);
     await page.locator('button[type="submit"]').first().click();
     await page.waitForTimeout(3000);
     console.log('✅ Logged in');

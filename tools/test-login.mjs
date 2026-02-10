@@ -14,13 +14,15 @@ async function testLogin() {
     console.log('⏳ Waiting for login form...');
     await page.waitForSelector('input[type="text"], input[name="username"], input[placeholder*="username" i]', { timeout: 10000 });
     
-    console.log('✍️  Filling in username: demo.user');
+    const testUser = process.env.TEST_ENV_USER || 'demo.user';
+    const testSecret = process.env.TEST_ENV_SECRET || 'password';
+    console.log(`✍️  Filling in username: ${testUser}`);
     const usernameInput = await page.locator('input[type="text"], input[name="username"], input[placeholder*="username" i]').first();
-    await usernameInput.fill('demo.user');
-    
-    console.log('✍️  Filling in password: k33pS8fe!!');
+    await usernameInput.fill(testUser);
+
+    console.log('✍️  Filling in password: ***');
     const passwordInput = await page.locator('input[type="password"]').first();
-    await passwordInput.fill('k33pS8fe!!');
+    await passwordInput.fill(testSecret);
     
     console.log('🔘 Clicking login button...');
     const loginButton = await page.locator('button[type="submit"], button:has-text("Login"), button:has-text("Sign in")').first();

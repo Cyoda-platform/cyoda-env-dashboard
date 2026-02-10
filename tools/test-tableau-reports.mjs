@@ -16,9 +16,11 @@ async function testTableauReports() {
     console.log('⏳ Waiting for login form...');
     await page.waitForSelector('input[type="text"], input[name="username"]', { timeout: 10000 });
     
+    const testUser = process.env.TEST_ENV_USER || 'demo.user';
+    const testSecret = process.env.TEST_ENV_SECRET || 'password';
     console.log('✍️  Filling in credentials...');
-    await page.locator('input[type="text"], input[name="username"]').first().fill('demo.user');
-    await page.locator('input[type="password"]').first().fill('k33pS8fe!!');
+    await page.locator('input[type="text"], input[name="username"]').first().fill(testUser);
+    await page.locator('input[type="password"]').first().fill(testSecret);
     
     console.log('🔘 Clicking login button...');
     await page.locator('button[type="submit"], button:has-text("Login")').first().click();
