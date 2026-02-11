@@ -7,7 +7,7 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Tag, Spin, Modal, Button, Space, Tooltip } from 'antd';
 import { RightOutlined, SearchOutlined, BranchesOutlined, ThunderboltOutlined, DiffOutlined } from '@ant-design/icons';
-import { axios, getCyodaCloudEntity, HelperFeatureFlags } from '@cyoda/http-api-react';
+import { axios, getCyodaCloudEntity, HelperFeatureFlags, isCyodaCloudEntityFormat } from '@cyoda/http-api-react';
 import type { AuditEventType } from '@cyoda/http-api-react';
 import Prism from 'prismjs';
 import 'prismjs/themes/prism.css';
@@ -39,7 +39,10 @@ const EntityAudit: React.FC<EntityAuditProps> = ({ entityClass, entityId }) => {
   const [loading, setLoading] = useState(false);
 
   // Cyoda Cloud mode state for viewing entity at transaction
-  const isCyodaCloud = HelperFeatureFlags.isCyodaCloud();
+  // Only enable Cyoda Cloud features when both conditions are met:
+  // 1. Cyoda Cloud mode is enabled
+  // 2. Entity class is in Cyoda Cloud format (<modelname>.<modelversion>)
+  const isCyodaCloud = HelperFeatureFlags.isCyodaCloud() && isCyodaCloudEntityFormat(entityClass);
   const [jsonModalVisible, setJsonModalVisible] = useState(false);
   const [jsonModalData, setJsonModalData] = useState<Record<string, unknown> | null>(null);
   const [jsonModalLoading, setJsonModalLoading] = useState(false);

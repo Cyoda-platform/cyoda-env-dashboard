@@ -414,6 +414,49 @@ export function parseModelNameVersion(modelName: string): { entityName: string; 
 }
 
 /**
+ * Check if an entity class name is in the Cyoda Cloud format (<modelname>.<modelversion>)
+ *
+ * Cyoda Cloud format: Simple name with version number (e.g., "nobel-prize.1", "travel.1001")
+ * Non-Cyoda Cloud format: Full Java package names (e.g., "com.cyoda.tdb.model.Customer")
+ *
+ * The Cyoda Cloud API (/entity/{entityId}) only works for entities with class names
+ * in the <modelname>.<modelversion> format.
+ *
+ * @param entityClass - The entity class name to check
+ * @returns true if the entity class is in Cyoda Cloud format, false otherwise
+ */
+export function isCyodaCloudEntityFormat(entityClass: string): boolean {
+  if (!entityClass) {
+    return false;
+  }
+
+  // Check for Java package name patterns (non-Cyoda Cloud format)
+  // These are full package names like com.cyoda.*, net.cyoda.*, org.*, etc.
+  if (
+    entityClass.startsWith('com.') ||
+    entityClass.startsWith('net.') ||
+    entityClass.startsWith('org.') ||
+    entityClass.includes('.cyoda.')
+  ) {
+    return false;
+  }
+
+  // Check if it matches the Cyoda Cloud format: <modelname>.<version>
+  // The format should be: name.number (e.g., "nobel-prize.1", "travel.1001")
+  const lastDotIndex = entityClass.lastIndexOf('.');
+  if (lastDotIndex === -1) {
+    // No dot at all - not in the expected format
+    return false;
+  }
+
+  const versionStr = entityClass.substring(lastDotIndex + 1);
+  const version = parseInt(versionStr, 10);
+
+  // If the part after the last dot is a valid number, it's in Cyoda Cloud format
+  return !isNaN(version) && version > 0;
+}
+
+/**
  * Get entity audit events (Cyoda Cloud API)
  * Used when VITE_FEATURE_FLAG_IS_CYODA_CLOUD is enabled
  * Returns audit events for a specific entity with optional filtering

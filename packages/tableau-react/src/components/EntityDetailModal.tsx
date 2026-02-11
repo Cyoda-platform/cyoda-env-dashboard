@@ -6,7 +6,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Modal, Tabs, Descriptions, Spin, Button, Switch, notification, Divider, theme } from 'antd';
-import { getEntityLoad, getCyodaCloudEntity, HelperFeatureFlags } from '@cyoda/http-api-react';
+import { getEntityLoad, getCyodaCloudEntity, HelperFeatureFlags, isCyodaCloudEntityFormat } from '@cyoda/http-api-react';
 import { HelperFormat } from '@cyoda/ui-lib-react';
 import type { ConfigDefinition } from '../types';
 import type { Entity } from '@cyoda/http-api-react/types';
@@ -101,13 +101,18 @@ const EntityDetailModal: React.FC<EntityDetailModalProps> = ({
 
     setLoading(true);
     try {
-      if (isCyodaCloudMode) {
+      // Use Cyoda Cloud endpoint only when:
+      // 1. Cyoda Cloud mode is enabled AND
+      // 2. Entity class is in Cyoda Cloud format (<modelname>.<modelversion>)
+      const useCyodaCloudApi = isCyodaCloudMode && isCyodaCloudEntityFormat(entityClass);
+
+      if (useCyodaCloudApi) {
         // Use Cyoda Cloud endpoint for entity data
         const { data } = await getCyodaCloudEntity(entityId);
         setCyodaCloudEntity(data);
         setEntity([]); // Clear structured entity data
       } else {
-        // Use standard endpoint
+        // Use standard endpoint for non-Cyoda Cloud format entities
         const { data } = await getEntityLoad(entityId, entityClass);
         // Filter and sort data using HelperDetailEntity (like in Vue version)
         const filteredData = HelperDetailEntity.filterData(data);
@@ -128,13 +133,19 @@ const EntityDetailModal: React.FC<EntityDetailModalProps> = ({
     loadEntity();
   }, [visible, selectedRow, configDefinition.requestClass, configDefinition.entityClass]);
 
+  // Determine if we should use Cyoda Cloud UI (JSON tab as default)
+  // Only use Cyoda Cloud UI when both conditions are met:
+  // 1. Cyoda Cloud mode is enabled
+  // 2. Entity class is in Cyoda Cloud format (<modelname>.<modelversion>)
+  const useCyodaCloudUI = isCyodaCloudMode && isCyodaCloudEntityFormat(getEntityClass());
+
   // Reset tab when modal opens
   useEffect(() => {
     if (visible) {
-      // Set default tab based on mode
-      setActiveTab(isCyodaCloudMode ? 'json' : 'details');
+      // Set default tab based on mode and entity class format
+      setActiveTab(useCyodaCloudUI ? 'json' : 'details');
     }
-  }, [visible, isCyodaCloudMode]);
+  }, [visible, useCyodaCloudUI]);
 
   // Helper to get value from entity array by column name
   const getValueFromColumn = (columnName: string) => {
@@ -189,8 +200,8 @@ const EntityDetailModal: React.FC<EntityDetailModalProps> = ({
   const textColor = isDark ? '#e2e8f0' : '#1f2937';
   const borderColor = isDark ? '#334155' : '#d1d5db';
 
-  // Build tab items based on mode
-  const tabItems = isCyodaCloudMode
+  // Build tab items based on mode and entity class format
+  const tabItems = useCyodaCloudUI
     ? [
         {
           key: 'json',
