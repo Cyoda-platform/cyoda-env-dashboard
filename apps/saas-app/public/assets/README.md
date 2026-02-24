@@ -23,12 +23,6 @@ Located in `/public/`:
 - **favicon-16x16.png** (1.1KB) - 16x16 favicon
 - **favicon-32x32.png** (1.8KB) - 32x32 favicon
 
-## Source
-
-All assets were copied from the original Vue project:
-- Source: `.old_project /packages/*/src/assets/`
-- Date: October 26, 2025
-
 ## Adding New Assets
 
 To add new images or assets:

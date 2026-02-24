@@ -73,7 +73,7 @@ npm install
 npm run dev
 
 # Or from this directory
-cd react-project/apps/saas-app
+cd apps/saas-app
 npm run dev
 ```
 

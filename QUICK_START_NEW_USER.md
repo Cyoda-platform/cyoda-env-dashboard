@@ -202,10 +202,9 @@ yarn install
 ## 📚 Дополнительная документация
 
 - **Полная документация:** `README.md`
-- **Анализ структуры:** `STRUCTURE_ANALYSIS.md`
-- **SaaS App гайд:** `apps/saas-app/QUICK_START.md`
-- **Backend подключение:** `apps/saas-app/QUICK_START_BACKEND.md`
+- **SaaS App:** `apps/saas-app/README.md`
 - **Порты:** `PORTS.md`
+- **Env файлы:** `ENV_FILES_GUIDE.md`
 
 ---
 

@@ -10,30 +10,11 @@ These tests run against the **real Cyoda backend** at `https://cyoda-develop.kub
 
 - **`saas-app.spec.ts`** - General app tests (navigation, layout, error handling, performance)
 - **`saas-app-with-backend.spec.ts`** - Tests with real backend data integration
-- **`tableau-modelling.spec.ts`** - ✅ **UPDATED** Tableau Reporting tests (Reports, Stream Reports, Catalogue of Aliases)
+- **`tableau-modelling.spec.ts`** - Tableau Reporting tests (Reports, Stream Reports, Catalogue of Aliases)
 - **`tasks.spec.ts`** - Tasks feature tests (list, detail, filters, pagination)
 - **`entity-viewer.spec.ts`** - Entity Viewer tests (entity types, schema, fields, JOINs)
 - **`statemachine.spec.ts`** - State Machine tests (workflows, states, transitions)
 - **`processing-manager.spec.ts`** - Processing Manager tests (nodes, queues, stats)
-
-### ✅ Recently Updated: Tableau Tests
-
-The `tableau-modelling.spec.ts` file has been updated to work with the SaaS app integration:
-
-**What was fixed:**
-- ❌ Old paths: `/tableau`, `/modelling`, `/catalogue` → ✅ New paths: `/tableau/reports`, `/tableau/reports/stream`, `/tableau/catalogue-of-aliases`
-- ✅ Added authentication (login before each test)
-- ✅ Updated selectors to match SaaS app UI
-- ✅ Added navigation tests
-- ✅ Added integration tests
-- ✅ More resilient error handling
-
-**Test Coverage:**
-- **Tableau Reports** - Main reports page with tabs
-- **Stream Reports** - Stream report configurations
-- **Catalogue of Aliases** - Alias management with CRUD operations
-- **Navigation** - Menu navigation and route accessibility
-- **Integration** - Console errors, backend data, error handling
 
 ## Prerequisites
 
@@ -253,7 +234,7 @@ To run E2E tests in CI/CD:
 
 - [Playwright Documentation](https://playwright.dev/)
 - [Playwright Best Practices](https://playwright.dev/docs/best-practices)
-- [Testing Strategy](../TESTING_STRATEGY.md)
+
 
 ## Notes
 

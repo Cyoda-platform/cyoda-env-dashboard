@@ -320,16 +320,6 @@ Run tests with:
 npm test
 ```
 
-## Migration from Vue
-
-This package was migrated from the Vue 3 version. Key changes:
-
-- **Vuex → Zustand** - State management
-- **Vue Router → React Router** - Routing
-- **Element Plus → Ant Design** - UI components
-- **Pinia → Zustand** - Store management
-- **Vue Composables → React Hooks** - Reusable logic
-
 ## Contributing
 
 Please read the main project's CONTRIBUTING.md for details on our code of conduct and the process for submitting pull requests.

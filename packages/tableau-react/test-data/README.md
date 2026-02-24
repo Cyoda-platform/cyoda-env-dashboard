@@ -126,25 +126,6 @@ Once the test data is imported, you can create reports using these entities:
 
 ---
 
-## Mock Data (No Backend Required)
-
-If you don't have a backend running, the application will use mock entity types defined in `useEntityTypes.ts`:
-
-```typescript
-const MOCK_ENTITY_TYPES = [
-  'com.cyoda.tms.model.entities.Account',
-  'com.cyoda.tms.model.entities.Transaction',
-  'com.cyoda.tms.model.entities.Customer',
-  'com.cyoda.tms.model.entities.Product',
-  'com.cyoda.tms.model.entities.Order',
-  'com.cyoda.tms.model.entities.Payment',
-  'com.cyoda.tms.model.entities.Invoice',
-  'com.cyoda.tms.model.entities.User',
-];
-```
-
-You can select any of these entity types when creating reports, even without actual data. The UI will work, but running reports will require actual backend data.
-
 ---
 
 ## Notes
@@ -173,18 +154,5 @@ You can select any of these entity types when creating reports, even without act
 - Check the entity class name in the report configuration
 - Try running a simple report without filters first
 
----
 
-## Next Steps
-
-After importing test data:
-
-1. ✅ Create a simple report to verify data is accessible
-2. ✅ Test different column configurations
-3. ✅ Test filtering and sorting
-4. ✅ Test grouping and summary functions
-5. ✅ Test report execution and history
-6. ✅ Test stream reports with range conditions
-
-Happy testing! 🚀
 
