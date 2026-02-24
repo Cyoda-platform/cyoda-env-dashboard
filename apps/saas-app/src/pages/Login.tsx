@@ -40,6 +40,13 @@ const Login: React.FC = () => {
       return;
     }
 
+    // Only redirect if we have a valid backend token
+    const authData = helperStorage.get('auth');
+    if (!authData?.token) {
+      console.log('Auth0 authenticated but no backend token - staying on login');
+      return;
+    }
+
     hasHandledAuth0Login.current = true;
     navigate(getDefaultRoute(), { replace: true });
   }, [isAuthenticated, auth0Loading, navigate]);

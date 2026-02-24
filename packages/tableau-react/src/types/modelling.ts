@@ -4,7 +4,7 @@
  */
 
 export interface ReportingInfoRow {
-  columnName: string;
+  columnName?: string;
   columnPath: string;
   type: string;
   clazzType?: string;
@@ -51,8 +51,9 @@ export interface RequestParam {
 }
 
 export interface ColDef {
+  '@bean'?: string;
   fullPath: string;
-  colType: string;
+  colType?: string;
   parts?: any;
 }
 

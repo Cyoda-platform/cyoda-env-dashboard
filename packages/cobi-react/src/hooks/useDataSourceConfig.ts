@@ -286,7 +286,7 @@ export function useStatisticsForChild() {
 }
 
 /**
- * Hook to export all COBI
+ * Hook to export all COBI (Data Source Config)
  */
 export function useExportAllCobi() {
   return useMutation({
@@ -295,7 +295,7 @@ export function useExportAllCobi() {
 }
 
 /**
- * Hook to import COBI configuration
+ * Hook to import COBI configuration (Data Source Config)
  */
 export function useImportCobiConfig() {
   const queryClient = useQueryClient();

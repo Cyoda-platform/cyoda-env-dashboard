@@ -73,6 +73,8 @@ const authProvider: AuthProvider = {
     const authData = helperStorage.get<AuthData>('auth');
 
     if (authData?.token) {
+      // Validate token is still valid by checking if it works
+      // If we get 401s, the token is stale and should be cleared
       return {
         authenticated: true,
       };

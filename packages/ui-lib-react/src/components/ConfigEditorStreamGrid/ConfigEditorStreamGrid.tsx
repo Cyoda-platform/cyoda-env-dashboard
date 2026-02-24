@@ -19,6 +19,7 @@ export interface StreamGridData {
     columnsValues: Record<string, any>
   }>
   pointTime?: number
+  sdDef?: any
 }
 
 export interface ConfigEditorStreamGridProps {

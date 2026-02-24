@@ -93,6 +93,18 @@ export const ProcessForm: React.FC<ProcessFormProps> = ({
     return filtered;
   }, [processorsList, entityParentClasses, entityClassName]);
 
+  // Normalize a parameter value into the wrapped { '@type', value } format.
+  // The backend may return BOOLEAN values as raw primitives (e.g., true/false)
+  // instead of the wrapped structure.
+  const normalizeParamValue = (value: any, valueType?: string): { '@type': string; value: any } => {
+    if (value !== null && value !== undefined && typeof value === 'object' && '@type' in value) {
+      return value; // already wrapped
+    }
+    // Unwrapped primitive (e.g., boolean from backend) or null
+    const type = valueType || (typeof value === 'boolean' ? 'BOOLEAN' : 'STRING');
+    return { '@type': type.charAt(0).toUpperCase() + type.slice(1).toLowerCase(), value: value ?? null };
+  };
+
   // Get parameters for the selected processor
   const getProcessorParameters = React.useCallback((processorClassName: string) => {
     if (!processorClassName || !Array.isArray(processorsList)) {
@@ -110,6 +122,7 @@ export const ProcessForm: React.FC<ProcessFormProps> = ({
       return processor.parameters.map((p: any) => ({
         name: p.name,
         valueType: p.type,
+        required: p.required === true, // defaults to false (optional) if missing
         availableValues: p.availableValues,
         value: {
           '@type': p.type.charAt(0).toUpperCase() + p.type.slice(1).toLowerCase(),
@@ -124,12 +137,15 @@ export const ProcessForm: React.FC<ProcessFormProps> = ({
   // Track if form has been initialized to prevent loops
   const formInitializedRef = React.useRef(false);
   const lastProcessorRef = React.useRef<string | null>(null);
+  // Track whether parameters have been fully merged with processor definitions
+  const paramsMergedRef = React.useRef(false);
 
-  // Reset initialization flag on unmount
+  // Reset initialization flags on unmount
   React.useEffect(() => {
     return () => {
       formInitializedRef.current = false;
       lastProcessorRef.current = null;
+      paramsMergedRef.current = false;
     };
   }, []);
 
@@ -163,12 +179,37 @@ export const ProcessForm: React.FC<ProcessFormProps> = ({
         isTemplate: process.isTemplate || false,
       };
 
-      // Set parameters from loaded process
-      if (process.parameters && Array.isArray(process.parameters)) {
-        setProcessParameters(process.parameters);
+      // Build the full parameter list from the processor definition,
+      // merging in any saved values from the existing process.
+      // This ensures ALL possible parameters are shown, not just those with values.
+      const allParams = getProcessorParameters(process.processorClassName || '');
+      const savedParams = (process.parameters && Array.isArray(process.parameters)) ? process.parameters : [];
 
-        // Set parameter values in form
-        process.parameters.forEach((param: any) => {
+      if (allParams.length > 0) {
+        const mergedParams = allParams.map((defParam: any) => {
+          const saved = savedParams.find((s: any) => s.name === defParam.name);
+          if (saved) {
+            // Normalize saved value (backend may return BOOLEAN as raw primitive)
+            return { ...defParam, value: normalizeParamValue(saved.value, defParam.valueType) };
+          }
+          return defParam;
+        });
+
+        setProcessParameters(mergedParams);
+        paramsMergedRef.current = true;
+
+        mergedParams.forEach((param: any) => {
+          formValues[`param_${param.name}`] = param.value?.value;
+        });
+      } else if (savedParams.length > 0) {
+        // Fallback: processor definition not available yet, show saved params
+        const normalizedParams = savedParams.map((param: any) => ({
+          ...param,
+          value: normalizeParamValue(param.value, param.valueType),
+        }));
+        setProcessParameters(normalizedParams);
+        paramsMergedRef.current = false;
+        normalizedParams.forEach((param: any) => {
           formValues[`param_${param.name}`] = param.value?.value;
         });
       }
@@ -183,8 +224,34 @@ export const ProcessForm: React.FC<ProcessFormProps> = ({
         isTemplate: false,
       });
     }
-  }, [process, isNew, form]);
-  
+  }, [process, isNew, form, getProcessorParameters]);
+
+  // Re-merge parameters when processors list loads after initial form init
+  useEffect(() => {
+    if (process && formInitializedRef.current && !paramsMergedRef.current && !isNew) {
+      const allParams = getProcessorParameters(process.processorClassName || '');
+      if (allParams.length > 0) {
+        const savedParams = (process.parameters && Array.isArray(process.parameters)) ? process.parameters : [];
+        const mergedParams = allParams.map((defParam: any) => {
+          const saved = savedParams.find((s: any) => s.name === defParam.name);
+          if (saved) {
+            return { ...defParam, value: normalizeParamValue(saved.value, defParam.valueType) };
+          }
+          return defParam;
+        });
+
+        setProcessParameters(mergedParams);
+        paramsMergedRef.current = true;
+
+        const paramValues: any = {};
+        mergedParams.forEach((param: any) => {
+          paramValues[`param_${param.name}`] = param.value?.value;
+        });
+        form.setFieldsValue(paramValues);
+      }
+    }
+  }, [process, isNew, form, getProcessorParameters]);
+
   // Handlers
   const handleSubmit = async () => {
     try {
@@ -194,21 +261,35 @@ export const ProcessForm: React.FC<ProcessFormProps> = ({
       // Get all form values (including untouched fields with default values)
       const values = form.getFieldsValue(true);
 
-      // Process parameters - convert integer values
+      // Process parameters - convert integer values, strip frontend-only fields,
+      // and exclude parameters that have no value set.
       const processedParameters = processParameters.map((param) => {
         const paramValue = values[`param_${param.name}`];
-        const processedParam = { ...param };
+        const { required: _required, ...paramWithoutRequired } = param;
+        const processedParam = { ...paramWithoutRequired };
+        const paramTypeStr = (param.value?.['@type'] || param.valueType || '').toLowerCase();
 
         if (paramValue !== undefined && paramValue !== null && paramValue !== '') {
           processedParam.value = {
             ...param.value,
-            value: param.value['@type'].toLowerCase() === 'integer'
+            value: paramTypeStr === 'integer'
               ? parseInt(paramValue, 10)
               : paramValue,
+          };
+        } else if (paramTypeStr === 'boolean' && paramValue === false) {
+          // Boolean false is a valid value, not "empty"
+          processedParam.value = {
+            ...param.value,
+            value: false,
           };
         }
 
         return processedParam;
+      }).filter((param) => {
+        const val = param.value?.value;
+        // Keep parameters that have a value set (including boolean false)
+        if (val === false) return true;
+        return val !== null && val !== undefined && val !== '';
       });
 
       const formData: ProcessFormType = {
@@ -222,6 +303,12 @@ export const ProcessForm: React.FC<ProcessFormProps> = ({
         parameters: processedParameters,
         entityClassName,
       };
+
+      // Include the id from the fetched process data when updating.
+      // The backend returns id as a ProcessIdDto bean and expects it back on PUT.
+      if (!isNew && process?.id) {
+        formData.id = process.id;
+      }
 
       let resultId;
       if (isNew) {
@@ -240,7 +327,7 @@ export const ProcessForm: React.FC<ProcessFormProps> = ({
         resultId = processId;
         message.success('Process updated successfully');
       }
-      
+
       if (onSubmitted) {
         onSubmitted({ id: resultId });
       }
@@ -249,10 +336,10 @@ export const ProcessForm: React.FC<ProcessFormProps> = ({
       message.error(`Failed to save process: ${errorMessage}`);
     }
   };
-  
+
   const isLoading = isLoadingProcess || createProcessMutation.isPending || updateProcessMutation.isPending;
   const isTemplate = Form.useWatch('isTemplate', form);
-  
+
   return (
     <Form
       form={form}
@@ -282,7 +369,7 @@ export const ProcessForm: React.FC<ProcessFormProps> = ({
           </Space>
         </Space>
       </div>
-      
+
       <Form.Item
         label="Name"
         name="name"
@@ -290,14 +377,14 @@ export const ProcessForm: React.FC<ProcessFormProps> = ({
       >
         <Input disabled={isRuntime} />
       </Form.Item>
-      
+
       <Form.Item label="Description" name="description">
         <TextArea
           disabled={isRuntime}
           autoSize={{ minRows: 3, maxRows: 6 }}
         />
       </Form.Item>
-      
+
       {isTemplate ? (
         <Form.Item
           label="Processor"
@@ -336,28 +423,46 @@ export const ProcessForm: React.FC<ProcessFormProps> = ({
           <h2 style={{ marginTop: '24px', marginBottom: '16px' }}>Process parameters</h2>
           {processParameters.map((param, index) => {
             const fieldName = `param_${param.name}`;
-            const paramType = param.value['@type'];
+            const paramType = param.value?.['@type'] || param.valueType || 'String';
+            const paramTypeLower = paramType.toLowerCase();
+            const isRequired = param.required === true;
+            const optionalHint = !isRequired ? <small style={{ color: '#999', fontWeight: 'normal' }}> (optional)</small> : null;
 
             // If parameter has available values, render as select
             if (param.availableValues && Array.isArray(param.availableValues)) {
               return (
                 <Form.Item
                   key={index}
-                  label={param.name}
+                  label={<span>{param.name}{optionalHint}</span>}
                   name={fieldName}
-                  rules={[{ required: true, message: 'Please select a value' }]}
-                  initialValue={param.value.value}
+                  rules={isRequired ? [{ required: true, message: 'Please select a value' }] : []}
+                  initialValue={param.value?.value}
                 >
                   <Select
                     disabled={isRuntime}
                     placeholder={`Select ${param.name}`}
                     options={param.availableValues.map((val: any) => ({
                       label: val.displayValue,
-                      value: val.value.value,
+                      value: val.value?.value ?? val.value,
                     }))}
                     classNames={{ popup: { root: 'process-form-dropdown' } }}
                     styles={{ popup: { root: { minWidth: '300px' } } }}
                   />
+                </Form.Item>
+              );
+            }
+
+            // Boolean parameters render as a switch
+            if (paramTypeLower === 'boolean') {
+              return (
+                <Form.Item
+                  key={index}
+                  label={<span>{param.name}{optionalHint}</span>}
+                  name={fieldName}
+                  valuePropName="checked"
+                  initialValue={param.value?.value ?? false}
+                >
+                  <Switch disabled={isRuntime} />
                 </Form.Item>
               );
             }
@@ -368,17 +473,17 @@ export const ProcessForm: React.FC<ProcessFormProps> = ({
                 key={index}
                 label={
                   <span>
-                    {param.name} <small style={{ color: '#999' }}>{paramType}</small>
+                    {param.name} <small style={{ color: '#999' }}>{paramType}</small>{optionalHint}
                   </span>
                 }
                 name={fieldName}
-                rules={[{ required: true, message: 'Please fill field' }]}
-                initialValue={param.value.value}
+                rules={isRequired ? [{ required: true, message: 'Please fill field' }] : []}
+                initialValue={param.value?.value}
               >
                 <Input
                   disabled={isRuntime}
                   placeholder={`Enter ${param.name}`}
-                  type={paramType.toLowerCase() === 'integer' ? 'number' : 'text'}
+                  type={paramTypeLower === 'integer' ? 'number' : 'text'}
                 />
               </Form.Item>
             );

@@ -2,7 +2,7 @@
 
 **Objective:** Remove redundant documentation, eliminate progress reports, and consolidate essential documentation following agile documentation principles.
 
-**Prerequisites:** Step 3 (Design Target Package Architecture) must be complete. Having the target architecture defined allows us to evaluate documentation against where things are going, not just where they are.
+**Prerequisites:** Report results package audit available in .ai/package-refactor/audit-results/1-package-audit-report.md to help identify which documentation might be redundant.
 
 **Action Items:**
 

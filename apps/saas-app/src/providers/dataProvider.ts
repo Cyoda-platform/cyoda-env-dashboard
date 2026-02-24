@@ -54,15 +54,17 @@ axiosInstance.interceptors.response.use(
           return axiosInstance(originalRequest);
         } catch (refreshError) {
           refreshPromise = null;
-          // Refresh failed, redirect to login
+          // Refresh failed, clear auth and redirect to login
           helperStorage.remove('auth');
+          localStorage.clear(); // Clear all stale data
           window.location.href = '/login';
           return Promise.reject(refreshError);
         }
       }
 
-      // Not Auth0 session, redirect to login
+      // Not Auth0 session or token invalid, clear auth and redirect to login
       helperStorage.remove('auth');
+      localStorage.clear(); // Clear all stale data
       window.location.href = '/login';
     }
 

@@ -253,6 +253,15 @@ export interface IDefinitionStream {
   name: string;
   owner?: string;
   streamDataDef: StreamDataDef;
+  // Properties from StreamDataDef for union type compatibility
+  aliasDefs?: AliasDef[];
+  colDefs?: ColDef[];
+  columns?: IDefinitionColumn[];
+  condition?: IDefinitionContentConditionGroup;
+  rangeCondition?: IDefinitionContentCondition;
+  rangeOrder?: 'ASC' | 'DESC';
+  requestClass?: string;
+  rangeColDefs?: ColDef[];
 }
 
 export interface StreamDataDef {
@@ -263,6 +272,7 @@ export interface StreamDataDef {
   rangeCondition: IDefinitionContentCondition;
   rangeOrder: 'ASC' | 'DESC';
   requestClass: string;
+  rangeColDefs?: ColDef[];
 }
 
 export interface IDefinitionContentStream {
@@ -314,11 +324,12 @@ export interface StreamDefinitionsIndex {
 
 export interface ColDef {
   fullPath: string;
-  parts: {
+  parts?: {
     '@meta': string;
     value: ColDefValue[];
   };
-  colType: string;
+  colType?: string;
+  '@bean'?: string;
 }
 
 export interface ColDefValue {
