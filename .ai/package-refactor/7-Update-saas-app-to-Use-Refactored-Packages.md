@@ -2,53 +2,82 @@
 
 **Objective:** Adjust the saas-app to work with the refactored package structure, ensuring no regression in functionality.
 
-**Prerequisites:** Step 6 (Refactor Feature Packages) must be complete.
+**Prerequisites:** Steps 5–6 (Extract Common Utilities / Refactor Feature Packages) are complete. The deduplication of `ResizableTitle`, `ErrorBoundary`, `globalUiSettingsStore`, and test utilities into Layer 0 is done.
 
-**Action Items:**
+## Current State
 
-1. Review current saas-app imports:
-   - `apps/saas-app/src/App.tsx`
-   - `apps/saas-app/src/routes/index.tsx`
-   - `apps/saas-app/src/components/*`
-   - `apps/saas-app/src/pages/*`
+The saas-app already uses workspace package references correctly in `apps/saas-app/package.json`. Most imports use the public API (`@cyoda/ui-lib-react`, `@cyoda/http-api-react`), but there are two categories of issues to address.
 
-2. Update imports to use new package exports:
-   - If saas-app was importing internal paths, update to public API
-   - Example: `@cyoda/ui-lib-react/src/components/X` → `@cyoda/ui-lib-react`
+## Action Items
 
-3. Verify all package dependencies in `apps/saas-app/package.json`:
-   - Ensure workspace references are correct
-   - Remove any unnecessary direct dependencies that packages provide
+### 1. Replace local ErrorBoundary with shared version
 
-4. Update any local components that should use shared versions:
-   - Check `apps/saas-app/src/components/ErrorBoundary.tsx`
-   - Replace with import from `@cyoda/ui-lib-react` if appropriate
+`apps/saas-app/src/components/ErrorBoundary.tsx` is a local copy. The canonical `ErrorBoundary` now lives in `@cyoda/ui-lib-react`.
 
-5. Run the saas-app development server:
-   ```bash
-   yarn dev:saas
-   ```
-   - Verify all routes load correctly
-   - Check browser console for errors
-   - Test navigation between features
+- Delete `apps/saas-app/src/components/ErrorBoundary.tsx`
+- Update `apps/saas-app/src/App.tsx` to import from `@cyoda/ui-lib-react`:
+  ```ts
+  import { ErrorBoundary } from '@cyoda/ui-lib-react';
+  ```
 
-6. Run saas-app build:
-   ```bash
-   yarn build:saas
-   ```
+### 2. Replace deep sub-path imports with public API imports
 
-7. Test each integrated feature in saas-app:
-   - Tableau/Reports functionality
-   - State Machine/Workflows functionality
-   - Processing Manager functionality
-   - Tasks functionality
-   - Source Configuration functionality
+Several files import from internal sub-paths of `@cyoda/http-api-react`. These should use the public barrel export instead:
 
-**Acceptance Criteria:**
-- [ ] All imports updated to use public package APIs
+| File | Current Import | Replacement |
+|------|---------------|-------------|
+| `src/providers/authProvider.ts` | `@cyoda/http-api-react/utils/storage` | `@cyoda/http-api-react` |
+| `src/providers/dataProvider.ts` | `@cyoda/http-api-react/utils/storage` | `@cyoda/http-api-react` |
+| `src/utils/auth0TokenManager.ts` | `@cyoda/http-api-react/utils/storage` | `@cyoda/http-api-react` |
+| `src/components/Auth0TokenInitializer.tsx` | `@cyoda/http-api-react/utils/storage` | `@cyoda/http-api-react` |
+| `src/components/AppLayout.tsx` | `@cyoda/http-api-react/utils/storage` | `@cyoda/http-api-react` |
+| `src/components/LeftSideMenu.tsx` | `@cyoda/http-api-react/utils/storage` | `@cyoda/http-api-react` |
+| `src/pages/Login.tsx` | `@cyoda/http-api-react/utils/storage` and `@cyoda/http-api-react/api/auth` | `@cyoda/http-api-react` |
+
+All of these symbols (`HelperStorage`, auth API functions) are already exported from `@cyoda/http-api-react`'s public barrel.
+
+For `Login.tsx`, the namespace import `import * as authApi from '@cyoda/http-api-react/api/auth'` needs to be converted to named imports (e.g., `import { login, logout, ... } from '@cyoda/http-api-react'`), or a namespace re-export needs to be added to `http-api-react`.
+
+### 3. Verify package.json dependencies
+
+`apps/saas-app/package.json` workspace references are already correct:
+- `@cyoda/http-api-react: workspace:*`
+- `@cyoda/ui-lib-react: workspace:*`
+- `@cyoda/statemachine-react: workspace:*`
+- `@cyoda/processing-manager-react: workspace:*`
+- `@cyoda/tasks-react: workspace:*`
+- `@cyoda/tableau-react: workspace:*`
+- `@cyoda/cyoda-sass-react: workspace:*`
+
+No changes needed here.
+
+### 4. Build and verify
+
+```bash
+# Type-check
+cd apps/saas-app && npx tsc --noEmit
+
+# Dev server
+yarn dev:saas
+
+# Production build
+yarn build:saas
+```
+
+### 5. Smoke-test each integrated feature
+
+- Tableau/Reports functionality
+- State Machine/Workflows functionality
+- Processing Manager functionality
+- Tasks functionality
+- Source Configuration functionality
+
+## Acceptance Criteria
+
+- [ ] Local `ErrorBoundary.tsx` deleted, import switched to `@cyoda/ui-lib-react`
+- [ ] All deep sub-path imports (`@cyoda/http-api-react/utils/storage`, `@cyoda/http-api-react/api/auth`) replaced with public API imports
+- [ ] `npx tsc --noEmit` passes with no new errors
 - [ ] `yarn dev:saas` runs without errors
 - [ ] `yarn build:saas` completes successfully
 - [ ] All features accessible and functional in the app
-- [ ] No console errors related to missing imports
-- [ ] No regression in existing functionality
 
