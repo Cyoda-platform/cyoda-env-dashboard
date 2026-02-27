@@ -38,20 +38,23 @@ All of these symbols (`HelperStorage`, auth API functions) are already exported 
 
 For `Login.tsx`, the namespace import `import * as authApi from '@cyoda/http-api-react/api/auth'` needs to be converted to named imports (e.g., `import { login, logout, ... } from '@cyoda/http-api-react'`), or a namespace re-export needs to be added to `http-api-react`.
 
-### 3. Verify package.json dependencies
+### 3. Switch saas-app to `@cyoda/reporting-react` — COMPLETED
 
-`apps/saas-app/package.json` workspace references are already correct:
+The saas-app now depends on `@cyoda/reporting-react` (not `@cyoda/tableau-react`).
+All imports use `@cyoda/reporting-react` and all routes use `/reporting/...` prefix.
+
+### 4. Verify remaining package.json dependencies — COMPLETED
+
+`apps/saas-app/package.json` now has:
 - `@cyoda/http-api-react: workspace:*`
 - `@cyoda/ui-lib-react: workspace:*`
+- `@cyoda/reporting-react: workspace:*`
 - `@cyoda/statemachine-react: workspace:*`
 - `@cyoda/processing-manager-react: workspace:*`
 - `@cyoda/tasks-react: workspace:*`
-- `@cyoda/tableau-react: workspace:*`
 - `@cyoda/cyoda-sass-react: workspace:*`
 
-No changes needed here.
-
-### 4. Build and verify
+### 5. Build and verify
 
 ```bash
 # Type-check
@@ -66,7 +69,7 @@ yarn build:saas
 
 ### 5. Smoke-test each integrated feature
 
-- Tableau/Reports functionality
+- Reporting functionality
 - State Machine/Workflows functionality
 - Processing Manager functionality
 - Tasks functionality
@@ -76,8 +79,11 @@ yarn build:saas
 
 - [ ] Local `ErrorBoundary.tsx` deleted, import switched to `@cyoda/ui-lib-react`
 - [ ] All deep sub-path imports (`@cyoda/http-api-react/utils/storage`, `@cyoda/http-api-react/api/auth`) replaced with public API imports
+- [x] `@cyoda/tableau-react` removed from saas-app dependencies
+- [x] All reporting imports use `@cyoda/reporting-react`
+- [x] No references to `tableau` remain in saas-app source code
 - [ ] `npx tsc --noEmit` passes with no new errors
-- [ ] `yarn dev:saas` runs without errors
-- [ ] `yarn build:saas` completes successfully
-- [ ] All features accessible and functional in the app
+- [ ] `npm run dev` runs without errors
+- [ ] `npm run build` completes successfully
+- [ ] All reporting features accessible and functional in the app
 

@@ -36,7 +36,7 @@
 
 5. Run package-specific tests:
    ```bash
-   yarn workspace @cyoda/tableau-react test
+   yarn workspace @cyoda/reporting-react test
    yarn workspace @cyoda/statemachine-react test
    yarn workspace @cyoda/processing-manager-react test
    yarn workspace @cyoda/tasks-react test

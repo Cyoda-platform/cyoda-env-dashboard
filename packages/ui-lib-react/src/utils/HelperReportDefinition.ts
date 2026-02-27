@@ -62,7 +62,7 @@ export default class HelperReportDefinition {
       grouping: [],
       summary: [],
       columns: [],
-      pointTime: '',
+      pointTime: '2200-01-01T00:00:00.000+00:00',
       colDefs: [],
       aliasDefs: [],
       valuationPointTime: '2020-01-27T14:09:28.778+03:00',

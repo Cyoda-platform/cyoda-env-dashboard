@@ -14,7 +14,7 @@
 
 ### Feature Layer (Depends on Foundation)
 ```
-@cyoda/tableau-react              → @cyoda/ui-lib-react, @cyoda/http-api-react
+@cyoda/reporting-react            → @cyoda/ui-lib-react, @cyoda/http-api-react
 @cyoda/statemachine-react         → @cyoda/ui-lib-react, @cyoda/http-api-react
 @cyoda/tasks-react                → @cyoda/ui-lib-react, @cyoda/http-api-react
 @cyoda/source-configuration-react → @cyoda/ui-lib-react, @cyoda/http-api-react
@@ -23,7 +23,7 @@
 
 ### Extended Feature Layer (Depends on Foundation + Other Features)
 ```
-@cyoda/processing-manager-react   → @cyoda/ui-lib-react, @cyoda/http-api-react, @cyoda/tableau-react
+@cyoda/processing-manager-react   → @cyoda/ui-lib-react, @cyoda/http-api-react, @cyoda/reporting-react
 ```
 
 ### Standalone (No Internal Dependencies - Self-Contained)
@@ -39,7 +39,7 @@
 | processing-manager-react | `src/components/ResizableTitle.tsx` |
 | tasks-react | `src/components/ResizableTitle.tsx` |
 | statemachine-react | `src/components/ResizableTitle.tsx` |
-| tableau-react | `src/components/ResizableTitle.tsx` |
+| reporting-react | `src/components/ResizableTitle.tsx` |
 
 **Recommendation:** Move to `@cyoda/ui-lib-react`
 
@@ -74,7 +74,7 @@
 |---------|-----------|----------|
 | ui-lib-react | `src/test-utils.tsx` | Basic (ConfigProvider only) |
 | cobi-react | `src/test/test-utils.tsx` | Full (QueryClient, Router, ConfigProvider) |
-| tableau-react | `src/test/test-utils.tsx` | Full (QueryClient, Router, ConfigProvider) |
+| reporting-react | `src/test/test-utils.tsx` | Full (QueryClient, Router, ConfigProvider) |
 | processing-manager-react | `src/test/test-utils.tsx` | QueryClient only |
 
 **Recommendation:** Create unified test-utils in `@cyoda/ui-lib-react`
@@ -83,15 +83,15 @@
 | Package | File Path | Lines | Notes |
 |---------|-----------|-------|-------|
 | http-api-react | `src/utils/HelperModelling.ts` | 43 | Basic (filterData, sortData) |
-| tableau-react | `src/utils/HelperModelling.ts` | 258 | Extended (full modelling support) |
+| reporting-react | `src/utils/HelperModelling.ts` | 258 | Extended (full modelling support) |
 
-**Recommendation:** Keep tableau-react version, remove http-api-react version
+**Recommendation:** Keep reporting-react version, remove http-api-react version
 
 ### 2.7 HelperDetailEntity (NEARLY IDENTICAL)
 | Package | File Path | Notes |
 |---------|-----------|-------|
 | ui-lib-react | `src/utils/HelperDetailEntity.ts` | Original |
-| tableau-react | `src/utils/HelperDetailEntity.ts` | Copy with different import |
+| reporting-react | `src/utils/HelperDetailEntity.ts` | Copy with different import |
 
-**Recommendation:** Remove from tableau-react, import from ui-lib-react
+**Recommendation:** Remove from reporting-react, import from ui-lib-react
 

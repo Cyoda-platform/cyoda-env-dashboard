@@ -685,6 +685,45 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@cyoda/reporting-react@workspace:*, @cyoda/reporting-react@workspace:packages/reporting-react":
+  version: 0.0.0-use.local
+  resolution: "@cyoda/reporting-react@workspace:packages/reporting-react"
+  dependencies:
+    "@cyoda/http-api-react": "npm:1.0.0"
+    "@cyoda/ui-lib-react": "npm:1.0.0"
+    "@monaco-editor/react": "npm:^4.7.0"
+    "@playwright/test": "npm:^1.56.0"
+    "@tanstack/react-query": "npm:^5.62.11"
+    "@types/lodash": "npm:^4.17.13"
+    "@types/node": "npm:^22.10.7"
+    "@types/prismjs": "npm:^1.26.5"
+    "@types/react": "npm:^18.3.18"
+    "@types/react-dom": "npm:^18.3.5"
+    "@types/react-resizable": "npm:^3.0.8"
+    "@vitejs/plugin-react": "npm:^4.3.4"
+    antd: "npm:^5.29.3"
+    axios: "npm:^1.7.9"
+    buffer: "npm:^6.0.3"
+    cors: "npm:^2.8.5"
+    express: "npm:^5.1.0"
+    lodash: "npm:^4.17.21"
+    moment: "npm:^2.30.1"
+    playwright: "npm:^1.56.0"
+    prismjs: "npm:^1.30.0"
+    react: "npm:^18.3.1"
+    react-dom: "npm:^18.3.1"
+    react-resizable: "npm:^3.0.5"
+    react-router-dom: "npm:^7.9.4"
+    sass: "npm:^1.83.4"
+    typescript: "npm:^5.7.3"
+    vite: "npm:^6.0.11"
+    zustand: "npm:^5.0.2"
+  peerDependencies:
+    react: ^18.3.1
+    react-dom: ^18.3.1
+  languageName: unknown
+  linkType: soft
+
 "@cyoda/saas-app@workspace:apps/saas-app":
   version: 0.0.0-use.local
   resolution: "@cyoda/saas-app@workspace:apps/saas-app"
@@ -694,8 +733,8 @@ __metadata:
     "@cyoda/cyoda-sass-react": "workspace:*"
     "@cyoda/http-api-react": "workspace:*"
     "@cyoda/processing-manager-react": "workspace:*"
+    "@cyoda/reporting-react": "workspace:*"
     "@cyoda/statemachine-react": "workspace:*"
-    "@cyoda/tableau-react": "workspace:*"
     "@cyoda/tasks-react": "workspace:*"
     "@cyoda/ui-lib-react": "workspace:*"
     "@playwright/test": "npm:^1.49.1"
@@ -791,45 +830,6 @@ __metadata:
     vite: "npm:^6.0.11"
     vitest: "npm:^3.0.3"
     zustand: "npm:^5.0.2"
-  languageName: unknown
-  linkType: soft
-
-"@cyoda/tableau-react@workspace:*, @cyoda/tableau-react@workspace:packages/tableau-react":
-  version: 0.0.0-use.local
-  resolution: "@cyoda/tableau-react@workspace:packages/tableau-react"
-  dependencies:
-    "@cyoda/http-api-react": "npm:1.0.0"
-    "@cyoda/ui-lib-react": "npm:1.0.0"
-    "@monaco-editor/react": "npm:^4.7.0"
-    "@playwright/test": "npm:^1.56.0"
-    "@tanstack/react-query": "npm:^5.62.11"
-    "@types/lodash": "npm:^4.17.13"
-    "@types/node": "npm:^22.10.7"
-    "@types/prismjs": "npm:^1.26.5"
-    "@types/react": "npm:^18.3.18"
-    "@types/react-dom": "npm:^18.3.5"
-    "@types/react-resizable": "npm:^3.0.8"
-    "@vitejs/plugin-react": "npm:^4.3.4"
-    antd: "npm:^5.29.3"
-    axios: "npm:^1.7.9"
-    buffer: "npm:^6.0.3"
-    cors: "npm:^2.8.5"
-    express: "npm:^5.1.0"
-    lodash: "npm:^4.17.21"
-    moment: "npm:^2.30.1"
-    playwright: "npm:^1.56.0"
-    prismjs: "npm:^1.30.0"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
-    react-resizable: "npm:^3.0.5"
-    react-router-dom: "npm:^7.9.4"
-    sass: "npm:^1.83.4"
-    typescript: "npm:^5.7.3"
-    vite: "npm:^6.0.11"
-    zustand: "npm:^5.0.2"
-  peerDependencies:
-    react: ^18.3.1
-    react-dom: ^18.3.1
   languageName: unknown
   linkType: soft
 

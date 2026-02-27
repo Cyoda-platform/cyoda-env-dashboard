@@ -52,7 +52,7 @@
 ### Packages Modified:
 - `packages/ui-lib-react`
 - `packages/http-api-react`
-- `packages/tableau-react`
+- `packages/reporting-react`
 - `packages/statemachine-react`
 - `packages/tasks-react`
 - `packages/cyoda-sass-react`
@@ -85,9 +85,9 @@
 | processing-manager-react | ShardsDetailTabTransactions.test.tsx | 1/14 |
 | ui-lib-react | EntityDetailModal.test.tsx | 21/21 |
 | ui-lib-react | Home.test.tsx | 1/5 |
-| tableau-react | integration.test.tsx | 7/8 |
-| tableau-react | ReportTableRows.test.tsx | 17/17 |
-| tableau-react | HistoryTable.test.tsx | 4/15 |
+| reporting-react | integration.test.tsx | 7/8 |
+| reporting-react | ReportTableRows.test.tsx | 17/17 |
+| reporting-react | HistoryTable.test.tsx | 4/15 |
 | cobi-react | DataMapper.integration.test.tsx | 17/18 |
 | cobi-react | AIGenerateDialog.test.tsx | 13/14 |
 | cobi-react | MetadataDialog.test.tsx | 11/12 |

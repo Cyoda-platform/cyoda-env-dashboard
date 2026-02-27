@@ -10,7 +10,7 @@ const helperStorage = new HelperStorage();
 
 // Determine default route based on feature flags
 const getDefaultRoute = () => {
-  return HelperFeatureFlags.isTrinoSqlSchemaEnabled() ? '/trino' : '/tableau/reports';
+  return HelperFeatureFlags.isTrinoSqlSchemaEnabled() ? '/trino' : '/reporting/reports';
 };
 
 interface LoginFormValues {

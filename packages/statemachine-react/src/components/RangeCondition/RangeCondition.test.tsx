@@ -315,8 +315,8 @@ describe('RangeCondition', () => {
     it('should pass correct props to ModellingPopUp', async () => {
       render(<RangeCondition form={defaultForm} onChange={mockOnChange} />);
 
-      const tableauReact = await import('@cyoda/ui-lib-react');
-      const ModellingPopUp = tableauReact.ModellingPopUp as any;
+      const uiLibReact = await import('@cyoda/ui-lib-react');
+      const ModellingPopUp = uiLibReact.ModellingPopUp as any;
       const lastCall = ModellingPopUp.mock.calls[ModellingPopUp.mock.calls.length - 1][0];
 
       expect(lastCall.requestClass).toBe('com.example.Entity');

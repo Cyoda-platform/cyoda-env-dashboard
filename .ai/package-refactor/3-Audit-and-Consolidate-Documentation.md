@@ -9,7 +9,7 @@
 1. Inventory all documentation files in the repository:
    - Root level: `README.md`, `PORTS.md`, `QUICK_START_NEW_USER.md`, `ENV_*.md`, `STRUCTURE_ANALYSIS.md`, etc.
    - `docs/` folder contents
-   - Package-level documentation (especially `processing-manager-react` and `tableau-react` with 20+ .md files each)
+   - Package-level documentation (especially `processing-manager-react` and `reporting-react` with 20+ .md files each)
    - `apps/saas-app/` documentation
 
 2. Categorize documentation by type:

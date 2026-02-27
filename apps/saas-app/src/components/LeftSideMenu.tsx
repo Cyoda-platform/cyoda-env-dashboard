@@ -162,7 +162,7 @@ export const LeftSideMenu: React.FC<LeftSideMenuProps> = ({ collapsed, onCollaps
     const path = location.pathname;
 
     if (submenuKey === 'reporting') {
-      return path.startsWith('/tableau');
+      return path.startsWith('/reporting');
     }
     if (submenuKey === 'lifecycle') {
       return path.startsWith('/workflows') || path.startsWith('/instances') ||
@@ -214,21 +214,21 @@ export const LeftSideMenu: React.FC<LeftSideMenuProps> = ({ collapsed, onCollaps
       onTitleClick: () => handleSubMenuClick('reporting'),
       children: [
         {
-          key: '/tableau/reports',
+          key: '/reporting/reports',
           icon: <BarChartOutlined />,
-          label: <span data-path="/tableau/reports">Report config editor</span>,
+          label: <span data-path="/reporting/reports">Report config editor</span>,
           title: 'Report config editor',
         },
         {
-          key: '/tableau/reports/stream',
+          key: '/reporting/reports/stream',
           icon: <LineChartOutlined />,
-          label: <span data-path="/tableau/reports/stream">Stream Reports</span>,
+          label: <span data-path="/reporting/reports/stream">Stream Reports</span>,
           title: 'Stream Reports',
         },
         {
-          key: '/tableau/catalogue-of-aliases',
+          key: '/reporting/catalogue-of-aliases',
           icon: <TagsOutlined />,
-          label: <span data-path="/tableau/catalogue-of-aliases">Catalog of aliases</span>,
+          label: <span data-path="/reporting/catalogue-of-aliases">Catalog of aliases</span>,
           title: 'Catalog of aliases',
         },
       ],
@@ -363,9 +363,9 @@ export const LeftSideMenu: React.FC<LeftSideMenuProps> = ({ collapsed, onCollaps
 
     // Check for exact matches first
     if (path.startsWith('/trino')) return ['/trino'];
-    if (path.startsWith('/tableau/reports/stream')) return ['/tableau/reports/stream'];
-    if (path.startsWith('/tableau/catalogue-of-aliases')) return ['/tableau/catalogue-of-aliases'];
-    if (path.startsWith('/tableau/reports')) return ['/tableau/reports'];
+    if (path.startsWith('/reporting/reports/stream')) return ['/reporting/reports/stream'];
+    if (path.startsWith('/reporting/catalogue-of-aliases')) return ['/reporting/catalogue-of-aliases'];
+    if (path.startsWith('/reporting/reports')) return ['/reporting/reports'];
     if (path.startsWith('/workflows') || path.startsWith('/workflow/')) return ['/workflows'];
     if (path.startsWith('/instances') || path.startsWith('/instance/')) return ['/instances'];
     if (path.startsWith('/tasks')) return ['/tasks'];
@@ -385,7 +385,7 @@ export const LeftSideMenu: React.FC<LeftSideMenuProps> = ({ collapsed, onCollaps
       const path = location.pathname;
       const keys: string[] = [];
 
-      if (path.startsWith('/tableau')) {
+      if (path.startsWith('/reporting')) {
         keys.push('reporting');
       }
       if (path.startsWith('/workflows') || path.startsWith('/instances') || path.startsWith('/workflow/') || path.startsWith('/instance/')) {

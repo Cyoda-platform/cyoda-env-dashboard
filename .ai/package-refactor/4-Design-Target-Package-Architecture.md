@@ -4,82 +4,121 @@
 
 **Prerequisites:** Step 1 (Audit) and Step 3 (Documentation Audit) should be complete.
 
-**Action Items:**
+## Decision: Rename `tableau-react` to `@cyoda/reporting-react` — COMPLETED
 
-1. Define the package layer hierarchy:
-   ```
-   Layer 0 (Foundation):
-   ├── @cyoda/ui-lib-react      # Shared UI components, styles, utilities
-   └── @cyoda/http-api-react    # API clients, hooks, stores, types
+The former `@cyoda/tableau-react` package has been renamed to `@cyoda/reporting-react`.
+All Tableau Web Data Connector (WDC) code has been removed since the saas-app has no
+Tableau integration. The package now contains only core reporting UI that talks to the
+Cyoda reporting API.
 
-   Layer 1 (Features - depend only on Layer 0):
-   ├── @cyoda/tableau-react           # Tableau WDC integration ONLY
-   ├── @cyoda/statemachine-react      # Workflow management
-   ├── @cyoda/tasks-react             # Task management
-   ├── @cyoda/processing-manager-react # Processing & monitoring
-   ├── @cyoda/source-configuration-react  # Source config
-   ├── @cyoda/cobi-react              # Data mapping
-   └── @cyoda/cyoda-sass-react        # SQL schema management
+## Action Items
 
-   Apps (consume packages):
-   └── @cyoda/saas-app
-   ```
+### 1. Define the package layer hierarchy
 
-2. **CRITICAL: Fix tableau-react scope creep**
+```
+Layer 0 (Foundation):
+├── @cyoda/ui-lib-react      # Shared UI components, styles, utilities
+└── @cyoda/http-api-react    # API clients, hooks, stores, types
 
-   The `tableau-react` package has drifted from its stated purpose:
-   > "Tableau Web Data Connector integration for displaying Cyoda reports in Tableau dashboards"
+Layer 1 (Features - depend only on Layer 0):
+├── @cyoda/reporting-react          # Core reporting UI (NEW)
+├── @cyoda/statemachine-react       # Workflow management
+├── @cyoda/tasks-react              # Task management
+├── @cyoda/processing-manager-react # Processing & monitoring
+├── @cyoda/source-configuration-react  # Source config
+├── @cyoda/cobi-react               # Data mapping
+└── @cyoda/cyoda-sass-react         # SQL schema management
 
-   Currently it contains general-purpose components being misused by other packages:
-   - `ModellingRangeDefs`, `ModellingColDefs` - used by `processing-manager-react`
-   - `ModellingGroup`, `ModellingItem`, `ModellingPopUp` - general modelling UI
-   - Report configuration components that are not Tableau-specific
+Apps (consume Layer 0 + Layer 1 packages):
+├── @cyoda/saas-app                 # Uses reporting-react directly
+```
 
-   **Resolution options (choose one):**
+### 2. What belongs in `@cyoda/reporting-react`
 
-   **Option A: Move general components to ui-lib-react**
-   - Move `Modelling*` components to `@cyoda/ui-lib-react/components/Modelling`
-   - Move report configuration components to `@cyoda/ui-lib-react`
-   - Keep only Tableau WDC-specific code in `tableau-react`
-   - `tableau-react` becomes a thin integration layer
+**Pages:**
+- `Reports` (main reports page with History + Config tabs)
+- `ReportConfigs` (report configuration list)
+- `ReportEditor` (report definition editor)
+- `ReportConfigsStream` (stream report configs)
+- `ReportEditorStream` (stream report editor)
+- `CatalogueOfAliases` (alias catalog)
 
-   **Option B: Rename and repurpose tableau-react**
-   - Rename to `@cyoda/reports-react` to reflect actual usage
-   - Accept it as the reporting/analytics feature package
-   - Remove `processing-manager-react` dependency on it by moving shared components to ui-lib-react
+**Components:**
+- `HistoryTable` — report history list with expandable groups
+- `HistoryFilter` — filter controls for report history
+- `HistorySetting` — display settings (lazy loading, hide unknown)
+- `ReportTableRows` — fetches and displays report data rows in a table
+- `ReportTableGroup` — group-level report display
+- `ReportResultDialog` — modal for group results
+- `ReportDetailsDialog` — report details info dialog
+- `QuickRunReport` — quick-run dropdown
+- `ReportUISettings` — UI settings per report
+- `ReportScheduling` — report scheduling
+- `CreateReportDialog` — new report creation
+- `CloneReportDialog` — clone report
+- `ImportDialog` — import report definitions
+- `ConfigEditorReportsFilter` — filter for report configs
+- `ReportEditorTab*` — all report editor tab components (Columns, FilterBuilder, Grouping, Json, Sorting, Summary)
+- `FilterBuilderQueryPlan`, `QueryPlanButton`, `QueryPlanDetail` — query plan UI
+- `EntityDetailModal`, `EntityDetailTree`, `EntityDetailTreeItem` — entity detail views
+- `EntityAudit`, `EntityDataLineage`, `EntityTransitions` — entity inspection
+- `ColumnCollectionsDialog` — column detail viewer
+- `ReportsNavigation` — reports navigation
+- `StreamReportEditorTabRange` — stream report range tab
+- `CatalogueAliasChangeStateDialog`, `CatalogueOfAliasesFilter` — alias catalog components
 
-3. Define what belongs in `@cyoda/ui-lib-react` (common package):
-   - All shared UI components (buttons, forms, modals, tables, etc.)
-   - **Modelling components** (ModellingColDefs, ModellingRangeDefs, etc.)
-   - Shared styles and SCSS mixins
-   - Common utilities: formatters, validators, storage helpers
-   - Common hooks: useDebounce, etc.
-   - Common contexts: ErrorHandlerContext
-   - Test utilities: test-utils.tsx
-   - Components to move here: ResizableTitle, ErrorBoundary
+**Stores:**
+- `reportsStore` — report state management
 
-4. Define what belongs in `@cyoda/http-api-react`:
-   - Axios configuration and interceptors
-   - API client functions (entities, auth, config, reports, audit)
-   - React Query hooks for data fetching
-   - Global stores (globalUiSettingsStore)
-   - API types and error handling utilities
+**Utils:**
+- `HelperReportTable` — report table formatting utilities
 
-5. Define clear boundaries for each feature package:
-   - Each feature package exports: pages, routes, feature-specific components
-   - Each feature package imports **only from Layer 0**
-   - **No cross-feature imports between Layer 1 packages**
-   - `processing-manager-react` must NOT depend on `tableau-react`
+**Types:**
+- All reporting types (`ReportHistoryData`, `ConfigDefinition`, `TableDataRow`, `ReportingReportRows`, `TableColumn`, etc.)
 
-6. Document the public API contract for each package.
+### 3. What belongs in `@cyoda/ui-lib-react` (Layer 0 — already done)
 
-**Acceptance Criteria:**
-- [ ] Layer hierarchy documented and agreed
-- [ ] Decision made on tableau-react scope (Option A or B)
-- [ ] Modelling components moved to appropriate location
-- [ ] `processing-manager-react` no longer depends on `tableau-react`
-- [ ] Contents of common packages defined
-- [ ] Each feature package scope clearly bounded
-- [ ] Dependency rules documented (what can import what)
-- [ ] Public API contracts defined for each package
+- All shared UI components (buttons, forms, modals, tables, etc.)
+- **Modelling components** (ModellingColDefs, ModellingRangeDefs, etc.) — already moved
+- Shared styles and SCSS mixins
+- Common utilities: formatters, validators, storage helpers
+- Common hooks: useDebounce, etc.
+- Common contexts: ErrorHandlerContext
+- Test utilities: test-utils.tsx
+- ResizableTitle, ErrorBoundary
+
+### 5. What belongs in `@cyoda/http-api-react` (Layer 0)
+
+- Axios configuration and interceptors
+- API client functions (entities, auth, config, reports, audit)
+- React Query hooks for data fetching
+- Global stores (globalUiSettingsStore)
+- API types and error handling utilities
+
+### 6. Dependency rules
+
+- Layer 0 packages have **no** internal `@cyoda` dependencies
+- Layer 1 packages depend **only** on Layer 0
+- **No cross-imports between Layer 1 packages**
+- Apps (`saas-app`) depend on Layer 0 + Layer 1 only
+- `processing-manager-react` must NOT depend on `reporting-react`
+  (Modelling components are in `ui-lib-react`)
+
+### 7. Migration path for `saas-app` — COMPLETED
+
+1. ~~Renamed `tableau-react` to `reporting-react`~~
+2. ~~Removed all Tableau WDC code from the package~~
+3. ~~Updated `saas-app` to import from `@cyoda/reporting-react`~~
+4. ~~Updated all routes from `/tableau/...` to `/reporting/...`~~
+5. ~~Removed all references to `@cyoda/tableau-react`~~
+
+## Acceptance Criteria
+
+- [x] `@cyoda/reporting-react` package exists with all core reporting components
+- [x] No Tableau WDC code exists anywhere in the codebase
+- [x] `saas-app` imports from `@cyoda/reporting-react`
+- [x] `saas-app` has no dependency on `@cyoda/tableau-react`
+- [x] No cross-imports between Layer 1 packages
+- [ ] All existing tests pass after migration
+- [x] Layer hierarchy documented and enforced
 

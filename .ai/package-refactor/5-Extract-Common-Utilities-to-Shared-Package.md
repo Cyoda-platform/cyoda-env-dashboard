@@ -6,9 +6,9 @@
 
 **Action Items:**
 
-1. **CRITICAL: Move Modelling components from tableau-react to ui-lib-react**
+1. **CRITICAL: Move Modelling components from reporting-react to ui-lib-react**
 
-   These components are general-purpose and should not be in a Tableau-specific package:
+   These components are general-purpose and should not be in a reporting-specific package:
    - `ModellingGroup`, `ModellingItem`, `ModellingGroupClass`, `ModellingItemClass`
    - `ModellingPopUp`, `ModellingPopUpToggles`, `ModellingPopUpSearch`
    - `ModellingColDefs`, `ModellingAliases`, `ModellingRangeDefs`
@@ -47,7 +47,7 @@
    - This allows gradual migration without breaking imports
 
 **Acceptance Criteria:**
-- [ ] Modelling components moved from tableau-react to ui-lib-react
+- [ ] Modelling components moved from reporting-react to ui-lib-react
 - [ ] All duplicated components moved to ui-lib-react
 - [ ] All duplicated utilities moved to appropriate common package
 - [ ] All duplicated stores consolidated

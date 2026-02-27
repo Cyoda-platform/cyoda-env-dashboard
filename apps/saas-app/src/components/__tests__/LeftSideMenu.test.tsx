@@ -274,7 +274,7 @@ describe('LeftSideMenu', () => {
     it('should open parent submenu when on submenu route', () => {
       const { container } = renderWithRouter(
         <LeftSideMenu collapsed={false} onCollapse={mockOnCollapse} />,
-        '/tableau/reports'
+        '/reporting/reports'
       );
 
       // Reporting submenu should be open
@@ -316,10 +316,10 @@ describe('LeftSideMenu', () => {
   });
 
   describe('Active Child Indicator', () => {
-    it('should show indicator dot on Reporting parent when on tableau route and collapsed', () => {
+    it('should show indicator dot on Reporting parent when on reporting route and collapsed', () => {
       const { container } = renderWithRouter(
         <LeftSideMenu collapsed={true} onCollapse={mockOnCollapse} />,
-        '/tableau/reports'
+        '/reporting/reports'
       );
 
       // Find the indicator dot
@@ -352,7 +352,7 @@ describe('LeftSideMenu', () => {
     it('should NOT show indicator dot when menu is expanded', () => {
       const { container } = renderWithRouter(
         <LeftSideMenu collapsed={false} onCollapse={mockOnCollapse} />,
-        '/tableau/reports'
+        '/reporting/reports'
       );
 
       // Indicator should not be present when expanded
@@ -375,7 +375,7 @@ describe('LeftSideMenu', () => {
       const user = userEvent.setup();
       const { container } = renderWithRouter(
         <LeftSideMenu collapsed={true} onCollapse={mockOnCollapse} />,
-        '/tableau/reports'
+        '/reporting/reports'
       );
 
       // Initially, indicator should be visible

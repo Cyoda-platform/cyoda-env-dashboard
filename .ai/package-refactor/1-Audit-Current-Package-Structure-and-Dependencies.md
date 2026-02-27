@@ -9,9 +9,9 @@
 1. Generate a dependency graph showing how packages depend on each other:
    - `ui-lib-react` → no internal dependencies (foundation layer)
    - `http-api-react` → no internal dependencies (foundation layer)
-   - `tableau-react` → depends on `ui-lib-react`, `http-api-react`
+   - `reporting-react` → depends on `ui-lib-react`, `http-api-react`
    - `statemachine-react` → depends on `ui-lib-react`, `http-api-react`
-   - `processing-manager-react` → depends on `ui-lib-react`, `http-api-react`, `tableau-react`
+   - `processing-manager-react` → depends on `ui-lib-react`, `http-api-react`, `reporting-react`
    - `tasks-react` → no internal dependencies (standalone)
    - `source-configuration-react` → no internal dependencies (standalone)
    - `cobi-react` → no internal dependencies (standalone)
@@ -22,13 +22,13 @@
    - `ErrorBoundary` component exists in: `cobi-react`, `tasks-react`, `source-configuration-react`
    - `appStore` exists in: `cobi-react`, `cyoda-sass-react`, `processing-manager-react`
    - `globalUiSettingsStore` exists in: `http-api-react`, `statemachine-react`
-   - `test-utils.tsx` exists in: `ui-lib-react`, `cobi-react`, `tableau-react`, `processing-manager-react`
+   - `test-utils.tsx` exists in: `ui-lib-react`, `cobi-react`, `reporting-react`, `processing-manager-react`
    - Helper utilities duplicated across packages (formatters, storage helpers, etc.)
 
 3. Analyze each package's scope and purpose:
    - `ui-lib-react`: Shared UI components (97+ components) - FOUNDATION
    - `http-api-react`: API layer, hooks, stores - FOUNDATION
-   - `tableau-react`: Reporting/analytics feature
+   - `reporting-react`: Reporting/analytics feature
    - `statemachine-react`: Workflow/state machine feature
    - `processing-manager-react`: Processing/monitoring feature
    - `tasks-react`: Task management feature

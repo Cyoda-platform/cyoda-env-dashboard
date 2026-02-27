@@ -7,11 +7,11 @@ import { HelperFeatureFlags } from '@cyoda/http-api-react';
 const TrinoIndex = React.lazy(() => import('@cyoda/cyoda-sass-react').then(m => ({ default: m.TrinoIndex })));
 const TrinoEdit = React.lazy(() => import('@cyoda/cyoda-sass-react').then(m => ({ default: m.TrinoEdit })));
 
-const Reports = React.lazy(() => import('@cyoda/tableau-react').then(m => ({ default: m.Reports })));
-const ReportEditor = React.lazy(() => import('@cyoda/tableau-react').then(m => ({ default: m.ReportEditor })));
-const ReportConfigsStream = React.lazy(() => import('@cyoda/tableau-react').then(m => ({ default: m.ReportConfigsStream })));
-const ReportEditorStream = React.lazy(() => import('@cyoda/tableau-react').then(m => ({ default: m.ReportEditorStream })));
-const CatalogueOfAliases = React.lazy(() => import('@cyoda/tableau-react').then(m => ({ default: m.CatalogueOfAliases })));
+const Reports = React.lazy(() => import('@cyoda/reporting-react').then(m => ({ default: m.Reports })));
+const ReportEditor = React.lazy(() => import('@cyoda/reporting-react').then(m => ({ default: m.ReportEditor })));
+const ReportConfigsStream = React.lazy(() => import('@cyoda/reporting-react').then(m => ({ default: m.ReportConfigsStream })));
+const ReportEditorStream = React.lazy(() => import('@cyoda/reporting-react').then(m => ({ default: m.ReportEditorStream })));
+const CatalogueOfAliases = React.lazy(() => import('@cyoda/reporting-react').then(m => ({ default: m.CatalogueOfAliases })));
 
 const Workflows = React.lazy(() => import('@cyoda/statemachine-react').then(m => ({ default: m.Workflows })));
 const WorkflowDetail = React.lazy(() => import('@cyoda/statemachine-react').then(m => ({ default: m.WorkflowDetail })));
@@ -42,7 +42,7 @@ import Login from '../pages/Login';
 export const AppRoutes: React.FC = () => {
   const isTrinoEnabled = HelperFeatureFlags.isTrinoSqlSchemaEnabled();
   const isTasksEnabled = HelperFeatureFlags.isTasksEnabled();
-  const defaultRoute = isTrinoEnabled ? '/trino' : '/tableau/reports';
+  const defaultRoute = isTrinoEnabled ? '/trino' : '/reporting/reports';
 
   return (
     <Routes>
@@ -63,12 +63,12 @@ export const AppRoutes: React.FC = () => {
           </>
         )}
 
-        {/* Reporting - Tableau */}
-        <Route path="tableau/reports" element={<Reports />} />
-        <Route path="tableau/report-editor/:id" element={<ReportEditor />} />
-        <Route path="tableau/reports/stream" element={<ReportConfigsStream />} />
-        <Route path="tableau/reports/stream/:id" element={<ReportEditorStream />} />
-        <Route path="tableau/catalogue-of-aliases" element={<CatalogueOfAliases />} />
+        {/* Reporting */}
+        <Route path="reporting/reports" element={<Reports />} />
+        <Route path="reporting/report-editor/:id" element={<ReportEditor />} />
+        <Route path="reporting/reports/stream" element={<ReportConfigsStream />} />
+        <Route path="reporting/reports/stream/:id" element={<ReportEditorStream />} />
+        <Route path="reporting/catalogue-of-aliases" element={<CatalogueOfAliases />} />
 
         {/* Lifecycle - Statemachine */}
         <Route path="workflows" element={<Workflows />} />

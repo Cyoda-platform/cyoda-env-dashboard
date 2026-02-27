@@ -6,27 +6,21 @@
 
 **Action Items:**
 
-1. **CRITICAL: Update `@cyoda/processing-manager-react` to remove tableau-react dependency**
-   - Change imports from `@cyoda/tableau-react` to `@cyoda/ui-lib-react`:
-     ```typescript
-     // Before (WRONG - cross-feature dependency)
-     import { ModellingRangeDefs, ModellingColDefs } from '@cyoda/tableau-react';
-     import type { ColDef } from '@cyoda/tableau-react';
+1. **COMPLETED: Renamed `tableau-react` to `reporting-react` and removed all Tableau WDC code**
+   - `@cyoda/tableau-react` has been renamed to `@cyoda/reporting-react`
+   - All Tableau WDC code (`window.tableau.submit()`, `chartsDataStore`, Tableau types) removed
+   - `reporting-react` depends only on Layer 0: `@cyoda/ui-lib-react`, `@cyoda/http-api-react`
 
+2. **Update `@cyoda/processing-manager-react` to use `@cyoda/ui-lib-react`**
+   - Change imports from `@cyoda/reporting-react` to `@cyoda/ui-lib-react` for Modelling components:
+     ```typescript
      // After (CORRECT - imports from foundation layer)
      import { ModellingRangeDefs, ModellingColDefs } from '@cyoda/ui-lib-react';
      import type { ColDef } from '@cyoda/ui-lib-react';
      ```
-   - Remove `@cyoda/tableau-react` from package.json dependencies
+   - Remove `@cyoda/reporting-react` from package.json dependencies
    - Import `ResizableTitle` from `@cyoda/ui-lib-react`
    - Remove local duplicates
-
-2. Update `@cyoda/tableau-react`:
-   - Import Modelling components from `@cyoda/ui-lib-react` (or keep re-exports for backward compatibility)
-   - Remove moved component source files
-   - Verify only imports from Layer 0 packages
-   - Update package.json if dependencies changed
-   - Scope package to Tableau WDC integration only
 
 3. Update `@cyoda/statemachine-react`:
    - Import `ResizableTitle` from `@cyoda/ui-lib-react`
@@ -57,13 +51,13 @@
 10. Validate no cross-feature dependencies remain:
     ```bash
     # Check for any remaining cross-feature imports
-    grep -r "@cyoda/tableau-react" packages/processing-manager-react/src
-    grep -r "@cyoda/statemachine-react" packages/tableau-react/src
+    grep -r "@cyoda/reporting-react" packages/processing-manager-react/src
+    grep -r "@cyoda/statemachine-react" packages/reporting-react/src
     # etc. - no Layer 1 package should import another Layer 1 package
     ```
 
 **Acceptance Criteria:**
-- [ ] `processing-manager-react` no longer depends on `tableau-react`
+- [ ] `processing-manager-react` no longer depends on `reporting-react`
 - [ ] Each feature package imports shared code from common packages only
 - [ ] No duplicated code remains in feature packages
 - [ ] No cross-feature dependencies (Layer 1 packages don't import each other)

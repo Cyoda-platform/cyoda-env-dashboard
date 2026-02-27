@@ -29,7 +29,7 @@
       "@cyoda/ui-lib-react": ["../../packages/ui-lib-react/src"],
       "@cyoda/http-api-react": ["../../packages/http-api-react/src"],
       "@cyoda/cyoda-sass-react": ["../../packages/cyoda-sass-react/src"],
-      "@cyoda/tableau-react": ["../../packages/tableau-react/src"],
+      "@cyoda/reporting-react": ["../../packages/reporting-react/src"],
       "@cyoda/statemachine-react": ["../../packages/statemachine-react/src"],
       "@cyoda/tasks-react": ["../../packages/tasks-react/src"],
       "@cyoda/processing-manager-react": ["../../packages/processing-manager-react/src"]
