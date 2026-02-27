@@ -70,15 +70,20 @@ vi.mock('../components/CatalogueOfAliasesFilter', () => ({
   ),
 }));
 
-vi.mock('../components/Modelling/Alias/ModellingPopUpAliasNew', () => ({
-  default: React.forwardRef(({ onCreate, onUpdate }: any, ref: any) => {
-    React.useImperativeHandle(ref, () => ({
-      open: vi.fn(),
-      close: vi.fn(),
-    }));
-    return <div data-testid="alias-dialog" />;
-  }),
-}));
+// ModellingPopUpAliasNew now comes from @cyoda/ui-lib-react
+vi.mock('@cyoda/ui-lib-react', async () => {
+  const actual = await vi.importActual('@cyoda/ui-lib-react');
+  return {
+    ...actual,
+    ModellingPopUpAliasNew: React.forwardRef(({ onCreate, onUpdate }: any, ref: any) => {
+      React.useImperativeHandle(ref, () => ({
+        open: vi.fn(),
+        close: vi.fn(),
+      }));
+      return <div data-testid="alias-dialog" />;
+    }),
+  };
+});
 
 vi.mock('../components/CatalogueAliasChangeStateDialog', () => ({
   default: React.forwardRef(({ onStateChanged }: any, ref: any) => {

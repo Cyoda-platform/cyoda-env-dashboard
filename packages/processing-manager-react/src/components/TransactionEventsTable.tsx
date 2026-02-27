@@ -11,7 +11,7 @@ import type { ResizeCallbackData } from 'react-resizable';
 import type { TransactionEvent } from '../types';
 import { useTransactionEvents } from '../hooks';
 import { HelperStorage } from '@cyoda/http-api-react';
-import { ResizableTitle } from './ResizableTitle';
+import { ResizableTitle } from '@cyoda/ui-lib-react';
 import './TransactionEventsTable.scss';
 
 const { Search } = Input;

@@ -24,8 +24,7 @@ export * from './stores';
 // Export components
 export * from './components';
 
-// Export pages
-export * from './pages';
+
 
 // Export axios instances
 export { default as axios, axiosPublic, axiosPlatform, axiosProcessing, axiosGrafana, axiosAI } from './config/axios';

@@ -25,11 +25,21 @@ export const TransitionDetailStatisticsTransactionEvents: React.FC<TransitionDet
     cursor: '',
   });
 
-  const [data, setData] = useState<any>({
-    rows: [],
-    firstPage: false,
-    lastPage: false,
-  });
+  const { data: queryData, refetch, isLoading } = useTransactionsViewEvents(
+    {
+      id: transactionId,
+      ...eventsFilterRef.current?.form,
+      ...paginationForm,
+    },
+    {
+      enabled: false,
+    }
+  );
+
+  const data = useMemo(() => {
+    if (!queryData) return { rows: [] as any[], firstPage: false, lastPage: false };
+    return queryData as { rows: any[]; firstPage: boolean; lastPage: boolean };
+  }, [queryData]);
 
   const prevCursor = useMemo(() => {
     if (data.rows.length > 0) {
@@ -44,20 +54,6 @@ export const TransitionDetailStatisticsTransactionEvents: React.FC<TransitionDet
     }
     return '';
   }, [data.rows]);
-
-  const { refetch, isLoading } = useTransactionsViewEvents(
-    {
-      id: transactionId,
-      ...eventsFilterRef.current?.form,
-      ...paginationForm,
-    },
-    {
-      enabled: false,
-      onSuccess: (responseData: any) => {
-        setData(responseData || { rows: [], firstPage: false, lastPage: false });
-      },
-    }
-  );
 
   const handleFilterChange = async () => {
     await refetch();

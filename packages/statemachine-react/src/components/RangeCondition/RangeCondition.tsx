@@ -7,7 +7,8 @@
 import React, { useState, useRef, useMemo, useCallback } from 'react';
 import { Row, Col, Button, Form, Select, Alert } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import { ModellingPopUp, ModellingPopUpRef } from '@cyoda/tableau-react';
+import { ModellingPopUp } from '@cyoda/ui-lib-react';
+import type { ModellingPopUpRef } from '@cyoda/ui-lib-react';
 import { FilterBuilderCondition } from '@cyoda/cobi-react';
 import type { FilterCondition, ColumnInfo } from '@cyoda/cobi-react';
 import './RangeCondition.css';
@@ -77,7 +78,7 @@ export const RangeCondition: React.FC<RangeConditionProps> = ({
 
   const handleChangeModellingPopUp = useCallback((data: any[]) => {
     setConfigDefinitionColRanges(data);
-    
+
     if (data && data.length > 0) {
       // Update the rangeCondition with the selected field
       const updatedForm = {

@@ -13,8 +13,8 @@ import { axiosPlatform, useGlobalUiSettingsStore, getReportConfig } from '@cyoda
 import { HelperStorage } from '@cyoda/ui-lib-react';
 import moment from 'moment';
 import type { ReportHistoryData, TableDataRow, ConfigDefinition } from '@/types';
-import type { HistoryFilterForm } from '../utils/HelperReportDefinition';
-import { ResizableTitle } from './ResizableTitle';
+import type { HistoryFilterForm } from '@cyoda/ui-lib-react';
+import { ResizableTitle } from '@cyoda/ui-lib-react';
 import ReportDetailsDialog from './ReportDetailsDialog';
 import type { ColumnData } from './ColumnCollectionsDialog';
 import HelperReportTable from '../utils/HelperReportTable';

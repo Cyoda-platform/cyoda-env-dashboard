@@ -18,7 +18,7 @@ import ReportConfigs from './ReportConfigs';
 import { HelperStorage } from '@cyoda/ui-lib-react';
 import { axiosPlatform } from '@cyoda/http-api-react';
 import type { ReportHistoryData, ConfigDefinition, HistorySettings, TableDataRow } from '../types';
-import type { HistoryFilterForm } from '../utils/HelperReportDefinition';
+import type { HistoryFilterForm } from '@cyoda/ui-lib-react';
 import './Reports.scss';
 
 // History Reports Tab Content Component (migrated from HistoryReports.vue)
@@ -69,7 +69,7 @@ const HistoryReportsTab: React.FC<{ onResetState: () => void }> = ({ onResetStat
     try {
       // Use reportId from the row if available, otherwise use current reportDefinition
       const reportId = row.reportId || reportDefinition?.id;
-      
+
       // Fetch configDefinition if not available or if reportId is different
       let configDef = configDefinition;
       if (reportId && (!configDef?.columns || configDef.columns.length === 0)) {
@@ -78,7 +78,7 @@ const HistoryReportsTab: React.FC<{ onResetState: () => void }> = ({ onResetStat
         );
         configDef = data.content;
       }
-      
+
       setSelectedGroupData({
         linkRows: row._link_rows,
         configDefinition: configDef,

@@ -1,7 +1,7 @@
 /**
  * ReportConfigsStream Component
  * Stream report configurations list and management
- * 
+ *
  * Migrated from: .old_project/packages/http-api/src/views/ConfigEditor/ConfigEditorReportsStream.vue
  */
 
@@ -31,10 +31,10 @@ import ReportScheduling from '../components/ReportScheduling';
 import ImportDialog from '../components/ImportDialog';
 import { ConfigEditorStreamGrid, ConfigEditorStreamGridRef } from '@cyoda/ui-lib-react';
 import { HelperStorage } from '@cyoda/ui-lib-react';
-import { ResizableTitle } from '../components/ResizableTitle';
-import type { HistoryFilterForm } from '../utils/HelperReportDefinition';
+import { ResizableTitle } from '@cyoda/ui-lib-react';
+import { HelperReportDefinition } from '@cyoda/ui-lib-react';
+import type { HistoryFilterForm } from '@cyoda/ui-lib-react';
 import type { ReportDefinition } from '../types';
-import HelperReportDefinition from '../utils/HelperReportDefinition';
 import './ReportConfigsStream.scss';
 import '../../../statemachine-react/src/components/ExportImport/ExportImport.scss';
 

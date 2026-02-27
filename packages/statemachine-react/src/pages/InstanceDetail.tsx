@@ -30,7 +30,7 @@ import {
   EntityTransitions,
   EntityAudit,
   EntityDataLineage,
-} from '@cyoda/tableau-react';
+} from '@cyoda/ui-lib-react';
 import './InstanceDetail.scss';
 
 const { Title, Text } = Typography;

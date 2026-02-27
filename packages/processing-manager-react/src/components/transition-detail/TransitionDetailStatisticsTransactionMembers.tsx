@@ -26,15 +26,25 @@ export const TransitionDetailStatisticsTransactionMembers: React.FC<TransitionDe
     cursor: '',
   });
 
-  const [data, setData] = useState<any>({
-    rows: [],
-    firstPage: false,
-    lastPage: false,
-  });
-
   const convertTime = (mkTime: number) => {
     return dayjs(mkTime).format('YYYY-MM-DD HH:mm:ss.SSS');
   };
+
+  const { data: queryData, refetch, isLoading } = useTransactionsViewMembers(
+    {
+      id: transactionId,
+      ...membersFilterRef.current?.form,
+      ...paginationForm,
+    },
+    {
+      enabled: false,
+    }
+  );
+
+  const data = useMemo(() => {
+    if (!queryData) return { rows: [] as any[], firstPage: false, lastPage: false };
+    return queryData as { rows: any[]; firstPage: boolean; lastPage: boolean };
+  }, [queryData]);
 
   const prevCursor = useMemo(() => {
     if (data.rows.length > 0) {
@@ -49,20 +59,6 @@ export const TransitionDetailStatisticsTransactionMembers: React.FC<TransitionDe
     }
     return '';
   }, [data.rows]);
-
-  const { refetch, isLoading } = useTransactionsViewMembers(
-    {
-      id: transactionId,
-      ...membersFilterRef.current?.form,
-      ...paginationForm,
-    },
-    {
-      enabled: false,
-      onSuccess: (responseData: any) => {
-        setData(responseData || { rows: [], firstPage: false, lastPage: false });
-      },
-    }
-  );
 
   const handleFilterChange = async () => {
     await refetch();

@@ -14,7 +14,7 @@ import type { ColumnData } from './ColumnCollectionsDialog';
 import HelperReportTable, { type ReportGroup, type WrappedEntityModel } from '../utils/HelperReportTable';
 import type { ConfigDefinition } from '../types';
 import { HelperStorage } from '@cyoda/ui-lib-react';
-import { ResizableTitle } from './ResizableTitle';
+import { ResizableTitle } from '@cyoda/ui-lib-react';
 import './ReportTableGroup.scss';
 
 interface ReportTableGroupProps {

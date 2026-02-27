@@ -77,8 +77,8 @@ vi.mock('../hooks/useStatemachine', () => ({
   })),
 }));
 
-// Mock tableau-react components
-vi.mock('@cyoda/tableau-react', () => ({
+// Mock ui-lib-react components
+vi.mock('@cyoda/ui-lib-react', () => ({
   EntityDetailTree: ({ entity }: any) => (
     <div data-testid="entity-detail-tree">
       {entity?.map((item: any, index: number) => (

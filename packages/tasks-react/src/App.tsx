@@ -11,7 +11,7 @@ import { BaseLayout, LoginLayout, ErrorHandler, TasksNotifications, ErrorHandler
 import { useAuth } from '@cyoda/http-api-react';
 import { useTasksStore } from './stores/tasksStore';
 import { routes } from './routes';
-import { ErrorBoundary } from './components/ErrorBoundary';
+import { ErrorBoundary } from '@cyoda/ui-lib-react';
 import './App.css';
 import './styles/accessibility.css';
 

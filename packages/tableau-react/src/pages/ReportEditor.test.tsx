@@ -39,10 +39,8 @@ vi.mock('@cyoda/http-api-react', () => ({
   },
 }));
 
-// Mock tab components
-vi.mock('../components/ReportEditorTabModel', () => ({
-  default: () => <div data-testid="tab-model">Model Tab</div>,
-}));
+// Mock tab components (ReportEditorTabModel now comes from @cyoda/ui-lib-react)
+// See vi.mock('@cyoda/ui-lib-react', ...) below
 
 vi.mock('../components/ReportEditorTabColumns', () => ({
   default: () => <div data-testid="tab-columns">Columns Tab</div>,
@@ -81,26 +79,31 @@ vi.mock('../components/ReportScheduling', () => ({
     ) : null,
 }));
 
-// Mock HelperReportDefinition
-vi.mock('../utils/HelperReportDefinition', () => ({
-  default: {
-    reportDefinition: () => ({
-      '@bean': 'com.cyoda.service.api.beans.ReportDefinition',
-      description: '',
-      requestClass: '',
-      colDefs: [],
-      aliasDefs: [],
-      condition: {
-        '@bean': 'com.cyoda.core.conditions.GroupCondition',
-        operator: 'OR',
-        conditions: [],
-      },
-    }),
-    buildCols: () => [],
-    expandColumnNames: (def: any) => def,
-    validateConfigDefinition: () => true,
-  },
-}));
+// Mock @cyoda/ui-lib-react for HelperReportDefinition and ReportEditorTabModel
+vi.mock('@cyoda/ui-lib-react', async () => {
+  const actual = await vi.importActual('@cyoda/ui-lib-react');
+  return {
+    ...actual,
+    ReportEditorTabModel: () => <div data-testid="tab-model">Model Tab</div>,
+    HelperReportDefinition: {
+      reportDefinition: () => ({
+        '@bean': 'com.cyoda.service.api.beans.ReportDefinition',
+        description: '',
+        requestClass: '',
+        colDefs: [],
+        aliasDefs: [],
+        condition: {
+          '@bean': 'com.cyoda.core.conditions.GroupCondition',
+          operator: 'OR',
+          conditions: [],
+        },
+      }),
+      buildCols: () => [],
+      expandColumnNames: (def: any) => def,
+      validateConfigDefinition: () => true,
+    },
+  };
+});
 
 // Import after mocks
 import ReportEditor from './ReportEditor';
@@ -113,7 +116,7 @@ const TestWrapper = ({ children }: { children: React.ReactNode }) => (
 describe('ReportEditor Page', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     // Default mock for loading report definition
     mockGet.mockResolvedValue({
       data: {
@@ -209,7 +212,7 @@ describe('ReportEditor Page', () => {
   describe('Existing Report Dialog - 422 Error', () => {
     it('should show "Existing report" dialog when 422 error occurs', async () => {
       const user = userEvent.setup();
-      
+
       // Mock 422 error response
       mockPut.mockRejectedValueOnce({
         response: {
@@ -245,7 +248,7 @@ describe('ReportEditor Page', () => {
 
     it('should have Cancel button that can be clicked', async () => {
       const user = userEvent.setup();
-      
+
       mockPut.mockRejectedValueOnce({
         response: {
           status: 422,
@@ -273,14 +276,14 @@ describe('ReportEditor Page', () => {
       const cancelButton = screen.getByRole('button', { name: /Cancel/i });
       expect(cancelButton).toBeInTheDocument();
       await user.click(cancelButton);
-      
+
       // The modal should start closing (we just verify the click doesn't throw)
       // Note: Ant Design modal animation may not complete in test environment
     });
 
     it('should delete existing reports and save when "Delete existing reports and save" is clicked', async () => {
       const user = userEvent.setup();
-      
+
       // First call - 422 error
       mockPut.mockRejectedValueOnce({
         response: {
@@ -288,10 +291,10 @@ describe('ReportEditor Page', () => {
           data: { message: 'Report has existing reports' },
         },
       });
-      
+
       // Delete call
       mockDelete.mockResolvedValueOnce({ data: { success: true } });
-      
+
       // Second update call after delete
       mockPut.mockResolvedValueOnce({ data: { success: true } });
 
@@ -328,7 +331,7 @@ describe('ReportEditor Page', () => {
 
     it('should show "Create new" dialog when "Create new report definition" is clicked', async () => {
       const user = userEvent.setup();
-      
+
       mockPut.mockRejectedValueOnce({
         response: {
           status: 422,
@@ -368,14 +371,14 @@ describe('ReportEditor Page', () => {
 
     it('should create new report definition with entered name', async () => {
       const user = userEvent.setup();
-      
+
       mockPut.mockRejectedValueOnce({
         response: {
           status: 422,
           data: { message: 'Report has existing reports' },
         },
       });
-      
+
       mockPost.mockResolvedValueOnce({
         data: { content: 'new-report-definition-456' },
       });

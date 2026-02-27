@@ -8,9 +8,8 @@ import { Form, Select, DatePicker, Row, Col, Input } from 'antd';
 import { useQuery } from '@tanstack/react-query';
 import { axios, useGlobalUiSettingsStore, usersList } from '@cyoda/http-api-react';
 import dayjs, { Dayjs } from 'dayjs';
-import type { HistoryFilterForm } from '../utils/HelperReportDefinition';
-import HelperReportDefinition from '../utils/HelperReportDefinition';
-import { HelperStorage } from '@cyoda/ui-lib-react';
+import { HelperReportDefinition, HelperStorage } from '@cyoda/ui-lib-react';
+import type { HistoryFilterForm } from '@cyoda/ui-lib-react';
 import './HistoryFilter.scss';
 
 interface HistoryFilterProps {

@@ -5,7 +5,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { getEntityLoad, getCyodaCloudEntity, HelperFeatureFlags, type Entity } from '@cyoda/http-api-react';
-import { HelperDetailEntity } from '@cyoda/tableau-react';
+import { HelperDetailEntity } from '@cyoda/ui-lib-react';
 
 /**
  * Hook to load entity data using React Query

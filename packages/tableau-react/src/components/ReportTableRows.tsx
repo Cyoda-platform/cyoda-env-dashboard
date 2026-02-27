@@ -13,7 +13,7 @@ import { HelperStorage, HelperFormat } from '@cyoda/ui-lib-react';
 import type { ConfigDefinition, ReportingReportRows, TableColumn, TableauConnectionData } from '@/types';
 import type { ColumnData } from './ColumnCollectionsDialog';
 import EntityDetailModal from './EntityDetailModal';
-import { ResizableTitle } from './ResizableTitle';
+import { ResizableTitle } from '@cyoda/ui-lib-react';
 import './ReportTableRows.scss';
 
 interface ReportTableRowsProps {

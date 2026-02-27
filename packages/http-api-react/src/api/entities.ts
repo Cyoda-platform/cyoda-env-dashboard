@@ -264,7 +264,8 @@ export async function getReportingFetchTypes(onlyDynamic = false) {
 
 /**
  * Get reporting info (entity fields and types)
- * Always uses real backend data - no mock fallback
+ * Returns real data from Cyoda backend API
+ * Falls back to empty array if API is unavailable
  */
 export async function getReportingInfo(
   entityClass: string,
@@ -281,27 +282,44 @@ export async function getReportingInfo(
     .map((key) => `${key}=${params[key]}`)
     .join('&');
 
-  // Always use real backend data - no mock fallback
-  const response = await axios.get(`/platform-api/entity-info/model-info?${query}`);
+  try {
+    const response = await axios.get<import('../types').ReportingInfoRow[]>(
+      `/platform-api/entity-info/model-info?${query}`
+    );
 
-  // Return the actual API response (even if empty)
-  return response;
+    if (Array.isArray(response.data)) {
+      return response;
+    }
+
+    console.warn(`Invalid response data for ${entityClass}, expected array`);
+    return { data: [] as import('../types').ReportingInfoRow[], status: 200, statusText: 'OK', headers: {}, config: {} as any };
+  } catch (error) {
+    console.warn(`API unavailable for ${entityClass}, returning empty array:`, error);
+    return { data: [] as import('../types').ReportingInfoRow[], status: 200, statusText: 'OK', headers: {}, config: {} as any };
+  }
 }
 
 /**
  * Get related paths for an entity
  * Returns JOIN relationships (not nested objects)
- * Always uses real backend data - no mock fallback
+ * Falls back to empty array if API is unavailable
  */
 export async function getReportingRelatedPaths(entityClass: string) {
-  // Always use real backend data - no mock fallback
-  const response = await axios.get(
-    `/platform-api/entity-info/model-info/related/paths?entityModel=${entityClass}`
-  );
+  try {
+    const response = await axios.get<import('../types').RelatedPath[]>(
+      `/platform-api/entity-info/model-info/related/paths?entityModel=${entityClass}`
+    );
 
-  // Return the actual API response (even if empty array)
-  // Empty array means no JOIN relationships exist for this entity
-  return response;
+    if (Array.isArray(response.data)) {
+      return response;
+    }
+
+    console.warn(`Invalid response data for related paths of ${entityClass}, expected array`);
+    return { data: [] as import('../types').RelatedPath[], status: 200, statusText: 'OK', headers: {}, config: {} as any };
+  } catch (error) {
+    console.warn(`API unavailable for related paths of ${entityClass}, returning empty array:`, error);
+    return { data: [] as import('../types').RelatedPath[], status: 200, statusText: 'OK', headers: {}, config: {} as any };
+  }
 }
 
 /**

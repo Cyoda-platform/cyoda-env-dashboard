@@ -10,7 +10,7 @@ import { DownOutlined } from '@ant-design/icons';
 import type { Entity } from '@cyoda/http-api-react/types';
 import { HelperFormat } from '@cyoda/ui-lib-react';
 import { getEntityLoad } from '@cyoda/http-api-react';
-import HelperDetailEntity from '../utils/HelperDetailEntity';
+import { HelperDetailEntity } from '@cyoda/ui-lib-react';
 import Prism from 'prismjs';
 import 'prismjs/themes/prism.css';
 import './EntityDetailTreeItem.scss';

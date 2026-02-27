@@ -1,7 +1,7 @@
 /**
  * Catalogue of Aliases Page
  * Migrated from: .old_project/packages/http-api/src/views/CatalogOfAliases.vue
- * 
+ *
  * Displays a catalog of all alias definitions with filtering, CRUD operations,
  * export/import, and state transitions
  */
@@ -16,10 +16,11 @@ import moment from 'moment';
 import { getAllCatalogItems, createCatalogItem, updateCatalogItem, deleteCatalogItem, exportCatalogItems, importCatalogItems, useGlobalUiSettingsStore, getReportingFetchTypes } from '@cyoda/http-api-react';
 import type { CatalogItem } from '@cyoda/http-api-react';
 import CatalogueOfAliasesFilter from '../components/CatalogueOfAliasesFilter';
-import ModellingPopUpAliasNew, { ModellingPopUpAliasNewRef } from '../components/Modelling/Alias/ModellingPopUpAliasNew';
+import { ModellingPopUpAliasNew } from '@cyoda/ui-lib-react';
+import type { ModellingPopUpAliasNewRef } from '@cyoda/ui-lib-react';
 import CatalogueAliasChangeStateDialog, { CatalogueAliasChangeStateDialogRef } from '../components/CatalogueAliasChangeStateDialog';
 import ImportDialog from '../components/ImportDialog';
-import { ResizableTitle } from '../components/ResizableTitle';
+import { ResizableTitle } from '@cyoda/ui-lib-react';
 import { HelperStorage } from '@cyoda/ui-lib-react';
 import './CatalogueOfAliases.scss';
 import '../../../statemachine-react/src/components/ExportImport/ExportImport.scss';
@@ -336,8 +337,8 @@ const CatalogueOfAliases: React.FC = () => {
   };
 
   const handleExport = () => {
-    const ids = selectedRowKeys.length > 0 
-      ? (selectedRowKeys as string[]) 
+    const ids = selectedRowKeys.length > 0
+      ? (selectedRowKeys as string[])
       : tableData.map((item) => item.id);
     exportMutation.mutate(ids);
   };

@@ -6,8 +6,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { Modal, Steps, Form, Input, Button, Space, App } from 'antd';
-import { ModellingRangeDefs, ModellingColDefs } from '@cyoda/tableau-react';
-import type { ColDef } from '@cyoda/tableau-react';
+import { ModellingRangeDefs, ModellingColDefs } from '@cyoda/ui-lib-react';
+import type { ColDef } from '@cyoda/ui-lib-react';
 import './CompositeIndexCreateDialog.scss';
 
 interface CompositeIndexCreateDialogProps {

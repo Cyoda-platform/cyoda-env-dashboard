@@ -15,7 +15,7 @@ import { useStatemachineStore } from '../stores/statemachineStore';
 import type { PersistedType, CriteriaForm as CriteriaFormType } from '../types';
 import FilterBuilderGroup from './FilterBuilder/FilterBuilderGroup';
 import HelperFilter, { type GroupCondition } from './FilterBuilder/HelperFilter';
-import { ReportEditorTabModel, HelperReportDefinition } from '@cyoda/tableau-react';
+import { ReportEditorTabModel, HelperReportDefinition } from '@cyoda/ui-lib-react';
 import './CriteriaForm.scss';
 
 const { TextArea } = Input;

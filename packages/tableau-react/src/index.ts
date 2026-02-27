@@ -4,7 +4,7 @@
  * Exports all public components, hooks, and utilities
  */
 
-// Export Modelling components
+// Re-export Modelling components from @cyoda/ui-lib-react (moved there for layer architecture)
 export {
   ModellingGroup,
   ModellingItem,
@@ -18,11 +18,13 @@ export {
   ModellingRangeDefs,
   ModellingPopUpAlias,
   ModellingPopUpAliasNew,
-} from './components/Modelling';
+  ReportEditorTabModel,
+  MapperParametersDialog,
+} from '@cyoda/ui-lib-react';
 
-export type { ModellingPopUpRef } from './components/Modelling';
+export type { ModellingPopUpRef, ModellingPopUpAliasRef, ModellingPopUpAliasNewRef } from '@cyoda/ui-lib-react';
 
-// Export other components
+// Export local components
 export { default as CloneReportDialog } from './components/CloneReportDialog';
 export { default as ConfigEditorReportsFilter } from './components/ConfigEditorReportsFilter';
 export { default as CreateReportDialog } from './components/CreateReportDialog';
@@ -41,7 +43,6 @@ export { default as ReportEditorTabColumns } from './components/ReportEditorTabC
 export { default as ReportEditorTabFilterBuilder } from './components/ReportEditorTabFilterBuilder';
 export { default as ReportEditorTabGrouping } from './components/ReportEditorTabGrouping';
 export { default as ReportEditorTabJson } from './components/ReportEditorTabJson';
-export { default as ReportEditorTabModel } from './components/ReportEditorTabModel';
 export { default as ReportEditorTabSorting } from './components/ReportEditorTabSorting';
 export { default as ReportEditorTabSummary } from './components/ReportEditorTabSummary';
 export { default as ReportResultDialog } from './components/ReportResultDialog';
@@ -59,9 +60,6 @@ export * from './stores';
 
 // Export utilities
 export * from './utils';
-
-// Export API
-export * from './api/modelling';
 
 // Export pages
 export * from './pages';

@@ -15,7 +15,7 @@ import EntityDataLineage from './EntityDataLineage';
 import EntityAudit from './EntityAudit';
 import EntityTransitions from './EntityTransitions';
 import EntityDetailTree from './EntityDetailTree';
-import HelperDetailEntity from '../utils/HelperDetailEntity';
+import { HelperDetailEntity } from '@cyoda/ui-lib-react';
 import './EntityDetailModal.scss';
 
 interface EntityDetailModalProps {

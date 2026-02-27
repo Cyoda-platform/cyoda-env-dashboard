@@ -27,9 +27,8 @@ import CreateReportDialog, { type CreateReportDialogRef, type CreateReportFormDa
 import CloneReportDialog, { type CloneReportDialogRef } from '../components/CloneReportDialog';
 import ConfigEditorReportsFilter from '../components/ConfigEditorReportsFilter';
 import ImportDialog from '../components/ImportDialog';
-import { ResizableTitle } from '../components/ResizableTitle';
-import HelperReportDefinition from '../utils/HelperReportDefinition';
-import { HelperStorage } from '@cyoda/ui-lib-react';
+import { ResizableTitle } from '@cyoda/ui-lib-react';
+import { HelperReportDefinition, HelperStorage } from '@cyoda/ui-lib-react';
 import type { ReportDefinition } from '../types';
 import './ReportConfigs.scss';
 import '../../../statemachine-react/src/components/ExportImport/ExportImport.scss';

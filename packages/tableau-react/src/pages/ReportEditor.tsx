@@ -1,7 +1,7 @@
 /**
  * ReportEditor Page
  * Main report editor with 7 tabs for configuring reports
- * 
+ *
  * Migrated from: .old_project/packages/http-api/src/views/ConfigEditorSimple.vue
  */
 
@@ -12,12 +12,11 @@ import type { MenuProps } from 'antd';
 import { ArrowLeftOutlined, SaveOutlined, PlayCircleOutlined, StopOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { axios } from '@cyoda/http-api-react';
-import HelperReportDefinition from '../utils/HelperReportDefinition';
+import { HelperReportDefinition, ReportEditorTabModel } from '@cyoda/ui-lib-react';
 import type { ReportDefinition } from '../types';
 import './ReportEditor.scss';
 
-// Tab components (to be created)
-import ReportEditorTabModel from '../components/ReportEditorTabModel';
+// Tab components
 import ReportEditorTabColumns from '../components/ReportEditorTabColumns';
 import ReportEditorTabFilterBuilder from '../components/ReportEditorTabFilterBuilder';
 import ReportEditorTabSorting from '../components/ReportEditorTabSorting';
@@ -42,7 +41,7 @@ const ReportEditor: React.FC = () => {
   const [runningReportId, setRunningReportId] = useState<string | null>(null);
   const [reportExecutionTime, setReportExecutionTime] = useState(0);
   const [showScheduling, setShowScheduling] = useState(false);
-  
+
   // State for "Existing report" dialog (when 422 error occurs)
   const [showExistingReportDialog, setShowExistingReportDialog] = useState(false);
   const [isDeleteAndSaveLoading, setIsDeleteAndSaveLoading] = useState(false);
@@ -122,7 +121,7 @@ const ReportEditor: React.FC = () => {
     onSuccess: (data) => {
       message.success('Report started successfully');
       setRunningReportId(data.id);
-      
+
       // Navigate to reports page to see results
       setTimeout(() => {
         navigate('/tableau/reports');
@@ -191,11 +190,11 @@ const ReportEditor: React.FC = () => {
     try {
       // Delete existing reports for this definition
       await axios.delete(`/platform-api/reporting/definitions/${encodeURIComponent(id!)}?mode=reports`);
-      
+
       // Now perform the update
       const copyConfigDefinition = JSON.parse(JSON.stringify(configDefinition));
       await performUpdate(copyConfigDefinition);
-      
+
       message.success('Report configuration updated successfully');
       queryClient.invalidateQueries({ queryKey: ['reportDefinition', id] });
       queryClient.invalidateQueries({ queryKey: ['reportDefinitions'] });
@@ -229,11 +228,11 @@ const ReportEditor: React.FC = () => {
         `/platform-api/reporting/definitions?name=${encodeURIComponent(newReportName)}`,
         copyConfigDefinition
       );
-      
+
       message.success('New report definition created successfully');
       setShowExistingReportDialog(false);
       setShowCreateNewDialog(false);
-      
+
       // Navigate to the new report
       if (data.content) {
         navigate(`/tableau/report-editor/${encodeURIComponent(data.content)}`);

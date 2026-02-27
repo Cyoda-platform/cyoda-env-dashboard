@@ -1,7 +1,7 @@
 /**
  * ReportEditorTabFilterBuilder Component
  * Tab for building complex filters for reports
- * 
+ *
  * Migrated from: .old_project/packages/http-api/src/views/ConfigEditor/tabs/ConfigEditorReportsTabFilterBuilder.vue
  */
 
@@ -47,7 +47,7 @@ const ReportEditorTabFilterBuilder: React.FC<ReportEditorTabFilterBuilderProps> 
   };
 
   const handlePointTimeChange = (value: string | null) => {
-    onChange({ pointTime: value || undefined });
+    onChange({ pointTime: value || '' });
   };
 
   const handleConditionChange = () => {

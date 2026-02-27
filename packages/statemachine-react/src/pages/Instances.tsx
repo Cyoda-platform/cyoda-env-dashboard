@@ -19,7 +19,7 @@ import { useTableState } from '../hooks/useTableState';
 import { useGlobalUiSettingsStore, HelperFeatureFlags, HelperStorage } from '@cyoda/http-api-react';
 import { RangeCondition, type RangeConditionForm } from '../components/RangeCondition';
 import type { Instance, InstanceTableRow, InstancesResponse } from '../types';
-import { ResizableTitle } from '../components/ResizableTitle';
+import { ResizableTitle } from '@cyoda/ui-lib-react';
 import './Instances.scss';
 
 const PAGE_SIZE = 20;

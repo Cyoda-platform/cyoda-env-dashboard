@@ -25,7 +25,7 @@ const Process = React.lazy(() => import('@cyoda/statemachine-react').then(m => (
 const Tasks = React.lazy(() => import('@cyoda/tasks-react').then(m => ({ default: m.Tasks })));
 const TaskDetail = React.lazy(() => import('@cyoda/tasks-react').then(m => ({ default: m.TaskDetail })));
 
-const PageEntityViewer = React.lazy(() => import('@cyoda/http-api-react').then(m => ({ default: m.PageEntityViewer })));
+const PageEntityViewer = React.lazy(() => import('@cyoda/ui-lib-react').then(m => ({ default: m.PageEntityViewer })));
 
 const ProcessingHome = React.lazy(() => import('@cyoda/processing-manager-react').then(m => ({ default: m.Home })));
 const ProcessingNodes = React.lazy(() => import('@cyoda/processing-manager-react').then(m => ({ default: m.Nodes })));

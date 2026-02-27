@@ -14,6 +14,9 @@ export * from './LogOutButton'
 export * from './List'
 export * from './Markdown'
 
+// Error Boundary
+export * from './ErrorBoundary'
+
 // Error Handling
 export * from './ErrorHandler'
 export * from './ErrorNotification'
@@ -83,12 +86,10 @@ export * from './DataLineageTransactions'
 export * from './DataLineage'
 
 // Cyoda Modelling
-export * from './ModellingToggles'
-export * from './ModellingGroup'
-export * from './ModellingGroupClass'
-export * from './ModellingPopupSearch'
-export * from './ModellingPopupToggles'
-export * from './ModellingItemClassForm'
+export * from './Modelling'
+export { default as MapperParametersDialog } from './MapperParametersDialog'
+export type { MapperParametersDialogRef } from './MapperParametersDialog'
+export { default as ReportEditorTabModel } from './ReportEditorTabModel'
 
 // Adaptable Blotter
 export * from './BlotterDetailForm'
@@ -112,6 +113,12 @@ export * from './ConsistencyDialog'
 
 // Config Editor
 export * from './ConfigEditorStreamGrid'
+
+// Resizable Table Headers
+export * from './ResizableTitle'
+
+// Entity Viewer
+export * from './EntityViewer'
 
 // Entity Detail
 export * from './EntityDetailModal'
