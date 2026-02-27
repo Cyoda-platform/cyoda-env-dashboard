@@ -42,7 +42,7 @@ import Login from '../pages/Login';
 export const AppRoutes: React.FC = () => {
   const isTrinoEnabled = HelperFeatureFlags.isTrinoSqlSchemaEnabled();
   const isTasksEnabled = HelperFeatureFlags.isTasksEnabled();
-  const defaultRoute = isTrinoEnabled ? '/trino' : '/reporting/reports';
+  const defaultRoute = '/workflows';
 
   return (
     <Routes>
