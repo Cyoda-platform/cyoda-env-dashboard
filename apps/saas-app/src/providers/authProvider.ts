@@ -1,5 +1,5 @@
 import type { AuthProvider } from '@refinedev/core';
-import { HelperStorage } from '@cyoda/http-api-react/utils/storage';
+import { HelperStorage } from '@cyoda/http-api-react';
 
 // Use HelperStorage to match Login.tsx (stores with 'cyoda_' prefix)
 const helperStorage = new HelperStorage();

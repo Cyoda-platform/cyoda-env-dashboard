@@ -1,6 +1,6 @@
 import type { DataProvider } from '@refinedev/core';
 import axios from 'axios';
-import { HelperStorage } from '@cyoda/http-api-react/utils/storage';
+import { HelperStorage } from '@cyoda/http-api-react';
 import { isAuth0Session, refreshAuth0Token } from '../utils/auth0TokenManager';
 
 const API_URL = '/platform-api';

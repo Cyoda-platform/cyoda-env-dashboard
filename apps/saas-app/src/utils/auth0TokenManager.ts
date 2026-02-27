@@ -5,7 +5,7 @@
  * The getAccessTokenSilently function is set from the Auth0Provider context.
  */
 
-import { HelperStorage } from '@cyoda/http-api-react/utils/storage';
+import { HelperStorage } from '@cyoda/http-api-react';
 
 const helperStorage = new HelperStorage();
 
