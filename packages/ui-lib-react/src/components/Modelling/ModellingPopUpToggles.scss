@@ -1,0 +1,20 @@
+.modelling-popup-toggles {
+  .toggle-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .toggle-label {
+    color: var(--refine-text-primary);
+    font-size: 14px;
+  }
+
+  .delimiter {
+    margin: 0 12px;
+    display: inline-block;
+    font-size: 20px;
+    color: var(--refine-text-secondary);
+  }
+}
+

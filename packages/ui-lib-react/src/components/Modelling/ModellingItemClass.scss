@@ -1,0 +1,65 @@
+.modelling-item-class {
+  margin-bottom: 0;
+  margin-top: 0;
+  font-size: 14px;
+  line-height: 20px;
+  position: relative;
+
+  // Force Ant Design Spin to not take up extra space
+  .ant-spin-nested-loading {
+    display: inline-block;
+    min-height: 0;
+    height: auto;
+  }
+
+  .ant-spin-container {
+    line-height: inherit;
+    display: inline-block;
+    min-height: 0;
+    height: auto;
+  }
+
+  .checked-path {
+    color: var(--refine-primary);
+  }
+
+  .name {
+    a {
+      cursor: pointer;
+      color: #1890ff;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    .empty-link {
+      color: #8c8c8c;
+      cursor: not-allowed;
+    }
+  }
+
+  .modelling-item-class-form {
+    margin-bottom: 0;
+    margin-top: 10px;
+    margin-left: 40px;
+
+    .flex {
+      gap: 0 !important;
+    }
+
+    .inner-field-type {
+      margin-right: 5px !important;
+    }
+
+    .wrap-btn {
+      margin-left: 0 !important;
+    }
+  }
+
+  // Indent nested groups to show hierarchy
+  .modelling-group {
+    padding-left: 18px;
+  }
+}
+

@@ -1,0 +1,2 @@
+export { ResizableTitle } from './ResizableTitle';
+

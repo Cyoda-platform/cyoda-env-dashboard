@@ -1,0 +1,149 @@
+.modelling-item {
+  margin-bottom: 0;
+  margin-top: 0;
+  position: relative;
+
+  .inner {
+    display: block;
+    padding-left: 18px;
+    padding-right: 180px;
+    position: relative;
+    margin-bottom: 2px;
+    font-size: 14px;
+    vertical-align: middle;
+    line-height: 20px;
+
+    &.checked-path {
+      background-color: rgba(0, 212, 170, 0.1);
+    }
+
+    &.inner-related {
+      background-color: rgba(20, 184, 166, 0.08);
+      padding-left: 18px;
+      margin-left: 0;
+      padding-right: 10px;
+      border-radius: 4px;
+    }
+
+    &:hover .eye,
+    &:hover .join-link-icon {
+      display: inline-block;
+    }
+  }
+
+  .eye {
+    cursor: pointer;
+    color: #bcbcbc;
+    display: none;
+    position: absolute;
+    font-size: 14px;
+    left: 0;
+    top: 3px;
+
+    &:hover {
+      color: var(--refine-primary);
+    }
+
+    &.is-leaf {
+      color: #52c41a;
+    }
+
+    &.is-joins {
+      color: #faad14;
+    }
+  }
+
+  .join-link-icon {
+    cursor: pointer;
+    color: #14b8a6;
+    display: none;
+    position: absolute;
+    font-size: 14px;
+    left: 0;
+    top: 3px;
+
+    &:hover {
+      color: #0d9488;
+    }
+
+    &.active {
+      color: #0d9488;
+    }
+  }
+
+  .join-link {
+    cursor: pointer;
+    color: var(--refine-text-secondary);
+
+    &:hover {
+      color: var(--refine-primary);
+    }
+
+    &.active {
+      color: var(--refine-primary);
+    }
+
+    &.disabled {
+      color: rgba(255, 255, 255, 0.3);
+      cursor: not-allowed;
+    }
+  }
+
+  .no-child {
+    margin-left: 24px;
+  }
+
+  .name {
+    color: var(--refine-text-primary);
+
+    a {
+      cursor: pointer;
+      color: var(--refine-primary);
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .entity-class-name {
+    color: #6b7280;
+    font-size: 0.85em;
+    display: inline;
+    margin-left: 4px;
+    font-style: italic;
+  }
+
+  .wrap-form {
+    position: absolute;
+    right: 0;
+    top: -4px;
+    width: 150px;
+
+    .modelling-item-class-form {
+      margin-bottom: 0;
+    }
+  }
+
+  .inner-group {
+    padding-left: 40px;
+    margin-top: 0;
+  }
+
+  &.has-join {
+    // Styles already applied via .inner-related
+  }
+
+  &.rel-active {
+    .inner {
+      background-color: rgba(250, 173, 20, 0.1);
+    }
+  }
+
+  &.generic-field {
+    .inner {
+      background-color: rgba(114, 46, 209, 0.1);
+    }
+  }
+}
+
