@@ -20,8 +20,7 @@ import {
   BulbOutlined,
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
-import { HelperStorage } from '@cyoda/http-api-react/utils/storage';
-import { HelperFeatureFlags } from '@cyoda/http-api-react';
+import { HelperStorage, HelperFeatureFlags } from '@cyoda/http-api-react';
 import { AppLogo } from '@cyoda/ui-lib-react';
 import { useThemeStore } from '../stores/themeStore';
 import './LeftSideMenu.scss';

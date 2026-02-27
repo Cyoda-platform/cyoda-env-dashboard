@@ -3,9 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Form, Input, Button, Card, App, Divider } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useAuth0 } from '@auth0/auth0-react';
-import * as authApi from '@cyoda/http-api-react/api/auth';
-import { HelperStorage } from '@cyoda/http-api-react/utils/storage';
-import { HelperFeatureFlags } from '@cyoda/http-api-react';
+import { login, HelperStorage, HelperFeatureFlags } from '@cyoda/http-api-react';
 import './Login.scss';
 
 const helperStorage = new HelperStorage();
@@ -55,7 +53,7 @@ const Login: React.FC = () => {
   const onFinish = async (values: LoginFormValues) => {
     setLoading(true);
     try {
-      const response = await authApi.login(values.username, values.password);
+      const response = await login(values.username, values.password);
       const authData = response.data;
 
       helperStorage.set('auth', {
