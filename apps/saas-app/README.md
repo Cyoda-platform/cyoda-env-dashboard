@@ -13,61 +13,37 @@ no IDE**, on macOS.
 
 ## 1. Prerequisites (macOS)
 
-You need three things on your machine: **Node.js 22+**, **Corepack-managed
-pnpm 9.x**, and **Git**.
+You need **Node.js 22+**, **pnpm 9.x** (via Corepack), and **Git**.
 
-### 1.1 Install Homebrew (if you don't already have it)
+> **Want to skip this section entirely?** Use the
+> [VS Code Dev Container](../../.devcontainer/README.md) — Docker handles
+> the toolchain and you don't install anything else on your host. Then
+> jump to [§3. Configure environment variables](#3-configure-environment-variables).
 
 ```bash
+# Install Homebrew if you don't have it
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-```
 
-Follow the post-install hint Homebrew prints to add `brew` to your `PATH`.
-
-### 1.2 Install Node.js 22
-
-The simplest path is via Homebrew:
-
-```bash
-brew install node@22
+# Install Node 22 and Git
+brew install node@22 git
 brew link --overwrite --force node@22
-node -v   # should print v22.x.x
-```
 
-If you prefer multiple Node versions, use `nvm` instead:
-
-```bash
-brew install nvm
-mkdir -p ~/.nvm
-echo 'export NVM_DIR="$HOME/.nvm"' >> ~/.zshrc
-echo '[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && . "/opt/homebrew/opt/nvm/nvm.sh"' >> ~/.zshrc
-source ~/.zshrc
-
-nvm install 22
-nvm use 22
-```
-
-### 1.3 Enable pnpm 9 via Corepack
-
-The repo is pinned to **pnpm 9** in `package.json`'s `packageManager`
-field. Corepack ships with Node ≥ 16 — use it to install the pinned
-version:
-
-```bash
+# Activate the pinned pnpm version via Corepack (ships with Node)
 corepack enable
 corepack prepare pnpm@9.15.4 --activate
-pnpm -v   # should print 9.15.4
+
+# Verify
+node -v   # v22.x
+pnpm -v   # 9.15.4
 ```
 
-> **Do not install pnpm through Homebrew or `npm install -g pnpm`.** Use
+> **Don't install pnpm through Homebrew or `npm install -g pnpm`.** Use
 > Corepack so the version stays in sync with the repo's `packageManager`
-> field — anyone cloning the repo gets the same pnpm version automatically.
+> field — anyone cloning the repo automatically gets the same pnpm version.
 
-### 1.4 Install Git (if missing)
-
-```bash
-brew install git
-```
+If you prefer to manage multiple Node versions, install
+[`nvm`](https://github.com/nvm-sh/nvm) instead of `node@22` and run
+`nvm install 22 && nvm use 22`.
 
 ---
 
