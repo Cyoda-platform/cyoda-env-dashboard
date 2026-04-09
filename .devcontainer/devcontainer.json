@@ -1,0 +1,76 @@
+// VS Code Dev Container configuration for cyoda-env-dashboard.
+//
+// What this gets you:
+//   - No local Node, pnpm, or Corepack install required on the host —
+//     everything runs inside a container with the right toolchain pinned.
+//
+// Auth0:
+//   - The Auth0 application must have http://localhost:5173 in its
+//     Allowed Callback URLs (and Allowed Logout URLs / Web Origins).
+//
+// What you still need on the host:
+//   - Docker Desktop (or OrbStack on macOS)
+//   - The "Dev Containers" VS Code extension (ms-vscode-remote.remote-containers)
+//
+// First-time use:
+//   1. Open the repo folder in VS Code.
+//   2. When prompted, click "Reopen in Container".
+//   3. Wait for the image to pull and `pnpm install` to finish.
+//   4. In the integrated terminal:
+//        cp apps/saas-app/.env.template apps/saas-app/.env
+//        # edit the file, fill in VITE_APP_BASE_URL and the Auth0 values
+//        pnpm dev
+//   5. Click the forwarded-port toast (or open http://localhost:5173).
+//
+// See .devcontainer/README.md for more.
+{
+  "name": "cyoda-env-dashboard",
+
+  // Official Microsoft devcontainer image: Debian + Node 22 + git + zsh
+  // + common build tools + the "node" non-root user.
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-22-bookworm",
+
+  // Vite's default port. VS Code's forwarder auto-detects the listening
+  // socket inside the container and exposes it on the host as
+  // http://localhost:5173.
+  "forwardPorts": [5173],
+  "portsAttributes": {
+    "5173": {
+      "label": "Cyoda Env Dashboard (Vite)",
+      "onAutoForward": "notify"
+    }
+  },
+
+  // Run once after the container is created:
+  //   - activate the pnpm version pinned in package.json's packageManager
+  //   - install all workspace dependencies
+  "postCreateCommand": "corepack enable && corepack prepare pnpm@9.15.4 --activate && pnpm install",
+
+  // Helpful extensions, auto-installed in the container the first time
+  // it's opened. Add or remove as you like.
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "ms-playwright.playwright",
+        "vitest.explorer",
+        "EditorConfig.EditorConfig"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "zsh",
+        "typescript.tsdk": "node_modules/typescript/lib"
+      }
+    }
+  },
+
+  // Run as the non-root user the base image ships with. Avoids files
+  // being created as root in the bind-mounted workspace.
+  "remoteUser": "node",
+
+  // Persist the pnpm content-addressable store across container rebuilds
+  // so reinstalls are nearly instant.
+  "mounts": [
+    "source=cyoda-pnpm-store,target=/home/node/.local/share/pnpm/store,type=volume"
+  ]
+}

@@ -59,6 +59,22 @@ create a competing lockfile and break workspace linking.
 
 ## First-time setup
 
+You have two options. Pick one.
+
+### Option A — VS Code Dev Container (no local toolchain install)
+
+If you have **Docker Desktop** (or OrbStack) and the **Dev Containers**
+VS Code extension, you don't need to install Node, pnpm, or Corepack on
+your host machine at all:
+
+1. `git clone https://github.com/Cyoda-platform/cyoda-env-dashboard.git`
+2. Open the folder in VS Code → click *Reopen in Container* when prompted.
+3. VS Code pulls the image and runs `pnpm install` automatically.
+
+See [`.devcontainer/README.md`](./.devcontainer/README.md) for details.
+
+### Option B — Local toolchain
+
 ```bash
 # 1. Clone
 git clone https://github.com/Cyoda-platform/cyoda-env-dashboard.git
@@ -71,6 +87,9 @@ corepack prepare pnpm@9.15.4 --activate
 # 3. Install all workspace dependencies
 pnpm install
 ```
+
+For a step-by-step macOS walkthrough (Homebrew, Node 22, Corepack, Git),
+see [`apps/saas-app/README.md` §1](./apps/saas-app/README.md#1-prerequisites-macos).
 
 ## Running the app
 
