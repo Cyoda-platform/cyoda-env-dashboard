@@ -3,8 +3,6 @@
 
 # Dependencies
 node_modules/
-.pnp
-.pnp.js
 
 # Testing
 coverage/
@@ -37,14 +35,9 @@ packages/*/.env.production.local
 .DS_Store
 Thumbs.db
 
-# Yarn
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions
-.pnp.*
+# pnpm
+.pnpm-store/
+.pnpm-debug.log*
 
 # Playwright
 test-results/

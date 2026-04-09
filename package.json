@@ -5,18 +5,13 @@
   "description": "Cyoda SaaS Platform - React-based monorepo",
   "author": "Cyoda",
   "license": "PRIVATE",
-  "packageManager": "yarn@4.6.0",
-  "workspaces": [
-    "packages/*",
-    "apps/*"
-  ],
+  "packageManager": "pnpm@9.15.4",
   "scripts": {
-    "dev": "npm run dev -w apps/saas-app",
-    "dev:all": "npm run dev --workspaces --if-present",
-    "dev:saas": "npm run dev -w apps/saas-app",
-    "build": "npm run build --workspaces --if-present",
-    "build:saas": "npm run build:saas-deps && npm run build -w apps/saas-app",
-    "build:saas-deps": "npm run build -w packages/ui-lib-react -w packages/http-api-react -w packages/cyoda-sass-react -w packages/reporting-react -w packages/statemachine-react -w packages/tasks-react -w packages/processing-manager-react",
+    "dev": "pnpm --filter @cyoda/saas-app dev",
+    "dev:all": "pnpm -r --parallel --if-present run dev",
+    "dev:saas": "pnpm --filter @cyoda/saas-app dev",
+    "build": "pnpm -r --if-present run build",
+    "build:saas": "pnpm --filter ...@cyoda/saas-app run build",
     "test": "vitest",
     "test:run": "vitest run",
     "test:ui": "vitest --ui",
@@ -24,10 +19,24 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
-    "lint": "npm run lint --workspaces --if-present",
-    "type-check": "npm run type-check --workspaces --if-present",
-    "clean": "npm run clean --workspaces --if-present && rm -rf node_modules",
+    "lint": "pnpm -r --if-present run lint",
+    "type-check": "pnpm -r --if-present run type-check",
+    "clean": "pnpm -r --if-present run clean && rm -rf node_modules",
     "format": "prettier --write \"packages/**/*.{ts,tsx,js,jsx,json,md}\""
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@parcel/watcher",
+      "@playwright/test",
+      "browser-tabs-lock",
+      "core-js",
+      "core-js-pure",
+      "cypress",
+      "esbuild",
+      "msw",
+      "playwright",
+      "puppeteer"
+    ]
   },
   "devDependencies": {
     "@playwright/test": "^1.49.1",
