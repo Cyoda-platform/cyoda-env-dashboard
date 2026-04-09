@@ -56,3 +56,6 @@ playwright/.cache/
 
 # Claude Code settings
 .claude/
+
+# Agent Safehouse
+.sandbox/
