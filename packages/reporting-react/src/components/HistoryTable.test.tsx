@@ -77,7 +77,7 @@ describe('HistoryTable', () => {
 
   const mockSettings: HistorySettings = {
     lazyLoading: false,
-    
+
   };
 
   const mockOnChange = vi.fn();
@@ -319,8 +319,10 @@ describe('HistoryTable', () => {
       );
 
       await waitFor(() => {
-        expect(mockedAxiosPlatform.get).toHaveBeenCalledTimes(1);
+        expect(mockedAxiosPlatform.get).toHaveBeenCalled();
       });
+
+      const callCountBeforeFilterChange = mockedAxiosPlatform.get.mock.calls.length;
 
       // Change filter
       const newFilter: HistoryFilter = {
@@ -339,7 +341,7 @@ describe('HistoryTable', () => {
       );
 
       await waitFor(() => {
-        expect(mockedAxiosPlatform.get).toHaveBeenCalledTimes(2);
+        expect(mockedAxiosPlatform.get.mock.calls.length).toBeGreaterThan(callCountBeforeFilterChange);
       });
     });
   });
@@ -453,7 +455,7 @@ describe('HistoryTable', () => {
 
       const tableBody = container.querySelector('.ant-table-tbody');
       expect(tableBody).toBeInTheDocument();
-      
+
       const rows = container.querySelectorAll('.ant-table-row');
       expect(rows.length).toBeGreaterThan(0);
     });

@@ -3,7 +3,7 @@ import { Table, Tag, Modal, Button, Space, Spin, Tooltip } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import { RightOutlined, SearchOutlined, BranchesOutlined, ThunderboltOutlined, DiffOutlined } from '@ant-design/icons'
 import { Link } from 'react-router-dom'
-import { axiosProcessing, getCyodaCloudEntity, HelperFeatureFlags, isTreeNodeEntity } from '@cyoda/http-api-react'
+import { axiosProcessing, getCyodaCloudEntity, extractCyodaEntityData, HelperFeatureFlags, isTreeNodeEntity } from '@cyoda/http-api-react'
 import type { AuditEventType } from '@cyoda/http-api-react'
 import Prism from 'prismjs'
 import 'prismjs/themes/prism.css'
@@ -143,8 +143,8 @@ export const TransitionChangesTable: React.FC<TransitionChangesTableProps> = ({
     setJsonModalData(null)
 
     try {
-      const { data } = await getCyodaCloudEntity(entityId, transactionId)
-      setJsonModalData(data)
+      const { data: envelope } = await getCyodaCloudEntity(entityId, transactionId)
+      setJsonModalData(extractCyodaEntityData(envelope))
     } catch (error) {
       console.error('Failed to load entity at transaction:', error)
       setJsonModalData(null)

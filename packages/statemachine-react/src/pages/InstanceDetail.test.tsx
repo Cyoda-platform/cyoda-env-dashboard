@@ -53,10 +53,15 @@ const mockEntityData = [
   },
 ];
 
-// Mock useEntityLoad hook
+// Mock useEntityLoad and useCyodaCloudEntity hooks
 vi.mock('../hooks/useEntity', () => ({
   useEntityLoad: vi.fn(() => ({
     data: mockEntityData,
+    isLoading: false,
+    error: null,
+  })),
+  useCyodaCloudEntity: vi.fn(() => ({
+    data: undefined,
     isLoading: false,
     error: null,
   })),

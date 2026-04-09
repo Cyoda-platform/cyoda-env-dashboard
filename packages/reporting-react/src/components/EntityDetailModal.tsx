@@ -6,7 +6,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { Modal, Tabs, Descriptions, Spin, Button, Switch, notification, Divider, theme } from 'antd';
-import { getEntityLoad, getCyodaCloudEntity, HelperFeatureFlags, isCyodaCloudEntityFormat } from '@cyoda/http-api-react';
+import { getEntityLoad, getCyodaCloudEntity, extractCyodaEntityData, extractCyodaEntityMeta, HelperFeatureFlags, isCyodaCloudEntityFormat } from '@cyoda/http-api-react';
+import type { CyodaCloudEntityEnvelope } from '@cyoda/http-api-react';
 import { HelperFormat } from '@cyoda/ui-lib-react';
 import type { ConfigDefinition } from '../types';
 import type { Entity } from '@cyoda/http-api-react/types';
@@ -37,7 +38,7 @@ const EntityDetailModal: React.FC<EntityDetailModalProps> = ({
   const [activeTab, setActiveTab] = useState('details');
   const [loading, setLoading] = useState(false);
   const [entity, setEntity] = useState<Entity[]>([]);
-  const [cyodaCloudEntity, setCyodaCloudEntity] = useState<Record<string, unknown> | null>(null);
+  const [cyodaCloudEntity, setCyodaCloudEntity] = useState<CyodaCloudEntityEnvelope | null>(null);
   const [showEmptyFields, setShowEmptyFields] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
@@ -153,8 +154,20 @@ const EntityDetailModal: React.FC<EntityDetailModalProps> = ({
     return column?.value || '-';
   };
 
-  // Get standard fields
+  // Get standard fields — from entity array (platform-api) or from envelope meta (Cloud API)
   const getStandardFields = () => {
+    // Try Cloud API envelope metadata first
+    const meta = extractCyodaEntityMeta(cyodaCloudEntity ?? undefined);
+    if (meta) {
+      return {
+        id: meta.id || getEntityId(),
+        state: meta.state || '-',
+        previousTransition: meta.previousTransition || '-',
+        createdDate: meta.creationDate || '-',
+        lastUpdatedDate: meta.lastUpdateTime || '-',
+      };
+    }
+
     if (!entity || entity.length === 0) return {};
 
     return {
@@ -221,7 +234,7 @@ const EntityDetailModal: React.FC<EntityDetailModalProps> = ({
                   fontSize: '13px',
                   lineHeight: '1.6'
                 }}>
-                  {JSON.stringify(cyodaCloudEntity, null, 2)}
+                  {JSON.stringify(extractCyodaEntityData(cyodaCloudEntity ?? undefined), null, 2)}
                 </pre>
               ) : (
                 <p>No entity data available.</p>
@@ -285,6 +298,7 @@ const EntityDetailModal: React.FC<EntityDetailModalProps> = ({
                   <EntityTransitions
                     entityId={getEntityId()!}
                     entityClass={getEntityClass()}
+                    entityData={cyodaCloudEntity ?? undefined}
                     onTransitionChange={() => {
                       // Reload entity data after transition change
                       loadEntity();

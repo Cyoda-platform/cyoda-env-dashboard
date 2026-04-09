@@ -7,7 +7,7 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Tag, Spin, Modal, Button, Space, Tooltip } from 'antd';
 import { RightOutlined, SearchOutlined, BranchesOutlined, ThunderboltOutlined, DiffOutlined } from '@ant-design/icons';
-import { axios, getCyodaCloudEntity, HelperFeatureFlags, isCyodaCloudEntityFormat } from '@cyoda/http-api-react';
+import { axios, getCyodaCloudEntity, extractCyodaEntityData, HelperFeatureFlags, isCyodaCloudEntityFormat } from '@cyoda/http-api-react';
 import type { AuditEventType } from '@cyoda/http-api-react';
 import Prism from 'prismjs';
 import 'prismjs/themes/prism.css';
@@ -119,8 +119,8 @@ const EntityAudit: React.FC<EntityAuditProps> = ({ entityClass, entityId }) => {
     setJsonModalData(null);
 
     try {
-      const { data } = await getCyodaCloudEntity(entityId, transactionId);
-      setJsonModalData(data);
+      const { data: envelope } = await getCyodaCloudEntity(entityId, transactionId);
+      setJsonModalData(extractCyodaEntityData(envelope));
     } catch (error) {
       console.error('Failed to load entity at transaction:', error);
       setJsonModalData(null);

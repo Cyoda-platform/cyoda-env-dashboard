@@ -56,7 +56,7 @@ export default defineConfig(({ mode }) => {
     },
   },
   server: {
-    port: 3000,
+    port: 5173,
     watch: {
       // Watch files in linked packages for changes
       ignored: ['!**/node_modules/@cyoda/**'],

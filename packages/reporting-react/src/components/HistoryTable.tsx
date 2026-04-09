@@ -144,7 +144,7 @@ const HistoryTable: React.FC<HistoryTableProps> = ({
 
   // Fetch report history
   const { data: reportHistoryData = [], isLoading } = useQuery({
-    queryKey: ['reportHistory', filter, entityType],
+    queryKey: ['reports', 'history', filter, entityType],
     queryFn: async () => {
       try {
         // Build params matching the Vue implementation
@@ -231,6 +231,7 @@ const HistoryTable: React.FC<HistoryTableProps> = ({
       }
     },
     refetchInterval: 3000, // Auto-refresh every 3 seconds to catch new reports
+    refetchOnMount: 'always', // Always refetch when component mounts (e.g. tab switch)
   });
 
   // Transform data for table
