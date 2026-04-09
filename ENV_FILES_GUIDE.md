@@ -134,7 +134,7 @@ Vite looks for .env files in **`packages/tableau-react/`** directory.
 
 ```bash
 # 1. Install dependencies
-yarn install
+pnpm install
 
 # 2. Run the app (no .env setup needed!)
 npm run dev

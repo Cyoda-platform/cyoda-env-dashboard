@@ -37,6 +37,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@cyoda/cobi-react": "workspace:*",
     "@cyoda/http-api-react": "1.0.0",
     "@cyoda/ui-lib-react": "1.0.0",
     "@monaco-editor/react": "^4.7.0",

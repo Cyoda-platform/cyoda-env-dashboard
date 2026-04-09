@@ -31,6 +31,7 @@
   "dependencies": {
     "@ant-design/icons": "^6.1.0",
     "@cyoda/http-api-react": "^1.0.0",
+    "@monaco-editor/react": "^4.7.0",
     "@types/sortablejs": "^1.15.8",
     "antd": "^5.29.3",
     "axios": "^1.7.9",

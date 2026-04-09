@@ -1,64 +1,61 @@
-# Development Server Ports
+# Development server ports
 
-This document lists all development server ports used in the monorepo.
+This file lists the dev-server ports used by the workspaces in this monorepo.
+Each port is set in the corresponding `vite.config.ts`.
 
-## 🚀 Applications
+## Application
 
-| Port | Application | Command | Description |
-|------|-------------|---------|-------------|
-| **3000** | **SaaS App** | `npm run dev` | **Main SaaS application** (ALWAYS on port 3000) |
+| Port   | Workspace                  | Start command                                  |
+|--------|----------------------------|------------------------------------------------|
+| `5173` | `apps/saas-app`            | `pnpm dev` (alias for `pnpm --filter @cyoda/saas-app dev`) |
 
-## 📦 Packages (Standalone Development)
+`http://localhost:5173` is the canonical URL for the Cyoda Env Dashboard during
+local development. The port is set explicitly in `apps/saas-app/vite.config.ts`.
 
-| Port | Package | Command | Description |
-|------|---------|---------|-------------|
-| 3001 | COBI React | `npm run dev -w packages/cobi-react` | Data mapping and configuration |
-| 3002 | Tableau React | `npm run dev -w packages/tableau-react` | Reporting and visualization |
-| 3008 | Processing Manager | `npm run dev -w packages/processing-manager-react` | Processing management |
-| 3010 | Tasks React | `npm run dev -w packages/tasks-react` | Task management |
-| 3014 | State Machine React | `npm run dev -w packages/statemachine-react` | Workflow state machine |
+## Packages (standalone development)
 
-## ⚠️ Important Rules
+Each package can be run on its own dev server. Use this when iterating on a
+single package without bringing up `apps/saas-app`.
 
-1. **Port 3000 is RESERVED for SaaS App ONLY**
-   - Never change the SaaS app port
-   - All other apps/packages must use different ports
-   - This ensures `http://localhost:3000` always opens the main SaaS application
+| Port   | Workspace                                | Start command                                              |
+|--------|------------------------------------------|------------------------------------------------------------|
+| `3001` | `packages/cobi-react`                    | `pnpm --filter @cyoda/cobi-react dev`                      |
+| `3002` | `packages/reporting-react`               | `pnpm --filter @cyoda/reporting-react dev`                 |
+| `3008` | `packages/processing-manager-react`      | `pnpm --filter @cyoda/processing-manager-react dev`        |
+| `3010` | `packages/tasks-react`                   | `pnpm --filter @cyoda/tasks-react dev`                     |
+| `3011` | `packages/cyoda-sass-react`              | `pnpm --filter @cyoda/cyoda-sass-react dev`                |
+| `3014` | `packages/statemachine-react`            | `pnpm --filter @cyoda/statemachine-react dev`              |
+| `5176` | `packages/source-configuration-react`    | `pnpm --filter @cyoda/source-configuration-react dev`      |
 
-2. **Package Development**
-   - Packages can be developed standalone on their assigned ports
-   - Or integrated into SaaS app (recommended for most development)
+`packages/ui-lib-react` and `packages/http-api-react` are libraries; they have
+no standalone dev server.
 
-3. **Port Conflicts**
-   - If you see a port conflict, check this file
-   - Make sure no two services use the same port
-   - Update this file if you add new apps/packages
+## Configuration files
 
-## 🔧 Configuration Files
+| Port   | File                                                          |
+|--------|---------------------------------------------------------------|
+| `5173` | `apps/saas-app/vite.config.ts`                                |
+| `3001` | `packages/cobi-react/vite.config.ts`                          |
+| `3002` | `packages/reporting-react/vite.config.ts`                     |
+| `3008` | `packages/processing-manager-react/vite.config.ts`            |
+| `3010` | `packages/tasks-react/vite.config.ts`                         |
+| `3011` | `packages/cyoda-sass-react/vite.config.ts`                    |
+| `3014` | `packages/statemachine-react/vite.config.ts`                  |
+| `5176` | `packages/source-configuration-react/vite.config.ts`          |
 
-Port configurations are defined in:
-- `apps/saas-app/vite.config.ts` - Port 3000
-- `packages/cobi-react/vite.config.ts` - Port 3001
-- `packages/tableau-react/vite.config.ts` - Port 3002
-- `packages/processing-manager-react/vite.config.ts` - Port 3008
-- `packages/tasks-react/vite.config.ts` - Port 3010
-- `packages/statemachine-react/vite.config.ts` - Port 3014
+## Rules
 
-## 📝 Adding New Apps/Packages
+1. **Do not change `apps/saas-app`'s port.** `5173` is the canonical local URL
+   and is referenced by tests, Auth0 callback URLs, and developer bookmarks.
+2. **No two workspaces may share a port.** When adding a new package, pick an
+   unused port from this file and update the table.
+3. **Standalone packages do not collide with the app.** You can run
+   `apps/saas-app` on `5173` while running any package on its own port at the
+   same time.
 
-When adding a new app or package:
+## Adding a new workspace
 
-1. Choose an unused port (check this file)
-2. Update the `vite.config.ts` with the port
-3. Add entry to this file
-4. Commit changes
-
-## 🎯 Quick Start
-
-**To run the main SaaS application:**
-```bash
-npm run dev
-```
-
-Then open: **http://localhost:3000**
-
+1. Pick an unused port (check this file).
+2. Set `server.port` in the new `vite.config.ts`.
+3. Add a row to both tables above.
+4. Commit the change in the same PR that adds the workspace.
