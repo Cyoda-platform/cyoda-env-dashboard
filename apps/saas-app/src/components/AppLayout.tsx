@@ -3,7 +3,7 @@ import { Layout } from 'antd';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { AppHeader } from './AppHeader';
 import { LeftSideMenu } from './LeftSideMenu';
-import { HelperStorage } from '@cyoda/http-api-react/utils/storage';
+import { HelperStorage } from '@cyoda/http-api-react';
 import { useAppStore } from '@cyoda/cyoda-sass-react';
 import './AppLayout.scss';
 

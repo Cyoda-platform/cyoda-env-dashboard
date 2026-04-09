@@ -68,9 +68,9 @@ export function useReportStatus(
       return response.data;
     },
     enabled: !!reportId,
-    refetchInterval: (data) => {
+    refetchInterval: (query) => {
       // Auto-refetch every 2 seconds if report is running
-      const status = data?.content?.status;
+      const status = query.state.data?.content?.status;
       return status === 'RUNNING' || status === 'STARTED' ? 2000 : false;
     },
     ...options,

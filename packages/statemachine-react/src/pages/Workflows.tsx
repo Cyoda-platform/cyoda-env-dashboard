@@ -27,7 +27,7 @@ import { useTableState } from '../hooks/useTableState';
 import { useQueryInvalidation } from '../hooks/useQueryInvalidation';
 import { ExportImport } from '../components/ExportImport';
 import { StateIndicator } from '../components/StateIndicator';
-import { ResizableTitle } from '../components/ResizableTitle';
+import { ResizableTitle } from '@cyoda/ui-lib-react';
 import { HelperStorage } from '@cyoda/ui-lib-react';
 import './Workflows.scss';
 import { useGlobalUiSettingsStore } from '@cyoda/http-api-react';

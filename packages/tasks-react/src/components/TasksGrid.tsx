@@ -14,7 +14,7 @@ import { HelperDictionary, HelperFormat, HelperStorage } from '@cyoda/ui-lib-rea
 import { useTasksPerPage, useTasksState } from '../hooks/useTasks';
 import { BulkUpdateForm } from './BulkUpdateForm';
 import { TasksNotifications, taskEventBus, type TaskEvent } from './TasksNotifications';
-import { ResizableTitle } from './ResizableTitle';
+import { ResizableTitle } from '@cyoda/ui-lib-react';
 import type { Task, TaskFilterType, TableRow } from '../types';
 import './TasksGrid.scss';
 

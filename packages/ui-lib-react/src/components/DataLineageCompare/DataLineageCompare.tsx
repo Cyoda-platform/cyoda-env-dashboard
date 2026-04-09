@@ -2,7 +2,7 @@ import React, { useState, useImperativeHandle, forwardRef, useMemo, useEffect } 
 import { Modal, Spin } from 'antd'
 import { RightOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
-import { getCyodaCloudEntity, HelperFeatureFlags } from '@cyoda/http-api-react'
+import { getCyodaCloudEntity, extractCyodaEntityData, HelperFeatureFlags } from '@cyoda/http-api-react'
 import { CodeEditor } from '../CodeEditor'
 import './DataLineageCompare.scss'
 
@@ -94,8 +94,8 @@ export const DataLineageCompare = forwardRef<DataLineageCompareRef, DataLineageC
             getCyodaCloudEntity(entityId, checkedTransactions[0].transactionId),
             getCyodaCloudEntity(entityId, checkedTransactions[1].transactionId)
           ])
-          setCyodaCloudOldEntity(oldResponse.data)
-          setCyodaCloudNewEntity(newResponse.data)
+          setCyodaCloudOldEntity(extractCyodaEntityData(oldResponse.data))
+          setCyodaCloudNewEntity(extractCyodaEntityData(newResponse.data))
         } catch (error) {
           console.error('Failed to fetch entity versions for comparison:', error)
           setCyodaCloudError('Failed to fetch entity versions. Please try again.')

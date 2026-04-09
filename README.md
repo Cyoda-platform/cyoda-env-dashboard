@@ -63,8 +63,7 @@ cyoda-saas-platform/
 │   └── source-configuration-react/  # Source config (optional)
 │
 ├── docs/                      # 📚 Documentation
-│   ├── migration/            # Migration documentation
-│   └── guides/               # User guides
+│   └── cyoda-cloud/          # API specifications
 │
 ├── tools/                     # 🛠️ Development Tools
 │   ├── backend-mock-server/  # Mock backend for testing
@@ -207,9 +206,9 @@ npm start
 
 ## 📚 Documentation
 
-- **User Guides**: `docs/guides/` - Setup and usage guides
+- **API Specs**: `docs/cyoda-cloud/` - OpenAPI specifications
 - **Package READMEs**: Each package has its own README with specific documentation
-- **SaaS App Docs**: `apps/saas-app/` - Main application documentation and quick start guides
+- **SaaS App**: `apps/saas-app/README.md` - Main application documentation
 
 ## 🧪 Testing
 

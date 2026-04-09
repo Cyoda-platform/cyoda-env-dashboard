@@ -248,9 +248,8 @@ nano apps/saas-app/.env
 ## 📚 Related Documentation
 
 - **Quick Start:** `QUICK_START_NEW_USER.md`
-- **Structure Analysis:** `STRUCTURE_ANALYSIS.md`
-- **SaaS App Guide:** `apps/saas-app/QUICK_START.md`
-- **Backend Connection:** `apps/saas-app/QUICK_START_BACKEND.md`
+- **SaaS App:** `apps/saas-app/README.md`
+- **Ports:** `PORTS.md`
 
 ---
 

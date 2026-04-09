@@ -148,7 +148,7 @@ test.describe('SaaS App - Navigation', () => {
     const features = [
       { name: 'Tasks', path: '/tasks' },
       { name: 'Entity Viewer', path: '/entity-viewer' },
-      { name: 'Tableau', path: '/tableau' },
+      { name: 'Reporting', path: '/reporting' },
       { name: 'Modelling', path: '/modelling' },
       { name: 'State Machine', path: '/statemachine' },
       { name: 'Processing', path: '/processing' },

@@ -19,6 +19,7 @@ export interface StreamGridData {
     columnsValues: Record<string, any>
   }>
   pointTime?: number
+  sdDef?: any
 }
 
 export interface ConfigEditorStreamGridProps {
@@ -40,7 +41,7 @@ export interface ConfigEditorStreamGridRef {
   setConfigDefinitionRequest: (request: ConfigDefinitionRequest) => void
   onlyUniq: boolean
   setOnlyUniq: (value: boolean) => void
-  loadPage: () => Promise<void>
+  loadPage: (reset?: boolean, customRequest?: any) => Promise<void>
   open: (id: string) => void
 }
 

@@ -48,7 +48,7 @@ export interface Transaction {
   user?: string;
 }
 
-export type TransactionStatus = 
+export type TransactionStatus =
   | 'PENDING'
   | 'RUNNING'
   | 'COMPLETED'
@@ -92,7 +92,7 @@ export interface ProcessEvent {
   retryCount?: number;
 }
 
-export type ProcessEventStatus = 
+export type ProcessEventStatus =
   | 'PENDING'
   | 'PROCESSING'
   | 'PROCESSED'
@@ -246,8 +246,9 @@ export interface EntityChange {
 
 export interface GrafanaChart {
   id: string;
-  title: string;
-  url: string;
+  name?: string;
+  title?: string;
+  url?: string;
   panelId?: number;
   from?: string;
   to?: string;

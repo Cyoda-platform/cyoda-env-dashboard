@@ -8,7 +8,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { RangeCondition, type RangeConditionForm } from './RangeCondition';
 
 // Mock the ModellingPopUp component
-vi.mock('@cyoda/tableau-react', () => ({
+vi.mock('@cyoda/ui-lib-react', () => ({
   ModellingPopUp: vi.fn(({ onChange, requestClass }) => (
     <div data-testid="modelling-popup">
       <button
@@ -223,7 +223,7 @@ describe('RangeCondition', () => {
       const { rerender } = render(<RangeCondition form={formWithCondition} onChange={mockOnChange} />);
 
       // Simulate clearing selection by passing empty array
-      const ModellingPopUp = await import('@cyoda/tableau-react');
+      const ModellingPopUp = await import('@cyoda/ui-lib-react');
       const mockOnChangeHandler = (ModellingPopUp.ModellingPopUp as any).mock.calls[0][0].onChange;
       mockOnChangeHandler([]);
 
@@ -315,8 +315,8 @@ describe('RangeCondition', () => {
     it('should pass correct props to ModellingPopUp', async () => {
       render(<RangeCondition form={defaultForm} onChange={mockOnChange} />);
 
-      const tableauReact = await import('@cyoda/tableau-react');
-      const ModellingPopUp = tableauReact.ModellingPopUp as any;
+      const uiLibReact = await import('@cyoda/ui-lib-react');
+      const ModellingPopUp = uiLibReact.ModellingPopUp as any;
       const lastCall = ModellingPopUp.mock.calls[ModellingPopUp.mock.calls.length - 1][0];
 
       expect(lastCall.requestClass).toBe('com.example.Entity');

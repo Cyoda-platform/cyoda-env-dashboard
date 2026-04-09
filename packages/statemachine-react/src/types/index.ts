@@ -61,9 +61,9 @@ export interface Transition {
   id: string;
   name: string;
   description?: string;
-  workflowId: string;
-  fromState: string;
-  toState: string;
+  workflowId?: string;
+  fromState?: string;
+  toState?: string;
   criteriaId?: string;
   processId?: string;
   automatic?: boolean;
@@ -150,9 +150,17 @@ export interface Process {
   persisted?: boolean;
 }
 
+// ProcessIdDto bean returned by the backend
+export interface ProcessIdDto {
+  '@bean': string;
+  persisted: boolean;
+  persistedId?: string;
+  runtimeId: number;
+}
+
 export interface ProcessForm {
   '@bean'?: string;
-  id?: string;
+  id?: string | ProcessIdDto;
   name: string;
   description?: string;
   entityClassName?: string;
@@ -282,7 +290,7 @@ export interface ExportData {
 }
 
 // Persisted Type
-export type PersistedType = 'persisted' | 'runtime';
+export type PersistedType = 'persisted' | 'runtime' | 'draft';
 
 // Layout Mode
 export type LayoutMode = 'tabular' | 'graphical';

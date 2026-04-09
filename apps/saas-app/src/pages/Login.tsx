@@ -3,16 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { Form, Input, Button, Card, App, Divider } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useAuth0 } from '@auth0/auth0-react';
-import * as authApi from '@cyoda/http-api-react/api/auth';
-import { HelperStorage } from '@cyoda/http-api-react/utils/storage';
-import { HelperFeatureFlags } from '@cyoda/http-api-react';
+import { login, HelperStorage, HelperFeatureFlags } from '@cyoda/http-api-react';
 import './Login.scss';
 
 const helperStorage = new HelperStorage();
 
 // Determine default route based on feature flags
 const getDefaultRoute = () => {
-  return HelperFeatureFlags.isTrinoSqlSchemaEnabled() ? '/trino' : '/tableau/reports';
+  return HelperFeatureFlags.isTrinoSqlSchemaEnabled() ? '/trino' : '/reporting/reports';
 };
 
 interface LoginFormValues {
@@ -40,6 +38,13 @@ const Login: React.FC = () => {
       return;
     }
 
+    // Only redirect if we have a valid backend token
+    const authData = helperStorage.get('auth');
+    if (!authData?.token) {
+      console.log('Auth0 authenticated but no backend token - staying on login');
+      return;
+    }
+
     hasHandledAuth0Login.current = true;
     navigate(getDefaultRoute(), { replace: true });
   }, [isAuthenticated, auth0Loading, navigate]);
@@ -48,7 +53,7 @@ const Login: React.FC = () => {
   const onFinish = async (values: LoginFormValues) => {
     setLoading(true);
     try {
-      const response = await authApi.login(values.username, values.password);
+      const response = await login(values.username, values.password);
       const authData = response.data;
 
       helperStorage.set('auth', {

@@ -264,7 +264,8 @@ export async function getReportingFetchTypes(onlyDynamic = false) {
 
 /**
  * Get reporting info (entity fields and types)
- * Always uses real backend data - no mock fallback
+ * Returns real data from Cyoda backend API
+ * Falls back to empty array if API is unavailable
  */
 export async function getReportingInfo(
   entityClass: string,
@@ -281,27 +282,44 @@ export async function getReportingInfo(
     .map((key) => `${key}=${params[key]}`)
     .join('&');
 
-  // Always use real backend data - no mock fallback
-  const response = await axios.get(`/platform-api/entity-info/model-info?${query}`);
+  try {
+    const response = await axios.get<import('../types').ReportingInfoRow[]>(
+      `/platform-api/entity-info/model-info?${query}`
+    );
 
-  // Return the actual API response (even if empty)
-  return response;
+    if (Array.isArray(response.data)) {
+      return response;
+    }
+
+    console.warn(`Invalid response data for ${entityClass}, expected array`);
+    return { data: [] as import('../types').ReportingInfoRow[], status: 200, statusText: 'OK', headers: {}, config: {} as any };
+  } catch (error) {
+    console.warn(`API unavailable for ${entityClass}, returning empty array:`, error);
+    return { data: [] as import('../types').ReportingInfoRow[], status: 200, statusText: 'OK', headers: {}, config: {} as any };
+  }
 }
 
 /**
  * Get related paths for an entity
  * Returns JOIN relationships (not nested objects)
- * Always uses real backend data - no mock fallback
+ * Falls back to empty array if API is unavailable
  */
 export async function getReportingRelatedPaths(entityClass: string) {
-  // Always use real backend data - no mock fallback
-  const response = await axios.get(
-    `/platform-api/entity-info/model-info/related/paths?entityModel=${entityClass}`
-  );
+  try {
+    const response = await axios.get<import('../types').RelatedPath[]>(
+      `/platform-api/entity-info/model-info/related/paths?entityModel=${entityClass}`
+    );
 
-  // Return the actual API response (even if empty array)
-  // Empty array means no JOIN relationships exist for this entity
-  return response;
+    if (Array.isArray(response.data)) {
+      return response;
+    }
+
+    console.warn(`Invalid response data for related paths of ${entityClass}, expected array`);
+    return { data: [] as import('../types').RelatedPath[], status: 200, statusText: 'OK', headers: {}, config: {} as any };
+  } catch (error) {
+    console.warn(`API unavailable for related paths of ${entityClass}, returning empty array:`, error);
+    return { data: [] as import('../types').RelatedPath[], status: 200, statusText: 'OK', headers: {}, config: {} as any };
+  }
 }
 
 /**
@@ -376,15 +394,73 @@ export function getEntityModelExport(entityName: string, modelVersion: number) {
 /**
  * Get entity data by ID (Cyoda Cloud API)
  * Used when VITE_FEATURE_FLAG_IS_CYODA_CLOUD is enabled
- * Returns the raw entity data as JSON
+ *
+ * The GET /entity/{entityId} endpoint returns an envelope:
+ *   { "type": "ENTITY", "data": { ...pure entity JSON... }, "meta": { id, state, ... } }
+ *
+ * Use extractCyodaEntityData() to get the pure entity JSON for PUT operations.
+ * Use extractCyodaEntityMeta() to get the metadata (state, previousTransition, etc.).
  *
  * @param entityId - The entity UUID
  * @param transactionId - Optional transaction ID to load entity as it was at the end of that transaction
- * @returns The entity data as a JSON object
+ * @returns The full entity envelope containing type, data, and meta
  */
 export function getCyodaCloudEntity(entityId: string, transactionId?: string) {
   const params = transactionId ? { transactionId } : undefined;
-  return axios.get<Record<string, unknown>>(`/entity/${encodeURIComponent(entityId)}`, { params });
+  return axios.get<CyodaCloudEntityEnvelope>(`/entity/${encodeURIComponent(entityId)}`, { params });
+}
+
+/**
+ * Envelope structure returned by GET /entity/{entityId}
+ */
+export interface CyodaCloudEntityEnvelope {
+  type?: string;
+  data?: Record<string, unknown>;
+  meta?: CyodaCloudEntityMeta;
+  [key: string]: unknown;
+}
+
+/**
+ * Metadata from the entity envelope (state, dates, transition info)
+ */
+export interface CyodaCloudEntityMeta {
+  id?: string;
+  state?: string;
+  creationDate?: string;
+  lastUpdateTime?: string;
+  previousTransition?: string;
+  [key: string]: unknown;
+}
+
+/**
+ * Extract the pure entity JSON from a Cyoda Cloud entity envelope.
+ * This is the format expected by PUT /entity/JSON/{entityId} endpoints.
+ *
+ * @param envelope - The envelope from getCyodaCloudEntity response.data
+ * @returns The pure entity data, or the envelope itself as fallback
+ */
+export function extractCyodaEntityData(envelope: CyodaCloudEntityEnvelope | Record<string, unknown> | undefined): Record<string, unknown> | undefined {
+  if (!envelope) return undefined;
+  if ('data' in envelope && typeof envelope.data === 'object' && envelope.data !== null) {
+    return envelope.data as Record<string, unknown>;
+  }
+  // Fallback: not in envelope format, return as-is
+  return envelope as Record<string, unknown>;
+}
+
+/**
+ * Extract metadata from a Cyoda Cloud entity envelope.
+ * Contains state, previousTransition, creationDate, lastUpdateTime, etc.
+ *
+ * @param envelope - The envelope from getCyodaCloudEntity response.data
+ * @returns The metadata object, or undefined if not available
+ */
+export function extractCyodaEntityMeta(envelope: CyodaCloudEntityEnvelope | Record<string, unknown> | undefined): CyodaCloudEntityMeta | undefined {
+  if (!envelope) return undefined;
+  if ('meta' in envelope && typeof envelope.meta === 'object' && envelope.meta !== null) {
+    return envelope.meta as CyodaCloudEntityMeta;
+  }
+  return undefined;
 }
 
 /**

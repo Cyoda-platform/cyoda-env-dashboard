@@ -1,6 +1,6 @@
 /**
  * Scripts Store
- * 
+ *
  * State management for reusable scripts using Zustand.
  * Manages script definitions and editor state.
  * State is persisted to localStorage.
@@ -9,7 +9,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-export interface Script {
+export interface ReusableScript {
   id: string;
   name: string;
   description: string;
@@ -21,15 +21,15 @@ export interface Script {
 
 interface ScriptsState {
   // Scripts list
-  scripts: Script[];
-  setScripts: (scripts: Script[]) => void;
-  addScript: (script: Script) => void;
-  updateScript: (id: string, updates: Partial<Script>) => void;
+  scripts: ReusableScript[];
+  setScripts: (scripts: ReusableScript[]) => void;
+  addScript: (script: ReusableScript) => void;
+  updateScript: (id: string, updates: Partial<ReusableScript>) => void;
   removeScript: (id: string) => void;
 
   // Current script being edited
-  currentScript: Script | null;
-  setCurrentScript: (script: Script | null) => void;
+  currentScript: ReusableScript | null;
+  setCurrentScript: (script: ReusableScript | null) => void;
 
   // Editor state
   editorContent: string;
@@ -52,19 +52,19 @@ const initialState = {
 
 /**
  * Scripts Store Hook
- * 
+ *
  * Zustand store for reusable scripts with localStorage persistence.
- * 
+ *
  * @example
  * ```typescript
  * import { useScriptsStore } from './stores/scriptsStore';
- * 
+ *
  * function ScriptEditor() {
  *   const currentScript = useScriptsStore((state) => state.currentScript);
  *   const editorContent = useScriptsStore((state) => state.editorContent);
  *   const setEditorContent = useScriptsStore((state) => state.setEditorContent);
  *   const isDirty = useScriptsStore((state) => state.isDirty);
- *   
+ *
  *   return (
  *     <div>
  *       {isDirty && <span>Unsaved changes</span>}

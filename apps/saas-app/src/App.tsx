@@ -5,7 +5,7 @@ import { ConfigProvider, Spin, theme as antdTheme, App as AntdApp } from 'antd';
 import { Auth0Provider } from '@auth0/auth0-react';
 import { AppRoutes } from './routes';
 import { auth0Config } from './config/auth0';
-import ErrorBoundary from './components/ErrorBoundary';
+import { ErrorBoundary } from '@cyoda/ui-lib-react';
 import { Auth0TokenInitializer } from './components/Auth0TokenInitializer';
 import { useThemeStore } from './stores/themeStore';
 import './App.scss';

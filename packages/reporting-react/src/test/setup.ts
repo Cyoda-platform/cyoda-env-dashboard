@@ -1,0 +1,116 @@
+/**
+ * Test Setup
+ * Configure testing environment
+ */
+
+import { expect, afterEach, vi } from 'vitest';
+import { cleanup } from '@testing-library/react';
+import * as matchers from '@testing-library/jest-dom/matchers';
+
+// Extend Vitest's expect with jest-dom matchers
+expect.extend(matchers);
+
+// Cleanup after each test
+afterEach(() => {
+  cleanup();
+});
+
+// Suppress CSS parsing warnings and expected network errors from jsdom
+const originalConsoleError = console.error;
+const originalConsoleLog = console.log;
+
+console.error = (...args: any[]) => {
+  const message = typeof args[0] === 'string' ? args[0] : '';
+
+  // Suppress CSS parsing warnings
+  if (message.includes('Could not parse CSS stylesheet')) {
+    return;
+  }
+
+  // Suppress expected network errors in tests
+  if (message.includes('Network Error') || message.includes('API Error') || message.includes('Failed to load')) {
+    return;
+  }
+
+  originalConsoleError(...args);
+};
+
+console.log = (...args: any[]) => {
+  const message = typeof args[0] === 'string' ? args[0] : '';
+
+  // Suppress expected network errors in tests
+  if (message.includes('Network Error') || message.includes('API Error') || message.includes('Failed to load')) {
+    return;
+  }
+
+  originalConsoleLog(...args);
+};
+
+// Mock window.matchMedia for Ant Design
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: vi.fn().mockImplementation(query => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(), // deprecated
+    removeListener: vi.fn(), // deprecated
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
+});
+
+// Mock @monaco-editor/react
+vi.mock('@monaco-editor/react', () => ({
+  default: vi.fn(() => null),
+}));
+
+// Mock monaco-editor to avoid import errors
+vi.mock('monaco-editor', () => ({
+  editor: {
+    create: vi.fn(),
+    createDiffEditor: vi.fn(),
+  },
+  languages: {
+    register: vi.fn(),
+    setMonarchTokensProvider: vi.fn(),
+  },
+}));
+
+// Mock axios - this must be at the top level to be hoisted
+vi.mock('axios', () => {
+  const mockInstance = {
+    interceptors: {
+      request: { use: vi.fn(), eject: vi.fn() },
+      response: { use: vi.fn(), eject: vi.fn() },
+    },
+    get: vi.fn(() => Promise.resolve({ data: {} })),
+    post: vi.fn(() => Promise.resolve({ data: {} })),
+    put: vi.fn(() => Promise.resolve({ data: {} })),
+    delete: vi.fn(() => Promise.resolve({ data: {} })),
+    patch: vi.fn(() => Promise.resolve({ data: {} })),
+    defaults: {
+      paramsSerializer: { serialize: vi.fn() },
+    },
+  };
+
+  return {
+    default: {
+      create: vi.fn(() => mockInstance),
+      interceptors: {
+        request: { use: vi.fn(), eject: vi.fn() },
+        response: { use: vi.fn(), eject: vi.fn() },
+      },
+      get: vi.fn(() => Promise.resolve({ data: {} })),
+      post: vi.fn(() => Promise.resolve({ data: {} })),
+      put: vi.fn(() => Promise.resolve({ data: {} })),
+      delete: vi.fn(() => Promise.resolve({ data: {} })),
+      patch: vi.fn(() => Promise.resolve({ data: {} })),
+      defaults: {
+        paramsSerializer: { serialize: vi.fn() },
+      },
+    },
+  };
+});
+

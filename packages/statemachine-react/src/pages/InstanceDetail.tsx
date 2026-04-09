@@ -4,7 +4,7 @@
  * Migrated from: .old_project/packages/statemachine/src/views/InstancesDetailView.vue
  */
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { Tabs, Card, Spin, Typography, Space, Alert, Button, Switch, Divider, theme } from 'antd';
 import type { TabsProps } from 'antd';
@@ -20,9 +20,9 @@ import {
 } from '../hooks/useStatemachine';
 import { useGraphicalStatemachineStore } from '../stores/graphicalStatemachineStore';
 import { GraphicalStateMachine } from '../components/GraphicalStateMachine';
-import { useEntityLoad } from '../hooks/useEntity';
-import type { Entity } from '@cyoda/http-api-react';
-import { axiosPlatform, getCyodaCloudEntity, HelperFeatureFlags } from '@cyoda/http-api-react';
+import { useEntityLoad, useCyodaCloudEntity } from '../hooks/useEntity';
+import type { Entity, CyodaCloudEntityEnvelope } from '@cyoda/http-api-react';
+import { axiosPlatform, getCyodaCloudEntity, extractCyodaEntityData, extractCyodaEntityMeta, HelperFeatureFlags } from '@cyoda/http-api-react';
 import type { PersistedType } from '../types';
 import {
   HelperDetailEntity,
@@ -30,7 +30,7 @@ import {
   EntityTransitions,
   EntityAudit,
   EntityDataLineage,
-} from '@cyoda/tableau-react';
+} from '@cyoda/ui-lib-react';
 import './InstanceDetail.scss';
 
 const { Title, Text } = Typography;
@@ -62,6 +62,15 @@ export const InstanceDetail: React.FC = () => {
     error: entityLoadError
   } = useEntityLoad(instanceId, entityClassName);
 
+  // Load Cyoda Cloud entity JSON (for transitions that need the entity body)
+  const { data: cyodaCloudEntityData } = useCyodaCloudEntity(instanceId);
+
+  // Keep a ref to the latest cloud entity data so we can use it inside useMemo
+  // without adding it as a dependency (which would recreate tab items and
+  // unmount/remount child components that contain hooks).
+  const cyodaCloudEntityDataRef = useRef(cyodaCloudEntityData);
+  cyodaCloudEntityDataRef.current = cyodaCloudEntityData;
+
   // Determine if we should show JSON view
   const isShowDetailJson = () => {
     // Always show structured DetailView instead of JSON view
@@ -86,10 +95,12 @@ export const InstanceDetail: React.FC = () => {
             instanceId={instanceId!}
             entityClassName={entityClassName}
             entityData={entityData}
+            cyodaCloudEntityData={cyodaCloudEntityDataRef.current}
             currentWorkflowId={currentWorkflowId}
             onTransitionChange={() => {
               // Invalidate entity data cache to reload
               queryClient.invalidateQueries({ queryKey: ['entity-load', instanceId, entityClassName] });
+              queryClient.invalidateQueries({ queryKey: ['cyoda-cloud-entity', instanceId] });
               // Trigger refresh for other tabs
               setRefreshTrigger(prev => prev + 1);
             }}
@@ -142,9 +153,11 @@ export const InstanceDetail: React.FC = () => {
             instanceId={instanceId!}
             persistedType={persistedType}
             entityData={entityData}
+            cyodaCloudEntityData={cyodaCloudEntityDataRef.current}
             onTransitionChange={() => {
               // Invalidate entity data cache to reload
               queryClient.invalidateQueries({ queryKey: ['entity-load', instanceId, entityClassName] });
+              queryClient.invalidateQueries({ queryKey: ['cyoda-cloud-entity', instanceId] });
               // Trigger refresh for other tabs
               setRefreshTrigger(prev => prev + 1);
             }}
@@ -154,6 +167,12 @@ export const InstanceDetail: React.FC = () => {
     }
 
     return items;
+  // NOTE: cyodaCloudEntityData is intentionally excluded from dependencies.
+  // Including it causes tab items to be recreated when the query data changes,
+  // which unmounts/remounts DetailView and WorkflowView (which contain hooks),
+  // triggering React's "Rendered fewer hooks than expected" error.
+  // The child components receive the latest value through normal re-renders.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [instanceId, entityClassName, entityData, currentWorkflowId, persistedType, workflowEnabledTypes, refreshTrigger]);
 
   return (
@@ -205,9 +224,10 @@ const DetailView: React.FC<{
   instanceId: string;
   entityClassName: string;
   entityData: Entity[] | null;
+  cyodaCloudEntityData?: CyodaCloudEntityEnvelope;
   currentWorkflowId?: string;
   onTransitionChange?: () => void;
-}> = ({ instanceId, entityClassName, entityData, currentWorkflowId, onTransitionChange }) => {
+}> = ({ instanceId, entityClassName, entityData, cyodaCloudEntityData, currentWorkflowId, onTransitionChange }) => {
   const [showEmptyFields, setShowEmptyFields] = useState(true);
 
   if (!entityData || entityData.length === 0) {
@@ -230,8 +250,15 @@ const DetailView: React.FC<{
   // Standard fields to extract
   const standardFieldNames = ['id', 'state', 'previousTransition', 'creationDate', 'createdDate'];
 
-  // Extract standard fields
-  const standardFields = {
+  // Extract standard fields — prefer Cloud API envelope metadata when available
+  const meta = extractCyodaEntityMeta(cyodaCloudEntityData);
+  const standardFields = meta ? {
+    id: meta.id || instanceId,
+    state: meta.state || '-',
+    previousTransition: meta.previousTransition || '-',
+    createdDate: meta.creationDate || '-',
+    lastUpdatedDate: meta.lastUpdateTime || '-',
+  } : {
     id: getValueFromColumn('id') !== '-' ? getValueFromColumn('id') : instanceId,
     state: getValueFromColumn('state'),
     previousTransition: getValueFromColumn('previousTransition'),
@@ -282,6 +309,7 @@ const DetailView: React.FC<{
           <EntityTransitions
             entityId={instanceId}
             entityClass={entityClassName}
+            entityData={cyodaCloudEntityData}
             onTransitionChange={onTransitionChange}
           />
           <Divider />
@@ -330,8 +358,8 @@ const DetailJsonView: React.FC<{
 
         // Use Cyoda Cloud endpoint when flag is enabled
         if (HelperFeatureFlags.isCyodaCloud()) {
-          const { data } = await getCyodaCloudEntity(instanceId);
-          setJsonData(data);
+          const { data: envelope } = await getCyodaCloudEntity(instanceId);
+          setJsonData(extractCyodaEntityData(envelope));
         } else {
           // Use entity-info/fetch/lazy endpoint which works without 404 errors
           const { data } = await axiosPlatform.get(
@@ -399,13 +427,15 @@ const WorkflowView: React.FC<{
   instanceId: string;
   persistedType: PersistedType;
   entityData: any;
+  cyodaCloudEntityData?: CyodaCloudEntityEnvelope;
   onTransitionChange?: () => void;
-}> = ({ workflowId, entityClassName, instanceId, persistedType, entityData, onTransitionChange }) => {
-  // Extract state from entity data array
+}> = ({ workflowId, entityClassName, instanceId, persistedType, entityData, cyodaCloudEntityData, onTransitionChange }) => {
+  // Extract state from entity data array, or from Cloud API envelope metadata
+  const cloudMeta = extractCyodaEntityMeta(cyodaCloudEntityData);
   const stateItem = Array.isArray(entityData)
     ? entityData.find((item: any) => item.columnInfo?.columnName === 'state')
     : null;
-  const currentState = stateItem?.value || 'Unknown';
+  const currentState = cloudMeta?.state || stateItem?.value || 'Unknown';
 
   // Fetch workflow data for graphical view
   const { data: transitions = [] } = useTransitions(persistedType, workflowId, !!workflowId);
@@ -449,6 +479,7 @@ const WorkflowView: React.FC<{
       <EntityTransitions
         entityId={instanceId}
         entityClass={entityClassName}
+        entityData={cyodaCloudEntityData}
         onTransitionChange={onTransitionChange}
       />
 

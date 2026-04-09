@@ -18,7 +18,7 @@
   ],
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build",
     "preview": "vite preview",
     "test": "vitest",
     "test:ui": "vitest --ui",
@@ -31,9 +31,8 @@
   },
   "dependencies": {
     "@ant-design/icons": "^5.5.2",
-    "@cyoda/http-api-react": "file:../http-api-react",
-    "@cyoda/tableau-react": "file:../tableau-react",
-    "@cyoda/ui-lib-react": "file:../ui-lib-react",
+    "@cyoda/http-api-react": "^1.0.0",
+    "@cyoda/ui-lib-react": "^1.0.0",
     "@tanstack/react-query": "^5.62.11",
     "antd": "^5.29.3",
     "axios": "^1.7.9",

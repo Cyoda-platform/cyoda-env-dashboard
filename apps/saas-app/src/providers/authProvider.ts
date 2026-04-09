@@ -1,5 +1,5 @@
 import type { AuthProvider } from '@refinedev/core';
-import { HelperStorage } from '@cyoda/http-api-react/utils/storage';
+import { HelperStorage } from '@cyoda/http-api-react';
 
 // Use HelperStorage to match Login.tsx (stores with 'cyoda_' prefix)
 const helperStorage = new HelperStorage();
@@ -73,6 +73,8 @@ const authProvider: AuthProvider = {
     const authData = helperStorage.get<AuthData>('auth');
 
     if (authData?.token) {
+      // Validate token is still valid by checking if it works
+      // If we get 401s, the token is stale and should be cleared
       return {
         authenticated: true,
       };

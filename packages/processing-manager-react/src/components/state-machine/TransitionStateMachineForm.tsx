@@ -1,13 +1,20 @@
 /**
  * Transition State Machine Form Component
  * Migrated from @cyoda/processing-manager/src/components/PmTransitionStateMachine/TransitionStateMachineForm.vue
+ *
+ * When VITE_FEATURE_FLAG_IS_CYODA_CLOUD=true and the entityClass is in Business format
+ * (<modelName>.<modelVersion>), the /platform-api/entity endpoint requires the actual
+ * Java class name (com.cyoda.tdb.model.treenode.TreeNodeEntity), not the modelName.modelVersion.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Card, Form, Select, Button } from 'antd';
 import { useLocation } from 'react-router-dom';
+import { HelperFeatureFlags, isCyodaCloudEntityFormat } from '@cyoda/http-api-react';
 import { useDoManualTransition } from '../../hooks';
 import './TransitionStateMachineForm.scss';
+
+const TREE_NODE_ENTITY_CLASS = 'com.cyoda.tdb.model.treenode.TreeNodeEntity';
 
 interface TransitionStateMachineFormProps {
   possibleTransitions: string[];
@@ -29,8 +36,17 @@ export const TransitionStateMachineForm: React.FC<TransitionStateMachineFormProp
   const queryParams = new URLSearchParams(location.search);
 
   // Use props if provided, otherwise fall back to URL params
-  const entityClass = entityClassProp || queryParams.get('type') || '';
+  const entityClassRaw = entityClassProp || queryParams.get('type') || '';
   const entityId = entityIdProp || queryParams.get('entityId') || '';
+
+  // When Cyoda Cloud is enabled and the entityClass is in Business format
+  // (e.g. "Dataset.1"), substitute with the actual Java class for /platform-api/entity.
+  const entityClass = useMemo(() => {
+    if (HelperFeatureFlags.isCyodaCloud() && isCyodaCloudEntityFormat(entityClassRaw)) {
+      return TREE_NODE_ENTITY_CLASS;
+    }
+    return entityClassRaw;
+  }, [entityClassRaw]);
 
   const { mutate: doManualTransition, isLoading } = useDoManualTransition({
     onSuccess: () => {

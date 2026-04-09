@@ -3,8 +3,8 @@ import { render, screen } from '@testing-library/react';
 import { App } from 'antd';
 import { CompositeIndexCreateDialog } from '../CompositeIndexCreateDialog';
 
-// Mock ModellingRangeDefs and ModellingColDefs from tableau-react
-vi.mock('@cyoda/tableau-react', () => ({
+// Mock ModellingRangeDefs and ModellingColDefs from ui-lib-react
+vi.mock('@cyoda/ui-lib-react', () => ({
   ModellingRangeDefs: ({ onChange }: any) => (
     <div data-testid="modelling-range-defs">
       <button onClick={() => onChange([{ fullPath: 'test.range' }])}>

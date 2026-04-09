@@ -24,7 +24,7 @@ vi.mock('@cyoda/http-api-react', async () => {
   };
 });
 
-vi.mock('@cyoda/tableau-react', () => ({
+vi.mock('@cyoda/ui-lib-react', () => ({
   HelperDetailEntity: {
     filterData: (...args: any[]) => mockFilterData(...args),
   },

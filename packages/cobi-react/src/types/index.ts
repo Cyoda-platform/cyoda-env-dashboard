@@ -10,15 +10,15 @@
 export type DataType = 'JSON' | 'XML' | 'BINARY_DOC' | 'CSV';
 
 export interface MappingConfigDto {
-  '@bean': 'com.cyoda.plugins.mapping.core.dtos.DataMappingConfigDto';
-  id: string | null;
-  sampleContent: string;
-  dataType: DataType;
-  name: string;
-  description: string;
-  entityMappings: EntityMappingConfigDto[];
-  metadata: string;
-  parserParameters: ParserParametersDto;
+  '@bean'?: 'com.cyoda.plugins.mapping.core.dtos.DataMappingConfigDto';
+  id?: string | null;
+  sampleContent?: string;
+  dataType?: DataType;
+  name?: string;
+  description?: string;
+  entityMappings?: EntityMappingConfigDto[];
+  metadata?: string;
+  parserParameters?: ParserParametersDto;
   virtual?: Virtual;
   lastUpdated?: number;
 }
@@ -33,20 +33,25 @@ export interface EntityMappingConfigDto {
   columnPathsForUniqueCheck: string[];
   metadata: MetadataConfigDto[];
   entityFilter: any;
+  filter?: any;
   // Custom fields
   isShowNoneMappingFields: boolean;
   isPolymorphicList: boolean;
   cobiCoreMetadata: CobiCoreMetadataConfigDto[];
   cobiPathsRelations: CobiPathsRelationsDto[];
   script: ScriptMappingConfigDto;
+  sourceRelativeRootPath?: string;
 }
 
 export interface ScriptMappingConfigDto {
-  inputSrcPaths: string[];
-  inputMetaPaths: string[];
-  reusableScripts: string[];
-  body: string;
+  inputSrcPaths?: string[];
+  inputMetaPaths?: string[];
+  reusableScripts?: string[];
+  body?: string;
 }
+
+/** Alias for ScriptMappingConfigDto - used by ScriptEditor components */
+export type Script = ScriptMappingConfigDto;
 
 export interface CobiPathsRelationsDto {
   jsonPath: string;
@@ -57,6 +62,7 @@ export interface CobiPathsRelationsDto {
 export interface CobiCoreMetadataConfigDto {
   name: string;
   dstCyodaColumnPath: string;
+  srcColumnPath?: string;
 }
 
 export interface EntityMappingIdDto {
@@ -69,14 +75,16 @@ export interface ParentRelationConfigDto {
   srcRelativeRootPath: string | null;
   currentEntityIdPath?: string | null;
   parentEntityIdPath?: string | null;
+  parentRelationPath?: string | null;
+  parentEntityClass?: string | null;
 }
 
 export interface ParserParametersDto {
-  '@bean': 'com.cyoda.plugins.mapping.core.dtos.CSVParserParametersDto';
-  withHeader: boolean;
-  headers: string[];
-  delimiter: string | null;
-  quoteChar: string | null;
+  '@bean'?: 'com.cyoda.plugins.mapping.core.dtos.CSVParserParametersDto';
+  withHeader?: boolean;
+  headers?: string[];
+  delimiter?: string | null;
+  quoteChar?: string | null;
 }
 
 export interface FunctionalMappingConfigDto {
@@ -120,6 +128,7 @@ export interface ColumnMappingConfigDto {
   };
   dstCyodaColumnPathType: string;
   dstCollectionElementSetModes: CollectionElementSetModeConfigDto[];
+  targetColumnPath?: string;
 }
 
 export interface CollectionElementSetModeConfigDto {
@@ -136,13 +145,17 @@ export interface ValueTransformerConfigDto {
 }
 
 export interface MetadataConfigDto {
-  name: string;
-  dstCyodaColumnPath: string;
-  dstCyodaColumnPathType: string;
-  transformer: {
+  name?: string;
+  dstCyodaColumnPath?: string;
+  dstCyodaColumnPathType?: string;
+  transformer?: {
     children: ValueTransformerConfigDto[];
     type: 'COMPOSITE' | 'SINGLE';
   };
+  defaultValue?: any;
+  fullPath?: string;
+  colType?: string;
+  parts?: any[];
 }
 
 export interface CobiCoreMetadataParameterDto {

@@ -2,13 +2,20 @@
  * Transition State Machine Form Component
  * Form for manual state transitions
  * Migrated from @cyoda/processing-manager/src/components/PmTransitionStateMachine/TransitionStateMachineForm.vue
+ *
+ * When VITE_FEATURE_FLAG_IS_CYODA_CLOUD=true and the entityClass is in Business format
+ * (<modelName>.<modelVersion>), the /platform-api/entity endpoint requires the actual
+ * Java class name (com.cyoda.tdb.model.treenode.TreeNodeEntity), not the modelName.modelVersion.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Card, Form, Select, Button } from 'antd';
 import { useSearchParams } from 'react-router-dom';
+import { HelperFeatureFlags, isCyodaCloudEntityFormat } from '@cyoda/http-api-react';
 import { useManualTransition } from '../../hooks/useProcessing';
 import './TransitionStateMachineForm.scss';
+
+const TREE_NODE_ENTITY_CLASS = 'com.cyoda.tdb.model.treenode.TreeNodeEntity';
 
 interface TransitionStateMachineFormProps {
   possibleTransitions: string[];
@@ -23,6 +30,17 @@ export const TransitionStateMachineForm: React.FC<TransitionStateMachineFormProp
   const [selectedState, setSelectedState] = useState<string | undefined>(undefined);
   const mutation = useManualTransition();
 
+  const entityClassRaw = searchParams.get('type') || '';
+
+  // When Cyoda Cloud is enabled and the entityClass is in Business format
+  // (e.g. "Dataset.1"), substitute with the actual Java class for /platform-api/entity.
+  const entityClass = useMemo(() => {
+    if (HelperFeatureFlags.isCyodaCloud() && isCyodaCloudEntityFormat(entityClassRaw)) {
+      return TREE_NODE_ENTITY_CLASS;
+    }
+    return entityClassRaw;
+  }, [entityClassRaw]);
+
   const stateOptions = possibleTransitions.map((el) => ({
     value: el,
     label: el,
@@ -33,7 +51,7 @@ export const TransitionStateMachineForm: React.FC<TransitionStateMachineFormProp
 
     try {
       await mutation.mutateAsync({
-        entityClass: searchParams.get('type'),
+        entityClass,
         entityId: searchParams.get('entityId'),
         transition: selectedState,
         transactional: true,

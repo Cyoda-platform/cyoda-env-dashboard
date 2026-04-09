@@ -253,6 +253,15 @@ export interface IDefinitionStream {
   name: string;
   owner?: string;
   streamDataDef: StreamDataDef;
+  // Properties from StreamDataDef for union type compatibility
+  aliasDefs?: AliasDef[];
+  colDefs?: ColDef[];
+  columns?: IDefinitionColumn[];
+  condition?: IDefinitionContentConditionGroup;
+  rangeCondition?: IDefinitionContentCondition;
+  rangeOrder?: 'ASC' | 'DESC';
+  requestClass?: string;
+  rangeColDefs?: ColDef[];
 }
 
 export interface StreamDataDef {
@@ -263,6 +272,7 @@ export interface StreamDataDef {
   rangeCondition: IDefinitionContentCondition;
   rangeOrder: 'ASC' | 'DESC';
   requestClass: string;
+  rangeColDefs?: ColDef[];
 }
 
 export interface IDefinitionContentStream {
@@ -314,11 +324,12 @@ export interface StreamDefinitionsIndex {
 
 export interface ColDef {
   fullPath: string;
-  parts: {
+  parts?: {
     '@meta': string;
     value: ColDefValue[];
   };
-  colType: string;
+  colType?: string;
+  '@bean'?: string;
 }
 
 export interface ColDefValue {
@@ -511,23 +522,35 @@ export interface RelatedPath {
 }
 
 // ============================================================================
-// Reporting Info Types (for Entity Viewer)
+// Reporting Info / Modelling Types (canonical definitions for API responses)
 // ============================================================================
 
 export interface ReportingInfoRow {
-  columnName: string;
+  columnName?: string;
   columnPath: string;
-  columnType: string;
-  elementType?: string;
-  elementInfo?: string;
-  joinInfo?: JoinInfo;
+  type: string;
+  clazzType?: string;
+  declaredClass?: DeclaredClass;
   subClasses?: SubClass[];
-  abstract?: boolean;
+  elementType?: ElementInfo;
+  elementInfo?: ElementInfo;
+  joinInfo?: JoinInfo;
 }
 
-export interface JoinInfo {
-  targetEntityClass: string;
-  cardinality: string;
+export interface ElementInfo {
+  columnPath: string;
+  type: string;
+  clazzType?: string;
+  columnName?: string;
+  declaredClass?: DeclaredClass;
+  subClasses?: SubClass[];
+  elementType?: ElementInfo;
+  elementInfo?: ElementInfo;
+}
+
+export interface DeclaredClass {
+  class: string;
+  abstract: boolean;
 }
 
 export interface SubClass {
@@ -535,13 +558,62 @@ export interface SubClass {
   abstract: boolean;
 }
 
+export interface JoinInfo {
+  targetEntityClass: string;
+  joinType: string;
+}
+
 export interface RequestParam {
   reportClass: string;
   columnPath: string;
   requestClass: string;
-  types: string[];
+  types?: string[];
   baseColumnPath: string;
-  key: string | null;
+  key?: string | null;
+}
+
+export interface ModellingColDef {
+  '@bean'?: string;
+  fullPath: string;
+  colType?: string;
+  parts?: any;
+}
+
+export interface ModellingColDefValue {
+  value: any;
+  '@bean': string;
+}
+
+export interface ModellingAliasDef {
+  name: string;
+  aliasType: string;
+  aliasPaths: {
+    '@bean': string;
+    value: ModellingAliasPath[];
+  };
+}
+
+export interface ModellingAliasPath {
+  colDef: ModellingColDef;
+  mapperClass: string;
+  mapperParameters?: string;
+}
+
+export interface ModellingCatalogItem {
+  id?: string;
+  entityClass: string;
+  name: string;
+  description?: string;
+  aliasDef: ModellingAliasDef;
+}
+
+export interface ModellingPopUpToggles {
+  isCondenseThePaths: boolean;
+  isOpenAllSelected: boolean;
+}
+
+export interface ModellingSearchResult {
+  paths: string[];
 }
 
 // ============================================================================

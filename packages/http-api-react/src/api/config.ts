@@ -257,6 +257,13 @@ export function getMappers(params?: { inClass?: string }) {
 }
 
 /**
+ * Get mapper classes
+ */
+export function getMapperClasses() {
+  return axios.get<string[]>('/platform-api/catalog/mappers');
+}
+
+/**
  * Get available transformers
  */
 export function getTransformers() {

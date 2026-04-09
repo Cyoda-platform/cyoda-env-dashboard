@@ -11,5 +11,5 @@ export { useProcessingStore } from './processingStore';
 export { useScriptsStore } from './scriptsStore';
 
 export type { Transaction } from './processingStore';
-export type { Script } from './scriptsStore';
+export type { ReusableScript } from './scriptsStore';
 

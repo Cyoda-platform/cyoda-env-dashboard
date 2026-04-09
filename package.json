@@ -16,7 +16,7 @@
     "dev:saas": "npm run dev -w apps/saas-app",
     "build": "npm run build --workspaces --if-present",
     "build:saas": "npm run build:saas-deps && npm run build -w apps/saas-app",
-    "build:saas-deps": "npm run build -w packages/ui-lib-react -w packages/http-api-react -w packages/cyoda-sass-react -w packages/tableau-react -w packages/statemachine-react -w packages/tasks-react -w packages/processing-manager-react",
+    "build:saas-deps": "npm run build -w packages/ui-lib-react -w packages/http-api-react -w packages/cyoda-sass-react -w packages/reporting-react -w packages/statemachine-react -w packages/tasks-react -w packages/processing-manager-react",
     "test": "vitest",
     "test:run": "vitest run",
     "test:ui": "vitest --ui",

@@ -15,7 +15,7 @@ import { useStatemachineStore } from '../stores/statemachineStore';
 import type { PersistedType, CriteriaForm as CriteriaFormType } from '../types';
 import FilterBuilderGroup from './FilterBuilder/FilterBuilderGroup';
 import HelperFilter, { type GroupCondition } from './FilterBuilder/HelperFilter';
-import { ReportEditorTabModel, HelperReportDefinition } from '@cyoda/tableau-react';
+import { ReportEditorTabModel, HelperReportDefinition } from '@cyoda/ui-lib-react';
 import './CriteriaForm.scss';
 
 const { TextArea } = Input;
@@ -121,11 +121,11 @@ export const CriteriaForm: React.FC<CriteriaFormProps> = ({
     !isNew
   );
   const { data: criteriacheckers = [], isLoading: isLoadingCheckers } = useCriteriacheckers(entityClassName);
-  
+
   // Mutations
   const createCriteriaMutation = useCreateCriteria();
   const updateCriteriaMutation = useUpdateCriteria();
-  
+
   // Criteria checker options
   const checkerOptions = React.useMemo(() => {
     if (Array.isArray(criteriacheckers)) {
@@ -342,6 +342,12 @@ export const CriteriaForm: React.FC<CriteriaFormProps> = ({
         // colDefs is only used internally for the criteria builder UI
       };
 
+      // Include the id from the fetched criteria data when updating.
+      // The backend expects the id to be passed back on PUT.
+      if (!isNew && criteria?.id) {
+        formData.id = criteria.id;
+      }
+
       let resultId;
       if (isNew) {
         const result = await createCriteriaMutation.mutateAsync({
@@ -359,7 +365,7 @@ export const CriteriaForm: React.FC<CriteriaFormProps> = ({
         resultId = criteriaId;
         message.success('Criteria updated successfully');
       }
-      
+
       if (onSubmitted) {
         onSubmitted({ id: resultId });
       }
@@ -369,9 +375,9 @@ export const CriteriaForm: React.FC<CriteriaFormProps> = ({
       message.error(`Failed to save criteria: ${errorMessage}`);
     }
   };
-  
+
   const isLoading = isLoadingCriteria || createCriteriaMutation.isPending || updateCriteriaMutation.isPending;
-  
+
   return (
     <Form
       form={form}

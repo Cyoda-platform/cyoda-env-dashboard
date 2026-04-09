@@ -8,7 +8,7 @@ import { Table } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import type { ResizeCallbackData } from 'react-resizable';
 import { HelperStorage } from '@cyoda/http-api-react';
-import { ResizableTitle } from '../ResizableTitle';
+import { ResizableTitle } from '@cyoda/ui-lib-react';
 import { useProcessingQueues } from '../../hooks';
 import './PmComponentsExecutionQueuesInfo.scss';
 

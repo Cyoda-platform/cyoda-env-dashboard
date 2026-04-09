@@ -53,10 +53,15 @@ const mockEntityData = [
   },
 ];
 
-// Mock useEntityLoad hook
+// Mock useEntityLoad and useCyodaCloudEntity hooks
 vi.mock('../hooks/useEntity', () => ({
   useEntityLoad: vi.fn(() => ({
     data: mockEntityData,
+    isLoading: false,
+    error: null,
+  })),
+  useCyodaCloudEntity: vi.fn(() => ({
+    data: undefined,
     isLoading: false,
     error: null,
   })),
@@ -77,8 +82,8 @@ vi.mock('../hooks/useStatemachine', () => ({
   })),
 }));
 
-// Mock tableau-react components
-vi.mock('@cyoda/tableau-react', () => ({
+// Mock ui-lib-react components
+vi.mock('@cyoda/ui-lib-react', () => ({
   EntityDetailTree: ({ entity }: any) => (
     <div data-testid="entity-detail-tree">
       {entity?.map((item: any, index: number) => (

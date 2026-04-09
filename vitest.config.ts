@@ -49,7 +49,7 @@ export default defineConfig({
       '@cyoda/ui-lib-react': resolve(__dirname, './packages/ui-lib-react/src/index.ts'),
       '@cyoda/tasks-react': resolve(__dirname, './packages/tasks-react/src/index.ts'),
       '@cyoda/statemachine-react': resolve(__dirname, './packages/statemachine-react/src/index.ts'),
-      '@cyoda/tableau-react': resolve(__dirname, './packages/tableau-react/src/index.ts'),
+      '@cyoda/reporting-react': resolve(__dirname, './packages/reporting-react/src/index.ts'),
       'monaco-editor': resolve(__dirname, './vitest.monaco-mock.ts'),
       // Mock monaco-editor workers
       'monaco-editor/esm/vs/editor/editor.worker?worker': resolve(__dirname, './vitest.worker-mock.ts'),

@@ -13,7 +13,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { Spin } from 'antd';
 import { setAuth0TokenGetter, clearAuth0TokenGetter } from '../utils/auth0TokenManager';
-import { HelperStorage } from '@cyoda/http-api-react/utils/storage';
+import { HelperStorage } from '@cyoda/http-api-react';
 
 const helperStorage = new HelperStorage();
 
