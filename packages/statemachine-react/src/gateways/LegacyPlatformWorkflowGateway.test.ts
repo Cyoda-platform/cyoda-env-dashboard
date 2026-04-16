@@ -70,4 +70,37 @@ describe('LegacyPlatformWorkflowGateway', () => {
       await expect(gateway.deleteWorkflow(null, 'wf-42')).rejects.toThrow('forbidden');
     });
   });
+
+  describe('copyWorkflow', () => {
+    it('orchestrates copyWorkflow, getWorkflow, putWorkflow to set newName on the copy', async () => {
+      storeApi.copyWorkflow.mockResolvedValueOnce({ data: { id: 'wf-copy' } });
+      storeApi.getWorkflow.mockResolvedValueOnce({
+        data: { id: 'wf-copy', name: 'Premium (copy)', entityClassName: 'Customer', active: true, persisted: true },
+      });
+      storeApi.putWorkflow.mockResolvedValueOnce({ data: undefined });
+
+      await gateway.copyWorkflow(null, 'wf-source', 'PremiumDuplicate');
+
+      expect(storeApi.copyWorkflow).toHaveBeenCalledWith('persisted', 'wf-source');
+      expect(storeApi.getWorkflow).toHaveBeenCalledWith('persisted', 'wf-copy');
+      expect(storeApi.putWorkflow).toHaveBeenCalledWith({
+        id: 'wf-copy',
+        name: 'PremiumDuplicate',
+        entityClassName: 'Customer',
+        active: true,
+        persisted: true,
+      });
+    });
+
+    it('propagates errors from any step of the orchestration', async () => {
+      storeApi.copyWorkflow.mockRejectedValueOnce(new Error('copy failed'));
+
+      await expect(gateway.copyWorkflow(null, 'wf-source', 'NewName')).rejects.toThrow(
+        'copy failed'
+      );
+
+      expect(storeApi.getWorkflow).not.toHaveBeenCalled();
+      expect(storeApi.putWorkflow).not.toHaveBeenCalled();
+    });
+  });
 });

@@ -50,10 +50,18 @@ export class LegacyPlatformWorkflowGateway implements WorkflowGateway {
 
   async copyWorkflow(
     _modelRef: ModelRef | null,
-    _sourceName: string,
-    _newName: string
+    sourceName: string,
+    newName: string
   ): Promise<void> {
-    throw new Error('not implemented');
+    const store = useStatemachineStore.getState();
+    const copyResp = await store.copyWorkflow('persisted', sourceName);
+    const copyId = copyResp?.data?.id;
+    if (!copyId) {
+      throw new Error('copyWorkflow: backend response did not include the new workflow id');
+    }
+    const recordResp = await store.getWorkflow('persisted', copyId);
+    const record = recordResp?.data ?? {};
+    await store.putWorkflow({ ...record, id: copyId, name: newName });
   }
 
   async renameWorkflow(
