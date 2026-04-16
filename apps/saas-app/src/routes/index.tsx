@@ -41,7 +41,9 @@ import Login from '../pages/Login';
 
 export const AppRoutes: React.FC = () => {
   const isTrinoEnabled = HelperFeatureFlags.isTrinoSqlSchemaEnabled();
-  const isTasksEnabled = HelperFeatureFlags.isTasksEnabled();
+  const isTasksAvailable = HelperFeatureFlags.isTasksAvailable();
+  const isReportingAvailable = HelperFeatureFlags.isReportingAvailable();
+  const isProcessingManagerAvailable = HelperFeatureFlags.isProcessingManagerAvailable();
   const defaultRoute = '/workflows';
 
   return (
@@ -63,12 +65,16 @@ export const AppRoutes: React.FC = () => {
           </>
         )}
 
-        {/* Reporting */}
-        <Route path="reporting/reports" element={<Reports />} />
-        <Route path="reporting/report-editor/:id" element={<ReportEditor />} />
-        <Route path="reporting/reports/stream" element={<ReportConfigsStream />} />
-        <Route path="reporting/reports/stream/:id" element={<ReportEditorStream />} />
-        <Route path="reporting/catalogue-of-aliases" element={<CatalogueOfAliases />} />
+        {/* Reporting - hidden under cyoda-go (uses /platform-* endpoints) */}
+        {isReportingAvailable && (
+          <>
+            <Route path="reporting/reports" element={<Reports />} />
+            <Route path="reporting/report-editor/:id" element={<ReportEditor />} />
+            <Route path="reporting/reports/stream" element={<ReportConfigsStream />} />
+            <Route path="reporting/reports/stream/:id" element={<ReportEditorStream />} />
+            <Route path="reporting/catalogue-of-aliases" element={<CatalogueOfAliases />} />
+          </>
+        )}
 
         {/* Lifecycle - Statemachine */}
         <Route path="workflows" element={<Workflows />} />
@@ -81,8 +87,8 @@ export const AppRoutes: React.FC = () => {
         <Route path="criteria/:criteriaId" element={<Criteria />} />
         <Route path="process/:processId" element={<Process />} />
 
-        {/* Tasks - conditionally rendered based on feature flag */}
-        {isTasksEnabled && (
+        {/* Tasks - hidden under cyoda-go and gated by VITE_FEATURE_FLAG_TASKS */}
+        {isTasksAvailable && (
           <>
             <Route path="tasks" element={<Tasks />} />
             <Route path="tasks/:id" element={<TaskDetail />} />
@@ -92,16 +98,20 @@ export const AppRoutes: React.FC = () => {
         {/* Entity Viewer */}
         <Route path="entity-viewer" element={<PageEntityViewer />} />
 
-        {/* Processing Manager */}
-        <Route path="processing" element={<Navigate to="/processing-ui" replace />} />
-        <Route path="processing-ui" element={<ProcessingHome />} />
-        <Route path="processing-ui/nodes" element={<ProcessingNodes />} />
-        <Route path="processing-ui/nodes/:name" element={<ProcessingNodesDetail />} />
-        <Route path="processing-ui/nodes/:name/transaction/:transactionId" element={<TransactionDetail />} />
-        <Route path="processing-ui/nodes/:name/versions" element={<TransitionVersions />} />
-        <Route path="processing-ui/nodes/:name/changes" element={<TransitionChanges />} />
-        <Route path="processing-ui/nodes/:name/entity-state-machine" element={<TransitionEntityStateMachine />} />
-        <Route path="processing-ui/nodes/:name/event-view" element={<EventView />} />
+        {/* Processing Manager - hidden under cyoda-go (uses /platform-processing endpoints) */}
+        {isProcessingManagerAvailable && (
+          <>
+            <Route path="processing" element={<Navigate to="/processing-ui" replace />} />
+            <Route path="processing-ui" element={<ProcessingHome />} />
+            <Route path="processing-ui/nodes" element={<ProcessingNodes />} />
+            <Route path="processing-ui/nodes/:name" element={<ProcessingNodesDetail />} />
+            <Route path="processing-ui/nodes/:name/transaction/:transactionId" element={<TransactionDetail />} />
+            <Route path="processing-ui/nodes/:name/versions" element={<TransitionVersions />} />
+            <Route path="processing-ui/nodes/:name/changes" element={<TransitionChanges />} />
+            <Route path="processing-ui/nodes/:name/entity-state-machine" element={<TransitionEntityStateMachine />} />
+            <Route path="processing-ui/nodes/:name/event-view" element={<EventView />} />
+          </>
+        )}
 
         {/* Catch all - redirect to default route */}
         <Route path="*" element={<Navigate to={defaultRoute} replace />} />
