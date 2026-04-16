@@ -261,18 +261,19 @@ UI on `/instances` and `/instances/:instanceId` stays structurally the same (lis
 
 - `main` — stable.
 - `feature/cyoda-go-support` — long-running integration branch, cut from `main` as part of sub-branch 1.
-- `feature/cyoda-go-support/<task-slug>` — sub-branches, cut from the feature branch, PR'd back into the feature branch. CI on sub-PRs runs lint / type-check / unit tests only.
+- `feature/cyoda-go-support-<task-slug>` — sub-branches, cut from the feature branch, PR'd back into the feature branch. CI on sub-PRs runs lint / type-check / unit tests only.
+- **Naming caveat:** sub-branches use a hyphen (`feature/cyoda-go-support-<slug>`) rather than a nested slash (`feature/cyoda-go-support/<slug>`). Git stores refs as files under `.git/refs/heads/`, so a branch named `feature/cyoda-go-support` (a file) cannot coexist with `feature/cyoda-go-support/foundation` (which would require the same path to be a directory). The hyphenated form sidesteps this without losing readability.
 - Final integration PR: `feature/cyoda-go-support → main` once all sub-branches are green and E2E passes end-to-end against cyoda-go and against a legacy backend.
 
 ### 9.2 Sub-branches (in order)
 
-1. **Foundation** (`.../foundation`): env var; `HelperFeatureFlags` changes including the auto-implication and new availability helpers; menu + route gates in the SaaS app; env templates and `ENV_FILES_GUIDE.md`. No functional code change to workflow or Instances behavior. Legacy mode unchanged.
-2. **Workflow data layer** (`.../workflow-gateway`): introduce `WorkflowGateway` + `LegacyPlatformWorkflowGateway` + `CloudWorkflowGateway` + factory; rewrite React Query hooks; shrink the store to UI state only. Legacy UI still works; cloud UI renders only a stub page that exercises the gateway end-to-end via manual test.
-3. **Workflow list — cloud** (`.../workflow-list-cloud`): `WorkflowsCloud` page, entity-model picker, URL-state persistence, row actions (Edit wires to a stub editor; Duplicate/Deactivate/Delete implemented).
-4. **Workflow editor — cloud** (`.../workflow-editor-cloud`): `WorkflowEditorCloud`, tree+form UI, `QueryConditionEditor` component, MERGE save, Copy, Deactivate toggle, Delete flow with ≥1 invariant, read-only graph view.
-5. **Instances port** (`.../instances-cloud`): `InstancesGateway` interface + two implementations; UI updates to drive list and detail through the gateway; cloud API mapping detailed in this sub-branch's plan.
-6. **Vite proxy & dev-server** (`.../vite-proxy`): proxy gating; fail-fast checks; audit of `.devcontainer` and tools scripts.
-7. **E2E coverage** (`.../e2e-cyoda-go`): Docker'd cyoda-go in Playwright config; new specs; CI wiring for E2E on PRs to `main` and nightly.
+1. **Foundation** (`.../-foundation`): env var; `HelperFeatureFlags` changes including the auto-implication and new availability helpers; menu + route gates in the SaaS app; env templates and `ENV_FILES_GUIDE.md`. No functional code change to workflow or Instances behavior. Legacy mode unchanged.
+2. **Workflow data layer** (`.../-workflow-gateway`): introduce `WorkflowGateway` + `LegacyPlatformWorkflowGateway` + `CloudWorkflowGateway` + factory; rewrite React Query hooks; shrink the store to UI state only. Legacy UI still works; cloud UI renders only a stub page that exercises the gateway end-to-end via manual test.
+3. **Workflow list — cloud** (`.../-workflow-list-cloud`): `WorkflowsCloud` page, entity-model picker, URL-state persistence, row actions (Edit wires to a stub editor; Duplicate/Deactivate/Delete implemented).
+4. **Workflow editor — cloud** (`.../-workflow-editor-cloud`): `WorkflowEditorCloud`, tree+form UI, `QueryConditionEditor` component, MERGE save, Copy, Deactivate toggle, Delete flow with ≥1 invariant, read-only graph view.
+5. **Instances port** (`.../-instances-cloud`): `InstancesGateway` interface + two implementations; UI updates to drive list and detail through the gateway; cloud API mapping detailed in this sub-branch's plan.
+6. **Vite proxy & dev-server** (`.../-vite-proxy`): proxy gating; fail-fast checks; audit of `.devcontainer` and tools scripts.
+7. **E2E coverage** (`.../-e2e-cyoda-go`): Docker'd cyoda-go in Playwright config; new specs; CI wiring for E2E on PRs to `main` and nightly.
 
 ### 9.3 Review discipline
 
