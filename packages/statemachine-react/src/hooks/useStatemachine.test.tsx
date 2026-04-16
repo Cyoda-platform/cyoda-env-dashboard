@@ -317,20 +317,26 @@ describe('useStatemachine hooks', () => {
 
   describe('useDeleteWorkflow', () => {
     it('should delete a workflow', async () => {
-      const mockResponse = { data: null };
-
-      mockDeleteWorkflow.mockResolvedValue(mockResponse);
+      const deleteWorkflow = vi.fn().mockResolvedValue(undefined);
+      vi.mocked(getWorkflowGateway).mockReturnValue({
+        listWorkflows: vi.fn(),
+        loadWorkflow: vi.fn(),
+        saveWorkflow: vi.fn(),
+        deleteWorkflow,
+        copyWorkflow: vi.fn(),
+        renameWorkflow: vi.fn(),
+      } as any);
 
       const { result } = renderHook(() => useDeleteWorkflow(), { wrapper });
 
-      result.current.mutate({
-        persistedType: 'persisted',
-        workflowId: 'workflow-1',
-      });
+      const modelRef = { entityName: 'Customer', modelVersion: 1 };
+      result.current.mutate({ modelRef, name: 'workflow-1' });
 
       await waitFor(() => {
         expect(result.current.isSuccess).toBe(true);
       });
+
+      expect(deleteWorkflow).toHaveBeenCalledWith(modelRef, 'workflow-1');
     });
   });
 
@@ -472,6 +478,27 @@ describe('useStatemachine hooks', () => {
       await result.current.mutateAsync({ modelRef: null, doc });
 
       expect(saveWorkflow).toHaveBeenCalledWith(null, doc, 'MERGE');
+    });
+  });
+
+  describe('useDeleteWorkflow — gateway-backed', () => {
+    it('mutateAsync calls gateway.deleteWorkflow with modelRef + name', async () => {
+      const deleteWorkflow = vi.fn().mockResolvedValue(undefined);
+      vi.mocked(getWorkflowGateway).mockReturnValue({
+        listWorkflows: vi.fn(),
+        loadWorkflow: vi.fn(),
+        saveWorkflow: vi.fn(),
+        deleteWorkflow,
+        copyWorkflow: vi.fn(),
+        renameWorkflow: vi.fn(),
+      } as any);
+
+      const { result } = renderHook(() => useDeleteWorkflow(), { wrapper });
+
+      const modelRef = { entityName: 'Customer', modelVersion: 1 };
+      await result.current.mutateAsync({ modelRef, name: 'X' });
+
+      expect(deleteWorkflow).toHaveBeenCalledWith(modelRef, 'X');
     });
   });
 });
