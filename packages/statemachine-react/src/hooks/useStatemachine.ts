@@ -171,6 +171,28 @@ export function useCopyWorkflow() {
   });
 }
 
+export function useRenameWorkflow() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      modelRef,
+      oldName,
+      newName,
+    }: {
+      modelRef: ModelRef | null;
+      oldName: string;
+      newName: string;
+    }) => {
+      const gateway = getWorkflowGateway();
+      await gateway.renameWorkflow(modelRef, oldName, newName);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: statemachineKeys.workflows() });
+    },
+  });
+}
+
 // ============================================================================
 // State Hooks
 // ============================================================================

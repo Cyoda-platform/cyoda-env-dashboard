@@ -518,5 +518,26 @@ describe('useStatemachine hooks', () => {
       expect(copyWorkflow).toHaveBeenCalledWith(modelRef, 'A', 'B');
     });
   });
+
+  describe('useRenameWorkflow', () => {
+    it('mutateAsync calls gateway.renameWorkflow with (modelRef, oldName, newName)', async () => {
+      const renameWorkflow = vi.fn().mockResolvedValue(undefined);
+      vi.mocked(getWorkflowGateway).mockReturnValue({
+        listWorkflows: vi.fn(),
+        loadWorkflow: vi.fn(),
+        saveWorkflow: vi.fn(),
+        deleteWorkflow: vi.fn(),
+        copyWorkflow: vi.fn(),
+        renameWorkflow,
+      } as any);
+
+      const { result } = renderHook(() => useRenameWorkflow(), { wrapper });
+
+      const modelRef = { entityName: 'Customer', modelVersion: 1 };
+      await result.current.mutateAsync({ modelRef, oldName: 'A', newName: 'B' });
+
+      expect(renameWorkflow).toHaveBeenCalledWith(modelRef, 'A', 'B');
+    });
+  });
 });
 
