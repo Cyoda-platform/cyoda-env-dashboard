@@ -46,8 +46,18 @@ export class CloudWorkflowGateway implements WorkflowGateway {
     return (response.data.workflows ?? []).map(toSummary);
   }
 
-  async loadWorkflow(_modelRef: ModelRef | null, _name: string): Promise<WorkflowDoc> {
-    throw new Error('not implemented');
+  async loadWorkflow(modelRef: ModelRef | null, name: string): Promise<WorkflowDoc> {
+    if (modelRef === null) {
+      throw new Error('CloudWorkflowGateway.loadWorkflow: modelRef is required');
+    }
+    const response = await axios.get<WorkflowExportResponse>(exportUrl(modelRef));
+    const found = (response.data.workflows ?? []).find((w) => w.name === name);
+    if (!found) {
+      throw new Error(
+        `Workflow "${name}" not found in model ${modelRef.entityName} v${modelRef.modelVersion}`
+      );
+    }
+    return found;
   }
 
   async saveWorkflow(

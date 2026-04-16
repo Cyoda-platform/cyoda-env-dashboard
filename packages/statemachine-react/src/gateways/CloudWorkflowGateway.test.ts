@@ -87,4 +87,46 @@ describe('CloudWorkflowGateway', () => {
       );
     });
   });
+
+  describe('loadWorkflow', () => {
+    const exportResponse = {
+      entityName: 'Customer',
+      modelVersion: 1,
+      workflows: [
+        { version: '1.0', name: 'Premium', initialState: 'draft', states: {} },
+        { version: '1.0', name: 'Standard', initialState: 'pending', states: {} },
+      ],
+    };
+
+    it('GETs the export endpoint and returns the matching workflow', async () => {
+      (axios.get as any).mockResolvedValueOnce({ data: exportResponse });
+
+      const result = await gateway.loadWorkflow(
+        { entityName: 'Customer', modelVersion: 1 },
+        'Standard'
+      );
+
+      expect(axios.get).toHaveBeenCalledWith('/model/Customer/1/workflow/export');
+      expect(result).toEqual({
+        version: '1.0',
+        name: 'Standard',
+        initialState: 'pending',
+        states: {},
+      });
+    });
+
+    it('throws if no workflow with that name exists in the model', async () => {
+      (axios.get as any).mockResolvedValueOnce({ data: exportResponse });
+
+      await expect(
+        gateway.loadWorkflow({ entityName: 'Customer', modelVersion: 1 }, 'NoSuchOne')
+      ).rejects.toThrow(/NoSuchOne/);
+    });
+
+    it('throws if modelRef is null', async () => {
+      await expect(gateway.loadWorkflow(null, 'X')).rejects.toThrow(
+        /modelRef is required/i
+      );
+    });
+  });
 });
