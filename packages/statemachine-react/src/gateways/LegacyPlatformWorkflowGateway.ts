@@ -21,7 +21,15 @@ import type { ModelRef, WorkflowDoc, WorkflowSummary } from './workflowDocTypes'
 
 export class LegacyPlatformWorkflowGateway implements WorkflowGateway {
   async listWorkflows(_modelRef: ModelRef | null): Promise<WorkflowSummary[]> {
-    throw new Error('not implemented');
+    const response = await useStatemachineStore.getState().getAllWorkflowsList(undefined);
+    const records = Array.isArray(response.data) ? response.data : [];
+    return records.map((rec: any) => ({
+      name: rec.id,
+      desc: undefined,
+      active: !!rec.active,
+      initialState: '',
+      criterion: undefined,
+    }));
   }
 
   async loadWorkflow(_modelRef: ModelRef | null, _name: string): Promise<WorkflowDoc> {
