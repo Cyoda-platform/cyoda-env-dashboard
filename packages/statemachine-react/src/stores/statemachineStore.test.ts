@@ -32,6 +32,7 @@ describe('statemachineStore', () => {
     const store = useStatemachineStore.getState();
     store.setSelectedWorkflow(null);
     store.setSelectedEntityClassName(null);
+    store.setSelectedModelRef(null);
   });
 
   afterEach(() => {
@@ -44,6 +45,7 @@ describe('statemachineStore', () => {
       
       expect(state.selectedWorkflow).toBeNull();
       expect(state.selectedEntityClassName).toBeNull();
+      expect(state.selectedModelRef).toBeNull();
     });
   });
 
