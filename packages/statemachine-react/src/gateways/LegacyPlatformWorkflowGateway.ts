@@ -73,10 +73,15 @@ export class LegacyPlatformWorkflowGateway implements WorkflowGateway {
   }
 
   async renameWorkflow(
-    _modelRef: ModelRef | null,
-    _oldName: string,
-    _newName: string
+    modelRef: ModelRef | null,
+    oldName: string,
+    newName: string
   ): Promise<void> {
-    throw new Error('not implemented');
+    await this.copyWorkflow(modelRef, oldName, newName);
+    try {
+      await this.deleteWorkflow(modelRef, oldName);
+    } catch (cause) {
+      throw new RenameIncompleteError(oldName, newName, cause);
+    }
   }
 }

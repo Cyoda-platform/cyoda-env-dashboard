@@ -159,4 +159,48 @@ describe('LegacyPlatformWorkflowGateway', () => {
       );
     });
   });
+
+  describe('renameWorkflow', () => {
+    it('orchestrates copyWorkflow then deleteWorkflow', async () => {
+      storeApi.copyWorkflow.mockResolvedValueOnce({ data: { id: 'wf-new' } });
+      storeApi.getWorkflow.mockResolvedValueOnce({
+        data: { id: 'wf-new', name: 'autogen', entityClassName: 'Customer', active: true, persisted: true },
+      });
+      storeApi.putWorkflow.mockResolvedValueOnce({ data: undefined });
+      storeApi.deleteWorkflow.mockResolvedValueOnce({ data: undefined });
+
+      await gateway.renameWorkflow(null, 'wf-old', 'NewDisplayName');
+
+      expect(storeApi.copyWorkflow).toHaveBeenCalledWith('persisted', 'wf-old');
+      expect(storeApi.getWorkflow).toHaveBeenCalledWith('persisted', 'wf-new');
+      expect(storeApi.putWorkflow).toHaveBeenCalledWith(
+        expect.objectContaining({ id: 'wf-new', name: 'NewDisplayName' })
+      );
+      expect(storeApi.deleteWorkflow).toHaveBeenCalledWith('wf-old');
+    });
+
+    it('throws RenameIncompleteError if the delete-old step fails after copy succeeded', async () => {
+      storeApi.copyWorkflow.mockResolvedValueOnce({ data: { id: 'wf-new' } });
+      storeApi.getWorkflow.mockResolvedValueOnce({
+        data: { id: 'wf-new', name: 'autogen', entityClassName: 'Customer', active: true, persisted: true },
+      });
+      storeApi.putWorkflow.mockResolvedValueOnce({ data: undefined });
+      const cause = new Error('delete forbidden');
+      storeApi.deleteWorkflow.mockRejectedValueOnce(cause);
+
+      await expect(gateway.renameWorkflow(null, 'wf-old', 'NewName')).rejects.toMatchObject({
+        name: 'RenameIncompleteError',
+        oldName: 'wf-old',
+        newName: 'NewName',
+        cause,
+      });
+    });
+
+    it('propagates copy errors directly when copy fails', async () => {
+      storeApi.copyWorkflow.mockRejectedValueOnce(new Error('copy denied'));
+
+      await expect(gateway.renameWorkflow(null, 'wf-old', 'NewName')).rejects.toThrow('copy denied');
+      expect(storeApi.deleteWorkflow).not.toHaveBeenCalled();
+    });
+  });
 });
