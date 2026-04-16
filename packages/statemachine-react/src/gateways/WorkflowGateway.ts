@@ -10,8 +10,12 @@
  * entity model whose workflows are being operated on.
  *
  * `name` is the workflow's identity within `(entityName, modelVersion)` in cloud
- * mode. In legacy mode, the legacy gateway treats it as the user-facing workflow
- * name; uniqueness is the caller's responsibility.
+ * mode (uniquely identifies the workflow per the cloud doc model). In legacy
+ * mode the legacy gateway treats it as the legacy backend's workflow `id` —
+ * an opaque-but-string identifier from the gateway's perspective. The
+ * human-readable workflow name (which the legacy backend allows duplicates
+ * of) lives on the underlying store record and is accessed by the legacy UI
+ * directly, not via this gateway.
  */
 
 import type { ModelRef, WorkflowDoc, WorkflowSummary } from './workflowDocTypes';

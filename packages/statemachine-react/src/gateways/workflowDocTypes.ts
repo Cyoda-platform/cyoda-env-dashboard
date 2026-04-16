@@ -93,7 +93,7 @@ export interface WorkflowSummary {
   name: string;
   desc?: string;
   active?: boolean;
-  initialState: string;
+  initialState?: string;
   criterion?: QueryCondition;
 }
 

@@ -12,6 +12,15 @@
  * has its `name` field set to the legacy id; the human-readable name and
  * other legacy-specific fields are accessed by the legacy list page from
  * the underlying store record, not from this summary.
+ *
+ * Known limitation — `copyWorkflow` partial failure: the orchestration is three
+ * sequential HTTP calls (copy → get → put). If `getWorkflow` or `putWorkflow`
+ * fails after the underlying `copyWorkflow` succeeded, the legacy backend will
+ * be left with an auto-named copy that the user never sees. The error is
+ * surfaced to the caller raw. A typed CopyIncompleteError that carries the
+ * orphan id (so a future UI can offer a "Discard the auto-named copy" action)
+ * is a worthwhile follow-up; not implemented here because no current caller
+ * could act on it. Track in a follow-up issue when the cloud editor lands.
  */
 
 import { useStatemachineStore } from '../stores/statemachineStore';
@@ -27,7 +36,7 @@ export class LegacyPlatformWorkflowGateway implements WorkflowGateway {
       name: rec.id,
       desc: undefined,
       active: !!rec.active,
-      initialState: '',
+      initialState: undefined,
       criterion: undefined,
     }));
   }
@@ -44,10 +53,13 @@ export class LegacyPlatformWorkflowGateway implements WorkflowGateway {
     const store = useStatemachineStore.getState();
     const recordResp = await store.getWorkflow('persisted', doc.name);
     const record = recordResp?.data ?? {};
+    // Spread doc.active only when defined, so an undefined `active` preserves
+    // the existing record's value (no silent re-enable). Symmetric with
+    // CloudWorkflowGateway.saveWorkflow which forwards the doc verbatim.
     const merged = {
       ...record,
       id: doc.name,
-      active: doc.active === undefined ? true : doc.active,
+      ...(doc.active !== undefined ? { active: doc.active } : {}),
     };
     await store.putWorkflow(merged);
   }
@@ -77,6 +89,9 @@ export class LegacyPlatformWorkflowGateway implements WorkflowGateway {
     oldName: string,
     newName: string
   ): Promise<void> {
+    if (oldName === newName) {
+      return; // no-op: rename to the same name has no effect
+    }
     await this.copyWorkflow(modelRef, oldName, newName);
     try {
       await this.deleteWorkflow(modelRef, oldName);

@@ -4,7 +4,6 @@ import { LegacyPlatformWorkflowGateway } from './LegacyPlatformWorkflowGateway';
 const storeApi = {
   getAllWorkflowsList: vi.fn(),
   getWorkflow: vi.fn(),
-  postWorkflow: vi.fn(),
   putWorkflow: vi.fn(),
   deleteWorkflow: vi.fn(),
   copyWorkflow: vi.fn(),
@@ -41,8 +40,8 @@ describe('LegacyPlatformWorkflowGateway', () => {
 
       expect(storeApi.getAllWorkflowsList).toHaveBeenCalledWith(undefined);
       expect(result).toEqual([
-        { name: 'wf-1', desc: undefined, active: true, initialState: '', criterion: undefined },
-        { name: 'wf-2', desc: undefined, active: false, initialState: '', criterion: undefined },
+        { name: 'wf-1', desc: undefined, active: true, initialState: undefined, criterion: undefined },
+        { name: 'wf-2', desc: undefined, active: false, initialState: undefined, criterion: undefined },
       ]);
     });
 
@@ -139,7 +138,7 @@ describe('LegacyPlatformWorkflowGateway', () => {
       });
     });
 
-    it('defaults active to true if doc.active is undefined', async () => {
+    it('preserves the record active value when doc.active is undefined', async () => {
       storeApi.getWorkflow.mockResolvedValueOnce({
         data: { id: 'wf-7', name: 'Premium', entityClassName: 'Customer', active: false, persisted: true },
       });
@@ -154,8 +153,9 @@ describe('LegacyPlatformWorkflowGateway', () => {
 
       await gateway.saveWorkflow(null, doc, 'MERGE');
 
+      // active should be preserved from the loaded record (false), NOT defaulted to true
       expect(storeApi.putWorkflow).toHaveBeenCalledWith(
-        expect.objectContaining({ id: 'wf-7', active: true })
+        expect.objectContaining({ id: 'wf-7', active: false })
       );
     });
   });
@@ -200,6 +200,13 @@ describe('LegacyPlatformWorkflowGateway', () => {
       storeApi.copyWorkflow.mockRejectedValueOnce(new Error('copy denied'));
 
       await expect(gateway.renameWorkflow(null, 'wf-old', 'NewName')).rejects.toThrow('copy denied');
+      expect(storeApi.deleteWorkflow).not.toHaveBeenCalled();
+    });
+
+    it('is a no-op when oldName equals newName', async () => {
+      await gateway.renameWorkflow(null, 'wf-same', 'wf-same');
+
+      expect(storeApi.copyWorkflow).not.toHaveBeenCalled();
       expect(storeApi.deleteWorkflow).not.toHaveBeenCalled();
     });
   });

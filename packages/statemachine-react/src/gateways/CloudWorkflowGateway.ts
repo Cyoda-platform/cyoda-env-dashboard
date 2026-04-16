@@ -130,6 +130,9 @@ export class CloudWorkflowGateway implements WorkflowGateway {
     if (modelRef === null) {
       throw new Error('CloudWorkflowGateway.renameWorkflow: modelRef is required');
     }
+    if (oldName === newName) {
+      return; // no-op: rename to the same name has no effect
+    }
     // Copy first; if this throws, no state has changed and the caller sees the underlying error.
     await this.copyWorkflow(modelRef, oldName, newName);
     // Then delete the old. If this throws, we wrap it in RenameIncompleteError so the caller

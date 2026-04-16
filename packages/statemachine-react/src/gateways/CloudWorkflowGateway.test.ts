@@ -367,5 +367,12 @@ describe('CloudWorkflowGateway', () => {
     it('throws if modelRef is null', async () => {
       await expect(gateway.renameWorkflow(null, 'a', 'b')).rejects.toThrow(/modelRef is required/i);
     });
+
+    it('is a no-op when oldName equals newName', async () => {
+      await gateway.renameWorkflow({ entityName: 'Customer', modelVersion: 1 }, 'Same', 'Same');
+
+      expect(axios.get).not.toHaveBeenCalled();
+      expect(axios.post).not.toHaveBeenCalled();
+    });
   });
 });
