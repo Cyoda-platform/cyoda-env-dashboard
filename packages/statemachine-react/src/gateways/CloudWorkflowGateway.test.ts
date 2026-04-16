@@ -143,12 +143,13 @@ describe('CloudWorkflowGateway', () => {
         states: { draft: { transitions: [] } },
       };
 
-      await gateway.saveWorkflow({ entityName: 'Customer', modelVersion: 1 }, doc, 'MERGE');
+      const result = await gateway.saveWorkflow({ entityName: 'Customer', modelVersion: 1 }, doc, 'MERGE');
 
       expect(axios.post).toHaveBeenCalledWith(
         '/model/Customer/1/workflow/import',
         { importMode: 'MERGE', workflows: [doc] }
       );
+      expect(result).toEqual({ key: 'NewOne' });
     });
 
     it('throws if modelRef is null', async () => {
@@ -233,7 +234,7 @@ describe('CloudWorkflowGateway', () => {
       (axios.get as any).mockResolvedValueOnce({ data: exportResponse });
       (axios.post as any).mockResolvedValueOnce({ data: undefined });
 
-      await gateway.copyWorkflow(
+      const result = await gateway.copyWorkflow(
         { entityName: 'Customer', modelVersion: 1 },
         'Premium',
         'PremiumCopy'
@@ -248,6 +249,7 @@ describe('CloudWorkflowGateway', () => {
         importMode: 'MERGE',
         workflows: [expectedClone],
       });
+      expect(result).toEqual({ key: 'PremiumCopy' });
     });
 
     it('throws if newName is not unique within the model', async () => {

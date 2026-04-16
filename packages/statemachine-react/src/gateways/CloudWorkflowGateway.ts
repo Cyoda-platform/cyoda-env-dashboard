@@ -64,12 +64,13 @@ export class CloudWorkflowGateway implements WorkflowGateway {
     modelRef: ModelRef | null,
     doc: WorkflowDoc,
     mode: 'MERGE'
-  ): Promise<void> {
+  ): Promise<{ key: string }> {
     if (modelRef === null) {
       throw new Error('CloudWorkflowGateway.saveWorkflow: modelRef is required');
     }
     const body: WorkflowImportRequest = { importMode: mode, workflows: [doc] };
     await axios.post(importUrl(modelRef), body);
+    return { key: doc.name };
   }
 
   async deleteWorkflow(modelRef: ModelRef | null, name: string): Promise<void> {
@@ -95,7 +96,7 @@ export class CloudWorkflowGateway implements WorkflowGateway {
     modelRef: ModelRef | null,
     sourceName: string,
     newName: string
-  ): Promise<void> {
+  ): Promise<{ key: string }> {
     if (modelRef === null) {
       throw new Error('CloudWorkflowGateway.copyWorkflow: modelRef is required');
     }
@@ -120,6 +121,7 @@ export class CloudWorkflowGateway implements WorkflowGateway {
     const clone: WorkflowDoc = { ...source, name: newName };
     const body: WorkflowImportRequest = { importMode: 'MERGE', workflows: [clone] };
     await axios.post(importUrl(modelRef), body);
+    return { key: newName };
   }
 
   async renameWorkflow(
