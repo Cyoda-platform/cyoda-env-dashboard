@@ -82,7 +82,7 @@ export function useWorkflowsList(modelRef: ModelRef | null = null): ReturnType<t
 
 export function useWorkflow(persistedType: PersistedType, workflowId: string, enabled = true) {
   const store = useStatemachineStore();
-  
+
   return useQuery({
     queryKey: statemachineKeys.workflow(persistedType, workflowId),
     queryFn: async () => {
@@ -90,6 +90,17 @@ export function useWorkflow(persistedType: PersistedType, workflowId: string, en
       return response.data;
     },
     enabled: enabled && !!workflowId,
+  });
+}
+
+export function useWorkflowDoc(modelRef: ModelRef | null, name: string, enabled = true) {
+  return useQuery<WorkflowDoc>({
+    queryKey: statemachineKeys.workflowDoc(modelRef, name),
+    queryFn: async () => {
+      const gateway = getWorkflowGateway();
+      return gateway.loadWorkflow(modelRef, name);
+    },
+    enabled: enabled && !!name,
   });
 }
 

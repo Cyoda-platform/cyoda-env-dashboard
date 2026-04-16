@@ -402,5 +402,44 @@ describe('useStatemachine hooks', () => {
       expect(result.current.data).toEqual(mockResponse.data);
     });
   });
+
+  describe('useWorkflowDoc', () => {
+    it('calls gateway.loadWorkflow with modelRef + name', async () => {
+      const doc = { version: '1.0', name: 'X', initialState: 's', states: {} };
+      const loadWorkflow = vi.fn().mockResolvedValue(doc);
+      vi.mocked(getWorkflowGateway).mockReturnValue({
+        listWorkflows: vi.fn(),
+        loadWorkflow,
+        saveWorkflow: vi.fn(),
+        deleteWorkflow: vi.fn(),
+        copyWorkflow: vi.fn(),
+        renameWorkflow: vi.fn(),
+      } as any);
+
+      const modelRef = { entityName: 'Customer', modelVersion: 1 };
+      const { result } = renderHook(() => useWorkflowDoc(modelRef, 'X'), { wrapper });
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+      expect(loadWorkflow).toHaveBeenCalledWith(modelRef, 'X');
+      expect(result.current.data).toEqual(doc);
+    });
+
+    it('does not run when name is empty', () => {
+      const loadWorkflow = vi.fn();
+      vi.mocked(getWorkflowGateway).mockReturnValue({
+        listWorkflows: vi.fn(),
+        loadWorkflow,
+        saveWorkflow: vi.fn(),
+        deleteWorkflow: vi.fn(),
+        copyWorkflow: vi.fn(),
+        renameWorkflow: vi.fn(),
+      } as any);
+
+      renderHook(() => useWorkflowDoc({ entityName: 'X', modelVersion: 1 }, ''), { wrapper });
+
+      expect(loadWorkflow).not.toHaveBeenCalled();
+    });
+  });
 });
 
