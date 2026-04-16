@@ -437,8 +437,8 @@ describe('useStatemachine hooks', () => {
   });
 
   describe('useCreateWorkflow / useUpdateWorkflow — gateway-backed', () => {
-    it('useCreateWorkflow.mutateAsync calls gateway.saveWorkflow with MERGE', async () => {
-      const saveWorkflow = vi.fn().mockResolvedValue(undefined);
+    it('useCreateWorkflow.mutateAsync calls gateway.saveWorkflow with MERGE and returns the gateway key', async () => {
+      const saveWorkflow = vi.fn().mockResolvedValue({ key: 'X' });
       vi.mocked(getWorkflowGateway).mockReturnValue({
         listWorkflows: vi.fn(),
         loadWorkflow: vi.fn(),
@@ -448,17 +448,18 @@ describe('useStatemachine hooks', () => {
         renameWorkflow: vi.fn(),
       } as any);
 
-      const { result } = renderHook(() => useCreateWorkflow(), { wrapper });
+      const { result: hookResult } = renderHook(() => useCreateWorkflow(), { wrapper });
 
       const doc = { version: '1.0', name: 'X', initialState: 's', states: {} };
       const modelRef = { entityName: 'Customer', modelVersion: 1 };
-      await result.current.mutateAsync({ modelRef, doc });
+      const mutResult = await hookResult.current.mutateAsync({ modelRef, doc });
 
       expect(saveWorkflow).toHaveBeenCalledWith(modelRef, doc, 'MERGE');
+      expect(mutResult).toEqual({ key: 'X' });
     });
 
-    it('useUpdateWorkflow.mutateAsync calls gateway.saveWorkflow with MERGE', async () => {
-      const saveWorkflow = vi.fn().mockResolvedValue(undefined);
+    it('useUpdateWorkflow.mutateAsync calls gateway.saveWorkflow with MERGE and returns the gateway key', async () => {
+      const saveWorkflow = vi.fn().mockResolvedValue({ key: 'X' });
       vi.mocked(getWorkflowGateway).mockReturnValue({
         listWorkflows: vi.fn(),
         loadWorkflow: vi.fn(),
@@ -468,12 +469,13 @@ describe('useStatemachine hooks', () => {
         renameWorkflow: vi.fn(),
       } as any);
 
-      const { result } = renderHook(() => useUpdateWorkflow(), { wrapper });
+      const { result: hookResult } = renderHook(() => useUpdateWorkflow(), { wrapper });
 
       const doc = { version: '1.0', name: 'X', initialState: 's', states: {} };
-      await result.current.mutateAsync({ modelRef: null, doc });
+      const mutResult = await hookResult.current.mutateAsync({ modelRef: null, doc });
 
       expect(saveWorkflow).toHaveBeenCalledWith(null, doc, 'MERGE');
+      expect(mutResult).toEqual({ key: 'X' });
     });
   });
 
@@ -499,8 +501,8 @@ describe('useStatemachine hooks', () => {
   });
 
   describe('useCopyWorkflow — gateway-backed', () => {
-    it('mutateAsync calls gateway.copyWorkflow with (modelRef, sourceName, newName)', async () => {
-      const copyWorkflow = vi.fn().mockResolvedValue(undefined);
+    it('mutateAsync calls gateway.copyWorkflow with (modelRef, sourceName, newName) and returns the gateway key', async () => {
+      const copyWorkflow = vi.fn().mockResolvedValue({ key: 'B' });
       vi.mocked(getWorkflowGateway).mockReturnValue({
         listWorkflows: vi.fn(),
         loadWorkflow: vi.fn(),
@@ -510,12 +512,13 @@ describe('useStatemachine hooks', () => {
         renameWorkflow: vi.fn(),
       } as any);
 
-      const { result } = renderHook(() => useCopyWorkflow(), { wrapper });
+      const { result: hookResult } = renderHook(() => useCopyWorkflow(), { wrapper });
 
       const modelRef = { entityName: 'Customer', modelVersion: 1 };
-      await result.current.mutateAsync({ modelRef, sourceName: 'A', newName: 'B' });
+      const mutResult = await hookResult.current.mutateAsync({ modelRef, sourceName: 'A', newName: 'B' });
 
       expect(copyWorkflow).toHaveBeenCalledWith(modelRef, 'A', 'B');
+      expect(mutResult).toEqual({ key: 'B' });
     });
   });
 

@@ -110,7 +110,7 @@ export function useCreateWorkflow() {
   return useMutation({
     mutationFn: async ({ modelRef, doc }: { modelRef: ModelRef | null; doc: WorkflowDoc }) => {
       const gateway = getWorkflowGateway();
-      await gateway.saveWorkflow(modelRef, doc, 'MERGE');
+      return gateway.saveWorkflow(modelRef, doc, 'MERGE');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: statemachineKeys.workflows() });
@@ -124,7 +124,7 @@ export function useUpdateWorkflow() {
   return useMutation({
     mutationFn: async ({ modelRef, doc }: { modelRef: ModelRef | null; doc: WorkflowDoc }) => {
       const gateway = getWorkflowGateway();
-      await gateway.saveWorkflow(modelRef, doc, 'MERGE');
+      return gateway.saveWorkflow(modelRef, doc, 'MERGE');
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: statemachineKeys.workflows() });
@@ -163,7 +163,7 @@ export function useCopyWorkflow() {
       newName: string;
     }) => {
       const gateway = getWorkflowGateway();
-      await gateway.copyWorkflow(modelRef, sourceName, newName);
+      return gateway.copyWorkflow(modelRef, sourceName, newName);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: statemachineKeys.workflows() });
