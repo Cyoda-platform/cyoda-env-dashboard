@@ -52,13 +52,22 @@ export default class HelperFeatureFlags {
   }
 
   /**
-   * Check if Cyoda Cloud mode is enabled
+   * Check if Cyoda Cloud mode is enabled.
+   *
+   * Returns true when EITHER VITE_FEATURE_FLAG_IS_CYODA_CLOUD or
+   * VITE_FEATURE_FLAG_IS_CYODA_GO is truthy. Cyoda-go is a digital twin
+   * of Cyoda Cloud, so any cyoda-go installation is also a cloud-mode
+   * installation; the auto-implication is enforced here so a misconfigured
+   * .env file (only IS_CYODA_GO=true) still produces correct cloud behavior.
+   *
    * When enabled, uses Cyoda Cloud API endpoints:
    * - /model/export/SIMPLE_VIEW/{entityName}/{modelVersion} for entity models
    * - /entity/{entityId} for entity data
+   * - /model/{entityName}/{modelVersion}/workflow/{export,import} for workflows
    */
   static isCyodaCloud(): boolean {
-    return this.getFeatureFlagByName('VITE_FEATURE_FLAG_IS_CYODA_CLOUD');
+    return this.getFeatureFlagByName('VITE_FEATURE_FLAG_IS_CYODA_CLOUD')
+      || this.isCyodaGo();
   }
 
   /**

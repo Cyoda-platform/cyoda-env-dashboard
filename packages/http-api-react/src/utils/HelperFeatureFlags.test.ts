@@ -249,5 +249,42 @@ describe('HelperFeatureFlags', () => {
       expect(result).toBe(false);
     });
   });
+
+  describe('isCyodaCloud auto-implication from isCyodaGo', () => {
+    it('should return true when only IS_CYODA_CLOUD is set', () => {
+      import.meta.env.VITE_FEATURE_FLAG_IS_CYODA_CLOUD = true as any;
+      delete (import.meta.env as any).VITE_FEATURE_FLAG_IS_CYODA_GO;
+
+      expect(HelperFeatureFlags.isCyodaCloud()).toBe(true);
+    });
+
+    it('should return true when only IS_CYODA_GO is set', () => {
+      delete (import.meta.env as any).VITE_FEATURE_FLAG_IS_CYODA_CLOUD;
+      import.meta.env.VITE_FEATURE_FLAG_IS_CYODA_GO = true as any;
+
+      expect(HelperFeatureFlags.isCyodaCloud()).toBe(true);
+    });
+
+    it('should return true when both flags are set', () => {
+      import.meta.env.VITE_FEATURE_FLAG_IS_CYODA_CLOUD = true as any;
+      import.meta.env.VITE_FEATURE_FLAG_IS_CYODA_GO = true as any;
+
+      expect(HelperFeatureFlags.isCyodaCloud()).toBe(true);
+    });
+
+    it('should return false when neither flag is set', () => {
+      delete (import.meta.env as any).VITE_FEATURE_FLAG_IS_CYODA_CLOUD;
+      delete (import.meta.env as any).VITE_FEATURE_FLAG_IS_CYODA_GO;
+
+      expect(HelperFeatureFlags.isCyodaCloud()).toBe(false);
+    });
+
+    it('should return false when both flags are explicitly false', () => {
+      import.meta.env.VITE_FEATURE_FLAG_IS_CYODA_CLOUD = false as any;
+      import.meta.env.VITE_FEATURE_FLAG_IS_CYODA_GO = false as any;
+
+      expect(HelperFeatureFlags.isCyodaCloud()).toBe(false);
+    });
+  });
 });
 
