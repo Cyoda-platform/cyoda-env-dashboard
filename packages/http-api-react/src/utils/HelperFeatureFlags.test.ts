@@ -219,5 +219,35 @@ describe('HelperFeatureFlags', () => {
       expect(result).toBe(false);
     });
   });
+
+  describe('isCyodaGo', () => {
+    it('should return true when VITE_FEATURE_FLAG_IS_CYODA_GO is true', () => {
+      import.meta.env.VITE_FEATURE_FLAG_IS_CYODA_GO = true as any;
+
+      const result = HelperFeatureFlags.isCyodaGo();
+      expect(result).toBe(true);
+    });
+
+    it('should return true when VITE_FEATURE_FLAG_IS_CYODA_GO is the string "true"', () => {
+      import.meta.env.VITE_FEATURE_FLAG_IS_CYODA_GO = 'true' as any;
+
+      const result = HelperFeatureFlags.isCyodaGo();
+      expect(result).toBe(true);
+    });
+
+    it('should return false when VITE_FEATURE_FLAG_IS_CYODA_GO is false', () => {
+      import.meta.env.VITE_FEATURE_FLAG_IS_CYODA_GO = false as any;
+
+      const result = HelperFeatureFlags.isCyodaGo();
+      expect(result).toBe(false);
+    });
+
+    it('should return false when VITE_FEATURE_FLAG_IS_CYODA_GO is not set', () => {
+      delete (import.meta.env as any).VITE_FEATURE_FLAG_IS_CYODA_GO;
+
+      const result = HelperFeatureFlags.isCyodaGo();
+      expect(result).toBe(false);
+    });
+  });
 });
 

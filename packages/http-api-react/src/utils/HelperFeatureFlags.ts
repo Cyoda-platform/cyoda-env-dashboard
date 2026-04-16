@@ -60,5 +60,14 @@ export default class HelperFeatureFlags {
   static isCyodaCloud(): boolean {
     return this.getFeatureFlagByName('VITE_FEATURE_FLAG_IS_CYODA_CLOUD');
   }
+
+  /**
+   * Check if the cyoda-go backend is in use.
+   * Cyoda-go is a digital twin of Cyoda Cloud that does not expose any
+   * /platform-* endpoints. Implies isCyodaCloud() === true.
+   */
+  static isCyodaGo(): boolean {
+    return this.getFeatureFlagByName('VITE_FEATURE_FLAG_IS_CYODA_GO');
+  }
 }
 
