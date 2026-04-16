@@ -92,11 +92,34 @@ export class CloudWorkflowGateway implements WorkflowGateway {
   }
 
   async copyWorkflow(
-    _modelRef: ModelRef | null,
-    _sourceName: string,
-    _newName: string
+    modelRef: ModelRef | null,
+    sourceName: string,
+    newName: string
   ): Promise<void> {
-    throw new Error('not implemented');
+    if (modelRef === null) {
+      throw new Error('CloudWorkflowGateway.copyWorkflow: modelRef is required');
+    }
+    const response = await axios.get<WorkflowExportResponse>(exportUrl(modelRef));
+    const all = response.data.workflows ?? [];
+
+    if (all.some((w) => w.name === newName)) {
+      throw new Error(
+        `Cannot copy: a workflow named "${newName}" already exists in model ` +
+          `${modelRef.entityName} v${modelRef.modelVersion}`
+      );
+    }
+
+    const source = all.find((w) => w.name === sourceName);
+    if (!source) {
+      throw new Error(
+        `Source workflow "${sourceName}" not found in model ` +
+          `${modelRef.entityName} v${modelRef.modelVersion}`
+      );
+    }
+
+    const clone: WorkflowDoc = { ...source, name: newName };
+    const body: WorkflowImportRequest = { importMode: 'MERGE', workflows: [clone] };
+    await axios.post(importUrl(modelRef), body);
   }
 
   async renameWorkflow(

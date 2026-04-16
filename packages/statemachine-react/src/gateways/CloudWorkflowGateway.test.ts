@@ -211,4 +211,75 @@ describe('CloudWorkflowGateway', () => {
       await expect(gateway.deleteWorkflow(null, 'X')).rejects.toThrow(/modelRef is required/i);
     });
   });
+
+  describe('copyWorkflow', () => {
+    const exportResponse = {
+      entityName: 'Customer',
+      modelVersion: 1,
+      workflows: [
+        {
+          version: '1.0',
+          name: 'Premium',
+          desc: 'orig',
+          initialState: 's',
+          active: true,
+          states: { s: { transitions: [{ name: 't', next: 's', manual: true }] } },
+        },
+        { version: '1.0', name: 'Standard', initialState: 's', states: { s: { transitions: [] } } },
+      ],
+    };
+
+    it('exports, clones the source under the new name, and MERGE-saves the clone', async () => {
+      (axios.get as any).mockResolvedValueOnce({ data: exportResponse });
+      (axios.post as any).mockResolvedValueOnce({ data: undefined });
+
+      await gateway.copyWorkflow(
+        { entityName: 'Customer', modelVersion: 1 },
+        'Premium',
+        'PremiumCopy'
+      );
+
+      expect(axios.get).toHaveBeenCalledWith('/model/Customer/1/workflow/export');
+      const expectedClone = {
+        ...exportResponse.workflows[0],
+        name: 'PremiumCopy',
+      };
+      expect(axios.post).toHaveBeenCalledWith('/model/Customer/1/workflow/import', {
+        importMode: 'MERGE',
+        workflows: [expectedClone],
+      });
+    });
+
+    it('throws if newName is not unique within the model', async () => {
+      (axios.get as any).mockResolvedValueOnce({ data: exportResponse });
+
+      await expect(
+        gateway.copyWorkflow(
+          { entityName: 'Customer', modelVersion: 1 },
+          'Premium',
+          'Standard'
+        )
+      ).rejects.toThrow(/already exists/i);
+
+      expect(axios.post).not.toHaveBeenCalled();
+    });
+
+    it('throws if the source workflow does not exist', async () => {
+      (axios.get as any).mockResolvedValueOnce({ data: exportResponse });
+
+      await expect(
+        gateway.copyWorkflow(
+          { entityName: 'Customer', modelVersion: 1 },
+          'NoSuchSource',
+          'AnyName'
+        )
+      ).rejects.toThrow(/NoSuchSource/);
+
+      expect(axios.post).not.toHaveBeenCalled();
+    });
+
+    it('throws if modelRef is null', async () => {
+      await expect(gateway.copyWorkflow(null, 'a', 'b')).rejects.toThrow(/modelRef is required/i);
+    });
+  });
 });
