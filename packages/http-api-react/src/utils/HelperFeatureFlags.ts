@@ -78,5 +78,13 @@ export default class HelperFeatureFlags {
   static isCyodaGo(): boolean {
     return this.getFeatureFlagByName('VITE_FEATURE_FLAG_IS_CYODA_GO');
   }
+
+  /**
+   * Whether the Reporting feature is available in the current backend mode.
+   * Reporting depends on /platform-* endpoints that do not exist on cyoda-go.
+   */
+  static isReportingAvailable(): boolean {
+    return !this.isCyodaGo();
+  }
 }
 
