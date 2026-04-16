@@ -10,13 +10,29 @@ import { BrowserRouter } from 'react-router-dom';
 import React from 'react';
 import { Workflows } from '../../pages/Workflows';
 
-// Mock http-api-react/utils to avoid cross-package dependency issues
+// Mock http-api-react/utils to avoid cross-package dependency issues.
+// The package re-exports `* from './utils'` from its index, so HelperFeatureFlags
+// flows through to consumers via either import path. Workflows.tsx imports it
+// from `@cyoda/http-api-react` (the index) — without it being on this mock,
+// the import resolves to `undefined` and `HelperFeatureFlags.isCyodaCloud()` throws.
 vi.mock('@cyoda/http-api-react/utils', () => ({
   HelperStorage: {},
   HelperErrors: {},
   serializeParams: vi.fn(),
   HelperEntities: {},
   HelperModelling: {},
+  HelperFeatureFlags: {
+    isCyodaCloud: () => false,
+    isCyodaGo: () => false,
+    isReportingAvailable: () => true,
+    isTasksAvailable: () => false,
+    isProcessingManagerAvailable: () => true,
+    isChatBotEnabled: () => false,
+    isUseModelsInfo: () => false,
+    isEntityViewerUseJson: () => false,
+    isTrinoSqlSchemaEnabled: () => false,
+    isTasksEnabled: () => false,
+  },
   eventBus: { on: vi.fn(), off: vi.fn(), emit: vi.fn() },
   EventBus: class EventBus {},
 }));
