@@ -12,10 +12,9 @@ import {
   useWorkflow,
   useWorkflowEnabledTypes,
   useCriteriaList,
-  useCreateWorkflow,
-  useUpdateWorkflow,
 } from '../hooks/useStatemachine';
 import { useQueryInvalidation } from '../hooks/useQueryInvalidation';
+import { useStatemachineStore } from '../stores/statemachineStore';
 import { useGlobalUiSettingsStore, HelperFeatureFlags } from '@cyoda/http-api-react';
 import type { PersistedType, WorkflowForm as WorkflowFormType } from '../types';
 import './WorkflowForm.scss';
@@ -59,9 +58,9 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
   const { data: workflowEnabledTypes = [], isLoading: isLoadingTypes } = useWorkflowEnabledTypes();
   const { data: criteriaList = [], isLoading: isLoadingCriteria } = useCriteriaList(selectedEntityClassName);
 
-  // Mutations
-  const createWorkflowMutation = useCreateWorkflow();
-  const updateWorkflowMutation = useUpdateWorkflow();
+  // Local saving flag — we call the legacy store directly (see handleSave for
+  // why) so we manage the loading state ourselves rather than via mutation.
+  const [isSaving, setIsSaving] = useState(false);
   
   // Initialize form when workflow data loads
   useEffect(() => {
@@ -157,6 +156,7 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
   const handleSave = async () => {
     try {
       const values = await form.validateFields();
+      setIsSaving(true);
 
       if (isNew) {
         // For new workflows, create a minimal object
@@ -175,7 +175,12 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
           decisionTrees: [],
         };
 
-        const newWorkflow = await createWorkflowMutation.mutateAsync(formData);
+        // Legacy create still uses the store directly because the gateway's
+        // legacy saveWorkflow is update-only (it does getWorkflow → putWorkflow,
+        // which fails on a doc that doesn't exist yet). The cloud editor lands
+        // a unified create/update path in sub-branch 4.
+        const newWorkflowResp = await useStatemachineStore.getState().postWorkflow(formData);
+        const newWorkflow = newWorkflowResp?.data;
         message.success('Workflow created successfully');
 
         // Invalidate transitions list (replaces eventBus.$emit('transitions:reload'))
@@ -216,7 +221,11 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
           stateIds: (latestWorkflow as any)?.stateIds || [],
         };
 
-        await updateWorkflowMutation.mutateAsync(formData);
+        // Legacy update goes through the store's putWorkflow directly. Symmetric
+        // with the create branch above; the gateway's legacy saveWorkflow only
+        // toggles the active flag and would drop the rich legacy fields the
+        // backend requires (transitionIds, stateIds, decisionTrees, etc.).
+        await useStatemachineStore.getState().putWorkflow(formData);
         message.success('Workflow updated successfully');
 
         // Invalidate workflow data (replaces eventBus.$emit('workflow:reload'))
@@ -234,11 +243,13 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
       } else {
         message.error(errorMessage);
       }
+    } finally {
+      setIsSaving(false);
     }
   };
-  
+
   const pageTitle = isNew ? 'Create New Workflow' : workflow?.name || 'Workflow';
-  const isLoading = isLoadingWorkflow || createWorkflowMutation.isPending || updateWorkflowMutation.isPending;
+  const isLoading = isLoadingWorkflow || isSaving;
 
   // Define tabs using the new items API
   // Decision Tree tab is only shown when useDecisionTreeEnabled is true (matches Vue v-if behavior)
