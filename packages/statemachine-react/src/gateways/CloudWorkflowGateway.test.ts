@@ -282,4 +282,90 @@ describe('CloudWorkflowGateway', () => {
       await expect(gateway.copyWorkflow(null, 'a', 'b')).rejects.toThrow(/modelRef is required/i);
     });
   });
+
+  describe('renameWorkflow', () => {
+    const onlyOne = {
+      entityName: 'Customer',
+      modelVersion: 1,
+      workflows: [
+        { version: '1.0', name: 'Old', initialState: 's', states: { s: { transitions: [] } } },
+      ],
+    };
+
+    it('orchestrates copy(old → new) then delete(old) and tolerates the >=1 invariant on a single-workflow model', async () => {
+      // 1st call: export for copy()
+      (axios.get as any).mockResolvedValueOnce({ data: onlyOne });
+      // 2nd call: post for copy() (MERGE)
+      (axios.post as any).mockResolvedValueOnce({ data: undefined });
+      // 3rd call: export for delete() — now both exist
+      (axios.get as any).mockResolvedValueOnce({
+        data: {
+          ...onlyOne,
+          workflows: [...onlyOne.workflows, { ...onlyOne.workflows[0], name: 'New' }],
+        },
+      });
+      // 4th call: post for delete() (REPLACE, with only "New" remaining)
+      (axios.post as any).mockResolvedValueOnce({ data: undefined });
+
+      await gateway.renameWorkflow({ entityName: 'Customer', modelVersion: 1 }, 'Old', 'New');
+
+      expect(axios.get).toHaveBeenCalledTimes(2);
+      expect(axios.post).toHaveBeenCalledTimes(2);
+      // Copy POST
+      expect(axios.post).toHaveBeenNthCalledWith(1, '/model/Customer/1/workflow/import', {
+        importMode: 'MERGE',
+        workflows: [{ ...onlyOne.workflows[0], name: 'New' }],
+      });
+      // Delete POST (REPLACE keeps only New)
+      expect(axios.post).toHaveBeenNthCalledWith(2, '/model/Customer/1/workflow/import', {
+        importMode: 'REPLACE',
+        workflows: [{ ...onlyOne.workflows[0], name: 'New' }],
+      });
+    });
+
+    it('throws RenameIncompleteError when copy succeeds but delete fails', async () => {
+      // copy: export OK, post OK
+      (axios.get as any).mockResolvedValueOnce({ data: onlyOne });
+      (axios.post as any).mockResolvedValueOnce({ data: undefined });
+      // delete: export OK, post REJECTS
+      (axios.get as any).mockResolvedValueOnce({
+        data: {
+          ...onlyOne,
+          workflows: [...onlyOne.workflows, { ...onlyOne.workflows[0], name: 'New' }],
+        },
+      });
+      const networkError = new Error('network down');
+      (axios.post as any).mockRejectedValueOnce(networkError);
+
+      await expect(
+        gateway.renameWorkflow({ entityName: 'Customer', modelVersion: 1 }, 'Old', 'New')
+      ).rejects.toMatchObject({
+        name: 'RenameIncompleteError',
+        oldName: 'Old',
+        newName: 'New',
+        cause: networkError,
+      });
+    });
+
+    it('propagates copy errors directly (no RenameIncompleteError) when copy fails', async () => {
+      // copy export OK, but newName clashes with an existing workflow
+      (axios.get as any).mockResolvedValueOnce({
+        data: {
+          ...onlyOne,
+          workflows: [...onlyOne.workflows, { ...onlyOne.workflows[0], name: 'New' }],
+        },
+      });
+
+      await expect(
+        gateway.renameWorkflow({ entityName: 'Customer', modelVersion: 1 }, 'Old', 'New')
+      ).rejects.toThrow(/already exists/i);
+
+      // Should not have attempted any POST.
+      expect(axios.post).not.toHaveBeenCalled();
+    });
+
+    it('throws if modelRef is null', async () => {
+      await expect(gateway.renameWorkflow(null, 'a', 'b')).rejects.toThrow(/modelRef is required/i);
+    });
+  });
 });

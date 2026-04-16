@@ -123,10 +123,21 @@ export class CloudWorkflowGateway implements WorkflowGateway {
   }
 
   async renameWorkflow(
-    _modelRef: ModelRef | null,
-    _oldName: string,
-    _newName: string
+    modelRef: ModelRef | null,
+    oldName: string,
+    newName: string
   ): Promise<void> {
-    throw new Error('not implemented');
+    if (modelRef === null) {
+      throw new Error('CloudWorkflowGateway.renameWorkflow: modelRef is required');
+    }
+    // Copy first; if this throws, no state has changed and the caller sees the underlying error.
+    await this.copyWorkflow(modelRef, oldName, newName);
+    // Then delete the old. If this throws, we wrap it in RenameIncompleteError so the caller
+    // can prompt the user (retry delete vs. discard the new copy).
+    try {
+      await this.deleteWorkflow(modelRef, oldName);
+    } catch (cause) {
+      throw new RenameIncompleteError(oldName, newName, cause);
+    }
   }
 }
