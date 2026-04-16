@@ -7,15 +7,28 @@ import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import HelperFeatureFlags from './HelperFeatureFlags';
 
 describe('HelperFeatureFlags', () => {
-  const originalEnv = import.meta.env;
+  // Snapshot original env values BY VALUE (not by reference) so afterEach can
+  // genuinely restore them. Naïve `Object.assign(import.meta.env, originalEnv)`
+  // with `originalEnv = import.meta.env` is a no-op because both sides are the
+  // same object reference; tests would silently leak state into siblings.
+  const originalEnv: Record<string, unknown> = { ...(import.meta.env as Record<string, unknown>) };
 
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   afterEach(() => {
-    // Restore original env
-    Object.assign(import.meta.env, originalEnv);
+    // Delete any key the test added that wasn't in the original snapshot,
+    // and restore every snapshot key to its original value (including undefined).
+    const env = import.meta.env as Record<string, unknown>;
+    for (const key of Object.keys(env)) {
+      if (!(key in originalEnv)) {
+        delete env[key];
+      }
+    }
+    for (const key of Object.keys(originalEnv)) {
+      env[key] = originalEnv[key];
+    }
   });
 
   describe('getFeatureFlagByName', () => {
