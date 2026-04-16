@@ -330,5 +330,19 @@ describe('HelperFeatureFlags', () => {
       expect(HelperFeatureFlags.isTasksAvailable()).toBe(false);
     });
   });
+
+  describe('isProcessingManagerAvailable', () => {
+    it('should return true when IS_CYODA_GO is not set', () => {
+      delete (import.meta.env as any).VITE_FEATURE_FLAG_IS_CYODA_GO;
+
+      expect(HelperFeatureFlags.isProcessingManagerAvailable()).toBe(true);
+    });
+
+    it('should return false when IS_CYODA_GO is true', () => {
+      import.meta.env.VITE_FEATURE_FLAG_IS_CYODA_GO = true as any;
+
+      expect(HelperFeatureFlags.isProcessingManagerAvailable()).toBe(false);
+    });
+  });
 });
 

@@ -95,5 +95,14 @@ export default class HelperFeatureFlags {
   static isTasksAvailable(): boolean {
     return !this.isCyodaGo() && this.isTasksEnabled();
   }
+
+  /**
+   * Whether the Processing Manager feature is available in the current backend mode.
+   * Processing Manager depends on /platform-processing endpoints that do not
+   * exist on cyoda-go.
+   */
+  static isProcessingManagerAvailable(): boolean {
+    return !this.isCyodaGo();
+  }
 }
 
