@@ -48,18 +48,30 @@ describe('LeftSideMenu', () => {
     });
 
     it('should render all main menu items', () => {
-      renderWithRouter(
-        <LeftSideMenu collapsed={false} onCollapse={mockOnCollapse} />
-      );
+      // Required feature flags for Trino + Tasks menu items to render
+      const env = import.meta.env as Record<string, unknown>;
+      const prevTrino = env.VITE_FEATURE_FLAG_TRINO_SQL_SCHEMA;
+      const prevTasks = env.VITE_FEATURE_FLAG_TASKS;
+      env.VITE_FEATURE_FLAG_TRINO_SQL_SCHEMA = true;
+      env.VITE_FEATURE_FLAG_TASKS = true;
 
-      expect(screen.getByText('Trino SQL schemas')).toBeInTheDocument();
-      expect(screen.getByText('Reporting')).toBeInTheDocument();
-      expect(screen.getByText('Lifecycle')).toBeInTheDocument();
-      expect(screen.getByText('Tasks')).toBeInTheDocument();
-      expect(screen.getByText('Entity viewer')).toBeInTheDocument();
-      expect(screen.getByText('Processing')).toBeInTheDocument();
-      expect(screen.getByText('Logout')).toBeInTheDocument();
-      expect(screen.getByText('Version App')).toBeInTheDocument();
+      try {
+        renderWithRouter(
+          <LeftSideMenu collapsed={false} onCollapse={mockOnCollapse} />
+        );
+
+        expect(screen.getByText('Trino SQL schemas')).toBeInTheDocument();
+        expect(screen.getByText('Reporting')).toBeInTheDocument();
+        expect(screen.getByText('Lifecycle')).toBeInTheDocument();
+        expect(screen.getByText('Tasks')).toBeInTheDocument();
+        expect(screen.getByText('Entity Model Viewer')).toBeInTheDocument();
+        expect(screen.getByText('Processing')).toBeInTheDocument();
+        expect(screen.getByText('Logout')).toBeInTheDocument();
+        expect(screen.getByText('Version App')).toBeInTheDocument();
+      } finally {
+        env.VITE_FEATURE_FLAG_TRINO_SQL_SCHEMA = prevTrino;
+        env.VITE_FEATURE_FLAG_TASKS = prevTasks;
+      }
     });
 
     it('should render menu icons', () => {
@@ -262,13 +274,22 @@ describe('LeftSideMenu', () => {
 
   describe('Active Menu Item', () => {
     it('should highlight active menu item based on route', () => {
-      const { container } = renderWithRouter(
-        <LeftSideMenu collapsed={false} onCollapse={mockOnCollapse} />,
-        '/tasks'
-      );
+      // Tasks menu item only renders when VITE_FEATURE_FLAG_TASKS is enabled
+      const env = import.meta.env as Record<string, unknown>;
+      const prevTasks = env.VITE_FEATURE_FLAG_TASKS;
+      env.VITE_FEATURE_FLAG_TASKS = true;
 
-      const selectedItem = container.querySelector('.ant-menu-item-selected');
-      expect(selectedItem).toBeInTheDocument();
+      try {
+        const { container } = renderWithRouter(
+          <LeftSideMenu collapsed={false} onCollapse={mockOnCollapse} />,
+          '/tasks'
+        );
+
+        const selectedItem = container.querySelector('.ant-menu-item-selected');
+        expect(selectedItem).toBeInTheDocument();
+      } finally {
+        env.VITE_FEATURE_FLAG_TASKS = prevTasks;
+      }
     });
 
     it('should open parent submenu when on submenu route', () => {
