@@ -9,11 +9,13 @@ import React from 'react';
 import {
   useWorkflowsList,
   useWorkflow,
+  useWorkflowDoc,
   useWorkflowEnabledTypes,
   useCreateWorkflow,
   useUpdateWorkflow,
   useDeleteWorkflow,
   useCopyWorkflow,
+  useRenameWorkflow,
   useStatesList,
   useState,
   useCreateState,
@@ -23,6 +25,15 @@ import {
   useProcessesList,
   useCriteriaList,
 } from './useStatemachine';
+import { getWorkflowGateway } from '../gateways';
+
+vi.mock('../gateways', async () => {
+  const actual = await vi.importActual<any>('../gateways');
+  return {
+    ...actual,
+    getWorkflowGateway: vi.fn(),
+  };
+});
 
 // Create mock store methods
 const mockGetWorkflowEnabledTypes = vi.fn();
@@ -106,19 +117,22 @@ describe('useStatemachine hooks', () => {
 
   describe('useWorkflowsList', () => {
     it('should fetch workflows list', async () => {
-      const mockResponse = {
-        data: [
-          {
-            id: 'workflow-1',
-            name: 'Test Workflow',
-            entityClassName: 'com.example.Entity',
-            active: true,
-            persisted: true,
-          },
-        ],
-      };
-
-      mockGetAllWorkflowsList.mockResolvedValue(mockResponse);
+      const summaries = [
+        {
+          name: 'Test Workflow',
+          initialState: 's',
+          active: true,
+        },
+      ];
+      const listWorkflows = vi.fn().mockResolvedValue(summaries);
+      vi.mocked(getWorkflowGateway).mockReturnValue({
+        listWorkflows,
+        loadWorkflow: vi.fn(),
+        saveWorkflow: vi.fn(),
+        deleteWorkflow: vi.fn(),
+        copyWorkflow: vi.fn(),
+        renameWorkflow: vi.fn(),
+      } as any);
 
       const { result } = renderHook(() => useWorkflowsList(), { wrapper });
 
@@ -126,26 +140,30 @@ describe('useStatemachine hooks', () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(result.current.data).toEqual(mockResponse.data);
+      expect(result.current.data).toEqual(summaries);
     });
 
-    it('should fetch workflows list with entity class filter', async () => {
-      const mockResponse = {
-        data: [
-          {
-            id: 'workflow-1',
-            name: 'Test Workflow',
-            entityClassName: 'com.example.Entity',
-            active: true,
-            persisted: true,
-          },
-        ],
-      };
+    it('should fetch workflows list with model ref filter', async () => {
+      const summaries = [
+        {
+          name: 'Test Workflow',
+          initialState: 's',
+          active: true,
+        },
+      ];
+      const listWorkflows = vi.fn().mockResolvedValue(summaries);
+      vi.mocked(getWorkflowGateway).mockReturnValue({
+        listWorkflows,
+        loadWorkflow: vi.fn(),
+        saveWorkflow: vi.fn(),
+        deleteWorkflow: vi.fn(),
+        copyWorkflow: vi.fn(),
+        renameWorkflow: vi.fn(),
+      } as any);
 
-      mockGetAllWorkflowsList.mockResolvedValue(mockResponse);
-
+      const modelRef = { entityName: 'Customer', modelVersion: 1 };
       const { result } = renderHook(
-        () => useWorkflowsList('com.example.Entity'),
+        () => useWorkflowsList(modelRef),
         { wrapper }
       );
 
@@ -153,7 +171,48 @@ describe('useStatemachine hooks', () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(mockGetAllWorkflowsList).toHaveBeenCalledWith('com.example.Entity');
+      expect(listWorkflows).toHaveBeenCalledWith(modelRef);
+    });
+  });
+
+  describe('useWorkflowsList — gateway-backed', () => {
+    it('calls gateway.listWorkflows with the provided modelRef and returns the result', async () => {
+      const summaries = [{ name: 'A', initialState: 's', active: true }];
+      const listWorkflows = vi.fn().mockResolvedValue(summaries);
+      vi.mocked(getWorkflowGateway).mockReturnValue({
+        listWorkflows,
+        loadWorkflow: vi.fn(),
+        saveWorkflow: vi.fn(),
+        deleteWorkflow: vi.fn(),
+        copyWorkflow: vi.fn(),
+        renameWorkflow: vi.fn(),
+      } as any);
+
+      const modelRef = { entityName: 'Customer', modelVersion: 1 };
+      const { result } = renderHook(() => useWorkflowsList(modelRef), { wrapper });
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+      expect(listWorkflows).toHaveBeenCalledWith(modelRef);
+      expect(result.current.data).toEqual(summaries);
+    });
+
+    it('passes null modelRef through to the gateway', async () => {
+      const listWorkflows = vi.fn().mockResolvedValue([]);
+      vi.mocked(getWorkflowGateway).mockReturnValue({
+        listWorkflows,
+        loadWorkflow: vi.fn(),
+        saveWorkflow: vi.fn(),
+        deleteWorkflow: vi.fn(),
+        copyWorkflow: vi.fn(),
+        renameWorkflow: vi.fn(),
+      } as any);
+
+      const { result } = renderHook(() => useWorkflowsList(null), { wrapper });
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+      expect(listWorkflows).toHaveBeenCalledWith(null);
     });
   });
 

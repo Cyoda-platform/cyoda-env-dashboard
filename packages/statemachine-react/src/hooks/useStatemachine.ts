@@ -15,13 +15,19 @@ import type {
   InstancesRequest,
   PersistedType,
 } from '../types';
+import { getWorkflowGateway } from '../gateways';
+import type { ModelRef, WorkflowDoc, WorkflowSummary } from '../gateways/workflowDocTypes';
 
 // Query Keys
 export const statemachineKeys = {
   all: ['statemachine'] as const,
   workflows: () => [...statemachineKeys.all, 'workflows'] as const,
-  workflowsList: (entityClassName?: string) => [...statemachineKeys.workflows(), 'list', entityClassName] as const,
-  workflow: (persistedType: PersistedType, workflowId: string) => [...statemachineKeys.workflows(), persistedType, workflowId] as const,
+  workflowsList: (modelRef?: ModelRef | null, entityClassName?: string) =>
+    [...statemachineKeys.workflows(), 'list', modelRef ?? null, entityClassName] as const,
+  workflow: (persistedType: PersistedType, workflowId: string) =>
+    [...statemachineKeys.workflows(), persistedType, workflowId] as const,
+  workflowDoc: (modelRef: ModelRef | null, name: string) =>
+    [...statemachineKeys.workflows(), 'doc', modelRef, name] as const,
   workflowEnabledTypes: () => [...statemachineKeys.workflows(), 'enabled-types'] as const,
   
   states: () => [...statemachineKeys.all, 'states'] as const,
@@ -64,19 +70,12 @@ export function useWorkflowEnabledTypes() {
   });
 }
 
-export function useWorkflowsList(entityClassName?: string) {
-  const store = useStatemachineStore();
-
-  return useQuery({
-    queryKey: statemachineKeys.workflowsList(entityClassName),
+export function useWorkflowsList(modelRef: ModelRef | null = null): ReturnType<typeof useQuery<WorkflowSummary[]>> {
+  return useQuery<WorkflowSummary[]>({
+    queryKey: statemachineKeys.workflowsList(modelRef),
     queryFn: async () => {
-      const response = await store.getAllWorkflowsList(entityClassName);
-      // Ensure we always return an array
-      const data = response.data;
-      if (Array.isArray(data)) {
-        return data;
-      }
-      return [];
+      const gateway = getWorkflowGateway();
+      return gateway.listWorkflows(modelRef);
     },
   });
 }
