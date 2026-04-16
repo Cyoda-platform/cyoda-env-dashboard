@@ -27,8 +27,12 @@ export interface WorkflowGateway {
   /** Load a full workflow document by name within the given model. */
   loadWorkflow(modelRef: ModelRef | null, name: string): Promise<WorkflowDoc>;
 
-  /** Persist (create or update) a single workflow with the given import mode. */
-  saveWorkflow(modelRef: ModelRef | null, doc: WorkflowDoc, mode: 'MERGE'): Promise<void>;
+  /**
+   * Persist (create or update) a single workflow with the given import mode.
+   * Returns the gateway-key of the affected workflow so callers (e.g. UI navigation)
+   * can address it without a follow-up fetch.
+   */
+  saveWorkflow(modelRef: ModelRef | null, doc: WorkflowDoc, mode: 'MERGE'): Promise<{ key: string }>;
 
   /**
    * Delete a workflow by name. In cloud mode, enforces the ≥1 invariant
@@ -36,8 +40,12 @@ export interface WorkflowGateway {
    */
   deleteWorkflow(modelRef: ModelRef | null, name: string): Promise<void>;
 
-  /** Duplicate a workflow under a new name. Validates uniqueness of `newName` client-side. */
-  copyWorkflow(modelRef: ModelRef | null, sourceName: string, newName: string): Promise<void>;
+  /**
+   * Duplicate a workflow under a new name. Validates uniqueness of `newName` client-side.
+   * Returns the gateway-key of the new copy so callers can navigate to it without a
+   * follow-up fetch.
+   */
+  copyWorkflow(modelRef: ModelRef | null, sourceName: string, newName: string): Promise<{ key: string }>;
 
   /**
    * Rename a workflow. Implementations orchestrate copy-then-delete because
