@@ -84,6 +84,7 @@ interface WorkflowGateway {
   saveWorkflow(modelRef: ModelRef | null, doc: WorkflowDoc, mode: 'MERGE'): Promise<void>;
   deleteWorkflow(modelRef: ModelRef | null, name: string): Promise<void>;
   copyWorkflow(modelRef: ModelRef | null, sourceName: string, newName: string): Promise<void>;
+  renameWorkflow(modelRef: ModelRef | null, oldName: string, newName: string): Promise<void>;
 }
 ```
 
@@ -108,6 +109,7 @@ interface WorkflowGateway {
 - `saveWorkflow({ entityName, modelVersion }, doc, 'MERGE')` → `POST /model/{entityName}/{modelVersion}/workflow/import` with body `{ importMode: 'MERGE', workflows: [doc] }`.
 - `deleteWorkflow({ entityName, modelVersion }, name)` → load all; filter out the target; validate the remaining set is non-empty; `POST .../workflow/import` with `{ importMode: 'REPLACE', workflows: remaining }`. If the remaining set is empty, reject with a typed `CannotDeleteLastWorkflowError` *before* hitting the network.
 - `copyWorkflow({ entityName, modelVersion }, sourceName, newName)` → load source; validate `newName` is unique within the loaded list; produce an in-memory clone with `name: newName`; `saveWorkflow` it with MERGE. Source remains untouched.
+- `renameWorkflow({ entityName, modelVersion }, oldName, newName)` → orchestrates `copyWorkflow(oldName → newName)` then `deleteWorkflow(oldName)`. Failure modes are explicit: if the copy fails, no state changes and the error is surfaced; if the copy succeeds but the delete fails, the gateway returns a typed `RenameIncompleteError` carrying both names so the UI can prompt the user to either retry the delete or remove the new copy. The legacy gateway implements rename natively against the existing endpoint where supported, or via the same orchestration if not.
 
 ### 4.5 Store changes
 
@@ -136,7 +138,16 @@ Every save (create and update) is a `POST .../workflow/import` with `importMode:
 
 ### 5.4 Delete (and the ≥1 invariant)
 
-A Cyoda entity model requires at least one workflow. Delete is implemented as REPLACE-minus-target: load the current set, remove the target, `POST .../workflow/import` with `importMode: 'REPLACE'` and the remaining workflows. The gateway enforces the ≥1 invariant before the network call. The UI disables the delete button in the list when the list has exactly one row and surfaces a tooltip explaining why; a race past that guard shows a friendly error toast.
+A Cyoda entity model requires at least one workflow. Delete is implemented as REPLACE-minus-target: load the current set, remove the target, `POST .../workflow/import` with `importMode: 'REPLACE'` and the remaining workflows. The gateway enforces the ≥1 invariant before the network call.
+
+The UI disables the delete button in the list when the list has exactly one row and surfaces a tooltip explaining why. Because the REPLACE-based delete carries a real risk of overwriting a concurrent edit by another user, the confirmation dialog is **disruptive by design** rather than a one-click "Are you sure?":
+
+- Lists by name every workflow that will be kept after the delete.
+- Shows the timestamp of the export the dialog was built from, with a label such as "snapshot taken at HH:MM:SS — other users' changes after that time may be overwritten".
+- Requires the user to type the exact `name` of the workflow they are deleting into a confirm input before the destructive button enables.
+- Offers a "Refresh snapshot" action that re-runs the export and rebuilds the dialog state, so a cautious user can shrink the race window before confirming.
+
+A race that still slips past these guards (the REPLACE goes through but the underlying set has changed) surfaces as a friendly error toast and the page refetches.
 
 ### 5.5 Deactivate
 
@@ -148,7 +159,12 @@ Copy (duplicate) asks for a new `name`, validates it is unique in the current li
 
 ### 5.7 Rename
 
-Renaming a workflow is **not** supported in v1. The `name` field is rendered read-only in the editor for an existing workflow. Users who need "rename" use Copy (to create the new-named workflow) then Delete (to remove the old one), which requires the model to have more than one workflow. This restriction is documented in a tooltip next to the disabled field.
+The cloud workflow API has no native rename: `name` is the workflow's identity within `(entityName, modelVersion)`. The dashboard nevertheless exposes a first-class **Rename** action so users do not have to perform the underlying two-step ritual themselves.
+
+- The editor's `name` field is **read-only** once a workflow has been created (this prevents an accidental rename via a MERGE save with a changed name from creating a second workflow). Next to the disabled field, an explicit **Rename** button opens a small dialog that takes the new name, validates uniqueness, and calls `gateway.renameWorkflow(modelRef, oldName, newName)`.
+- `renameWorkflow` is implemented in the gateway as `copyWorkflow` followed by `deleteWorkflow` (see §4.4). The cloud gateway's delete flow itself uses REPLACE; the ≥1 invariant is satisfied throughout the operation because the new copy exists before the old one is removed.
+- Failure handling: a `RenameIncompleteError` (copy succeeded, delete failed) is surfaced to the user with the new name visible in the workflows list and the old one still present, plus a guided "Retry delete" / "Discard new copy" prompt.
+- After a successful rename the editor URL is updated (`navigate` to the new `/workflow/:entityName/:modelVersion/:newName`) and React Query caches for both names are invalidated.
 
 ### 5.8 Versioning
 
@@ -186,10 +202,10 @@ A new component `WorkflowEditorCloud` in `packages/statemachine-react/src/pages/
 
 - **Load:** for `/workflow/:entityName/:modelVersion/:workflowName`, fetches via `gateway.loadWorkflow(modelRef, name)`. For `/workflow/:entityName/:modelVersion/new`, starts from a scaffold doc (`version: "1.0"`, one placeholder state as `initialState`, empty `states` map, `active: true`, no top-level `criterion`).
 - **Layout:** left panel with a tree (workflow-level properties at the top, then states → transitions); right panel shows the form for the currently selected tree node. The tree uses the existing graphical-view styling where sensible.
-- **Nested concepts inline:** transition-level criteria (`QueryCondition` types: simple, group, function) and processors (externalized, scheduled) are inline sub-forms on the transition form. A small, focused `QueryConditionEditor` component is built for this purpose (see §11 risk note). No separate routes for criteria/processors in cloud mode.
+- **Nested concepts inline:** transition-level criteria (`QueryCondition` types: simple, group, function) and processors (externalized, scheduled) are inline sub-forms on the transition form. To prevent the right-hand panel from becoming a vertical wall when transitions have several processors or deeply-nested group conditions, every inline sub-form is rendered inside a **collapsible accordion**: each processor is a collapsible row in a "Processors" accordion list, and the criterion editor itself collapses/expands group nodes. The default-open state is "first item open, rest collapsed" on load, and the editor remembers expansion state per-transition for the duration of the page session. A small, focused `QueryConditionEditor` component is built for this purpose (see §10.1 risk note). No separate routes for criteria/processors in cloud mode.
 - **Save:** a single "Save" button. Client-side validation enforces the doc schema invariants from `openapi-workflow.yml`: required `version`, `name`, `initialState`, `states` with at least one entry; each transition has `name`, `next`, `manual`. On success, `gateway.saveWorkflow(modelRef, doc, 'MERGE')`.
 - **Dirty tracking:** a boolean `hasChanges`; a `beforeunload` / `useBlocker` confirm-dialog when navigating away with unsaved edits.
-- **Graph view:** reuses `graphicalStatemachineStore` rendering in **read-only** mode. Interactive dragging / transition-drawing on cloud is explicitly a non-goal for v1.
+- **Graph view:** reuses `graphicalStatemachineStore` rendering in **read-only** mode. Interactive dragging / transition-drawing on cloud is explicitly a non-goal for v1. To make the read-only state unmistakable rather than feeling broken: a "View only" badge sits in the top-right corner of the graph canvas; nodes use a subtly desaturated styling and `cursor: default` (no grab cursor); attempts to drag a node show a one-time tooltip "Editing the graph layout is coming in a later release — use the form on the right to change the workflow".
 
 ### 6.5 Instances port
 
@@ -269,14 +285,13 @@ Each sub-branch PR includes: a link to this spec, a link to its own plan documen
 - **QueryCondition shape divergence.** The cloud doc's `criterion` uses `QueryCondition` (simple / group / function) defined in `openapi-common.yml`. The legacy granular criteria editor has a different UX and data shape. We will not try to reuse it. A new, focused `QueryConditionEditor` component is built in sub-branch 4. If the cloud `QueryCondition` schema evolves, only that component and the cloud gateway change.
 - **Export-then-filter for single-workflow load.** `CloudWorkflowGateway.loadWorkflow` fetches the full export and filters client-side. If a model ever has hundreds of workflows the payload could grow large. Acceptable for v1 given realistic workload sizes; a per-name endpoint is a server-side change tracked separately if needed.
 - **Model ref persistence.** The Workflows list persists the selected model ref in both URL and store. Users navigating between workflows within the same model keep their context; switching models resets it. Deep links work. This should not surprise users, but it is a behavior change from the legacy flat list; the PR description calls it out explicitly.
-- **Race on delete.** Between load-all and REPLACE-save, another user could add or remove a workflow. The REPLACE import would then overwrite their change. Mitigation: ensure the Delete flow includes an explicit confirmation dialog that lists the workflows being kept, and rely on cyoda-cloud's existing concurrency handling. Perfect optimistic concurrency (If-Match / ETag) is a server-side capability we don't currently have; flagged as future work.
+- **Race on delete.** Between load-all and REPLACE-save, another user could add or remove a workflow. The REPLACE import would then overwrite their change. Mitigation: a deliberately disruptive delete confirmation dialog (see §5.4) — lists the workflows being kept, shows the snapshot timestamp, requires the user to type the deletion target's name, and offers a "Refresh snapshot" action. Perfect optimistic concurrency (If-Match / ETag) is a server-side capability we don't currently have; flagged as future work.
 
 ### 10.2 Non-goals (recap)
 
 - Cloud ports of Reporting / Tasks / Processing-Manager.
-- User-facing REPLACE/ACTIVATE workflow import UX.
+- User-facing REPLACE/ACTIVATE workflow import UX. (REPLACE is used internally by delete; rename uses the delete primitive but is exposed as a first-class action — see §5.7.)
 - Runtime toggling of `IS_CYODA_GO`.
-- Workflow name rename.
 - Interactive graph editing in cloud mode.
 - Migration tooling between legacy and cloud workflow models.
 - Changes to `tools/backend-mock-server`.
@@ -294,7 +309,9 @@ These are deliberately deferred to their sub-branch plans so the respective spec
 - [ ] `VITE_FEATURE_FLAG_IS_CYODA_GO=true` launches the app with only Trino, Lifecycle (Workflows + Instances), and Entity Viewer visible.
 - [ ] Under cyoda-go, every reachable page loads without any call to `/platform-*` endpoints.
 - [ ] Under cloud mode (both cyoda-cloud and cyoda-go), the Workflows list shows the two-stage model-picker → workflows flow; URL state is preserved on reload and deep links.
-- [ ] Cloud workflow editor can create, edit, save (MERGE), duplicate, deactivate, and delete workflows; delete refuses when only one workflow remains and disables the button in the list.
+- [ ] Cloud workflow editor can create, edit, save (MERGE), duplicate, rename, deactivate, and delete workflows.
+- [ ] Rename works even when the model contains a single workflow (copy-then-delete sequencing preserves the ≥1 invariant throughout).
+- [ ] Delete refuses when only one workflow remains and disables the button in the list; the confirmation dialog requires typing the target name and shows the snapshot timestamp.
 - [ ] Under legacy mode (`IS_CYODA_CLOUD=false`), all existing workflow / state / transition / criteria / processor pages continue to function exactly as before.
 - [ ] Instances list and detail work under both modes, with filters restricted appropriately under cloud mode.
 - [ ] Unit test suite passes; Playwright legacy project passes; Playwright cyoda-go project passes against a cyoda-go container.
