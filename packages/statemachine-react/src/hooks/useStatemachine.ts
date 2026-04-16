@@ -151,12 +151,19 @@ export function useDeleteWorkflow() {
 
 export function useCopyWorkflow() {
   const queryClient = useQueryClient();
-  const store = useStatemachineStore();
-  
+
   return useMutation({
-    mutationFn: async ({ persistedType, workflowId }: { persistedType: PersistedType; workflowId: string }) => {
-      const response = await store.copyWorkflow(persistedType, workflowId);
-      return response.data;
+    mutationFn: async ({
+      modelRef,
+      sourceName,
+      newName,
+    }: {
+      modelRef: ModelRef | null;
+      sourceName: string;
+      newName: string;
+    }) => {
+      const gateway = getWorkflowGateway();
+      await gateway.copyWorkflow(modelRef, sourceName, newName);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: statemachineKeys.workflows() });

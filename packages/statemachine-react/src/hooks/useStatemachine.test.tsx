@@ -342,30 +342,26 @@ describe('useStatemachine hooks', () => {
 
   describe('useCopyWorkflow', () => {
     it('should copy a workflow', async () => {
-      const mockResponse = {
-        data: {
-          id: 'workflow-copy',
-          name: 'Test Workflow (Copy)',
-          entityClassName: 'com.example.Entity',
-          active: true,
-          persisted: true,
-        },
-      };
-
-      mockCopyWorkflow.mockResolvedValue(mockResponse);
+      const copyWorkflow = vi.fn().mockResolvedValue(undefined);
+      vi.mocked(getWorkflowGateway).mockReturnValue({
+        listWorkflows: vi.fn(),
+        loadWorkflow: vi.fn(),
+        saveWorkflow: vi.fn(),
+        deleteWorkflow: vi.fn(),
+        copyWorkflow,
+        renameWorkflow: vi.fn(),
+      } as any);
 
       const { result } = renderHook(() => useCopyWorkflow(), { wrapper });
 
-      result.current.mutate({
-        persistedType: 'persisted',
-        workflowId: 'workflow-1',
-      });
+      const modelRef = { entityName: 'Customer', modelVersion: 1 };
+      result.current.mutate({ modelRef, sourceName: 'workflow-1', newName: 'workflow-1-copy' });
 
       await waitFor(() => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(result.current.data).toEqual(mockResponse.data);
+      expect(copyWorkflow).toHaveBeenCalledWith(modelRef, 'workflow-1', 'workflow-1-copy');
     });
   });
 
@@ -499,6 +495,27 @@ describe('useStatemachine hooks', () => {
       await result.current.mutateAsync({ modelRef, name: 'X' });
 
       expect(deleteWorkflow).toHaveBeenCalledWith(modelRef, 'X');
+    });
+  });
+
+  describe('useCopyWorkflow — gateway-backed', () => {
+    it('mutateAsync calls gateway.copyWorkflow with (modelRef, sourceName, newName)', async () => {
+      const copyWorkflow = vi.fn().mockResolvedValue(undefined);
+      vi.mocked(getWorkflowGateway).mockReturnValue({
+        listWorkflows: vi.fn(),
+        loadWorkflow: vi.fn(),
+        saveWorkflow: vi.fn(),
+        deleteWorkflow: vi.fn(),
+        copyWorkflow,
+        renameWorkflow: vi.fn(),
+      } as any);
+
+      const { result } = renderHook(() => useCopyWorkflow(), { wrapper });
+
+      const modelRef = { entityName: 'Customer', modelVersion: 1 };
+      await result.current.mutateAsync({ modelRef, sourceName: 'A', newName: 'B' });
+
+      expect(copyWorkflow).toHaveBeenCalledWith(modelRef, 'A', 'B');
     });
   });
 });
