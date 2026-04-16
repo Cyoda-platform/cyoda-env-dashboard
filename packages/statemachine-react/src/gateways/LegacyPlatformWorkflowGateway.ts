@@ -38,10 +38,18 @@ export class LegacyPlatformWorkflowGateway implements WorkflowGateway {
 
   async saveWorkflow(
     _modelRef: ModelRef | null,
-    _doc: WorkflowDoc,
+    doc: WorkflowDoc,
     _mode: 'MERGE'
   ): Promise<void> {
-    throw new Error('not implemented');
+    const store = useStatemachineStore.getState();
+    const recordResp = await store.getWorkflow('persisted', doc.name);
+    const record = recordResp?.data ?? {};
+    const merged = {
+      ...record,
+      id: doc.name,
+      active: doc.active === undefined ? true : doc.active,
+    };
+    await store.putWorkflow(merged);
   }
 
   async deleteWorkflow(_modelRef: ModelRef | null, name: string): Promise<void> {

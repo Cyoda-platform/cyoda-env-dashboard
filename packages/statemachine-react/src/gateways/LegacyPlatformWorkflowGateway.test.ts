@@ -103,4 +103,60 @@ describe('LegacyPlatformWorkflowGateway', () => {
       expect(storeApi.putWorkflow).not.toHaveBeenCalled();
     });
   });
+
+  describe('saveWorkflow (MERGE — active-flag toggle)', () => {
+    it('loads the legacy record and writes it back with active overridden by doc.active', async () => {
+      storeApi.getWorkflow.mockResolvedValueOnce({
+        data: {
+          id: 'wf-7',
+          name: 'Premium',
+          entityClassName: 'Customer',
+          active: true,
+          persisted: true,
+          owner: 'someone',
+        },
+      });
+      storeApi.putWorkflow.mockResolvedValueOnce({ data: undefined });
+
+      const doc = {
+        version: '1.0',
+        name: 'wf-7',
+        initialState: 's',
+        active: false,
+        states: { s: { transitions: [] } },
+      };
+
+      await gateway.saveWorkflow(null, doc, 'MERGE');
+
+      expect(storeApi.getWorkflow).toHaveBeenCalledWith('persisted', 'wf-7');
+      expect(storeApi.putWorkflow).toHaveBeenCalledWith({
+        id: 'wf-7',
+        name: 'Premium',
+        entityClassName: 'Customer',
+        active: false,
+        persisted: true,
+        owner: 'someone',
+      });
+    });
+
+    it('defaults active to true if doc.active is undefined', async () => {
+      storeApi.getWorkflow.mockResolvedValueOnce({
+        data: { id: 'wf-7', name: 'Premium', entityClassName: 'Customer', active: false, persisted: true },
+      });
+      storeApi.putWorkflow.mockResolvedValueOnce({ data: undefined });
+
+      const doc = {
+        version: '1.0',
+        name: 'wf-7',
+        initialState: 's',
+        states: { s: { transitions: [] } },
+      };
+
+      await gateway.saveWorkflow(null, doc, 'MERGE');
+
+      expect(storeApi.putWorkflow).toHaveBeenCalledWith(
+        expect.objectContaining({ id: 'wf-7', active: true })
+      );
+    });
+  });
 });
