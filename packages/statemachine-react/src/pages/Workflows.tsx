@@ -119,7 +119,16 @@ export const Workflows: React.FC = () => {
   const { entityType } = useGlobalUiSettingsStore();
 
   // Queries
-  const { data: workflows = [], isLoading, refetch } = useWorkflowsList();
+  // Legacy mode passes null modelRef; the legacy gateway ignores it.
+  // TODO(sub-branch-3): the gateway returns WorkflowSummary which lacks the
+  // legacy fields (id, entityClassName, persisted, creationDate) this page
+  // still depends on. The legacy gateway's listWorkflows synthesises these
+  // from the underlying store records. We cast to Workflow[] here at the
+  // boundary so the rest of the page keeps compiling; sub-branch 3 replaces
+  // this whole list page with a cloud-native variant that only needs the
+  // gateway summary.
+  const { data: workflowsRaw = [], isLoading, refetch } = useWorkflowsList(null);
+  const workflows = workflowsRaw as unknown as Workflow[];
   const { data: workflowEnabledTypes = [] } = useWorkflowEnabledTypes();
 
   // Check if entity type info is available (feature flag equivalent)
@@ -206,6 +215,9 @@ export const Workflows: React.FC = () => {
   }, [workflows, workflowEnabledTypes, tableState.filter, entityType, hasEntityTypeInfo]);
 
   // Get selected workflows for export
+  // TODO(sub-branch-3): WorkflowSummary doesn't carry the legacy `id`; the
+  // legacy gateway's listWorkflows assigns the legacy id to the summary's
+  // `name` field. We use `name` as the row key here to match that mapping.
   const selectedWorkflows = useMemo(() => {
     return workflows.filter((w) => selectedRowKeys.includes(w.id));
   }, [workflows, selectedRowKeys]);
@@ -228,17 +240,22 @@ export const Workflows: React.FC = () => {
   
   const handleCopyWorkflow = async (record: WorkflowTableRow) => {
     try {
-      const persistedType = getPersistedType(record.persisted);
-      const newWorkflowId = await copyWorkflowMutation.mutateAsync({
-        persistedType,
-        workflowId: record.id,
+      // Legacy mode: the gateway uses record.id (the legacy UUID) as the
+      // sourceName; record.name is the human-readable label used for the
+      // suggested copy name. The gateway returns the gateway-key of the new
+      // workflow (in legacy mode, the new legacy id) so we can navigate
+      // without a follow-up fetch.
+      const { key: newWorkflowKey } = await copyWorkflowMutation.mutateAsync({
+        modelRef: null,
+        sourceName: record.id,
+        newName: `${record.name} (copy)`,
       });
 
       message.success('Workflow copied successfully');
 
-      // Navigate to the new workflow as 'persisted' so it can be edited
+      // Navigate to the new workflow as 'persisted' so it can be edited.
       navigate(
-        `/workflow/${newWorkflowId}?persistedType=persisted&entityClassName=${record.entityClassName}`
+        `/workflow/${newWorkflowKey}?persistedType=persisted&entityClassName=${record.entityClassName}`
       );
     } catch (error) {
       message.error('Failed to copy workflow');
@@ -254,7 +271,7 @@ export const Workflows: React.FC = () => {
       cancelText: 'Cancel',
       onOk: async () => {
         try {
-          await deleteWorkflowMutation.mutateAsync(record.id);
+          await deleteWorkflowMutation.mutateAsync({ modelRef: null, name: record.id });
           message.success('Workflow deleted successfully');
 
           // Clear selection if deleted workflow was selected
