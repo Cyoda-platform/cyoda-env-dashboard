@@ -44,6 +44,8 @@ export interface ExternalizedProcessorConfig extends ExternalizedFunctionConfig 
 /** Configuration for a scheduled-transition processor. */
 export interface ScheduledTransitionConfig {
   delayMs: number;
+  /** Timeout for the scheduled transition (ms). Optional per openapi-common.yml. */
+  timeoutMs?: number;
   transition: string;
 }
 
