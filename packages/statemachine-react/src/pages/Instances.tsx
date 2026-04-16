@@ -116,7 +116,11 @@ export const Instances: React.FC = () => {
 
   // Queries
   const { data: workflowEnabledTypes = [], isLoading: isLoadingEntities } = useWorkflowEnabledTypes();
-  const { data: workflows = [] } = useWorkflowsList(entityClassName);
+  // Legacy mode: WorkflowSummary doesn't carry entityClassName so we can't
+  // filter here. Sub-branch 5 (Instances port) replaces this with the cloud
+  // entity-search API.
+  // TODO(sub-branch-5): restore entity-class filtering or migrate to cloud API.
+  const { data: workflows = [] } = useWorkflowsList(null);
   const instancesMutation = useInstances();
 
   // Update rangeConditionForm when entityClassName changes
