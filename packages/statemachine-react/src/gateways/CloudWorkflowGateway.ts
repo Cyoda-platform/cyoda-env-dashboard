@@ -18,9 +18,32 @@ import type {
   WorkflowSummary,
 } from './workflowDocTypes';
 
+function exportUrl(modelRef: ModelRef): string {
+  return `/model/${encodeURIComponent(modelRef.entityName)}/${modelRef.modelVersion}/workflow/export`;
+}
+
+function importUrl(modelRef: ModelRef): string {
+  return `/model/${encodeURIComponent(modelRef.entityName)}/${modelRef.modelVersion}/workflow/import`;
+}
+
+function toSummary(doc: WorkflowDoc): WorkflowSummary {
+  return {
+    name: doc.name,
+    desc: doc.desc,
+    active: doc.active,
+    initialState: doc.initialState,
+    criterion: doc.criterion,
+  };
+}
+
 export class CloudWorkflowGateway implements WorkflowGateway {
-  async listWorkflows(_modelRef: ModelRef | null): Promise<WorkflowSummary[]> {
-    throw new Error('not implemented');
+  async listWorkflows(modelRef: ModelRef | null): Promise<WorkflowSummary[]> {
+    if (modelRef === null) {
+      throw new Error('CloudWorkflowGateway.listWorkflows: modelRef is required');
+    }
+    const url = exportUrl(modelRef);
+    const response = await axios.get<WorkflowExportResponse>(url);
+    return (response.data.workflows ?? []).map(toSummary);
   }
 
   async loadWorkflow(_modelRef: ModelRef | null, _name: string): Promise<WorkflowDoc> {
