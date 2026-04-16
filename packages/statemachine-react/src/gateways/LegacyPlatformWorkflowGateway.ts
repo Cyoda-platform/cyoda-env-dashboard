@@ -44,8 +44,8 @@ export class LegacyPlatformWorkflowGateway implements WorkflowGateway {
     throw new Error('not implemented');
   }
 
-  async deleteWorkflow(_modelRef: ModelRef | null, _name: string): Promise<void> {
-    throw new Error('not implemented');
+  async deleteWorkflow(_modelRef: ModelRef | null, name: string): Promise<void> {
+    await useStatemachineStore.getState().deleteWorkflow(name);
   }
 
   async copyWorkflow(

@@ -54,4 +54,20 @@ describe('LegacyPlatformWorkflowGateway', () => {
       expect(result).toEqual([]);
     });
   });
+
+  describe('deleteWorkflow', () => {
+    it('calls store.deleteWorkflow(name) where name is the legacy id', async () => {
+      storeApi.deleteWorkflow.mockResolvedValueOnce({ data: undefined });
+
+      await gateway.deleteWorkflow(null, 'wf-42');
+
+      expect(storeApi.deleteWorkflow).toHaveBeenCalledWith('wf-42');
+    });
+
+    it('propagates errors from the underlying store', async () => {
+      storeApi.deleteWorkflow.mockRejectedValueOnce(new Error('forbidden'));
+
+      await expect(gateway.deleteWorkflow(null, 'wf-42')).rejects.toThrow('forbidden');
+    });
+  });
 });
