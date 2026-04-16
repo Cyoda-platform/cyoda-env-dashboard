@@ -106,12 +106,11 @@ export function useWorkflowDoc(modelRef: ModelRef | null, name: string, enabled 
 
 export function useCreateWorkflow() {
   const queryClient = useQueryClient();
-  const store = useStatemachineStore();
-  
+
   return useMutation({
-    mutationFn: async (form: WorkflowForm) => {
-      const response = await store.postWorkflow(form);
-      return response.data;
+    mutationFn: async ({ modelRef, doc }: { modelRef: ModelRef | null; doc: WorkflowDoc }) => {
+      const gateway = getWorkflowGateway();
+      await gateway.saveWorkflow(modelRef, doc, 'MERGE');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: statemachineKeys.workflows() });
@@ -121,16 +120,17 @@ export function useCreateWorkflow() {
 
 export function useUpdateWorkflow() {
   const queryClient = useQueryClient();
-  const store = useStatemachineStore();
-  
+
   return useMutation({
-    mutationFn: async (form: WorkflowForm & { id: string }) => {
-      const response = await store.putWorkflow(form);
-      return response.data;
+    mutationFn: async ({ modelRef, doc }: { modelRef: ModelRef | null; doc: WorkflowDoc }) => {
+      const gateway = getWorkflowGateway();
+      await gateway.saveWorkflow(modelRef, doc, 'MERGE');
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: statemachineKeys.workflows() });
-      queryClient.invalidateQueries({ queryKey: statemachineKeys.workflow('persisted', variables.id) });
+      queryClient.invalidateQueries({
+        queryKey: statemachineKeys.workflowDoc(variables.modelRef, variables.doc.name),
+      });
     },
   });
 }

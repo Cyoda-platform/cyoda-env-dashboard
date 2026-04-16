@@ -263,63 +263,55 @@ describe('useStatemachine hooks', () => {
 
   describe('useCreateWorkflow', () => {
     it('should create a workflow', async () => {
-      const mockWorkflow = {
-        name: 'New Workflow',
-        entityClassName: 'com.example.Entity',
-        active: true,
-        persisted: true,
-      };
-
-      const mockResponse = {
-        data: {
-          id: 'workflow-new',
-          ...mockWorkflow,
-        },
-      };
-
-      mockPostWorkflow.mockResolvedValue(mockResponse);
+      const saveWorkflow = vi.fn().mockResolvedValue(undefined);
+      vi.mocked(getWorkflowGateway).mockReturnValue({
+        listWorkflows: vi.fn(),
+        loadWorkflow: vi.fn(),
+        saveWorkflow,
+        deleteWorkflow: vi.fn(),
+        copyWorkflow: vi.fn(),
+        renameWorkflow: vi.fn(),
+      } as any);
 
       const { result } = renderHook(() => useCreateWorkflow(), { wrapper });
 
-      result.current.mutate(mockWorkflow as any);
+      const doc = { version: '1.0', name: 'New Workflow', initialState: 's', states: {} };
+      const modelRef = { entityName: 'Customer', modelVersion: 1 };
+
+      result.current.mutate({ modelRef, doc });
 
       await waitFor(() => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(result.current.data).toEqual(mockResponse.data);
+      expect(saveWorkflow).toHaveBeenCalledWith(modelRef, doc, 'MERGE');
     });
   });
 
   describe('useUpdateWorkflow', () => {
     it('should update a workflow', async () => {
-      const mockWorkflow = {
-        id: 'workflow-1',
-        name: 'Updated Workflow',
-        entityClassName: 'com.example.Entity',
-        active: true,
-        persisted: true,
-      };
-
-      const mockResponse = {
-        data: mockWorkflow,
-      };
-
-      mockPutWorkflow.mockResolvedValue(mockResponse);
+      const saveWorkflow = vi.fn().mockResolvedValue(undefined);
+      vi.mocked(getWorkflowGateway).mockReturnValue({
+        listWorkflows: vi.fn(),
+        loadWorkflow: vi.fn(),
+        saveWorkflow,
+        deleteWorkflow: vi.fn(),
+        copyWorkflow: vi.fn(),
+        renameWorkflow: vi.fn(),
+      } as any);
 
       const { result } = renderHook(() => useUpdateWorkflow(), { wrapper });
 
-      result.current.mutate({
-        persistedType: 'persisted',
-        workflowId: 'workflow-1',
-        form: mockWorkflow as any,
-      });
+      const doc = { version: '1.0', name: 'Updated Workflow', initialState: 's', states: {} };
+      const modelRef = { entityName: 'Customer', modelVersion: 1 };
+
+      result.current.mutate({ modelRef, doc });
 
       await waitFor(() => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(result.current.data).toEqual(mockResponse.data);
+      expect(saveWorkflow).toHaveBeenCalledWith(modelRef, doc, 'MERGE');
     });
   });
 
@@ -439,6 +431,47 @@ describe('useStatemachine hooks', () => {
       renderHook(() => useWorkflowDoc({ entityName: 'X', modelVersion: 1 }, ''), { wrapper });
 
       expect(loadWorkflow).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('useCreateWorkflow / useUpdateWorkflow — gateway-backed', () => {
+    it('useCreateWorkflow.mutateAsync calls gateway.saveWorkflow with MERGE', async () => {
+      const saveWorkflow = vi.fn().mockResolvedValue(undefined);
+      vi.mocked(getWorkflowGateway).mockReturnValue({
+        listWorkflows: vi.fn(),
+        loadWorkflow: vi.fn(),
+        saveWorkflow,
+        deleteWorkflow: vi.fn(),
+        copyWorkflow: vi.fn(),
+        renameWorkflow: vi.fn(),
+      } as any);
+
+      const { result } = renderHook(() => useCreateWorkflow(), { wrapper });
+
+      const doc = { version: '1.0', name: 'X', initialState: 's', states: {} };
+      const modelRef = { entityName: 'Customer', modelVersion: 1 };
+      await result.current.mutateAsync({ modelRef, doc });
+
+      expect(saveWorkflow).toHaveBeenCalledWith(modelRef, doc, 'MERGE');
+    });
+
+    it('useUpdateWorkflow.mutateAsync calls gateway.saveWorkflow with MERGE', async () => {
+      const saveWorkflow = vi.fn().mockResolvedValue(undefined);
+      vi.mocked(getWorkflowGateway).mockReturnValue({
+        listWorkflows: vi.fn(),
+        loadWorkflow: vi.fn(),
+        saveWorkflow,
+        deleteWorkflow: vi.fn(),
+        copyWorkflow: vi.fn(),
+        renameWorkflow: vi.fn(),
+      } as any);
+
+      const { result } = renderHook(() => useUpdateWorkflow(), { wrapper });
+
+      const doc = { version: '1.0', name: 'X', initialState: 's', states: {} };
+      await result.current.mutateAsync({ modelRef: null, doc });
+
+      expect(saveWorkflow).toHaveBeenCalledWith(null, doc, 'MERGE');
     });
   });
 });
