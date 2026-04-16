@@ -83,7 +83,7 @@ describe('Entities API', () => {
 
       const result = await entitiesApi.updateEntity('TestClass', '123', entityRequest);
 
-      expect(axios.put).toHaveBeenCalledWith('/platform-api/entity/TestClass/123', {
+      expect(axios.put).toHaveBeenCalledWith('/platform-api/entity', {
         ...entityRequest,
         transactional: true,
       });
@@ -102,7 +102,7 @@ describe('Entities API', () => {
 
       const result = await entitiesApi.updateEntity('TestClass', '123', entityRequest);
 
-      expect(axios.put).toHaveBeenCalledWith('/platform-api/entity/TestClass/123', {
+      expect(axios.put).toHaveBeenCalledWith('/platform-api/entity', {
         ...entityRequest,
         transactional: true,
       });
@@ -122,7 +122,7 @@ describe('Entities API', () => {
       const result = await entitiesApi.updateEntity('TestClass', '123', entityRequest);
 
       // transactional=false should be preserved in the request body
-      expect(axios.put).toHaveBeenCalledWith('/platform-api/entity/TestClass/123', entityRequest);
+      expect(axios.put).toHaveBeenCalledWith('/platform-api/entity', entityRequest);
       expect(result).toEqual(mockResponse);
     });
   });
@@ -177,14 +177,14 @@ describe('Entities API', () => {
   });
 
   describe('executeEntityTransition', () => {
-    it('should call PUT /platform-api/entity/{entityClass}/{entityId} with transactional request body', async () => {
+    it('should call PUT /platform-api/entity with entityClass/entityId in transactional request body', async () => {
       const mockResponse = { data: { success: true } };
       vi.mocked(axios.put).mockResolvedValue(mockResponse);
 
       const result = await entitiesApi.executeEntityTransition('TestClass', '123', 'approve', [{ columnPath: 'field', value: 'value1' }]);
 
       expect(axios.put).toHaveBeenCalledWith(
-        '/platform-api/entity/TestClass/123',
+        '/platform-api/entity',
         {
           entityClass: 'TestClass',
           entityId: '123',
@@ -204,7 +204,7 @@ describe('Entities API', () => {
       await entitiesApi.executeEntityTransition('TestClass', '123', 'approve');
 
       expect(axios.put).toHaveBeenCalledWith(
-        '/platform-api/entity/TestClass/123',
+        '/platform-api/entity',
         {
           entityClass: 'TestClass',
           entityId: '123',
