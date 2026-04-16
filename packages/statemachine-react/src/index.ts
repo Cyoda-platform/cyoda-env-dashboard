@@ -28,6 +28,9 @@ export * from './hooks/useStatemachine';
 export { useStatemachineStore } from './stores/statemachineStore';
 export { useGraphicalStatemachineStore } from './stores/graphicalStatemachineStore';
 
+// Gateways
+export * from './gateways';
+
 // Types
 export * from './types';
 
