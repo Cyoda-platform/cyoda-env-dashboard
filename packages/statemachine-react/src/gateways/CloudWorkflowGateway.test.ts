@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { CloudWorkflowGateway } from './CloudWorkflowGateway';
+import { CannotDeleteLastWorkflowError } from './errors';
 
 vi.mock('@cyoda/http-api-react', () => ({
   axios: {
@@ -156,6 +157,58 @@ describe('CloudWorkflowGateway', () => {
       await expect(gateway.saveWorkflow(null, doc, 'MERGE')).rejects.toThrow(
         /modelRef is required/i
       );
+    });
+  });
+
+  describe('deleteWorkflow', () => {
+    const twoWorkflows = {
+      entityName: 'Customer',
+      modelVersion: 1,
+      workflows: [
+        { version: '1.0', name: 'KeepMe', initialState: 's', states: { s: { transitions: [] } } },
+        { version: '1.0', name: 'DeleteMe', initialState: 's', states: { s: { transitions: [] } } },
+      ],
+    };
+
+    it('exports, filters out the target, and POSTs REPLACE with the remaining workflows', async () => {
+      (axios.get as any).mockResolvedValueOnce({ data: twoWorkflows });
+      (axios.post as any).mockResolvedValueOnce({ data: undefined });
+
+      await gateway.deleteWorkflow({ entityName: 'Customer', modelVersion: 1 }, 'DeleteMe');
+
+      expect(axios.get).toHaveBeenCalledWith('/model/Customer/1/workflow/export');
+      expect(axios.post).toHaveBeenCalledWith('/model/Customer/1/workflow/import', {
+        importMode: 'REPLACE',
+        workflows: [twoWorkflows.workflows[0]],
+      });
+    });
+
+    it('throws CannotDeleteLastWorkflowError when only the target workflow exists', async () => {
+      (axios.get as any).mockResolvedValueOnce({
+        data: { entityName: 'Customer', modelVersion: 1, workflows: [twoWorkflows.workflows[1]] },
+      });
+
+      await expect(
+        gateway.deleteWorkflow({ entityName: 'Customer', modelVersion: 1 }, 'DeleteMe')
+      ).rejects.toThrow(CannotDeleteLastWorkflowError);
+
+      expect(axios.post).not.toHaveBeenCalled();
+    });
+
+    it('treats a missing target as a no-op delete (still throws if it would empty the model)', async () => {
+      (axios.get as any).mockResolvedValueOnce({
+        data: { entityName: 'Customer', modelVersion: 1, workflows: [twoWorkflows.workflows[0]] },
+      });
+
+      // The "target" doesn't exist; the remaining set is the full set; that's >= 1, so just no-op.
+      await gateway.deleteWorkflow({ entityName: 'Customer', modelVersion: 1 }, 'NoSuchWorkflow');
+
+      // Should NOT POST when there is nothing to remove (filter result equals original).
+      expect(axios.post).not.toHaveBeenCalled();
+    });
+
+    it('throws if modelRef is null', async () => {
+      await expect(gateway.deleteWorkflow(null, 'X')).rejects.toThrow(/modelRef is required/i);
     });
   });
 });

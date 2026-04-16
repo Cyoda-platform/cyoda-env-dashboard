@@ -72,8 +72,23 @@ export class CloudWorkflowGateway implements WorkflowGateway {
     await axios.post(importUrl(modelRef), body);
   }
 
-  async deleteWorkflow(_modelRef: ModelRef | null, _name: string): Promise<void> {
-    throw new Error('not implemented');
+  async deleteWorkflow(modelRef: ModelRef | null, name: string): Promise<void> {
+    if (modelRef === null) {
+      throw new Error('CloudWorkflowGateway.deleteWorkflow: modelRef is required');
+    }
+    const response = await axios.get<WorkflowExportResponse>(exportUrl(modelRef));
+    const all = response.data.workflows ?? [];
+    const remaining = all.filter((w) => w.name !== name);
+    if (remaining.length === 0) {
+      throw new CannotDeleteLastWorkflowError(modelRef.entityName, modelRef.modelVersion, name);
+    }
+    if (remaining.length === all.length) {
+      // Target wasn't in the export (already deleted by another caller, or never existed).
+      // Nothing to do.
+      return;
+    }
+    const body: WorkflowImportRequest = { importMode: 'REPLACE', workflows: remaining };
+    await axios.post(importUrl(modelRef), body);
   }
 
   async copyWorkflow(
