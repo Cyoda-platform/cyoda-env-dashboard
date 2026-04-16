@@ -49,7 +49,7 @@ export class LegacyPlatformWorkflowGateway implements WorkflowGateway {
     _modelRef: ModelRef | null,
     doc: WorkflowDoc,
     _mode: 'MERGE'
-  ): Promise<void> {
+  ): Promise<{ key: string }> {
     const store = useStatemachineStore.getState();
     const recordResp = await store.getWorkflow('persisted', doc.name);
     const record = recordResp?.data ?? {};
@@ -62,6 +62,7 @@ export class LegacyPlatformWorkflowGateway implements WorkflowGateway {
       ...(doc.active !== undefined ? { active: doc.active } : {}),
     };
     await store.putWorkflow(merged);
+    return { key: doc.name };
   }
 
   async deleteWorkflow(_modelRef: ModelRef | null, name: string): Promise<void> {
@@ -72,7 +73,7 @@ export class LegacyPlatformWorkflowGateway implements WorkflowGateway {
     _modelRef: ModelRef | null,
     sourceName: string,
     newName: string
-  ): Promise<void> {
+  ): Promise<{ key: string }> {
     const store = useStatemachineStore.getState();
     const copyResp = await store.copyWorkflow('persisted', sourceName);
     const copyId = copyResp?.data?.id;
@@ -82,6 +83,7 @@ export class LegacyPlatformWorkflowGateway implements WorkflowGateway {
     const recordResp = await store.getWorkflow('persisted', copyId);
     const record = recordResp?.data ?? {};
     await store.putWorkflow({ ...record, id: copyId, name: newName });
+    return { key: copyId };
   }
 
   async renameWorkflow(

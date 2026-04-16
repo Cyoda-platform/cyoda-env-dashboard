@@ -78,7 +78,7 @@ describe('LegacyPlatformWorkflowGateway', () => {
       });
       storeApi.putWorkflow.mockResolvedValueOnce({ data: undefined });
 
-      await gateway.copyWorkflow(null, 'wf-source', 'PremiumDuplicate');
+      const result = await gateway.copyWorkflow(null, 'wf-source', 'PremiumDuplicate');
 
       expect(storeApi.copyWorkflow).toHaveBeenCalledWith('persisted', 'wf-source');
       expect(storeApi.getWorkflow).toHaveBeenCalledWith('persisted', 'wf-copy');
@@ -89,6 +89,7 @@ describe('LegacyPlatformWorkflowGateway', () => {
         active: true,
         persisted: true,
       });
+      expect(result).toEqual({ key: 'wf-copy' });
     });
 
     it('propagates errors from any step of the orchestration', async () => {
@@ -125,7 +126,7 @@ describe('LegacyPlatformWorkflowGateway', () => {
         states: { s: { transitions: [] } },
       };
 
-      await gateway.saveWorkflow(null, doc, 'MERGE');
+      const result = await gateway.saveWorkflow(null, doc, 'MERGE');
 
       expect(storeApi.getWorkflow).toHaveBeenCalledWith('persisted', 'wf-7');
       expect(storeApi.putWorkflow).toHaveBeenCalledWith({
@@ -136,6 +137,7 @@ describe('LegacyPlatformWorkflowGateway', () => {
         persisted: true,
         owner: 'someone',
       });
+      expect(result).toEqual({ key: 'wf-7' });
     });
 
     it('preserves the record active value when doc.active is undefined', async () => {
