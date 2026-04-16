@@ -129,4 +129,33 @@ describe('CloudWorkflowGateway', () => {
       );
     });
   });
+
+  describe('saveWorkflow (MERGE)', () => {
+    it('POSTs to the import endpoint with importMode MERGE and a single-element workflows array', async () => {
+      (axios.post as any).mockResolvedValueOnce({ data: undefined });
+
+      const doc = {
+        version: '1.0',
+        name: 'NewOne',
+        initialState: 'draft',
+        active: true,
+        states: { draft: { transitions: [] } },
+      };
+
+      await gateway.saveWorkflow({ entityName: 'Customer', modelVersion: 1 }, doc, 'MERGE');
+
+      expect(axios.post).toHaveBeenCalledWith(
+        '/model/Customer/1/workflow/import',
+        { importMode: 'MERGE', workflows: [doc] }
+      );
+    });
+
+    it('throws if modelRef is null', async () => {
+      const doc = { version: '1.0', name: 'X', initialState: 's', states: {} };
+
+      await expect(gateway.saveWorkflow(null, doc, 'MERGE')).rejects.toThrow(
+        /modelRef is required/i
+      );
+    });
+  });
 });

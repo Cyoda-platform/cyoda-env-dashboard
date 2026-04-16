@@ -61,11 +61,15 @@ export class CloudWorkflowGateway implements WorkflowGateway {
   }
 
   async saveWorkflow(
-    _modelRef: ModelRef | null,
-    _doc: WorkflowDoc,
-    _mode: 'MERGE'
+    modelRef: ModelRef | null,
+    doc: WorkflowDoc,
+    mode: 'MERGE'
   ): Promise<void> {
-    throw new Error('not implemented');
+    if (modelRef === null) {
+      throw new Error('CloudWorkflowGateway.saveWorkflow: modelRef is required');
+    }
+    const body: WorkflowImportRequest = { importMode: mode, workflows: [doc] };
+    await axios.post(importUrl(modelRef), body);
   }
 
   async deleteWorkflow(_modelRef: ModelRef | null, _name: string): Promise<void> {
