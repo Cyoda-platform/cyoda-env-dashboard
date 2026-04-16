@@ -300,5 +300,35 @@ describe('HelperFeatureFlags', () => {
       expect(HelperFeatureFlags.isReportingAvailable()).toBe(false);
     });
   });
+
+  describe('isTasksAvailable', () => {
+    it('should return true when TASKS flag is true and IS_CYODA_GO is not set', () => {
+      import.meta.env.VITE_FEATURE_FLAG_TASKS = true as any;
+      delete (import.meta.env as any).VITE_FEATURE_FLAG_IS_CYODA_GO;
+
+      expect(HelperFeatureFlags.isTasksAvailable()).toBe(true);
+    });
+
+    it('should return false when TASKS flag is true but IS_CYODA_GO is true', () => {
+      import.meta.env.VITE_FEATURE_FLAG_TASKS = true as any;
+      import.meta.env.VITE_FEATURE_FLAG_IS_CYODA_GO = true as any;
+
+      expect(HelperFeatureFlags.isTasksAvailable()).toBe(false);
+    });
+
+    it('should return false when TASKS flag is false', () => {
+      import.meta.env.VITE_FEATURE_FLAG_TASKS = false as any;
+      delete (import.meta.env as any).VITE_FEATURE_FLAG_IS_CYODA_GO;
+
+      expect(HelperFeatureFlags.isTasksAvailable()).toBe(false);
+    });
+
+    it('should return false when neither flag is set', () => {
+      delete (import.meta.env as any).VITE_FEATURE_FLAG_TASKS;
+      delete (import.meta.env as any).VITE_FEATURE_FLAG_IS_CYODA_GO;
+
+      expect(HelperFeatureFlags.isTasksAvailable()).toBe(false);
+    });
+  });
 });
 

@@ -86,5 +86,14 @@ export default class HelperFeatureFlags {
   static isReportingAvailable(): boolean {
     return !this.isCyodaGo();
   }
+
+  /**
+   * Whether the Tasks feature is available in the current backend mode.
+   * Tasks depends on /platform-* endpoints that do not exist on cyoda-go,
+   * AND the existing VITE_FEATURE_FLAG_TASKS opt-in must remain in effect.
+   */
+  static isTasksAvailable(): boolean {
+    return !this.isCyodaGo() && this.isTasksEnabled();
+  }
 }
 
