@@ -183,6 +183,24 @@ nano .env.development.local
 npm run dev -w packages/tableau-react
 ```
 
+### Scenario 5: I'm running against a Cyoda-Go backend
+
+Cyoda-Go is a digital twin of Cyoda Cloud that does **not** expose the legacy `/platform-*` endpoints. To enable cyoda-go mode in the SaaS app:
+
+**Edit:** `apps/saas-app/.env.development.local`
+
+```bash
+VITE_FEATURE_FLAG_IS_CYODA_GO=true
+```
+
+When this flag is set:
+
+- `VITE_FEATURE_FLAG_IS_CYODA_CLOUD` is implicitly `true` — you do **not** need to set both. The `HelperFeatureFlags.isCyodaCloud()` helper enforces the implication in code, so a misconfigured `.env` with only `IS_CYODA_GO=true` still produces correct cloud behavior.
+- The menu shows only **Trino**, **Lifecycle** (Workflows + Instances), and **Entity Viewer**. Reporting, Tasks, and Processing are hidden because their endpoints do not exist on cyoda-go.
+- `VITE_APP_BASE_URL` should point at your cyoda-go instance.
+
+> ⚠️ **Instances is not yet ported to cyoda-go.** The Lifecycle → Instances page is visible in the menu but still calls the legacy `/platform-*` endpoints under the hood and will fail against a cyoda-go backend. The cloud-mode port lands in a later sub-branch of the cyoda-go support build. Workflows and Entity Viewer work as expected.
+
 ---
 
 ## 📊 Configuration Comparison
