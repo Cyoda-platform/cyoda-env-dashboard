@@ -22,6 +22,7 @@ This sub-branch ships the **form editor** with a polymorphic `QueryConditionEdit
 - `QueryConditionEditor` component supporting `simple`, `group`, `function` condition types only.
 - Dirty tracking via React Router v6 `useBlocker` (in-app navigation, including the browser back button) plus `beforeunload` listener (tab close), with AntD `Modal.confirm` for in-app confirmation and the native browser dialog for tab close.
 - Save flow: validate → focus first error in tree on failure → `gateway.saveWorkflow` on success → fetch the server's truth and re-hydrate the store. For `/new`, the URL is replaced with the canonical `/workflow/:entity/:version/:savedName` after save.
+- Small gateway scope-creep: promote `CloudWorkflowGateway.loadWorkflow`'s "Workflow not found" string error to a typed `WorkflowNotFoundError` class (exported from `gateways/errors.ts`). The editor needs to distinguish it from generic save failures to surface a more accurate post-save warning (see §3.8).
 - Scaffold doc for `/new` (defined in §3.9).
 - Unit tests (Vitest): store reducers (including path-rewrite invariants), `validateWorkflowDoc`, each form component in isolation, and a page-level integration test against a mocked gateway.
 - Playwright E2E specs (this is the editor's slice of spec §8.2):
@@ -83,7 +84,12 @@ interface WorkflowEditorState {
   expandedPaths: Set<string>;            // tree expansion, persisted per-page-session
   errors: ValidationIssue[];             // populated on Save attempt; cleared on any structural mutation (see "Errors lifecycle")
 
-  hydrate(initial: WorkflowDoc): void;   // also resets pristine, current, selection, expansion, and errors
+  hydrate(initial: WorkflowDoc, opts?: { preserveView?: boolean }): void;
+  // initial load: resets pristine, current, errors AND selection (defaults to '/'),
+  //               and expansion (defaults to '/' + the first state if any).
+  // preserveView=true (used by the save flow): re-uses the previous selectedPath
+  //               and expandedPaths IF they still resolve in the new doc; the parts
+  //               that don't resolve fall back to the same defaults as initial load.
   setSelected(path: string): void;
   toggleExpand(path: string): void;
 
@@ -126,14 +132,16 @@ const transition = useWorkflowEditorStore(
 | --- | --- |
 | `renameState(old, new)` | Replace prefix `/states/<old>` with `/states/<new>` in `selectedPath` and every entry of `expandedPaths`. Also: if `current.initialState === old`, set it to `new` (see §3.5 — this is the one cascade we do; `transition.next` references are NOT cascaded, by design). |
 | `deleteState(name)` | Drop every path that starts with `/states/<name>` from `expandedPaths`. If `selectedPath` was such a path, set `selectedPath = '/'`. |
-| `addState(name)` | No-op for paths. |
+| `addState(name)` | Set `selectedPath = '/states/<name>'` and add it to `expandedPaths`. The user just clicked "Add state" — they want to edit the new one. |
 | `deleteTransition(stateName, index)` | For every path matching `/states/<stateName>/transitions/<j>` with `j > index`, decrement `j`. Drop the path matching `j === index` and any descendants from `expandedPaths`. If `selectedPath` matched the deleted transition (or was a descendant), set `selectedPath = '/states/<stateName>'`. |
-| `addTransition(stateName)` | No-op for paths (the new transition appears at the end). |
+| `addTransition(stateName)` | Set `selectedPath = '/states/<stateName>/transitions/<lastIndex>'` (the just-added one) and add the parent state and the new transition to `expandedPaths`. |
 | `updateTransition` | No-op for paths. |
 | `add/update/deleteProcessor` | No-op for tree paths (processors aren't tree nodes). The accordion's per-transition expansion-key set lives in component-local state, not in `expandedPaths`. |
 | `setTransitionCriterion` | No-op for paths. |
 
-A small pure helper `rewritePathsAfter(action, state)` keeps these rules in one place; the unit tests in §4.1 cover each rule.
+A small pure helper (or set of per-action helpers — implementation choice) computes the path deltas for each mutation; the unit tests in §4.1 cover each rule.
+
+**Trade-off acknowledged: accordion expansion in TransitionForm is component-local state, not store-tracked.** That means navigating away from a transition and back to it collapses all processor accordion rows. We accept this to keep `expandedPaths` focused on tree-node expansion only — pulling per-transition accordion state into the global store would force every TransitionForm mount/unmount to round-trip through the store, complicating selectors for marginal UX gain. If users complain, the fix is small: add `accordionExpansionByPath: Map<string, Set<number>>` to the store and wire `<Collapse activeKey>` to it.
 
 **Tree-node error bubbling.** A tree node's path is a prefix of any descendant's path (e.g. `/states/draft` is a prefix of `/states/draft/transitions/0/next`). A node renders the red dot iff some `error.path` equals the node's path or starts with `<nodePath>/`. The helper:
 
@@ -255,24 +263,33 @@ Click Save                                           (button is disabled while !
   → try:
       → await gateway.saveWorkflow(modelRef, current, 'MERGE')
       → const fresh = await queryClient.fetchQuery({...cloudWorkflow(modelRef, current.name)})
-      → store.hydrate(fresh)                         (atomic: resets pristine = current = fresh, clears errors)
+      → store.hydrate(fresh, { preserveView: true })   (resets pristine = current = fresh, clears errors,
+                                                       keeps selectedPath/expandedPaths where they still resolve)
       → if route is /new:
           → navigate(`/workflow/${entityName}/${modelVersion}/${current.name}`, { replace: true })
       → message.success('Workflow saved')
   → catch MustHaveActiveWorkflowError:
       → message.error('Cannot deactivate the only active workflow')
+  → catch WorkflowNotFoundError (typed; promoted from CloudWorkflowGateway.loadWorkflow's existing "Workflow X not found" — see "Post-save navigation" below):
+      → message.warning('Save succeeded but the saved workflow could not be re-loaded by name. Refresh the workflows list.')
+      → (this is the surfacing point for backend name-rewrite; see §5 risks)
   → catch err:
       → message.error(err.message)
   → finally setSaving(false)
 ```
 
-**Why `fetchQuery` and not `invalidateQueries`?** `invalidateQueries` schedules a refetch but the success-handler order is non-deterministic relative to subsequent edits — if the user types into a field after Save fires the mutation but before the refetch lands, the refetch's `hydrate(serverDoc)` clobbers their typing. The Save button being disabled during `saving` (already specified) closes that window, but only `await fetchQuery` makes the contract explicit: "Save means: send to server, then take the server's truth." No `acceptCurrentAsPristine` action — `hydrate` does the same job atomically.
+**Why `fetchQuery` and not `invalidateQueries`?** `invalidateQueries` schedules a refetch but the success-handler order is non-deterministic relative to subsequent edits — if the user types into a field after Save fires the mutation but before the refetch lands, the refetch's `hydrate(serverDoc)` clobbers their typing. The Save button being disabled during `saving` (already specified) closes that window, but only `await fetchQuery` makes the contract explicit: "Save means: send to server, then take the server's truth." `hydrate` with `preserveView: true` keeps the user where they were in the tree — `hydrate` without that flag would teleport them back to `/`, which is correct semantics for initial load but wrong for "I just saved my edits to /states/review/transitions/3".
 
-**Post-save navigation for `/new`.** Before the save, the route is `/workflow/<entity>/<version>/new` and `current.name` is whatever the user typed. After successful save, the workflow has a canonical identity at `/workflow/<entity>/<version>/<name>`. The page calls `navigate(...{ replace: true })` so a browser refresh on that URL re-loads the saved workflow rather than re-scaffolding an empty doc.
+**Post-save navigation for `/new`.** Before the save, the route is `/workflow/<entity>/<version>/new` and `current.name` is whatever the user typed. After successful save, the workflow has a canonical identity at `/workflow/<entity>/<version>/<name>`. The page calls `navigate(...{ replace: true })` so a browser refresh on that URL re-loads the saved workflow rather than re-scaffolding an empty doc. **Caveat:** this assumes the backend preserves the workflow name verbatim. The cloud `POST .../workflow/import` returns no body (the OpenAPI documents only `200 — Workflows imported successfully`), so the gateway can't observe a server-side rewrite directly. The fall-back path is the post-save fetch failing — we detect it by matching the `loadWorkflow` error message (which is the existing `Workflow "<name>" not found in model ...` from `CloudWorkflowGateway.loadWorkflow`, sub-branch 3) and surface the warning toast. To avoid relying on string-matching, this sub-branch promotes that error to a typed class `WorkflowNotFoundError` exported from `gateways/errors.ts` (a small scope-creep on the gateway, justified because the editor needs to distinguish it from generic save failures). See §5 for the risk note.
+
+**MERGE handles both create and update.** The cloud `WorkflowImportMode.MERGE` is documented as "incremental update of the specified workflows. Any unspecified configurations remain unchanged." Empirically (sub-branch 3's `copyWorkflow` uses MERGE to materialize a renamed copy of an existing workflow, observed working in the live env), MERGE upserts: if the workflow name doesn't exist on the model, it's added; if it does, it's overwritten. So `/new` saving with MERGE is correct — no need to branch the save call by route.
 
 **`MustHaveActiveWorkflowError` reachability.** This error fires only when an existing workflow is being saved with `active: false` and would leave the model with no active workflows. It is **not** reachable from `/new` (the scaffold sets `active: true`). Spec §4.2 includes a test on the edit path; the `/new` create test does not.
 
-The Save button lives in a sticky footer. Disabled while `!isDirty || saving`, shows a loading spinner during the in-flight save.
+**Save bar layout.** Sticky footer, two buttons:
+
+- **Save** — primary, disabled while `!isDirty || saving`, shows a loading spinner during the in-flight save.
+- **Discard changes** — secondary, disabled while `!isDirty || saving`. On click, opens an AntD `Modal.confirm` ("Discard all unsaved changes? This cannot be undone.") and on confirm calls `store.resetToPristine()`. This is the affordance that wires `resetToPristine` to the UI and gives users a way out other than navigate-away-then-confirm.
 
 ### 3.9 Routing & data fetch
 
@@ -288,12 +305,13 @@ Sub-branch 4 swaps `WorkflowEditorCloudPlaceholder` for `WorkflowEditorCloud` an
 `WorkflowEditorCloud`:
 
 1. Reads `useParams<{entityName, modelVersion, workflowName?}>()`.
-2. Validates and computes `modelRef`. If `Number(modelVersion)` is `NaN` (or `entityName` is empty), the page short-circuits and renders an AntD `Result status="404"` with a back-to-workflows link. We do **not** propagate `NaN` into a fetch and surface a backend error — fail at the URL parse, not at the API boundary.
-3. Otherwise computes `modelRef = { entityName, modelVersion: Number(modelVersion) }`.
-4. If `workflowName` is set: `useQuery({ queryKey: [...statemachineKeys.cloudWorkflow(modelRef, workflowName)], queryFn: () => gateway.loadWorkflow(modelRef, workflowName) })`.
-5. If `workflowName` is undefined: hydrate the store with the scaffold doc (no fetch). The scaffold is `{ version: '1.0', name: '', initialState: 'draft', states: { draft: {} }, active: true }` — note `name` is empty, so the validator will reject Save until the user fills it.
-6. On `useQuery` success: `store.hydrate(data)` once.
-7. Renders the layout once `pristine !== null`.
+2. Computes `const isBadRef = !entityName || Number.isNaN(Number(modelVersion))`. **All hooks are called unconditionally** (rules-of-hooks compliance — see also the §3.5/§3.7 note in sub-branch 3 where the same pattern bit us). The `useQuery` below uses `enabled: !isBadRef && !!workflowName` so the bad-ref render path doesn't fetch.
+3. Computes `modelRef = { entityName, modelVersion: Number(modelVersion) }` for use inside the query.
+4. `useQuery({ queryKey: [...statemachineKeys.cloudWorkflow(modelRef, workflowName ?? '')], queryFn: () => gateway.loadWorkflow(modelRef, workflowName!), enabled: !isBadRef && !!workflowName })`.
+5. After all hooks: if `isBadRef`, return an AntD `Result status="404"` with a back-to-workflows link. **Do not** propagate `NaN` into a fetch and surface a backend error — fail at the URL parse, not at the API boundary.
+6. If `workflowName` is undefined and not bad-ref: in a `useEffect`, hydrate the store with the scaffold doc once. The scaffold is `{ version: '1.0', name: '', initialState: 'draft', states: { draft: {} }, active: true }` — note `name` is empty, so the validator will reject Save until the user fills it.
+7. On `useQuery` success: in a `useEffect`, `store.hydrate(data)` once.
+8. Renders the layout once `pristine !== null`.
 
 `statemachineKeys.cloudWorkflow(modelRef, name)` is a new key factory entry alongside the existing `cloudWorkflows(modelRef)` key.
 
@@ -301,12 +319,12 @@ Sub-branch 4 swaps `WorkflowEditorCloudPlaceholder` for `WorkflowEditorCloud` an
 
 ### 4.1 Unit (Vitest)
 
-- `workflowEditorStore.test.ts` — every action: hydrate; updateWorkflowProps; renameState (cascades only `initialState`, NOT `transition.next` — see §3.5); addState / deleteState; addTransition / deleteTransition / updateTransition; addProcessor / updateProcessor / deleteProcessor; setTransitionCriterion; resetToPristine. **Plus path-rewrite invariants** (one test per row in §3.2's path-rewrite table): renameState rewrites `selectedPath` and `expandedPaths`; deleteState clears descendants and falls `selectedPath` back to `/`; deleteTransition shifts indices in both selection and expansion; mutations clear `errors`.
-- `validateWorkflowDoc.test.ts` — table-driven: one test per rule from §3.4 (12 rules), both passing and failing cases per rule. **Plus a perf microbenchmark** (`bench` block) that runs `validateWorkflowDoc` against a synthetic 500-state, 5-transitions-each fixture and asserts a runtime ceiling (e.g. < 50ms on the test runner). Catches accidental O(n²) regressions early.
+- `workflowEditorStore.test.ts` — every action: hydrate (default and `preserveView: true`); updateWorkflowProps; renameState (cascades only `initialState`, NOT `transition.next` — see §3.5); addState / deleteState; addTransition / deleteTransition / updateTransition; addProcessor / updateProcessor / deleteProcessor; setTransitionCriterion; resetToPristine. **Plus path-rewrite invariants** (one test per row in §3.2's path-rewrite table): renameState rewrites `selectedPath` and `expandedPaths`; deleteState clears descendants and falls `selectedPath` back to `/`; deleteTransition shifts indices in both selection and expansion; addState/addTransition auto-select the new node; mutations clear `errors`. **Plus a `hydrate(_, { preserveView: true })` test** that confirms a still-valid `selectedPath` survives hydration and a no-longer-valid one falls back to `/`.
+- `validateWorkflowDoc.test.ts` — table-driven: one test per rule from §3.4 (12 rules), both passing and failing cases per rule. **Plus a perf-ceiling test** — a regular `it()` block (not Vitest's `bench` — `bench` reports comparative statistics, it doesn't fail on a threshold) that runs `validateWorkflowDoc` against a synthetic 500-state, 5-transitions-each fixture five times, takes the **median** elapsed time via `performance.now()`, and asserts `expect(medianMs).toBeLessThan(100)`. The threshold is generous to absorb runner jitter; the point is to catch O(n²) regressions, not to micro-tune. Median (not min/mean) because GC pauses on a single iteration would otherwise either give a spurious pass (lucky run) or a spurious fail (unlucky run).
 - `WorkflowTree.test.tsx` — renders the right node hierarchy from a fixture doc; clicking a node calls `setSelected`; red-dot suffix appears for any node whose path is a prefix of an error path (the §3.2 `nodeHasError` rule, asserted with both equal-path and prefix-path errors).
 - `WorkflowPropsForm.test.tsx`, `StateForm.test.tsx`, `TransitionForm.test.tsx`, `ProcessorRow.test.tsx` — render with a fixture, edit one field, assert the store action was called with the right path.
 - `QueryConditionEditor.test.tsx` — renders empty / simple / group / function; nested group with two simples round-trips through `value`/`onChange`. **Type-switch tests, both branches:** (a) switching from a non-trivial group to simple shows the confirm dialog; clicking Cancel preserves the original value; clicking OK applies the type change; (b) switching from a fresh empty group to simple does NOT show the dialog.
-- `WorkflowEditorCloud.test.tsx` (integration) — mocked gateway: load → edit → save calls `gateway.saveWorkflow` with the right doc; **after save on /new, asserts `navigate` was called with the canonical URL and `replace: true`**; validation failure surfaces in the tree; dirty guard fires `Modal.confirm` on attempted nav.
+- `WorkflowEditorCloud.test.tsx` (integration) — mocked gateway: load → edit → save calls `gateway.saveWorkflow` with the right doc; **after save, the user's selectedPath is preserved** (asserts `preserveView: true` was passed to `hydrate`); **after save on /new, asserts `navigate` was called with the canonical URL and `replace: true`**; **after save when the post-save fetch throws "Workflow X not found", asserts the warning toast** (the WorkflowNotFoundAfterSaveError surfacing from §3.8); validation failure surfaces in the tree; dirty guard fires `Modal.confirm` on attempted nav; **Discard-changes button click** confirms then calls `resetToPristine`, and the page returns to pristine state.
 
 ### 4.2 E2E (Playwright)
 
@@ -388,6 +406,7 @@ export const test = base.extend<{ model: ModelRef }>({
 - **Renaming a state — `initialState` cascades, `transition.next` does not.** Renaming a state rewrites `current.initialState` if it pointed at the old name (singular reference, almost never intentionally orphaned), but does NOT rewrite `transition.next` references across states (potentially many; auto-refactors of cross-state references hide intent and are easy to get wrong). The validator surfaces dangling `next` refs and the user fixes them by hand. If this proves clumsy in practice, a follow-up sub-branch can add an opt-in "Rewrite references" affordance.
 - **Plain-string `value` in simple conditions.** A `simple` condition's `value` field is sent as a string; a numeric backend field will receive the literal `"42"` and the failure mode is "query matches nothing," not an error. Helper text under the input warns about this and points users at function conditions for typed comparisons. Out of scope for this sub-branch to add JSON-aware coercion.
 - **Dirty flag stays true after edit-then-revert.** The reference-equality `current !== pristine` check returns true even after the user types a character and deletes it (Immer produces a new object on every mutation). A structural deep-equal would be more confusing than helpful (it would silently swallow "I tried that, undid it, will try something else" intent), so this is accepted.
+- **Backend may rewrite the workflow name on import.** The cloud `POST .../workflow/import` endpoint returns no body — only a `200` status — so the gateway can't observe whether the server slugified, normalized case, or otherwise rewrote `doc.name`. The current contract assumes the backend preserves names verbatim (consistent with how sub-branch 3's `copyWorkflow` worked in the live env), and the post-save `loadWorkflow` fetch detects a mismatch by failing with `Workflow "X" not found`. §3.8 surfaces that as a `WorkflowNotFoundAfterSaveError` warning toast directing the user to refresh the workflows list. If we ever discover the backend does rewrite names, the right fix is for the gateway to do an export and find-by-best-match heuristic, or for the cloud API to start returning the canonical name in the import response — neither is in scope here.
 - **`E2E_*` model name pollution:** if the cleanup step crashes hard (e.g. node process killed), models named `E2E_*` accumulate on the dev cyoda env. Tolerable — they're trivially identifiable and deletable manually; a periodic cleanup script is out of scope.
 
 ## 6. Branching and delivery
