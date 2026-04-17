@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { WorkflowsCloudStub } from './WorkflowsCloudStub';
 import { getWorkflowGateway } from '../gateways';
+import { makeMockGateway } from '../gateways/__test_utils__/mockGateway';
 
 vi.mock('../gateways', async () => {
   const actual = await vi.importActual<any>('../gateways');
@@ -28,14 +29,9 @@ describe('WorkflowsCloudStub', () => {
   });
 
   it('renders the model picker controls', () => {
-    vi.mocked(getWorkflowGateway).mockReturnValue({
+    vi.mocked(getWorkflowGateway).mockReturnValue(makeMockGateway({
       listWorkflows: vi.fn().mockResolvedValue([]),
-      loadWorkflow: vi.fn(),
-      saveWorkflow: vi.fn(),
-      deleteWorkflow: vi.fn(),
-      copyWorkflow: vi.fn(),
-      renameWorkflow: vi.fn(),
-    } as any);
+    }));
 
     renderWithClient();
 
@@ -49,14 +45,7 @@ describe('WorkflowsCloudStub', () => {
       { name: 'Premium', desc: 'p', active: true, initialState: 'draft' },
       { name: 'Standard', desc: undefined, active: false, initialState: 'pending' },
     ]);
-    vi.mocked(getWorkflowGateway).mockReturnValue({
-      listWorkflows,
-      loadWorkflow: vi.fn(),
-      saveWorkflow: vi.fn(),
-      deleteWorkflow: vi.fn(),
-      copyWorkflow: vi.fn(),
-      renameWorkflow: vi.fn(),
-    } as any);
+    vi.mocked(getWorkflowGateway).mockReturnValue(makeMockGateway({ listWorkflows }));
 
     renderWithClient();
 

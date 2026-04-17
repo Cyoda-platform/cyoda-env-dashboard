@@ -27,6 +27,7 @@ import {
   statemachineKeys,
 } from './useStatemachine';
 import { getWorkflowGateway } from '../gateways';
+import { makeMockGateway } from '../gateways/__test_utils__/mockGateway';
 
 vi.mock('../gateways', async () => {
   const actual = await vi.importActual<any>('../gateways');
@@ -126,14 +127,7 @@ describe('useStatemachine hooks', () => {
         },
       ];
       const listWorkflows = vi.fn().mockResolvedValue(summaries);
-      vi.mocked(getWorkflowGateway).mockReturnValue({
-        listWorkflows,
-        loadWorkflow: vi.fn(),
-        saveWorkflow: vi.fn(),
-        deleteWorkflow: vi.fn(),
-        copyWorkflow: vi.fn(),
-        renameWorkflow: vi.fn(),
-      } as any);
+      vi.mocked(getWorkflowGateway).mockReturnValue(makeMockGateway({ listWorkflows }));
 
       const { result } = renderHook(() => useWorkflowsList(), { wrapper });
 
@@ -153,14 +147,7 @@ describe('useStatemachine hooks', () => {
         },
       ];
       const listWorkflows = vi.fn().mockResolvedValue(summaries);
-      vi.mocked(getWorkflowGateway).mockReturnValue({
-        listWorkflows,
-        loadWorkflow: vi.fn(),
-        saveWorkflow: vi.fn(),
-        deleteWorkflow: vi.fn(),
-        copyWorkflow: vi.fn(),
-        renameWorkflow: vi.fn(),
-      } as any);
+      vi.mocked(getWorkflowGateway).mockReturnValue(makeMockGateway({ listWorkflows }));
 
       const modelRef = { entityName: 'Customer', modelVersion: 1 };
       const { result } = renderHook(
@@ -180,14 +167,7 @@ describe('useStatemachine hooks', () => {
     it('calls gateway.listWorkflows with the provided modelRef and returns the result', async () => {
       const summaries = [{ name: 'A', initialState: 's', active: true }];
       const listWorkflows = vi.fn().mockResolvedValue(summaries);
-      vi.mocked(getWorkflowGateway).mockReturnValue({
-        listWorkflows,
-        loadWorkflow: vi.fn(),
-        saveWorkflow: vi.fn(),
-        deleteWorkflow: vi.fn(),
-        copyWorkflow: vi.fn(),
-        renameWorkflow: vi.fn(),
-      } as any);
+      vi.mocked(getWorkflowGateway).mockReturnValue(makeMockGateway({ listWorkflows }));
 
       const modelRef = { entityName: 'Customer', modelVersion: 1 };
       const { result } = renderHook(() => useWorkflowsList(modelRef), { wrapper });
@@ -200,14 +180,7 @@ describe('useStatemachine hooks', () => {
 
     it('passes null modelRef through to the gateway', async () => {
       const listWorkflows = vi.fn().mockResolvedValue([]);
-      vi.mocked(getWorkflowGateway).mockReturnValue({
-        listWorkflows,
-        loadWorkflow: vi.fn(),
-        saveWorkflow: vi.fn(),
-        deleteWorkflow: vi.fn(),
-        copyWorkflow: vi.fn(),
-        renameWorkflow: vi.fn(),
-      } as any);
+      vi.mocked(getWorkflowGateway).mockReturnValue(makeMockGateway({ listWorkflows }));
 
       const { result } = renderHook(() => useWorkflowsList(null), { wrapper });
 
@@ -265,14 +238,7 @@ describe('useStatemachine hooks', () => {
   describe('useCreateWorkflow', () => {
     it('should create a workflow', async () => {
       const saveWorkflow = vi.fn().mockResolvedValue(undefined);
-      vi.mocked(getWorkflowGateway).mockReturnValue({
-        listWorkflows: vi.fn(),
-        loadWorkflow: vi.fn(),
-        saveWorkflow,
-        deleteWorkflow: vi.fn(),
-        copyWorkflow: vi.fn(),
-        renameWorkflow: vi.fn(),
-      } as any);
+      vi.mocked(getWorkflowGateway).mockReturnValue(makeMockGateway({ saveWorkflow }));
 
       const { result } = renderHook(() => useCreateWorkflow(), { wrapper });
 
@@ -292,14 +258,7 @@ describe('useStatemachine hooks', () => {
   describe('useUpdateWorkflow', () => {
     it('should update a workflow', async () => {
       const saveWorkflow = vi.fn().mockResolvedValue(undefined);
-      vi.mocked(getWorkflowGateway).mockReturnValue({
-        listWorkflows: vi.fn(),
-        loadWorkflow: vi.fn(),
-        saveWorkflow,
-        deleteWorkflow: vi.fn(),
-        copyWorkflow: vi.fn(),
-        renameWorkflow: vi.fn(),
-      } as any);
+      vi.mocked(getWorkflowGateway).mockReturnValue(makeMockGateway({ saveWorkflow }));
 
       const { result } = renderHook(() => useUpdateWorkflow(), { wrapper });
 
@@ -319,14 +278,7 @@ describe('useStatemachine hooks', () => {
   describe('useDeleteWorkflow', () => {
     it('should delete a workflow', async () => {
       const deleteWorkflow = vi.fn().mockResolvedValue(undefined);
-      vi.mocked(getWorkflowGateway).mockReturnValue({
-        listWorkflows: vi.fn(),
-        loadWorkflow: vi.fn(),
-        saveWorkflow: vi.fn(),
-        deleteWorkflow,
-        copyWorkflow: vi.fn(),
-        renameWorkflow: vi.fn(),
-      } as any);
+      vi.mocked(getWorkflowGateway).mockReturnValue(makeMockGateway({ deleteWorkflow }));
 
       const { result } = renderHook(() => useDeleteWorkflow(), { wrapper });
 
@@ -344,14 +296,7 @@ describe('useStatemachine hooks', () => {
   describe('useCopyWorkflow', () => {
     it('should copy a workflow', async () => {
       const copyWorkflow = vi.fn().mockResolvedValue(undefined);
-      vi.mocked(getWorkflowGateway).mockReturnValue({
-        listWorkflows: vi.fn(),
-        loadWorkflow: vi.fn(),
-        saveWorkflow: vi.fn(),
-        deleteWorkflow: vi.fn(),
-        copyWorkflow,
-        renameWorkflow: vi.fn(),
-      } as any);
+      vi.mocked(getWorkflowGateway).mockReturnValue(makeMockGateway({ copyWorkflow }));
 
       const { result } = renderHook(() => useCopyWorkflow(), { wrapper });
 
@@ -402,14 +347,7 @@ describe('useStatemachine hooks', () => {
     it('calls gateway.loadWorkflow with modelRef + name', async () => {
       const doc = { version: '1.0', name: 'X', initialState: 's', states: {} };
       const loadWorkflow = vi.fn().mockResolvedValue(doc);
-      vi.mocked(getWorkflowGateway).mockReturnValue({
-        listWorkflows: vi.fn(),
-        loadWorkflow,
-        saveWorkflow: vi.fn(),
-        deleteWorkflow: vi.fn(),
-        copyWorkflow: vi.fn(),
-        renameWorkflow: vi.fn(),
-      } as any);
+      vi.mocked(getWorkflowGateway).mockReturnValue(makeMockGateway({ loadWorkflow }));
 
       const modelRef = { entityName: 'Customer', modelVersion: 1 };
       const { result } = renderHook(() => useWorkflowDoc(modelRef, 'X'), { wrapper });
@@ -422,14 +360,7 @@ describe('useStatemachine hooks', () => {
 
     it('does not run when name is empty', () => {
       const loadWorkflow = vi.fn();
-      vi.mocked(getWorkflowGateway).mockReturnValue({
-        listWorkflows: vi.fn(),
-        loadWorkflow,
-        saveWorkflow: vi.fn(),
-        deleteWorkflow: vi.fn(),
-        copyWorkflow: vi.fn(),
-        renameWorkflow: vi.fn(),
-      } as any);
+      vi.mocked(getWorkflowGateway).mockReturnValue(makeMockGateway({ loadWorkflow }));
 
       renderHook(() => useWorkflowDoc({ entityName: 'X', modelVersion: 1 }, ''), { wrapper });
 
@@ -440,14 +371,7 @@ describe('useStatemachine hooks', () => {
   describe('useCreateWorkflow / useUpdateWorkflow — gateway-backed', () => {
     it('useCreateWorkflow.mutateAsync calls gateway.saveWorkflow with MERGE and returns the gateway key', async () => {
       const saveWorkflow = vi.fn().mockResolvedValue({ key: 'X' });
-      vi.mocked(getWorkflowGateway).mockReturnValue({
-        listWorkflows: vi.fn(),
-        loadWorkflow: vi.fn(),
-        saveWorkflow,
-        deleteWorkflow: vi.fn(),
-        copyWorkflow: vi.fn(),
-        renameWorkflow: vi.fn(),
-      } as any);
+      vi.mocked(getWorkflowGateway).mockReturnValue(makeMockGateway({ saveWorkflow }));
 
       const { result: hookResult } = renderHook(() => useCreateWorkflow(), { wrapper });
 
@@ -461,14 +385,7 @@ describe('useStatemachine hooks', () => {
 
     it('useUpdateWorkflow.mutateAsync calls gateway.saveWorkflow with MERGE and returns the gateway key', async () => {
       const saveWorkflow = vi.fn().mockResolvedValue({ key: 'X' });
-      vi.mocked(getWorkflowGateway).mockReturnValue({
-        listWorkflows: vi.fn(),
-        loadWorkflow: vi.fn(),
-        saveWorkflow,
-        deleteWorkflow: vi.fn(),
-        copyWorkflow: vi.fn(),
-        renameWorkflow: vi.fn(),
-      } as any);
+      vi.mocked(getWorkflowGateway).mockReturnValue(makeMockGateway({ saveWorkflow }));
 
       const { result: hookResult } = renderHook(() => useUpdateWorkflow(), { wrapper });
 
@@ -483,14 +400,7 @@ describe('useStatemachine hooks', () => {
   describe('useDeleteWorkflow — gateway-backed', () => {
     it('mutateAsync calls gateway.deleteWorkflow with modelRef + name', async () => {
       const deleteWorkflow = vi.fn().mockResolvedValue(undefined);
-      vi.mocked(getWorkflowGateway).mockReturnValue({
-        listWorkflows: vi.fn(),
-        loadWorkflow: vi.fn(),
-        saveWorkflow: vi.fn(),
-        deleteWorkflow,
-        copyWorkflow: vi.fn(),
-        renameWorkflow: vi.fn(),
-      } as any);
+      vi.mocked(getWorkflowGateway).mockReturnValue(makeMockGateway({ deleteWorkflow }));
 
       const { result } = renderHook(() => useDeleteWorkflow(), { wrapper });
 
@@ -502,14 +412,7 @@ describe('useStatemachine hooks', () => {
 
     it('invalidates the workflows list on FAILURE as well as success (onSettled, not onSuccess)', async () => {
       const deleteWorkflow = vi.fn().mockRejectedValue(new Error('server rejected'));
-      vi.mocked(getWorkflowGateway).mockReturnValue({
-        listWorkflows: vi.fn(),
-        loadWorkflow: vi.fn(),
-        saveWorkflow: vi.fn(),
-        deleteWorkflow,
-        copyWorkflow: vi.fn(),
-        renameWorkflow: vi.fn(),
-      } as any);
+      vi.mocked(getWorkflowGateway).mockReturnValue(makeMockGateway({ deleteWorkflow }));
 
       // Spy on the QueryClient that the wrapper provides.
       // We capture it by rendering a probe component first.
@@ -538,14 +441,7 @@ describe('useStatemachine hooks', () => {
   describe('useCopyWorkflow — gateway-backed', () => {
     it('mutateAsync calls gateway.copyWorkflow with (modelRef, sourceName, newName) and returns the gateway key', async () => {
       const copyWorkflow = vi.fn().mockResolvedValue({ key: 'B' });
-      vi.mocked(getWorkflowGateway).mockReturnValue({
-        listWorkflows: vi.fn(),
-        loadWorkflow: vi.fn(),
-        saveWorkflow: vi.fn(),
-        deleteWorkflow: vi.fn(),
-        copyWorkflow,
-        renameWorkflow: vi.fn(),
-      } as any);
+      vi.mocked(getWorkflowGateway).mockReturnValue(makeMockGateway({ copyWorkflow }));
 
       const { result: hookResult } = renderHook(() => useCopyWorkflow(), { wrapper });
 
@@ -560,14 +456,7 @@ describe('useStatemachine hooks', () => {
   describe('useRenameWorkflow', () => {
     it('mutateAsync calls gateway.renameWorkflow with (modelRef, oldName, newName)', async () => {
       const renameWorkflow = vi.fn().mockResolvedValue(undefined);
-      vi.mocked(getWorkflowGateway).mockReturnValue({
-        listWorkflows: vi.fn(),
-        loadWorkflow: vi.fn(),
-        saveWorkflow: vi.fn(),
-        deleteWorkflow: vi.fn(),
-        copyWorkflow: vi.fn(),
-        renameWorkflow,
-      } as any);
+      vi.mocked(getWorkflowGateway).mockReturnValue(makeMockGateway({ renameWorkflow }));
 
       const { result } = renderHook(() => useRenameWorkflow(), { wrapper });
 
