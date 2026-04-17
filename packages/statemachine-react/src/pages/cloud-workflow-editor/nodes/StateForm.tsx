@@ -10,8 +10,7 @@ export interface StateFormProps {
 
 export const StateForm: React.FC<StateFormProps> = ({ stateName }) => {
   const store = useContext(WorkflowEditorStoreContext)!;
-  const transitions = useWorkflowEditorStore((s) => s.current?.states[stateName]?.transitions ?? []);
-  const count = transitions.length;
+  const count = useWorkflowEditorStore((s) => s.current?.states[stateName]?.transitions?.length ?? 0);
   return (
     <Space direction="vertical" style={{ width: '100%' }}>
       <Title level={4}>State: {stateName}</Title>
