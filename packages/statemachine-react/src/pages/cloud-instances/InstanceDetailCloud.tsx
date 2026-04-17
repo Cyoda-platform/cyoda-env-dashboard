@@ -21,10 +21,12 @@ export const InstanceDetailCloud: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const entityName = searchParams.get('entityName') ?? '';
-  const modelVersion = Number(searchParams.get('modelVersion'));
+  const modelVersionParam = searchParams.get('modelVersion');
+  const modelVersion = modelVersionParam === null ? NaN : Number(modelVersionParam);
   const workflowName = searchParams.get('workflowName') ?? '';
-  const modelRef: ModelRef | null = entityName && !Number.isNaN(modelVersion)
-    ? { entityName, modelVersion } : null;
+  const modelRef = useMemo<ModelRef | null>(() => (
+    entityName && !Number.isNaN(modelVersion) ? { entityName, modelVersion } : null
+  ), [entityName, modelVersion]);
 
   const items = useMemo(() => [
     { key: 'details', label: 'Details', children: <DetailsTab entityId={entityId!} modelRef={modelRef} workflowName={workflowName} /> },
