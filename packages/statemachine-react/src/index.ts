@@ -5,6 +5,7 @@
 
 // Pages
 export { Workflows } from './pages/Workflows';
+export { WorkflowsCloudStub } from './pages/WorkflowsCloudStub';
 export { Instances } from './pages/Instances';
 export { InstanceDetail } from './pages/InstanceDetail';
 export { WorkflowDetail } from './pages/WorkflowDetail';
@@ -27,6 +28,9 @@ export * from './hooks/useStatemachine';
 // Stores
 export { useStatemachineStore } from './stores/statemachineStore';
 export { useGraphicalStatemachineStore } from './stores/graphicalStatemachineStore';
+
+// Gateways
+export * from './gateways';
 
 // Types
 export * from './types';

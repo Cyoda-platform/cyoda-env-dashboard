@@ -15,13 +15,19 @@ import type {
   InstancesRequest,
   PersistedType,
 } from '../types';
+import { getWorkflowGateway } from '../gateways';
+import type { ModelRef, WorkflowDoc, WorkflowSummary } from '../gateways/workflowDocTypes';
 
 // Query Keys
 export const statemachineKeys = {
   all: ['statemachine'] as const,
   workflows: () => [...statemachineKeys.all, 'workflows'] as const,
-  workflowsList: (entityClassName?: string) => [...statemachineKeys.workflows(), 'list', entityClassName] as const,
-  workflow: (persistedType: PersistedType, workflowId: string) => [...statemachineKeys.workflows(), persistedType, workflowId] as const,
+  workflowsList: (modelRef?: ModelRef | null, entityClassName?: string) =>
+    [...statemachineKeys.workflows(), 'list', modelRef ?? null, entityClassName] as const,
+  workflow: (persistedType: PersistedType, workflowId: string) =>
+    [...statemachineKeys.workflows(), persistedType, workflowId] as const,
+  workflowDoc: (modelRef: ModelRef | null, name: string) =>
+    [...statemachineKeys.workflows(), 'doc', modelRef, name] as const,
   workflowEnabledTypes: () => [...statemachineKeys.workflows(), 'enabled-types'] as const,
   
   states: () => [...statemachineKeys.all, 'states'] as const,
@@ -64,26 +70,19 @@ export function useWorkflowEnabledTypes() {
   });
 }
 
-export function useWorkflowsList(entityClassName?: string) {
-  const store = useStatemachineStore();
-
-  return useQuery({
-    queryKey: statemachineKeys.workflowsList(entityClassName),
+export function useWorkflowsList(modelRef: ModelRef | null = null): ReturnType<typeof useQuery<WorkflowSummary[]>> {
+  return useQuery<WorkflowSummary[]>({
+    queryKey: statemachineKeys.workflowsList(modelRef),
     queryFn: async () => {
-      const response = await store.getAllWorkflowsList(entityClassName);
-      // Ensure we always return an array
-      const data = response.data;
-      if (Array.isArray(data)) {
-        return data;
-      }
-      return [];
+      const gateway = getWorkflowGateway();
+      return gateway.listWorkflows(modelRef);
     },
   });
 }
 
 export function useWorkflow(persistedType: PersistedType, workflowId: string, enabled = true) {
   const store = useStatemachineStore();
-  
+
   return useQuery({
     queryKey: statemachineKeys.workflow(persistedType, workflowId),
     queryFn: async () => {
@@ -94,14 +93,24 @@ export function useWorkflow(persistedType: PersistedType, workflowId: string, en
   });
 }
 
+export function useWorkflowDoc(modelRef: ModelRef | null, name: string, enabled = true) {
+  return useQuery<WorkflowDoc>({
+    queryKey: statemachineKeys.workflowDoc(modelRef, name),
+    queryFn: async () => {
+      const gateway = getWorkflowGateway();
+      return gateway.loadWorkflow(modelRef, name);
+    },
+    enabled: enabled && !!name,
+  });
+}
+
 export function useCreateWorkflow() {
   const queryClient = useQueryClient();
-  const store = useStatemachineStore();
-  
+
   return useMutation({
-    mutationFn: async (form: WorkflowForm) => {
-      const response = await store.postWorkflow(form);
-      return response.data;
+    mutationFn: async ({ modelRef, doc }: { modelRef: ModelRef | null; doc: WorkflowDoc }) => {
+      const gateway = getWorkflowGateway();
+      return gateway.saveWorkflow(modelRef, doc, 'MERGE');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: statemachineKeys.workflows() });
@@ -111,53 +120,30 @@ export function useCreateWorkflow() {
 
 export function useUpdateWorkflow() {
   const queryClient = useQueryClient();
-  const store = useStatemachineStore();
-  
+
   return useMutation({
-    mutationFn: async (form: WorkflowForm & { id: string }) => {
-      const response = await store.putWorkflow(form);
-      return response.data;
+    mutationFn: async ({ modelRef, doc }: { modelRef: ModelRef | null; doc: WorkflowDoc }) => {
+      const gateway = getWorkflowGateway();
+      return gateway.saveWorkflow(modelRef, doc, 'MERGE');
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: statemachineKeys.workflows() });
-      queryClient.invalidateQueries({ queryKey: statemachineKeys.workflow('persisted', variables.id) });
+      queryClient.invalidateQueries({
+        queryKey: statemachineKeys.workflowDoc(variables.modelRef, variables.doc.name),
+      });
     },
   });
 }
 
 export function useDeleteWorkflow() {
   const queryClient = useQueryClient();
-  const store = useStatemachineStore();
 
   return useMutation({
-    mutationFn: async (workflowId: string) => {
-      const response = await store.deleteWorkflow(workflowId);
-      return response.data;
-    },
-    onMutate: async (workflowId: string) => {
-      // Cancel any outgoing refetches
-      await queryClient.cancelQueries({ queryKey: statemachineKeys.workflowsList() });
-
-      // Snapshot the previous value
-      const previousWorkflows = queryClient.getQueryData(statemachineKeys.workflowsList());
-
-      // Optimistically update to remove the workflow
-      queryClient.setQueryData(statemachineKeys.workflowsList(), (old: any) => {
-        if (!old) return old;
-        return old.filter((w: any) => w.id !== workflowId);
-      });
-
-      // Return context with the snapshot
-      return { previousWorkflows };
-    },
-    onError: (err, workflowId, context: any) => {
-      // Rollback on error
-      if (context?.previousWorkflows) {
-        queryClient.setQueryData(statemachineKeys.workflowsList(), context.previousWorkflows);
-      }
+    mutationFn: async ({ modelRef, name }: { modelRef: ModelRef | null; name: string }) => {
+      const gateway = getWorkflowGateway();
+      await gateway.deleteWorkflow(modelRef, name);
     },
     onSettled: () => {
-      // Always refetch after error or success
       queryClient.invalidateQueries({ queryKey: statemachineKeys.workflows() });
     },
   });
@@ -165,12 +151,41 @@ export function useDeleteWorkflow() {
 
 export function useCopyWorkflow() {
   const queryClient = useQueryClient();
-  const store = useStatemachineStore();
-  
+
   return useMutation({
-    mutationFn: async ({ persistedType, workflowId }: { persistedType: PersistedType; workflowId: string }) => {
-      const response = await store.copyWorkflow(persistedType, workflowId);
-      return response.data;
+    mutationFn: async ({
+      modelRef,
+      sourceName,
+      newName,
+    }: {
+      modelRef: ModelRef | null;
+      sourceName: string;
+      newName: string;
+    }) => {
+      const gateway = getWorkflowGateway();
+      return gateway.copyWorkflow(modelRef, sourceName, newName);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: statemachineKeys.workflows() });
+    },
+  });
+}
+
+export function useRenameWorkflow() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      modelRef,
+      oldName,
+      newName,
+    }: {
+      modelRef: ModelRef | null;
+      oldName: string;
+      newName: string;
+    }) => {
+      const gateway = getWorkflowGateway();
+      await gateway.renameWorkflow(modelRef, oldName, newName);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: statemachineKeys.workflows() });

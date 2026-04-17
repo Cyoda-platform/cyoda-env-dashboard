@@ -4,6 +4,7 @@
  */
 
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
+import { renderHook, act } from '@testing-library/react';
 import { useStatemachineStore } from './statemachineStore';
 import { axios, HelperFeatureFlags } from '@cyoda/http-api-react';
 
@@ -31,6 +32,7 @@ describe('statemachineStore', () => {
     const store = useStatemachineStore.getState();
     store.setSelectedWorkflow(null);
     store.setSelectedEntityClassName(null);
+    store.setSelectedModelRef(null);
   });
 
   afterEach(() => {
@@ -43,6 +45,7 @@ describe('statemachineStore', () => {
       
       expect(state.selectedWorkflow).toBeNull();
       expect(state.selectedEntityClassName).toBeNull();
+      expect(state.selectedModelRef).toBeNull();
     });
   });
 
@@ -54,6 +57,22 @@ describe('statemachineStore', () => {
 
       const state = useStatemachineStore.getState();
       expect(state.selectedWorkflow).toEqual(mockWorkflow);
+    });
+
+    it('should set and clear selected model ref', () => {
+      const { result } = renderHook(() => useStatemachineStore());
+
+      act(() => {
+        result.current.setSelectedModelRef({ entityName: 'Customer', modelVersion: 1 });
+      });
+
+      expect(result.current.selectedModelRef).toEqual({ entityName: 'Customer', modelVersion: 1 });
+
+      act(() => {
+        result.current.setSelectedModelRef(null);
+      });
+
+      expect(result.current.selectedModelRef).toBeNull();
     });
 
     it('should set selected entity class name', () => {

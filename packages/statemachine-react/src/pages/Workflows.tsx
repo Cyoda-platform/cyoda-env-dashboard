@@ -17,12 +17,14 @@ import {
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import type { ResizeCallbackData } from 'react-resizable';
+import { useQuery } from '@tanstack/react-query';
 import {
-  useWorkflowsList,
+  statemachineKeys,
   useWorkflowEnabledTypes,
   useDeleteWorkflow,
   useCopyWorkflow,
 } from '../hooks/useStatemachine';
+import { useStatemachineStore } from '../stores/statemachineStore';
 import { useTableState } from '../hooks/useTableState';
 import { useQueryInvalidation } from '../hooks/useQueryInvalidation';
 import { ExportImport } from '../components/ExportImport';
@@ -31,6 +33,8 @@ import { ResizableTitle } from '@cyoda/ui-lib-react';
 import { HelperStorage } from '@cyoda/ui-lib-react';
 import './Workflows.scss';
 import { useGlobalUiSettingsStore } from '@cyoda/http-api-react';
+import { HelperFeatureFlags } from '@cyoda/http-api-react';
+import { WorkflowsCloudStub } from './WorkflowsCloudStub';
 import { getPersistedType } from '../utils/helpers';
 import type { Workflow, WorkflowTableRow } from '../types';
 
@@ -53,6 +57,12 @@ function getTimeFromUuid(uuid: string): number {
 }
 
 export const Workflows: React.FC = () => {
+  // When cyoda-cloud (or cyoda-go) is in use, render the stub cloud page.
+  // The real cloud Workflows UI lands in sub-branch 3.
+  if (HelperFeatureFlags.isCyodaCloud()) {
+    return <WorkflowsCloudStub />;
+  }
+
   const { modal, message } = App.useApp();
   const navigate = useNavigate();
   const storage = useMemo(() => new HelperStorage(), []);
@@ -119,7 +129,22 @@ export const Workflows: React.FC = () => {
   const { entityType } = useGlobalUiSettingsStore();
 
   // Queries
-  const { data: workflows = [], isLoading, refetch } = useWorkflowsList();
+  // The legacy table reads richer fields (id, entityClassName, persisted,
+  // creationDate, etc.) than WorkflowGateway.listWorkflows projects into a
+  // WorkflowSummary. Bypass the gateway here and call the legacy store
+  // directly — same pattern WorkflowForm.tsx already uses for create/update.
+  // The cloud branch above already returns to WorkflowsCloudStub, so this
+  // only runs in legacy mode. Sub-branch 3 replaces this whole list page
+  // with the real cloud Workflows UI; until then, legacy must keep working
+  // against the legacy backend's full record shape.
+  const { data: workflows = [], isLoading, refetch } = useQuery<Workflow[]>({
+    queryKey: statemachineKeys.workflowsList(null),
+    queryFn: async () => {
+      const response = await useStatemachineStore.getState().getAllWorkflowsList(undefined);
+      const data = response?.data;
+      return Array.isArray(data) ? data : [];
+    },
+  });
   const { data: workflowEnabledTypes = [] } = useWorkflowEnabledTypes();
 
   // Check if entity type info is available (feature flag equivalent)
@@ -206,6 +231,9 @@ export const Workflows: React.FC = () => {
   }, [workflows, workflowEnabledTypes, tableState.filter, entityType, hasEntityTypeInfo]);
 
   // Get selected workflows for export
+  // TODO(sub-branch-3): WorkflowSummary doesn't carry the legacy `id`; the
+  // legacy gateway's listWorkflows assigns the legacy id to the summary's
+  // `name` field. We use `name` as the row key here to match that mapping.
   const selectedWorkflows = useMemo(() => {
     return workflows.filter((w) => selectedRowKeys.includes(w.id));
   }, [workflows, selectedRowKeys]);
@@ -228,17 +256,22 @@ export const Workflows: React.FC = () => {
   
   const handleCopyWorkflow = async (record: WorkflowTableRow) => {
     try {
-      const persistedType = getPersistedType(record.persisted);
-      const newWorkflowId = await copyWorkflowMutation.mutateAsync({
-        persistedType,
-        workflowId: record.id,
+      // Legacy mode: the gateway uses record.id (the legacy UUID) as the
+      // sourceName; record.name is the human-readable label used for the
+      // suggested copy name. The gateway returns the gateway-key of the new
+      // workflow (in legacy mode, the new legacy id) so we can navigate
+      // without a follow-up fetch.
+      const { key: newWorkflowKey } = await copyWorkflowMutation.mutateAsync({
+        modelRef: null,
+        sourceName: record.id,
+        newName: `${record.name} (copy)`,
       });
 
       message.success('Workflow copied successfully');
 
-      // Navigate to the new workflow as 'persisted' so it can be edited
+      // Navigate to the new workflow as 'persisted' so it can be edited.
       navigate(
-        `/workflow/${newWorkflowId}?persistedType=persisted&entityClassName=${record.entityClassName}`
+        `/workflow/${newWorkflowKey}?persistedType=persisted&entityClassName=${record.entityClassName}`
       );
     } catch (error) {
       message.error('Failed to copy workflow');
@@ -254,7 +287,7 @@ export const Workflows: React.FC = () => {
       cancelText: 'Cancel',
       onOk: async () => {
         try {
-          await deleteWorkflowMutation.mutateAsync(record.id);
+          await deleteWorkflowMutation.mutateAsync({ modelRef: null, name: record.id });
           message.success('Workflow deleted successfully');
 
           // Clear selection if deleted workflow was selected
