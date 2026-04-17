@@ -57,12 +57,14 @@ export const WorkflowsCloud: React.FC = () => {
   const modelRef = readModelRefFromUrl(searchParams);
 
   const setModelRef = (next: ModelRef | null) => {
+    // Picker selection is filter state, not navigation; replace history entries
+    // so the back button isn't polluted with every model switch.
     if (next === null) {
-      setSearchParams({}, { replace: false });
+      setSearchParams({}, { replace: true });
     } else {
       setSearchParams(
         { entityName: next.entityName, modelVersion: String(next.modelVersion) },
-        { replace: false }
+        { replace: true }
       );
     }
   };
@@ -77,13 +79,21 @@ export const WorkflowsCloud: React.FC = () => {
   const deleteMutation = useDeleteWorkflow();
 
   const [dialog, setDialog] = useState<DialogState>({ kind: 'none' });
+  const [pendingActiveNames, setPendingActiveNames] = useState<ReadonlySet<string>>(new Set());
 
   const closeDialog = () => setDialog({ kind: 'none' });
 
   // For Deactivate / Activate we need the full doc to MERGE-save with active toggled.
   // Pull on-demand: when a row's button is clicked we load the doc, then save.
+  // Track pendingActiveNames so the row's button is disabled while in flight,
+  // preventing a double-click from overlapping load+save round-trips.
   const handleActiveToggle = async (name: string, active: boolean) => {
     if (!modelRef) return;
+    setPendingActiveNames((prev) => {
+      const next = new Set(prev);
+      next.add(name);
+      return next;
+    });
     try {
       const gateway = getWorkflowGateway();
       const doc = await gateway.loadWorkflow(modelRef, name);
@@ -91,6 +101,12 @@ export const WorkflowsCloud: React.FC = () => {
       message.success(active ? `Activated "${name}"` : `Deactivated "${name}"`);
     } catch (err) {
       message.error(`Failed to ${active ? 'activate' : 'deactivate'} "${name}": ${(err as Error).message}`);
+    } finally {
+      setPendingActiveNames((prev) => {
+        const next = new Set(prev);
+        next.delete(name);
+        return next;
+      });
     }
   };
 
@@ -142,10 +158,16 @@ export const WorkflowsCloud: React.FC = () => {
 
   const existingNames = workflows.map((w) => w.name);
 
-  // Snapshot timestamp for the disruptive delete dialog.
-  const snapshotAt = workflowsQuery.dataUpdatedAt
-    ? new Date(workflowsQuery.dataUpdatedAt)
-    : new Date();
+  // Snapshot timestamp for the disruptive delete dialog. We use dataUpdatedAt
+  // from the React Query cache, which reflects when the listWorkflows export
+  // last completed. The Delete dialog only opens on a row click, which
+  // requires the table to have rendered, which requires data to have loaded —
+  // so dataUpdatedAt should always be > 0 by the time this is read. The
+  // fallback is defensive only.
+  const snapshotAt =
+    workflowsQuery.dataUpdatedAt > 0
+      ? new Date(workflowsQuery.dataUpdatedAt)
+      : new Date();
 
   return (
     <div style={{ padding: 24 }}>
@@ -160,6 +182,7 @@ export const WorkflowsCloud: React.FC = () => {
           <WorkflowsTable
             workflows={workflows}
             loading={workflowsQuery.isLoading}
+            pendingActiveNames={pendingActiveNames}
             onEdit={handleEdit}
             onDuplicate={(name) => setDialog({ kind: 'duplicate', sourceName: name })}
             onRename={(name) => setDialog({ kind: 'rename', oldName: name })}

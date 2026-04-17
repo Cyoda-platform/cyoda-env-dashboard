@@ -186,4 +186,50 @@ describe('WorkflowsCloud', () => {
     const dialog = screen.getByRole('dialog');
     expect(within(dialog).getByText('Standard')).toBeInTheDocument();
   });
+
+  it('writes the picker selection back to the URL', async () => {
+    vi.mocked(useEntityModelList).mockReturnValue({
+      data: [
+        { id: '1', modelName: 'Customer', modelVersion: 1, currentState: 'LOCKED' },
+      ],
+      isLoading: false,
+      isSuccess: true,
+      isError: false,
+    } as any);
+    vi.mocked(useWorkflowsList).mockReturnValue({
+      data: [],
+      isLoading: false,
+      dataUpdatedAt: Date.now(),
+    } as any);
+
+    renderPage('/workflows');
+
+    // Open the picker and click the only model.
+    await userEvent.click(screen.getByRole('combobox'));
+    await userEvent.click(await screen.findByText('Customer (v1)'));
+
+    // The picker invokes onChange, which calls setSearchParams. The next render
+    // sees the URL state and re-invokes useWorkflowsList with the parsed modelRef.
+    await waitFor(() => {
+      expect(useWorkflowsList).toHaveBeenLastCalledWith({ entityName: 'Customer', modelVersion: 1 });
+    });
+  });
+
+  it('returns null modelRef when only entityName is in the URL (malformed)', () => {
+    vi.mocked(useEntityModelList).mockReturnValue({
+      data: [],
+      isLoading: false,
+      isSuccess: true,
+      isError: false,
+    } as any);
+    vi.mocked(useWorkflowsList).mockReturnValue({
+      data: undefined,
+      isLoading: false,
+    } as any);
+
+    renderPage('/workflows?entityName=Customer');
+
+    // Half-set URL params should NOT produce a modelRef.
+    expect(useWorkflowsList).toHaveBeenCalledWith(null);
+  });
 });

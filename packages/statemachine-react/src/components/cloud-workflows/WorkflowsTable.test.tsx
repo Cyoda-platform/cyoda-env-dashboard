@@ -120,4 +120,20 @@ describe('WorkflowsTable', () => {
     // so the user sees the loading state instead of "No workflows" flashing.
     expect(screen.queryByText(/no workflows in this model/i)).not.toBeInTheDocument();
   });
+
+  it('disables the Activate/Deactivate button for rows in pendingActiveNames', () => {
+    renderWithApp(
+      <WorkflowsTable
+        {...baseProps}
+        pendingActiveNames={new Set(['Premium'])}
+      />
+    );
+
+    // Premium is active → Deactivate button. With AntD's loading prop the
+    // button's accessible name becomes "loadingDeactivate" (spinner aria-label
+    // concatenated with the label). Match either form so this test isn't
+    // brittle to that concatenation detail.
+    const deactivateBtn = screen.getByRole('button', { name: /Deactivate$/ });
+    expect(deactivateBtn).toBeDisabled();
+  });
 });

@@ -14,6 +14,12 @@ import type { WorkflowSummary } from '../../gateways';
 export interface WorkflowsTableProps {
   workflows: WorkflowSummary[];
   loading: boolean;
+  /**
+   * Workflow names currently being activated/deactivated. The corresponding
+   * row's Activate/Deactivate button is disabled while in this set, preventing
+   * double-clicks that could overlap loadWorkflow + updateWorkflow round-trips.
+   */
+  pendingActiveNames?: ReadonlySet<string>;
   onEdit: (name: string) => void;
   onDuplicate: (name: string) => void;
   onRename: (name: string) => void;
@@ -25,6 +31,7 @@ export interface WorkflowsTableProps {
 export const WorkflowsTable: React.FC<WorkflowsTableProps> = ({
   workflows,
   loading,
+  pendingActiveNames,
   onEdit,
   onDuplicate,
   onRename,
@@ -75,11 +82,21 @@ export const WorkflowsTable: React.FC<WorkflowsTableProps> = ({
             Rename
           </Button>
           {row.active ? (
-            <Button size="small" onClick={() => onDeactivate(row.name)}>
+            <Button
+              size="small"
+              loading={pendingActiveNames?.has(row.name)}
+              disabled={pendingActiveNames?.has(row.name)}
+              onClick={() => onDeactivate(row.name)}
+            >
               Deactivate
             </Button>
           ) : (
-            <Button size="small" onClick={() => onActivate(row.name)}>
+            <Button
+              size="small"
+              loading={pendingActiveNames?.has(row.name)}
+              disabled={pendingActiveNames?.has(row.name)}
+              onClick={() => onActivate(row.name)}
+            >
               Activate
             </Button>
           )}
