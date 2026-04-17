@@ -57,8 +57,8 @@ function getTimeFromUuid(uuid: string): number {
 }
 
 export const Workflows: React.FC = () => {
-  // When cyoda-cloud (or cyoda-go) is in use, render the stub cloud page.
-  // The real cloud Workflows UI lands in sub-branch 3.
+  // When cyoda-cloud (or cyoda-go) is in use, render the cloud Workflows page.
+  // The legacy table below only runs when isCyodaCloud() is false.
   if (HelperFeatureFlags.isCyodaCloud()) {
     return <WorkflowsCloud />;
   }
@@ -133,10 +133,8 @@ export const Workflows: React.FC = () => {
   // creationDate, etc.) than WorkflowGateway.listWorkflows projects into a
   // WorkflowSummary. Bypass the gateway here and call the legacy store
   // directly — same pattern WorkflowForm.tsx already uses for create/update.
-  // The cloud branch above already returns to WorkflowsCloudStub, so this
-  // only runs in legacy mode. Sub-branch 3 replaces this whole list page
-  // with the real cloud Workflows UI; until then, legacy must keep working
-  // against the legacy backend's full record shape.
+  // The cloud branch above already returns to WorkflowsCloud, so this only
+  // runs in legacy mode. Legacy needs the full backend record shape.
   const { data: workflows = [], isLoading, refetch } = useQuery<Workflow[]>({
     queryKey: statemachineKeys.workflowsList(null),
     queryFn: async () => {
