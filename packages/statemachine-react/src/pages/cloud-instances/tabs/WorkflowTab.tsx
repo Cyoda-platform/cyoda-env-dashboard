@@ -7,6 +7,7 @@ import { statemachineKeys } from '../../../hooks/useStatemachine';
 import { workflowDocToGraphShape } from '../../cloud-workflow-editor/workflowDocToGraphShape';
 import { loadPositions, savePositions } from '../../../shared/positionsStorage';
 import type { PositionsMap } from '../../../types';
+import { TransitionList } from '../TransitionList';
 
 const { Title } = Typography;
 
@@ -37,6 +38,13 @@ export const WorkflowTab: React.FC<WorkflowTabProps> = ({ entityId, modelRef, wo
   return (
     <Space direction="vertical" style={{ width: '100%' }}>
       <Title level={4}>Workflow</Title>
+      <TransitionList
+        entityId={entityId}
+        modelRef={modelRef}
+        workflowName={workflowName}
+        entityBody={meta.data?.data}
+        currentState={meta.data?.meta?.state ?? ''}
+      />
       <GraphicalStateMachine
         workflowId={`${modelRef.entityName}/${modelRef.modelVersion}/${workflowName}`}
         transitions={shape.transitions}

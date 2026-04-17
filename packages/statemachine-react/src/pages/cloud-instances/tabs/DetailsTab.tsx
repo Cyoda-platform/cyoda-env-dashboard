@@ -3,6 +3,7 @@ import { Space, Switch, Typography } from 'antd';
 import { useQuery } from '@tanstack/react-query';
 import { getInstancesGateway, type ModelRef } from '../../../gateways';
 import { CloudEntityTree } from '../CloudEntityTree';
+import { TransitionList } from '../TransitionList';
 
 const { Title, Text } = Typography;
 
@@ -12,7 +13,7 @@ export interface DetailsTabProps {
   workflowName: string;
 }
 
-export const DetailsTab: React.FC<DetailsTabProps> = ({ entityId }) => {
+export const DetailsTab: React.FC<DetailsTabProps> = ({ entityId, modelRef, workflowName }) => {
   const [showEmpty, setShowEmpty] = useState(true);
   const query = useQuery({
     queryKey: ['cloud-instances', 'load', entityId],
@@ -33,6 +34,13 @@ export const DetailsTab: React.FC<DetailsTabProps> = ({ entityId }) => {
         <Text><Text strong>Created Date: </Text>{meta?.creationDate ?? '-'}</Text>
         <Text><Text strong>Last updated date: </Text>{meta?.lastUpdateTime ?? '-'}</Text>
       </Space>
+      <TransitionList
+        entityId={entityId}
+        modelRef={modelRef}
+        workflowName={workflowName}
+        entityBody={data}
+        currentState={meta?.state ?? ''}
+      />
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Title level={4}>Entity</Title>
         <Space>
