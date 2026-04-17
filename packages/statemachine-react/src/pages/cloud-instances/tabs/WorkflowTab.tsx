@@ -23,7 +23,7 @@ export const WorkflowTab: React.FC<WorkflowTabProps> = ({ entityId, modelRef, wo
     queryFn: () => getInstancesGateway().load(entityId),
   });
   const wf = useQuery({
-    queryKey: statemachineKeys.workflowDoc(modelRef!, workflowName),
+    queryKey: modelRef ? statemachineKeys.workflowDoc(modelRef, workflowName) : ['workflowDoc', null],
     queryFn: () => getWorkflowGateway().loadWorkflow(modelRef!, workflowName),
     enabled: modelRef !== null && workflowName.length > 0,
   });

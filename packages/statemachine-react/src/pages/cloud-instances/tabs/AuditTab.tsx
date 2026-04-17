@@ -18,7 +18,7 @@ export const AuditTab: React.FC<AuditTabProps> = ({ entityId }) => {
   const columns = [
     { title: 'Transaction ID', dataIndex: 'transactionId', key: 'transactionId' },
     {
-      title: 'Time (UUID/Date)', key: 'time',
+      title: 'Time', key: 'time',
       render: (_: any, row: EntityChange) => row.timestamp,
     },
     { title: 'State From', dataIndex: 'stateFrom', key: 'stateFrom', render: (v?: string) => v ?? 'None' },
