@@ -5,7 +5,7 @@ import { QueryConditionEditor } from '../../../components/cloud-workflows/QueryC
 
 const { Title } = Typography;
 
-export const WorkflowPropsForm: React.FC = () => {
+export const WorkflowSettingsForm: React.FC = () => {
   const store = useContext(WorkflowEditorStoreContext)!;
   const doc = useWorkflowEditorStore((s) => s.current);
   if (!doc) return null;
@@ -14,7 +14,7 @@ export const WorkflowPropsForm: React.FC = () => {
 
   return (
     <Space direction="vertical" style={{ width: '100%' }} size="middle">
-      <Title level={4}>Workflow</Title>
+      <Title level={4}>Workflow settings</Title>
       <Form layout="vertical">
         <Form.Item label="Name">
           <Input aria-label="Name" value={doc.name} onChange={(e) => update({ name: e.target.value })} />

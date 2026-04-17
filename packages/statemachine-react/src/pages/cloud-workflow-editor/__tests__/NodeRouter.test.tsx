@@ -25,9 +25,9 @@ describe('NodeRouter', () => {
   let store: ReturnType<typeof createWorkflowEditorStore>;
   beforeEach(() => { store = createWorkflowEditorStore(); store.getState().hydrate(doc); });
 
-  it('renders WorkflowPropsForm for selectedPath="/"', () => {
+  it('renders WorkflowSettingsForm for selectedPath="/"', () => {
     renderRouter(store);
-    expect(screen.getByText('Workflow')).toBeInTheDocument();   // Title from WorkflowPropsForm
+    expect(screen.getByText('Workflow settings')).toBeInTheDocument();   // Title from WorkflowSettingsForm
   });
 
   it('renders StateForm for /states/<name>', () => {

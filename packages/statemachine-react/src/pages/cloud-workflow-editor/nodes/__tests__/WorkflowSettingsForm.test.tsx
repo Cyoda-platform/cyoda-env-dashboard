@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { App } from 'antd';
 import { createWorkflowEditorStore } from '../../workflowEditorStore';
 import { WorkflowEditorStoreContext } from '../../storeContext';
-import { WorkflowPropsForm } from '../WorkflowPropsForm';
+import { WorkflowSettingsForm } from '../WorkflowSettingsForm';
 import type { WorkflowDoc } from '../../../../gateways';
 
 const doc: WorkflowDoc = {
@@ -16,13 +16,13 @@ function renderWithStore(store: ReturnType<typeof createWorkflowEditorStore>) {
   return render(
     <App>
       <WorkflowEditorStoreContext.Provider value={store}>
-        <WorkflowPropsForm />
+        <WorkflowSettingsForm />
       </WorkflowEditorStoreContext.Provider>
     </App>
   );
 }
 
-describe('WorkflowPropsForm', () => {
+describe('WorkflowSettingsForm', () => {
   let store: ReturnType<typeof createWorkflowEditorStore>;
   beforeEach(() => { store = createWorkflowEditorStore(); store.getState().hydrate(doc); });
 
