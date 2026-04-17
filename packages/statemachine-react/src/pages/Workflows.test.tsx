@@ -816,6 +816,34 @@ it('should display version value for Business entities', async () => {
       // fell through to the legacy code path.
       expect(container.querySelector('input[placeholder="Filter workflows"]')).not.toBeNull();
     });
+
+    it('toggles between cloud and legacy without violating the Rules of Hooks', async () => {
+      // Regression test for a "Rendered more hooks than during the previous
+      // render" crash that fired when Workflows had an early `return
+      // <WorkflowsCloud />` ahead of the legacy hooks. Toggling entityType in
+      // a single component instance changed the hook count between renders.
+      // The fix routes between two sibling components so each owns its own
+      // hook list.
+      import.meta.env.VITE_FEATURE_FLAG_IS_CYODA_CLOUD = true as any;
+      delete (import.meta.env as any).VITE_FEATURE_FLAG_IS_CYODA_GO;
+      mockEntityType.mockReturnValue('BUSINESS');
+      mockGetAllWorkflowsList.mockResolvedValue({ data: [] });
+
+      const { container, rerender } = render(<Workflows />, { wrapper: createWrapper() });
+
+      // Cloud branch first.
+      expect(container.querySelector('input[placeholder="Filter workflows"]')).toBeNull();
+
+      // Toggle to PERSISTENCE → legacy. Must not throw.
+      mockEntityType.mockReturnValue('PERSISTENCE');
+      rerender(<Workflows />);
+      expect(container.querySelector('input[placeholder="Filter workflows"]')).not.toBeNull();
+
+      // Toggle back to BUSINESS → cloud. Must not throw either.
+      mockEntityType.mockReturnValue('BUSINESS');
+      rerender(<Workflows />);
+      expect(container.querySelector('input[placeholder="Filter workflows"]')).toBeNull();
+    });
   });
 });
 

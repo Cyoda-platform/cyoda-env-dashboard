@@ -56,20 +56,18 @@ function getTimeFromUuid(uuid: string): number {
   }
 }
 
+// Cloud-vs-legacy dispatch must happen at a parent boundary so each branch
+// owns its own hook list. Returning early from a single component when
+// `entityType` toggles changes the hook count between renders and trips
+// React's "Rendered more hooks than during the previous render" rule.
 export const Workflows: React.FC = () => {
-  // entityType comes from the global UI toggle (BUSINESS vs PERSISTENCE/Technical).
-  // Drives the cloud-vs-legacy branch below per docs/feature-matrix.md.
   const { entityType: currentEntityType } = useGlobalUiSettingsStore();
+  return HelperFeatureFlags.isCloudWorkflowsActive(currentEntityType)
+    ? <WorkflowsCloud />
+    : <WorkflowsLegacy />;
+};
 
-  // Render the cloud Workflows page when cyoda-cloud is active AND the user
-  // has selected the Business entity type. Otherwise fall through to the
-  // legacy table — which works in both Legacy and Cloud+Technical modes
-  // (it uses /platform-* endpoints) but NOT in Go+Technical (no platform-*
-  // there; documented edge case in docs/feature-matrix.md).
-  if (HelperFeatureFlags.isCloudWorkflowsActive(currentEntityType)) {
-    return <WorkflowsCloud />;
-  }
-
+const WorkflowsLegacy: React.FC = () => {
   const { modal, message } = App.useApp();
   const navigate = useNavigate();
   const storage = useMemo(() => new HelperStorage(), []);
