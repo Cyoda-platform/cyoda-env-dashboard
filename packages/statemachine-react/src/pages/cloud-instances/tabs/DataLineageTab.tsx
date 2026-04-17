@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Checkbox, Col, DatePicker, Row, Timeline, Typography } from 'antd';
 import { useQuery } from '@tanstack/react-query';
-import { CodeEditor } from '@cyoda/ui-lib-react';
+import { DiffEditor } from '@monaco-editor/react';
 import { getInstancesGateway } from '../../../gateways';
 
 const { Title, Text } = Typography;
@@ -71,13 +71,20 @@ export const DataLineageTab: React.FC<DataLineageTabProps> = ({ entityId }) => {
         <Button type="primary" disabled={checkedQueue.length !== 2} onClick={onCompare} style={{ marginTop: 12 }}>Compare</Button>
         {diff && (
           <div style={{ marginTop: 16 }}>
-            <CodeEditor
-              diff
-              diffReadonly
-              oldString={diff.older}
-              newString={diff.newer}
+            <DiffEditor
+              original={diff.older}
+              modified={diff.newer}
               language="json"
               height={400}
+              theme={document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'vs-dark'}
+              options={{
+                readOnly: true,
+                renderSideBySide: true,
+                minimap: { enabled: false },
+                scrollBeyondLastLine: false,
+                wordWrap: 'on',
+                fontSize: 13,
+              }}
             />
           </div>
         )}

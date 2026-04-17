@@ -8,16 +8,12 @@ import { DataLineageTab } from '../DataLineageTab';
 import { getInstancesGateway } from '../../../../gateways';
 
 const captured: any = {};
-vi.mock('@cyoda/ui-lib-react', async () => {
-  const actual = await vi.importActual<any>('@cyoda/ui-lib-react');
-  return {
-    ...actual,
-    CodeEditor: (props: any) => {
-      Object.assign(captured, { props });
-      return <div data-testid="diff-stub" />;
-    },
-  };
-});
+vi.mock('@monaco-editor/react', () => ({
+  DiffEditor: (props: any) => {
+    Object.assign(captured, { props });
+    return <div data-testid="diff-stub" />;
+  },
+}));
 
 vi.mock('../../../../gateways', async () => {
   const actual = await vi.importActual<any>('../../../../gateways');
@@ -75,8 +71,8 @@ describe('DataLineageTab', () => {
     await userEvent.click(screen.getByRole('button', { name: /^Compare$/ }));
     await waitFor(() => expect(screen.getByTestId('diff-stub')).toBeInTheDocument());
     // Original is older, modified is newer (assert via captured props' textual content)
-    expect(captured.props.oldString).toContain('"old"');
-    expect(captured.props.newString).toContain('"new"');
+    expect(captured.props.original).toContain('"old"');
+    expect(captured.props.modified).toContain('"new"');
   });
 
   it('checking a third box un-checks the first-checked (click-order FIFO)', async () => {
