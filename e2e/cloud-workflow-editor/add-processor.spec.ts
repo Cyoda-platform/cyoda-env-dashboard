@@ -11,12 +11,14 @@ test('add an externalized processor to a transition → save', async ({ page, re
     },
   });
   await page.goto(`/workflow/${model.entityName}/${model.modelVersion}/wf`);
-  await page.getByText('draft').click();
-  await page.getByText('t').click();
-  await page.getByRole('button', { name: /add processor/i }).click();
+  await page.getByRole('button', { name: /^Edit$/ }).first().click();
+  await page.getByRole('button', { name: /\+ Add processor/ }).click();
   await page.getByRole('button', { name: /^externalized$/ }).click();
+  // The newly added processor's Name field — last() because there may be multiple
   await page.getByRole('textbox', { name: /^Name$/ }).last().fill('p1');
+  await page.getByRole('button', { name: /^Done$/ }).click();
   await page.getByRole('button', { name: /^Save$/ }).click();
   await page.reload();
+  await page.getByRole('button', { name: /^Edit$/ }).first().click();
   await expect(page.getByText(/externalized: p1/)).toBeVisible();
 });

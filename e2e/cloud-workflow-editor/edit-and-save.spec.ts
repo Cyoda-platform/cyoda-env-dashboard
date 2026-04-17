@@ -12,11 +12,14 @@ test('edit transition name → save → reload → persisted', async ({ page, re
     },
   });
   await page.goto(`/workflow/${model.entityName}/${model.modelVersion}/wf1`);
-  // Navigate to the transition node and edit its name.
-  await page.getByText('draft').click();
-  await page.getByText('oldName').click();
-  const nameInput = page.getByRole('textbox', { name: /^Name$/ });
+  // Switch to Tabular view (it's the default, but explicit is safer)
+  await page.getByRole('radio', { name: /Tabular/ }).click().catch(() => {});
+  // Open the Edit drawer for the row
+  await page.getByRole('button', { name: /^Edit$/ }).first().click();
+  // Now the drawer is open with TransitionForm; the Name field is the transition name
+  const nameInput = page.getByRole('textbox', { name: /^Name$/ }).last();
   await nameInput.fill('newName');
+  await page.getByRole('button', { name: /^Done$/ }).click();
   await page.getByRole('button', { name: /^Save$/ }).click();
   await page.reload();
   await expect(page.getByText('newName')).toBeVisible();

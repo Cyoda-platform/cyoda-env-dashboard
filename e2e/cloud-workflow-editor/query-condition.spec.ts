@@ -11,16 +11,18 @@ test('add group condition with two simple children → save → reload preserves
     },
   });
   await page.goto(`/workflow/${model.entityName}/${model.modelVersion}/wf`);
-  await page.getByText('draft').click();
-  await page.getByText('t').click();
+  await page.getByRole('button', { name: /^Edit$/ }).first().click();
   await page.getByRole('button', { name: /Add criterion/ }).click();
   // Switch type from simple → group (no destructive content yet).
   await page.locator('text=Type:').locator('xpath=following-sibling::*[1]').click();
   await page.getByText('group', { exact: true }).click();
   await page.getByRole('button', { name: /Add condition/ }).click();
   await page.getByRole('button', { name: /Add condition/ }).click();
+  await page.getByRole('button', { name: /^Done$/ }).click();
   await page.getByRole('button', { name: /^Save$/ }).click();
   await page.reload();
+  // Re-open to assert structure persisted
+  await page.getByRole('button', { name: /^Edit$/ }).first().click();
   // Two simple inputs visible
   await expect(page.locator('input[placeholder="JSONPath e.g. $.field"]')).toHaveCount(2);
 });

@@ -62,7 +62,7 @@ export const TransitionForm: React.FC<TransitionFormProps> = ({ stateName, trans
         defaultActiveKey={(t.processors?.length ?? 0) > 0 ? ['0'] : []}
         items={(t.processors ?? []).map((p, i) => ({
           key: String(i),
-          label: `${p.type}: ${p.name || '(unnamed)'}`,
+          label: `${p.type ?? 'externalized'}: ${p.name || '(unnamed)'}`,
           children: <ProcessorRow stateName={stateName} transitionIndex={transitionIndex} processorIndex={i} />,
         }))}
       />
