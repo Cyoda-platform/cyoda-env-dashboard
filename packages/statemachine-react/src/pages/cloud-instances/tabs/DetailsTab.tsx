@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { Radio, Space, Switch, Typography } from 'antd';
+import React, { useMemo, useState } from 'react';
+import { Descriptions, Radio, Space, Switch, Typography } from 'antd';
 import { useQuery } from '@tanstack/react-query';
+import { CodeEditor } from '@cyoda/ui-lib-react';
 import { getInstancesGateway, type ModelRef } from '../../../gateways';
 import { CloudEntityTree } from '../CloudEntityTree';
 import { TransitionList } from '../TransitionList';
@@ -15,25 +16,32 @@ export interface DetailsTabProps {
 
 export const DetailsTab: React.FC<DetailsTabProps> = ({ entityId, modelRef, workflowName }) => {
   const [showEmpty, setShowEmpty] = useState(true);
-  const [bodyView, setBodyView] = useState<'tree' | 'json'>('tree');
+  const [bodyView, setBodyView] = useState<'tree' | 'json'>('json');
   const query = useQuery({
     queryKey: ['cloud-instances', 'load', entityId],
     queryFn: () => getInstancesGateway().load(entityId),
   });
 
+  const { data, meta } = query.data ?? {};
+  const json = useMemo(() => JSON.stringify(data ?? {}, null, 2), [data]);
+
   if (query.isLoading) return <Text>Loading…</Text>;
   if (query.isError) return <Text type="danger">Failed to load: {(query.error as Error).message}</Text>;
 
-  const { data, meta } = query.data!;
   return (
     <Space direction="vertical" style={{ width: '100%' }} size="middle">
-      <Title level={4}>Standard fields</Title>
-      <Space direction="vertical">
-        <Text><Text strong>Id: </Text>{meta?.id ?? '-'}</Text>
-        <Text><Text strong>State: </Text>{meta?.state ?? '-'}</Text>
-        <Text><Text strong>Created Date: </Text>{meta?.creationDate ?? '-'}</Text>
-        <Text><Text strong>Last updated date: </Text>{meta?.lastUpdateTime ?? '-'}</Text>
-      </Space>
+      <Descriptions
+        title="Standard fields"
+        bordered
+        size="small"
+        column={{ xs: 1, sm: 1, md: 2 }}
+        styles={{ label: { fontWeight: 600, width: 180 } }}
+      >
+        <Descriptions.Item label="Id">{meta?.id ?? '-'}</Descriptions.Item>
+        <Descriptions.Item label="State">{meta?.state ?? '-'}</Descriptions.Item>
+        <Descriptions.Item label="Created Date">{meta?.creationDate ?? '-'}</Descriptions.Item>
+        <Descriptions.Item label="Last Updated">{meta?.lastUpdateTime ?? '-'}</Descriptions.Item>
+      </Descriptions>
       <TransitionList
         entityId={entityId}
         modelRef={modelRef}
@@ -42,11 +50,11 @@ export const DetailsTab: React.FC<DetailsTabProps> = ({ entityId, modelRef, work
         currentState={meta?.state ?? ''}
       />
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Title level={4}>Entity</Title>
+        <Title level={4} style={{ margin: 0 }}>Entity</Title>
         <Space>
           <Radio.Group value={bodyView} onChange={(e) => setBodyView(e.target.value)} options={[
-            { label: 'Tree', value: 'tree' },
             { label: 'JSON', value: 'json' },
+            { label: 'Tree', value: 'tree' },
           ]} optionType="button" buttonStyle="solid" size="small" />
           {bodyView === 'tree' && (
             <>
@@ -59,9 +67,7 @@ export const DetailsTab: React.FC<DetailsTabProps> = ({ entityId, modelRef, work
       {bodyView === 'tree' ? (
         <CloudEntityTree value={data ?? {}} showEmpty={showEmpty} />
       ) : (
-        <pre style={{ padding: 12, fontSize: 12, lineHeight: 1.4, overflowX: 'auto' }}>
-          {JSON.stringify(data ?? {}, null, 2)}
-        </pre>
+        <CodeEditor value={json} language="json" readOnly height={480} />
       )}
     </Space>
   );

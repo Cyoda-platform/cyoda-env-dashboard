@@ -11,6 +11,10 @@ vi.mock('../../../gateways', async () => {
   return { ...actual, getInstancesGateway: vi.fn() };
 });
 
+vi.mock('@cyoda/ui-lib-react', () => ({
+  CodeEditor: ({ value }: { value: string }) => <div data-testid="code-editor">{value}</div>,
+}));
+
 function renderIt(props: { open: boolean; entityId: string; transactionId: string }) {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
@@ -34,12 +38,12 @@ describe('EntityAtTransactionModal', () => {
     expect(screen.getByText(/active/)).toBeInTheDocument();
   });
 
-  it('shows Loading… while query is in flight', () => {
+  it('shows a loading spinner while query is in flight', () => {
     vi.mocked(getInstancesGateway).mockReturnValue({
       load: vi.fn().mockReturnValue(new Promise(() => {})),
     } as any);
     renderIt({ open: true, entityId: 'eid', transactionId: 'tx1' });
-    expect(screen.getByText('Loading…')).toBeInTheDocument();
+    expect(document.querySelector('.ant-spin')).toBeTruthy();
   });
 
   it('does not fire the query when open=false', () => {

@@ -11,6 +11,10 @@ vi.mock('../../../../gateways', async () => {
   return { ...actual, getInstancesGateway: vi.fn(), getWorkflowGateway: vi.fn() };
 });
 
+vi.mock('@cyoda/ui-lib-react', () => ({
+  CodeEditor: ({ value }: { value: string }) => <div data-testid="code-editor">{value}</div>,
+}));
+
 function renderIt(props: { entityId: string; modelRef: any; workflowName: string }) {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
