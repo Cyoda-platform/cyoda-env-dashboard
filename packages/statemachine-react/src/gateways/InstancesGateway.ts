@@ -101,5 +101,12 @@ export interface InstancesGateway {
 
   fireTransition(entityId: string, transition: string, body: unknown): Promise<void>;
 
+  /**
+   * Loopback update: PUT /entity/JSON/{entityId} with no transition path segment.
+   * Saves the body in place; if an automated exit transition's criteria pass,
+   * the engine drives the entity out of the current state on its own.
+   */
+  fireLoopback(entityId: string, body: unknown): Promise<void>;
+
   delete(entityId: string): Promise<void>;
 }

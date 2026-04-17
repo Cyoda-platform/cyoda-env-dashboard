@@ -42,6 +42,11 @@ export const TransitionList: React.FC<TransitionListProps> = ({ entityId, modelR
 
   const transitions = wf.data?.states?.[currentState]?.transitions ?? [];
 
+  const invalidate = () => Promise.all([
+    queryClient.invalidateQueries({ queryKey: ['cloud-instances', 'load', entityId] }),
+    queryClient.invalidateQueries({ queryKey: ['cloud-instances', 'changes', entityId] }),
+  ]);
+
   const onFire = (transitionName: string) => {
     modal.confirm({
       title: `Fire transition "${transitionName}"?`,
@@ -50,9 +55,25 @@ export const TransitionList: React.FC<TransitionListProps> = ({ entityId, modelR
       onOk: async () => {
         try {
           await getInstancesGateway().fireTransition(entityId, transitionName, entityBody ?? {});
-          await queryClient.invalidateQueries({ queryKey: ['cloud-instances', 'load', entityId] });
-          await queryClient.invalidateQueries({ queryKey: ['cloud-instances', 'changes', entityId] });
+          await invalidate();
           message.success(`Transition "${transitionName}" fired`);
+        } catch (e: any) {
+          message.error(`Failed: ${e?.message ?? 'unknown error'}`);
+        }
+      },
+    });
+  };
+
+  const onSaveLoopback = () => {
+    modal.confirm({
+      title: 'Save (loopback)?',
+      content: `Saves the entity in place (state stays "${currentState}"). An automated exit transition may then run if its criteria pass.`,
+      okText: 'Save',
+      onOk: async () => {
+        try {
+          await getInstancesGateway().fireLoopback(entityId, entityBody ?? {});
+          await invalidate();
+          message.success('Saved (loopback)');
         } catch (e: any) {
           message.error(`Failed: ${e?.message ?? 'unknown error'}`);
         }
@@ -66,15 +87,13 @@ export const TransitionList: React.FC<TransitionListProps> = ({ entityId, modelR
   return (
     <div>
       <Title level={4}>Transition Entity</Title>
-      {transitions.length === 0 ? (
-        <Text type="secondary">No transitions available</Text>
-      ) : (
-        <Space wrap>
-          {transitions.map((t: any) => (
-            <Button key={t.name} disabled={disabled} onClick={() => onFire(t.name)}>{t.name}</Button>
-          ))}
-        </Space>
-      )}
+      <Space wrap>
+        <Button type="primary" disabled={disabled} onClick={onSaveLoopback}>Save (loopback)</Button>
+        {transitions.map((t: any) => (
+          <Button key={t.name} disabled={disabled} onClick={() => onFire(t.name)}>{t.name}</Button>
+        ))}
+        {transitions.length === 0 && <Text type="secondary">No manual transitions from this state</Text>}
+      </Space>
     </div>
   );
 };

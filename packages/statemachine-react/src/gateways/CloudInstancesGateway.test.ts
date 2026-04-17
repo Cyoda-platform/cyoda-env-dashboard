@@ -280,6 +280,25 @@ describe('CloudInstancesGateway.fireTransition', () => {
   });
 });
 
+describe('CloudInstancesGateway.fireLoopback', () => {
+  beforeEach(() => { vi.clearAllMocks(); });
+
+  it('PUTs /entity/JSON/{entityId} with no transition path segment', async () => {
+    (axios.put as any).mockResolvedValueOnce({ data: {} });
+    const gw = new CloudInstancesGateway();
+    const body = { foo: 'bar' };
+    await gw.fireLoopback('eid', body);
+    expect(axios.put).toHaveBeenCalledWith('/entity/JSON/eid', body);
+  });
+
+  it('URL-encodes entityId', async () => {
+    (axios.put as any).mockResolvedValueOnce({ data: {} });
+    const gw = new CloudInstancesGateway();
+    await gw.fireLoopback('a/b', {});
+    expect(axios.put).toHaveBeenCalledWith('/entity/JSON/a%2Fb', {});
+  });
+});
+
 describe('CloudInstancesGateway.delete', () => {
   beforeEach(() => { vi.clearAllMocks(); });
 

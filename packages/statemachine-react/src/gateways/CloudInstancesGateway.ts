@@ -126,6 +126,10 @@ export class CloudInstancesGateway implements InstancesGateway {
     const url = `/entity/JSON/${encodeURIComponent(entityId)}/${encodeURIComponent(transition)}`;
     await axios.put(url, body);
   }
+  async fireLoopback(entityId: string, body: unknown): Promise<void> {
+    const url = `/entity/JSON/${encodeURIComponent(entityId)}`;
+    await axios.put(url, body);
+  }
   async delete(entityId: string): Promise<void> {
     await axios.delete(`/entity/${encodeURIComponent(entityId)}`);
   }

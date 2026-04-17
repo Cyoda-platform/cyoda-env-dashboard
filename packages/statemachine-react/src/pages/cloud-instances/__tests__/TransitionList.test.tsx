@@ -45,7 +45,7 @@ describe('TransitionList', () => {
     expect(await screen.findByRole('button', { name: 'submit' })).toBeInTheDocument();
   });
 
-  it('shows "No transitions available" when current state has none', async () => {
+  it('shows the "No manual transitions" hint when current state has none', async () => {
     vi.mocked(getWorkflowGateway).mockReturnValue({
       loadWorkflow: vi.fn().mockResolvedValue(wfDoc),
     } as any);
@@ -53,7 +53,8 @@ describe('TransitionList', () => {
       fireTransition: vi.fn(),
     } as any);
     renderIt({ entityId: 'eid', modelRef: { entityName: 'C', modelVersion: 1 }, workflowName: 'wf', entityBody: {}, currentState: 'PENDING' });
-    expect(await screen.findByText(/No transitions available/i)).toBeInTheDocument();
+    expect(await screen.findByText(/No manual transitions from this state/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Save (loopback)' })).toBeInTheDocument();
   });
 
   it('clicking a button confirms then calls fireTransition with the body', async () => {
