@@ -42,12 +42,26 @@ const mockUseWorkflowsList = vi.fn();
 const mockUseWorkflowEnabledTypes = vi.fn();
 const mockUseDeleteWorkflow = vi.fn();
 const mockUseCopyWorkflow = vi.fn();
+const mockGetAllWorkflowsList = vi.fn();
 
-vi.mock('../hooks/useStatemachine', () => ({
-  useWorkflowsList: () => mockUseWorkflowsList(),
-  useWorkflowEnabledTypes: () => mockUseWorkflowEnabledTypes(),
-  useDeleteWorkflow: () => mockUseDeleteWorkflow(),
-  useCopyWorkflow: () => mockUseCopyWorkflow(),
+vi.mock('../hooks/useStatemachine', async () => {
+  const actual = await vi.importActual<any>('../hooks/useStatemachine');
+  return {
+    ...actual,
+    // useWorkflowsList kept for any other tests that import it; the page no longer calls it.
+    useWorkflowsList: () => mockUseWorkflowsList(),
+    useWorkflowEnabledTypes: () => mockUseWorkflowEnabledTypes(),
+    useDeleteWorkflow: () => mockUseDeleteWorkflow(),
+    useCopyWorkflow: () => mockUseCopyWorkflow(),
+  };
+});
+
+vi.mock('../stores/statemachineStore', () => ({
+  useStatemachineStore: {
+    getState: () => ({
+      getAllWorkflowsList: mockGetAllWorkflowsList,
+    }),
+  },
 }));
 
 // Mock ExportImport component
@@ -136,6 +150,8 @@ describe('Workflows', () => {
       refetch: vi.fn(),
     });
 
+    mockGetAllWorkflowsList.mockResolvedValue({ data: mockWorkflows });
+
     mockUseWorkflowEnabledTypes.mockReturnValue({
       data: [
         { name: 'travel.1001', label: 'Travel', type: 'BUSINESS' },
@@ -162,10 +178,12 @@ describe('Workflows', () => {
     expect(screen.getByText('Create new workflow')).toBeInTheDocument();
   });
 
-  it('should display all workflows in the table', () => {
+  it('should display all workflows in the table', async () => {
     render(<Workflows />, { wrapper: createWrapper() });
 
-    expect(screen.getByText('Test Workflow 1')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('Test Workflow 1')).toBeInTheDocument();
+    });
     // Test Workflow 2 is filtered out because it's PERSISTENCE type and entityType is BUSINESS
     expect(screen.queryByText('Test Workflow 2')).not.toBeInTheDocument();
     expect(screen.getByText('Another Workflow')).toBeInTheDocument();
@@ -207,19 +225,23 @@ describe('Workflows', () => {
       isLoading: true,
       refetch: vi.fn(),
     });
-    
+    // Leave the store query unresolved to keep React Query in loading state.
+    mockGetAllWorkflowsList.mockReturnValue(new Promise(() => {}));
+
     render(<Workflows />, { wrapper: createWrapper() });
-    
+
     // Ant Design Table shows loading spinner
     expect(document.querySelector('.ant-spin')).toBeInTheDocument();
   });
 
-  it('should display entity class labels', () => {
+  it('should display entity class labels', async () => {
     render(<Workflows />, { wrapper: createWrapper() });
 
     // Entity 1 appears twice (2 workflows with this entity class) without type label
-    const entity1Elements = screen.getAllByText('travel');
-    expect(entity1Elements.length).toBeGreaterThanOrEqual(1);
+    await waitFor(() => {
+      const entity1Elements = screen.getAllByText('travel');
+      expect(entity1Elements.length).toBeGreaterThanOrEqual(1);
+    });
 
     // Entity 2 is PERSISTENCE type, so it's filtered out when entityType is BUSINESS
     expect(screen.queryByText(/Entity2/i)).not.toBeInTheDocument();
@@ -269,13 +291,18 @@ describe('Workflows', () => {
 
   it('should allow row selection', async () => {
     render(<Workflows />, { wrapper: createWrapper() });
-    
+
+    // Wait for the table data to render before selecting a row.
+    await waitFor(() => {
+      expect(screen.getByText('Test Workflow 1')).toBeInTheDocument();
+    });
+
     // Find and click the first checkbox
     const checkboxes = document.querySelectorAll('input[type="checkbox"]');
     const firstRowCheckbox = checkboxes[1]; // Skip the header checkbox
-    
+
     fireEvent.click(firstRowCheckbox);
-    
+
     await waitFor(() => {
       expect(firstRowCheckbox).toBeChecked();
     });
@@ -290,40 +317,51 @@ describe('Workflows', () => {
 
   it('should show correct count in ExportImport when rows selected', async () => {
     render(<Workflows />, { wrapper: createWrapper() });
-    
+
+    // Wait for the table data to render before selecting a row.
+    await waitFor(() => {
+      expect(screen.getByText('Test Workflow 1')).toBeInTheDocument();
+    });
+
     // Select first row
     const checkboxes = document.querySelectorAll('input[type="checkbox"]');
     fireEvent.click(checkboxes[1]);
-    
+
     await waitFor(() => {
       expect(screen.getByText(/Export\/Import \(1 selected\)/)).toBeInTheDocument();
     });
   });
 
-  it('should display creation date', () => {
+  it('should display creation date', async () => {
     render(<Workflows />, { wrapper: createWrapper() });
 
     // Dates should be formatted and displayed
     // The exact format depends on the implementation
-    const dateElements = screen.getAllByText(/2021/);
-    expect(dateElements.length).toBeGreaterThan(0);
+    await waitFor(() => {
+      const dateElements = screen.getAllByText(/2021/);
+      expect(dateElements.length).toBeGreaterThan(0);
+    });
   });
 
-  it('should show action buttons for each workflow', () => {
+  it('should show action buttons for each workflow', async () => {
     render(<Workflows />, { wrapper: createWrapper() });
 
     // Each workflow should have action buttons (search, table, copy, delete icons)
     // We have 3 workflows, so multiple action buttons
-    const allButtons = screen.getAllByRole('button');
-    // Should have at least: 3 workflows × 4 buttons + create button + filter clear
-    expect(allButtons.length).toBeGreaterThan(10);
+    await waitFor(() => {
+      const allButtons = screen.getAllByRole('button');
+      // Should have at least: 3 workflows × 4 buttons + create button + filter clear
+      expect(allButtons.length).toBeGreaterThan(10);
+    });
   });
 
-  it('should show total count in pagination', () => {
+  it('should show total count in pagination', async () => {
     render(<Workflows />, { wrapper: createWrapper() });
 
     // Only 2 BUSINESS workflows are shown (Entity1 workflows)
-    expect(screen.getByText('Total 2 workflows')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('Total 2 workflows')).toBeInTheDocument();
+    });
   });
 
   it('should clear filter when clear button is clicked', async () => {
@@ -375,15 +413,17 @@ it('should NOT display Version column when entityType is PERSISTENCE', () => {
   expect(screen.queryByText('Version')).not.toBeInTheDocument();
 });
 
-it('should display version value for Business entities', () => {
+it('should display version value for Business entities', async () => {
   mockEntityType.mockReturnValue('BUSINESS');
   render(<Workflows />, { wrapper: createWrapper() });
   // Version is extracted from entityClassName (e.g., travel.1001 -> 1001)
-  const versionElements = screen.getAllByText('1001');
-  expect(versionElements.length).toBeGreaterThanOrEqual(1);
+  await waitFor(() => {
+    const versionElements = screen.getAllByText('1001');
+    expect(versionElements.length).toBeGreaterThanOrEqual(1);
+  });
 });
 
-    it('should filter workflows by BUSINESS entity type', () => {
+    it('should filter workflows by BUSINESS entity type', async () => {
       mockEntityType.mockReturnValue('BUSINESS');
 
       // Update workflows to have entity types
@@ -398,18 +438,21 @@ it('should display version value for Business entities', () => {
         isLoading: false,
         refetch: vi.fn(),
       });
+      mockGetAllWorkflowsList.mockResolvedValue({ data: workflowsWithTypes });
 
       render(<Workflows />, { wrapper: createWrapper() });
 
       // Should show BUSINESS workflows (Entity1)
-      expect(screen.getByText('Test Workflow 1')).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText('Test Workflow 1')).toBeInTheDocument();
+      });
       expect(screen.getByText('Another Workflow')).toBeInTheDocument();
 
       // Should NOT show PERSISTENCE workflows (Entity2)
       expect(screen.queryByText('Test Workflow 2')).not.toBeInTheDocument();
     });
 
-    it('should filter workflows by PERSISTENCE entity type', () => {
+    it('should filter workflows by PERSISTENCE entity type', async () => {
       mockEntityType.mockReturnValue('PERSISTENCE');
 
       const workflowsWithTypes = [
@@ -423,26 +466,31 @@ it('should display version value for Business entities', () => {
         isLoading: false,
         refetch: vi.fn(),
       });
+      mockGetAllWorkflowsList.mockResolvedValue({ data: workflowsWithTypes });
 
       render(<Workflows />, { wrapper: createWrapper() });
 
       // Should show PERSISTENCE workflows (Entity2)
-      expect(screen.getByText('Test Workflow 2')).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText('Test Workflow 2')).toBeInTheDocument();
+      });
 
       // Should NOT show BUSINESS workflows (Entity1)
       expect(screen.queryByText('Test Workflow 1')).not.toBeInTheDocument();
       expect(screen.queryByText('Another Workflow')).not.toBeInTheDocument();
     });
 
-    it('should display entity class names without type suffix', () => {
+    it('should display entity class names without type suffix', async () => {
       mockEntityType.mockReturnValue('BUSINESS');
 
       render(<Workflows />, { wrapper: createWrapper() });
 
       // Entity class labels should NOT include type information (type is shown in column header)
       // Use getAllByText because Entity1 appears multiple times in the table
-      const entity1Elements = screen.getAllByText('travel');
-      expect(entity1Elements.length).toBeGreaterThanOrEqual(1);
+      await waitFor(() => {
+        const entity1Elements = screen.getAllByText('travel');
+        expect(entity1Elements.length).toBeGreaterThanOrEqual(1);
+      });
     });
 
     it('should update filtered workflows when entity type changes', async () => {
@@ -451,7 +499,9 @@ it('should display version value for Business entities', () => {
       const { rerender } = render(<Workflows />, { wrapper: createWrapper() });
 
       // Initially showing BUSINESS workflows
-      expect(screen.getByText('Test Workflow 1')).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText('Test Workflow 1')).toBeInTheDocument();
+      });
       expect(screen.queryByText('Test Workflow 2')).not.toBeInTheDocument();
 
       // Change to PERSISTENCE
@@ -467,47 +517,60 @@ it('should display version value for Business entities', () => {
   });
 
   describe('StateIndicator Integration', () => {
-    it('should render StateIndicator for Active column', () => {
+    it('should render StateIndicator for Active column', async () => {
       render(<Workflows />, { wrapper: createWrapper() });
 
       // Should have StateIndicator components for active state
-      const indicators = screen.getAllByTestId('state-indicator-default');
-      expect(indicators.length).toBeGreaterThan(0);
+      await waitFor(() => {
+        const indicators = screen.getAllByTestId('state-indicator-default');
+        expect(indicators.length).toBeGreaterThan(0);
+      });
     });
 
-    it('should show active state indicator for active workflows', () => {
+    it('should show active state indicator for active workflows', async () => {
       render(<Workflows />, { wrapper: createWrapper() });
 
-      const indicators = screen.getAllByTestId('state-indicator-default');
-      const activeIndicators = indicators.filter(ind => ind.getAttribute('data-state') === 'true');
+      await waitFor(() => {
+        const indicators = screen.getAllByTestId('state-indicator-default');
+        const activeIndicators = indicators.filter(ind => ind.getAttribute('data-state') === 'true');
 
-      // At least one workflow should be active
-      expect(activeIndicators.length).toBeGreaterThan(0);
+        // At least one workflow should be active
+        expect(activeIndicators.length).toBeGreaterThan(0);
+      });
     });
 
-    it('should show inactive state indicator for inactive workflows', () => {
+    it('should show inactive state indicator for inactive workflows', async () => {
       render(<Workflows />, { wrapper: createWrapper() });
 
-      const indicators = screen.getAllByTestId('state-indicator-default');
-      const inactiveIndicators = indicators.filter(ind => ind.getAttribute('data-state') === 'false');
+      await waitFor(() => {
+        const indicators = screen.getAllByTestId('state-indicator-default');
+        const inactiveIndicators = indicators.filter(ind => ind.getAttribute('data-state') === 'false');
 
-      // At least one workflow should be inactive
-      expect(inactiveIndicators.length).toBeGreaterThan(0);
+        // At least one workflow should be inactive
+        expect(inactiveIndicators.length).toBeGreaterThan(0);
+      });
     });
 
-    it('should render StateIndicator for Persisted column', () => {
+    it('should render StateIndicator for Persisted column', async () => {
       render(<Workflows />, { wrapper: createWrapper() });
 
       // Should have StateIndicator components
-      const indicators = screen.getAllByTestId('state-indicator-default');
+      await waitFor(() => {
+        const indicators = screen.getAllByTestId('state-indicator-default');
 
-      // Should have indicators for both Active and Persisted columns
-      // (2 indicators per row: Active + Persisted)
-      expect(indicators.length).toBeGreaterThan(0);
+        // Should have indicators for both Active and Persisted columns
+        // (2 indicators per row: Active + Persisted)
+        expect(indicators.length).toBeGreaterThan(0);
+      });
     });
 
-    it('should display correct state for persisted workflows', () => {
+    it('should display correct state for persisted workflows', async () => {
       render(<Workflows />, { wrapper: createWrapper() });
+
+      await waitFor(() => {
+        const indicators = screen.getAllByTestId('state-indicator-default');
+        expect(indicators.length).toBeGreaterThan(0);
+      });
 
       const indicators = screen.getAllByTestId('state-indicator-default');
 
@@ -532,7 +595,7 @@ it('should display version value for Business entities', () => {
         });
       });
 
-      it('should display entity names without type suffix', () => {
+      it('should display entity names without type suffix', async () => {
         mockEntityType.mockReturnValue('BUSINESS');
 
         const workflowsWithTypes = [
@@ -544,14 +607,17 @@ it('should display version value for Business entities', () => {
           isLoading: false,
           refetch: vi.fn(),
         });
+        mockGetAllWorkflowsList.mockResolvedValue({ data: workflowsWithTypes });
 
         render(<Workflows />, { wrapper: createWrapper() });
 
         // Should show entity name without type label (type is shown in column header)
-        expect(screen.getByText('travel')).toBeInTheDocument();
+        await waitFor(() => {
+          expect(screen.getByText('travel')).toBeInTheDocument();
+        });
       });
 
-      it('should filter workflows by BUSINESS type', () => {
+      it('should filter workflows by BUSINESS type', async () => {
         mockEntityType.mockReturnValue('BUSINESS');
 
         const workflowsWithTypes = [
@@ -564,15 +630,18 @@ it('should display version value for Business entities', () => {
           isLoading: false,
           refetch: vi.fn(),
         });
+        mockGetAllWorkflowsList.mockResolvedValue({ data: workflowsWithTypes });
 
         render(<Workflows />, { wrapper: createWrapper() });
 
         // Should only show BUSINESS workflows
-        expect(screen.getByText('Test Workflow 1')).toBeInTheDocument();
+        await waitFor(() => {
+          expect(screen.getByText('Test Workflow 1')).toBeInTheDocument();
+        });
         expect(screen.queryByText('Test Workflow 2')).not.toBeInTheDocument();
       });
 
-      it('should filter workflows by PERSISTENCE type', () => {
+      it('should filter workflows by PERSISTENCE type', async () => {
         mockEntityType.mockReturnValue('PERSISTENCE');
 
         const workflowsWithTypes = [
@@ -585,15 +654,18 @@ it('should display version value for Business entities', () => {
           isLoading: false,
           refetch: vi.fn(),
         });
+        mockGetAllWorkflowsList.mockResolvedValue({ data: workflowsWithTypes });
 
         render(<Workflows />, { wrapper: createWrapper() });
 
         // Should only show PERSISTENCE workflows
-        expect(screen.getByText('Test Workflow 2')).toBeInTheDocument();
+        await waitFor(() => {
+          expect(screen.getByText('Test Workflow 2')).toBeInTheDocument();
+        });
         expect(screen.queryByText('Test Workflow 1')).not.toBeInTheDocument();
       });
 
-      it('should handle workflows with unknown entity types', () => {
+      it('should handle workflows with unknown entity types', async () => {
         mockEntityType.mockReturnValue('BUSINESS');
 
         const workflowsWithTypes = [
@@ -606,11 +678,14 @@ it('should display version value for Business entities', () => {
           isLoading: false,
           refetch: vi.fn(),
         });
+        mockGetAllWorkflowsList.mockResolvedValue({ data: workflowsWithTypes });
 
         render(<Workflows />, { wrapper: createWrapper() });
 
         // Should show BUSINESS workflow
-        expect(screen.getByText('Test Workflow 1')).toBeInTheDocument();
+        await waitFor(() => {
+          expect(screen.getByText('Test Workflow 1')).toBeInTheDocument();
+        });
         // Unknown entity type should also show (no type = no filter)
         expect(screen.getByText('Test Workflow 2')).toBeInTheDocument();
       });
@@ -625,7 +700,7 @@ it('should display version value for Business entities', () => {
         });
       });
 
-      it('should display entity names without type suffix', () => {
+      it('should display entity names without type suffix', async () => {
         const workflowsWithTypes = [
           { ...mockWorkflows[0], entityClassName: 'travel.1001' },
           { ...mockWorkflows[2], entityClassName: 'travel.1001' },
@@ -636,17 +711,20 @@ it('should display version value for Business entities', () => {
           isLoading: false,
           refetch: vi.fn(),
         });
+        mockGetAllWorkflowsList.mockResolvedValue({ data: workflowsWithTypes });
 
         render(<Workflows />, { wrapper: createWrapper() });
 
         // Should show entity name without type label (appears twice)
-        const entity1Elements = screen.getAllByText('travel.1001');
-        expect(entity1Elements.length).toBeGreaterThanOrEqual(1);
+        await waitFor(() => {
+          const entity1Elements = screen.getAllByText('travel.1001');
+          expect(entity1Elements.length).toBeGreaterThanOrEqual(1);
+        });
         expect(screen.queryByText(/travel.1001.*Business/i)).not.toBeInTheDocument();
         expect(screen.queryByText(/Entity1.*Technical/i)).not.toBeInTheDocument();
       });
 
-      it('should show all workflows regardless of entity type filter', () => {
+      it('should show all workflows regardless of entity type filter', async () => {
         mockEntityType.mockReturnValue('BUSINESS');
 
         const workflowsWithTypes = [
@@ -659,11 +737,14 @@ it('should display version value for Business entities', () => {
           isLoading: false,
           refetch: vi.fn(),
         });
+        mockGetAllWorkflowsList.mockResolvedValue({ data: workflowsWithTypes });
 
         render(<Workflows />, { wrapper: createWrapper() });
 
         // Should show all workflows (no filtering when feature flag is disabled)
-        expect(screen.getByText('Test Workflow 1')).toBeInTheDocument();
+        await waitFor(() => {
+          expect(screen.getByText('Test Workflow 1')).toBeInTheDocument();
+        });
         expect(screen.getByText('Test Workflow 2')).toBeInTheDocument();
       });
     });
@@ -676,21 +757,25 @@ it('should display version value for Business entities', () => {
         });
       });
 
-      it('should show all workflows without filtering', () => {
+      it('should show all workflows without filtering', async () => {
         render(<Workflows />, { wrapper: createWrapper() });
 
         // Should show all workflows
-        expect(screen.getByText('Test Workflow 1')).toBeInTheDocument();
+        await waitFor(() => {
+          expect(screen.getByText('Test Workflow 1')).toBeInTheDocument();
+        });
         expect(screen.getByText('Test Workflow 2')).toBeInTheDocument();
         expect(screen.getByText('Another Workflow')).toBeInTheDocument();
       });
 
-      it('should display entity names without type suffix', () => {
+      it('should display entity names without type suffix', async () => {
         render(<Workflows />, { wrapper: createWrapper() });
 
         // Should show short class names without type labels (appears multiple times)
-        const entity1Elements = screen.getAllByText('travel.1001');
-        expect(entity1Elements.length).toBeGreaterThanOrEqual(1);
+        await waitFor(() => {
+          const entity1Elements = screen.getAllByText('travel.1001');
+          expect(entity1Elements.length).toBeGreaterThanOrEqual(1);
+        });
         expect(screen.queryByText(/travel.1001.*Business/i)).not.toBeInTheDocument();
       });
     });

@@ -17,12 +17,14 @@ import {
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import type { ResizeCallbackData } from 'react-resizable';
+import { useQuery } from '@tanstack/react-query';
 import {
-  useWorkflowsList,
+  statemachineKeys,
   useWorkflowEnabledTypes,
   useDeleteWorkflow,
   useCopyWorkflow,
 } from '../hooks/useStatemachine';
+import { useStatemachineStore } from '../stores/statemachineStore';
 import { useTableState } from '../hooks/useTableState';
 import { useQueryInvalidation } from '../hooks/useQueryInvalidation';
 import { ExportImport } from '../components/ExportImport';
@@ -127,16 +129,22 @@ export const Workflows: React.FC = () => {
   const { entityType } = useGlobalUiSettingsStore();
 
   // Queries
-  // Legacy mode passes null modelRef; the legacy gateway ignores it.
-  // TODO(sub-branch-3): the gateway returns WorkflowSummary which lacks the
-  // legacy fields (id, entityClassName, persisted, creationDate) this page
-  // still depends on. The legacy gateway's listWorkflows synthesises these
-  // from the underlying store records. We cast to Workflow[] here at the
-  // boundary so the rest of the page keeps compiling; sub-branch 3 replaces
-  // this whole list page with a cloud-native variant that only needs the
-  // gateway summary.
-  const { data: workflowsRaw = [], isLoading, refetch } = useWorkflowsList(null);
-  const workflows = workflowsRaw as unknown as Workflow[];
+  // The legacy table reads richer fields (id, entityClassName, persisted,
+  // creationDate, etc.) than WorkflowGateway.listWorkflows projects into a
+  // WorkflowSummary. Bypass the gateway here and call the legacy store
+  // directly — same pattern WorkflowForm.tsx already uses for create/update.
+  // The cloud branch above already returns to WorkflowsCloudStub, so this
+  // only runs in legacy mode. Sub-branch 3 replaces this whole list page
+  // with the real cloud Workflows UI; until then, legacy must keep working
+  // against the legacy backend's full record shape.
+  const { data: workflows = [], isLoading, refetch } = useQuery<Workflow[]>({
+    queryKey: statemachineKeys.workflowsList(null),
+    queryFn: async () => {
+      const response = await useStatemachineStore.getState().getAllWorkflowsList(undefined);
+      const data = response?.data;
+      return Array.isArray(data) ? data : [];
+    },
+  });
   const { data: workflowEnabledTypes = [] } = useWorkflowEnabledTypes();
 
   // Check if entity type info is available (feature flag equivalent)
