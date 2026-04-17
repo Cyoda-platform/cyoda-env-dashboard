@@ -4,7 +4,7 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider, useQueryClient } from '@tanstack/react-query';
 import React from 'react';
 import {
   useWorkflowsList,
@@ -24,6 +24,7 @@ import {
   useTransitionsList,
   useProcessesList,
   useCriteriaList,
+  statemachineKeys,
 } from './useStatemachine';
 import { getWorkflowGateway } from '../gateways';
 
@@ -497,6 +498,40 @@ describe('useStatemachine hooks', () => {
       await result.current.mutateAsync({ modelRef, name: 'X' });
 
       expect(deleteWorkflow).toHaveBeenCalledWith(modelRef, 'X');
+    });
+
+    it('invalidates the workflows list on FAILURE as well as success (onSettled, not onSuccess)', async () => {
+      const deleteWorkflow = vi.fn().mockRejectedValue(new Error('server rejected'));
+      vi.mocked(getWorkflowGateway).mockReturnValue({
+        listWorkflows: vi.fn(),
+        loadWorkflow: vi.fn(),
+        saveWorkflow: vi.fn(),
+        deleteWorkflow,
+        copyWorkflow: vi.fn(),
+        renameWorkflow: vi.fn(),
+      } as any);
+
+      // Spy on the QueryClient that the wrapper provides.
+      // We capture it by rendering a probe component first.
+      let capturedClient: any = null;
+      const Probe = () => {
+        capturedClient = useQueryClient();
+        return null;
+      };
+      renderHook(() => Probe(), { wrapper });
+      const invalidateSpy = vi.spyOn(capturedClient, 'invalidateQueries');
+
+      const { result } = renderHook(() => useDeleteWorkflow(), { wrapper });
+
+      // The mutation rejects; we expect mutateAsync to throw, but invalidation should still fire.
+      await expect(
+        result.current.mutateAsync({ modelRef: null, name: 'X' })
+      ).rejects.toThrow('server rejected');
+
+      expect(deleteWorkflow).toHaveBeenCalledWith(null, 'X');
+      expect(invalidateSpy).toHaveBeenCalledWith({
+        queryKey: statemachineKeys.workflows(),
+      });
     });
   });
 
