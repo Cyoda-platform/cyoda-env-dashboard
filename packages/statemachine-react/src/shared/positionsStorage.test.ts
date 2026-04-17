@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
-import { positionsKey, loadPositions, savePositions } from '../positionsStorage';
+import { positionsKey, loadPositions, savePositions } from './positionsStorage';
 
 const ref = { entityName: 'Customer', modelVersion: 1 };
 

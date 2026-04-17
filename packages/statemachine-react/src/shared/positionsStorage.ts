@@ -2,8 +2,8 @@
  * localStorage helpers for caching graph node positions per workflow.
  * Spec: docs/superpowers/specs/2026-04-17-cloud-workflow-editor-layout-pivot.md §3.5
  */
-import type { ModelRef } from '../../gateways';
-import type { PositionsMap } from '../../types';
+import type { ModelRef } from '../gateways';
+import type { PositionsMap } from '../types';
 
 export function positionsKey(modelRef: ModelRef, workflowName: string): string {
   return `cyoda.cloud-workflow-editor.positions:${modelRef.entityName}/${modelRef.modelVersion}/${workflowName}`;
