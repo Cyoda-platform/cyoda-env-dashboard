@@ -106,8 +106,8 @@ export default class HelperFeatureFlags {
   }
 
   /**
-   * Whether the cloud Workflows UI (list page + cloud editor + cloud row
-   * actions) should be active in the current mode.
+   * Whether cloud business features (Workflows UI, cloud instances, and future
+   * cloud business panels) should be active in the current mode.
    *
    * Active iff cyoda-cloud mode is on AND the user's entityType selector is
    * BUSINESS. Otherwise the page falls back to the legacy Workflows table
@@ -118,7 +118,7 @@ export default class HelperFeatureFlags {
    *
    * @param entityType — the global UI toggle ('BUSINESS' | 'PERSISTENCE').
    */
-  static isCloudWorkflowsActive(entityType: 'BUSINESS' | 'PERSISTENCE'): boolean {
+  static isCloudBusinessActive(entityType: 'BUSINESS' | 'PERSISTENCE'): boolean {
     return this.isCyodaCloud() && entityType === 'BUSINESS';
   }
 }

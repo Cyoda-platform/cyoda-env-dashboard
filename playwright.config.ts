@@ -28,12 +28,21 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
-      testIgnore: ['**/cloud-workflow-editor/**'],
+      testIgnore: ['**/cloud-workflow-editor/**', '**/cloud-instances/**'],
       use: { ...devices['Desktop Chrome'] },
     },
     {
       name: 'cloud-workflow-editor',
       testDir: './e2e/cloud-workflow-editor',
+      testMatch: '**/*.spec.ts',
+      use: {
+        ...devices['Desktop Chrome'],
+        baseURL: process.env.BASE_URL ?? 'http://localhost:5173',
+      },
+    },
+    {
+      name: 'cloud-instances',
+      testDir: './e2e/cloud-instances',
       testMatch: '**/*.spec.ts',
       use: {
         ...devices['Desktop Chrome'],

@@ -62,7 +62,7 @@ function getTimeFromUuid(uuid: string): number {
 // React's "Rendered more hooks than during the previous render" rule.
 export const Workflows: React.FC = () => {
   const { entityType: currentEntityType } = useGlobalUiSettingsStore();
-  return HelperFeatureFlags.isCloudWorkflowsActive(currentEntityType)
+  return HelperFeatureFlags.isCloudBusinessActive(currentEntityType)
     ? <WorkflowsCloud />
     : <WorkflowsLegacy />;
 };

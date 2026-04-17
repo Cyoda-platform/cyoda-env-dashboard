@@ -13,7 +13,7 @@ import React, { useMemo, useState } from 'react';
 import { GraphicalStateMachine } from '../../../components/GraphicalStateMachine';
 import { useWorkflowEditorStore } from '../storeContext';
 import { workflowDocToGraphShape } from '../workflowDocToGraphShape';
-import { loadPositions, savePositions } from '../positionsStorage';
+import { loadPositions, savePositions } from '../../../shared/positionsStorage';
 import type { ModelRef } from '../../../gateways';
 import type { PositionsMap } from '../../../types';
 
