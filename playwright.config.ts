@@ -28,6 +28,7 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
+      testIgnore: ['**/cloud-workflow-editor/**'],
       use: { ...devices['Desktop Chrome'] },
     },
     {
