@@ -100,3 +100,39 @@ describe('CloudInstancesGateway.search', () => {
     );
   });
 });
+
+describe('CloudInstancesGateway.load', () => {
+  beforeEach(() => { vi.clearAllMocks(); });
+
+  it('GETs /entity/{entityId} and extracts data + meta from the envelope', async () => {
+    (axios.get as any).mockResolvedValueOnce({
+      data: {
+        type: 'ENTITY',
+        data: { name: 'Acme' },
+        meta: { id: 'eid', state: 'ACTIVE', creationDate: '2026-04-01T00:00:00Z' },
+      },
+    });
+    const gw = new CloudInstancesGateway();
+    const result = await gw.load('eid');
+    expect(axios.get).toHaveBeenCalledWith('/entity/eid', expect.any(Object));
+    expect(result.data).toEqual({ name: 'Acme' });
+    expect(result.meta).toEqual({ id: 'eid', state: 'ACTIVE', creationDate: '2026-04-01T00:00:00Z' });
+  });
+
+  it('passes pointInTime and transactionId as query params', async () => {
+    (axios.get as any).mockResolvedValueOnce({ data: { type: 'ENTITY', data: {}, meta: {} } });
+    const gw = new CloudInstancesGateway();
+    await gw.load('eid', { pointInTime: '2026-04-01T00:00:00Z', transactionId: 'tx1' });
+    expect(axios.get).toHaveBeenCalledWith(
+      '/entity/eid',
+      expect.objectContaining({ params: { pointInTime: '2026-04-01T00:00:00Z', transactionId: 'tx1' } }),
+    );
+  });
+
+  it('URL-encodes entityId', async () => {
+    (axios.get as any).mockResolvedValueOnce({ data: { type: 'ENTITY', data: {}, meta: {} } });
+    const gw = new CloudInstancesGateway();
+    await gw.load('a/b');
+    expect(axios.get).toHaveBeenCalledWith('/entity/a%2Fb', expect.any(Object));
+  });
+});

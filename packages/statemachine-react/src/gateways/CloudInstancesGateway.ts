@@ -5,7 +5,7 @@
  *
  * Spec: docs/superpowers/specs/2026-04-17-cloud-instances-design.md §3.3
  */
-import { axios } from '@cyoda/http-api-react';
+import { axios, extractCyodaEntityData, extractCyodaEntityMeta, type CyodaCloudEntityEnvelope } from '@cyoda/http-api-react';
 import { TooManyEntityIdsError } from './errors';
 import type { ModelRef } from './workflowDocTypes';
 import type {
@@ -54,8 +54,15 @@ export class CloudInstancesGateway implements InstancesGateway {
       hasMore: response.data.hasMore ?? false,
     };
   }
-  async load(_entityId: string, _opts?: { pointInTime?: string; transactionId?: string }): Promise<EntityEnvelopeResponse> {
-    throw new Error('not implemented');
+  async load(entityId: string, opts: { pointInTime?: string; transactionId?: string } = {}): Promise<EntityEnvelopeResponse> {
+    const url = `/entity/${encodeURIComponent(entityId)}`;
+    const response = await axios.get<CyodaCloudEntityEnvelope>(url, {
+      params: { pointInTime: opts.pointInTime, transactionId: opts.transactionId },
+    });
+    return {
+      data: extractCyodaEntityData(response.data),
+      meta: extractCyodaEntityMeta(response.data),
+    };
   }
   async loadChanges(_entityId: string, _opts?: { pointInTime?: string }): Promise<EntityChange[]> {
     throw new Error('not implemented');
