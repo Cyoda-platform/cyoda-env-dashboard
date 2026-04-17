@@ -34,6 +34,9 @@ export type {
   ProcessorExecutionMode,
   QueryCondition,
 } from './workflowDocTypes';
+// Re-export from http-api-react so callers can import all gateway-related
+// types from one place.
+export type { EntityModelListItem } from '@cyoda/http-api-react';
 export { CloudWorkflowGateway } from './CloudWorkflowGateway';
 export { LegacyPlatformWorkflowGateway } from './LegacyPlatformWorkflowGateway';
 
