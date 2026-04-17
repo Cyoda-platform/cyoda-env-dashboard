@@ -1,19 +1,18 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Button, Result } from 'antd';
+import { Button, Radio, Result, Space } from 'antd';
 import { App } from 'antd';
 import { useQuery } from '@tanstack/react-query';
 import { useQueryClient } from '@tanstack/react-query';
 import { createWorkflowEditorStore } from './workflowEditorStore';
 import { WorkflowEditorStoreContext, useWorkflowEditorStore } from './storeContext';
-import { WorkflowTree } from './WorkflowTree';
-import { NodeRouter } from './NodeRouter';
 import { useDirtyGuard } from './useDirtyGuard';
 import { validateWorkflowDoc } from './validateWorkflowDoc';
 import { getWorkflowGateway } from '../../gateways';
 import { statemachineKeys } from '../../hooks/useStatemachine';
 import { MustHaveActiveWorkflowError, WorkflowNotFoundError } from '../../gateways/errors';
 import type { WorkflowDoc } from '../../gateways';
+import { WorkflowSettingsForm } from './nodes/WorkflowSettingsForm';
 
 const SCAFFOLD: WorkflowDoc = {
   version: '1.0', name: '', initialState: 'draft',
@@ -47,32 +46,58 @@ export const WorkflowEditorCloud: React.FC = () => {
 
   return (
     <WorkflowEditorStoreContext.Provider value={store}>
-      <PageBody isNew={isNew} entityName={modelRef.entityName} modelVersion={modelRef.modelVersion} />
+      <PageBody
+        isNew={isNew}
+        entityName={modelRef.entityName}
+        modelVersion={modelRef.modelVersion}
+        workflowName={params.workflowName ?? ''}
+      />
     </WorkflowEditorStoreContext.Provider>
   );
 };
 
-const PageBody: React.FC<{ isNew: boolean; entityName: string; modelVersion: number }> = ({ isNew, entityName, modelVersion }) => {
+type ViewMode = 'tabular' | 'graphical' | 'config';
+
+const PageBody: React.FC<{ isNew: boolean; entityName: string; modelVersion: number; workflowName: string }> = ({ isNew, entityName, modelVersion, workflowName }) => {
   const isDirty = useWorkflowEditorStore((s) => s.pristine !== null && s.current !== s.pristine);
   const ready = useWorkflowEditorStore((s) => s.pristine !== null);
+  const [view, setView] = useState<ViewMode>('tabular');
   useDirtyGuard(isDirty);
 
   if (!ready) return null;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 64px)' }}>
-      <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-        <div style={{ flex: '0 0 320px', borderRight: '1px solid #eee' }}>
-          <WorkflowTree />
-        </div>
-        <div style={{ flex: 1, overflow: 'auto', padding: 16 }}>
-          <NodeRouter />
-        </div>
+      <div style={{ flex: 1, overflow: 'auto', padding: 16 }}>
+        <Space direction="vertical" size="large" style={{ width: '100%' }}>
+          <WorkflowSettingsForm />
+          <Radio.Group
+            value={view}
+            onChange={(e) => setView(e.target.value)}
+            optionType="button"
+            buttonStyle="solid"
+            options={[
+              { label: 'Tabular',   value: 'tabular' },
+              { label: 'Graphical', value: 'graphical' },
+              { label: 'Config',    value: 'config' },
+            ]}
+          />
+          {view === 'tabular'   && <TabularView />}
+          {view === 'graphical' && <GraphicalView modelRef={{ entityName, modelVersion }} workflowName={workflowName} />}
+          {view === 'config'    && <ConfigView />}
+        </Space>
       </div>
       <SaveBar isNew={isNew} entityName={entityName} modelVersion={modelVersion} />
     </div>
   );
 };
+
+// Inline stubs — CC1/DD1/EE1 will replace these with real imports.
+function TabularView() { return <div>Tabular (todo)</div>; }
+function GraphicalView(_: { modelRef: { entityName: string; modelVersion: number }; workflowName: string }) {
+  return <div>Graphical (todo)</div>;
+}
+function ConfigView() { return <div>Config (todo)</div>; }
 
 const SaveBar: React.FC<{ isNew: boolean; entityName: string; modelVersion: number }> = ({ isNew, entityName, modelVersion }) => {
   const store = useContext(WorkflowEditorStoreContext)!;
@@ -90,14 +115,6 @@ const SaveBar: React.FC<{ isNew: boolean; entityName: string; modelVersion: numb
       const issues = validateWorkflowDoc(current);
       if (issues.length > 0) {
         store.getState().setErrors(issues);
-        store.getState().setSelected(issues[0].path);
-        // expand ancestors of the first error
-        const parts = issues[0].path.split('/').filter(Boolean);
-        let acc = '';
-        for (const part of parts) {
-          acc += '/' + part;
-          if (!store.getState().expandedPaths.has(acc)) store.getState().toggleExpand(acc);
-        }
         message.error('Validation failed — see highlighted fields.');
         setSaving(false);
         return;
@@ -109,7 +126,7 @@ const SaveBar: React.FC<{ isNew: boolean; entityName: string; modelVersion: numb
           queryKey: statemachineKeys.workflowDoc(modelRef, current.name),
           queryFn: () => getWorkflowGateway().loadWorkflow(modelRef, current.name),
         });
-        store.getState().hydrate(fresh, { preserveView: true });
+        store.getState().hydrate(fresh);
         if (isNew) navigate(`/workflow/${entityName}/${modelVersion}/${current.name}`, { replace: true });
         message.success('Workflow saved');
       } catch (err: any) {

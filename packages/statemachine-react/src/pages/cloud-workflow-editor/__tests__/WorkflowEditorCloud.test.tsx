@@ -4,6 +4,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { App } from 'antd';
+import userEvent from '@testing-library/user-event';
 import { WorkflowEditorCloud } from '../WorkflowEditorCloud';
 import { getWorkflowGateway } from '../../../gateways';
 import { WorkflowNotFoundError } from '../../../gateways/errors';
@@ -54,7 +55,7 @@ describe('WorkflowEditorCloud — load / scaffold / 404', () => {
       renameWorkflow: vi.fn(), listWorkflows: vi.fn(),
     } as any);
     renderAt('/workflow/Customer/1/wf');
-    await waitFor(() => expect(screen.getAllByText('Workflow').length).toBeGreaterThan(0));
+    await waitFor(() => expect(screen.getByText(/Workflow settings/)).toBeInTheDocument());
   });
 
   it('uses the scaffold for /new', async () => {
@@ -63,9 +64,7 @@ describe('WorkflowEditorCloud — load / scaffold / 404', () => {
       deleteWorkflow: vi.fn(), renameWorkflow: vi.fn(), listWorkflows: vi.fn(),
     } as any);
     renderAt('/workflow/Customer/1/new');
-    await waitFor(() => expect(screen.getAllByText('Workflow').length).toBeGreaterThan(0));
-    // Scaffold has draft state
-    await waitFor(() => expect(screen.getAllByText('draft').length).toBeGreaterThan(0));
+    await waitFor(() => expect(screen.getByText(/Workflow settings/)).toBeInTheDocument());
   });
 
   it('renders a 404 result when modelVersion is not a number', async () => {
@@ -80,13 +79,29 @@ describe('WorkflowEditorCloud — load / scaffold / 404', () => {
       renameWorkflow: vi.fn(), listWorkflows: vi.fn(),
     } as any);
     renderAt('/workflow/Customer/1/wf');
-    await waitFor(() => expect(screen.getAllByText('Workflow').length).toBeGreaterThan(0));
+    await waitFor(() => expect(screen.getByText(/Workflow settings/)).toBeInTheDocument());
     expect(screen.getByRole('button', { name: /^Save$/ })).toBeDisabled();
     expect(screen.getByRole('button', { name: /Discard changes/ })).toBeDisabled();
   });
-});
 
-import userEvent from '@testing-library/user-event';
+  it('view radio toggle switches between Tabular / Graphical / Config (showing stubs)', async () => {
+    vi.mocked(getWorkflowGateway).mockReturnValue({
+      loadWorkflow: vi.fn().mockResolvedValue(sampleDoc),
+      saveWorkflow: vi.fn(), copyWorkflow: vi.fn(), deleteWorkflow: vi.fn(),
+      renameWorkflow: vi.fn(), listWorkflows: vi.fn(),
+    } as any);
+    renderAt('/workflow/Customer/1/wf');
+    await waitFor(() => expect(screen.getByText(/Workflow settings/)).toBeInTheDocument());
+    // Default is tabular.
+    expect(screen.getByText(/Tabular \(todo\)/)).toBeInTheDocument();
+    // Click Graphical — AntD radio buttons wrap the hidden input in a label; click the label text.
+    await userEvent.click(screen.getByText('Graphical'));
+    expect(screen.getByText(/Graphical \(todo\)/)).toBeInTheDocument();
+    // Click Config.
+    await userEvent.click(screen.getByText('Config'));
+    expect(screen.getByText(/Config \(todo\)/)).toBeInTheDocument();
+  });
+});
 
 describe('WorkflowEditorCloud — save flow', () => {
   beforeEach(() => vi.clearAllMocks());
@@ -105,7 +120,7 @@ describe('WorkflowEditorCloud — save flow', () => {
     const gw = makeGateway();
     vi.mocked(getWorkflowGateway).mockReturnValue(gw as any);
     renderAt('/workflow/Customer/1/wf');
-    await waitFor(() => expect(screen.getAllByText('Workflow').length).toBeGreaterThan(0));
+    await waitFor(() => expect(screen.getByText(/Workflow settings/)).toBeInTheDocument());
     // Make the doc dirty by editing the description field.
     const descInput = await screen.findByRole('textbox', { name: /description/i });
     await userEvent.type(descInput, 'X');
@@ -119,7 +134,7 @@ describe('WorkflowEditorCloud — save flow', () => {
     const gw = makeGateway();
     vi.mocked(getWorkflowGateway).mockReturnValue(gw as any);
     renderAt('/workflow/Customer/1/wf');
-    await waitFor(() => expect(screen.getAllByText('Workflow').length).toBeGreaterThan(0));
+    await waitFor(() => expect(screen.getByText(/Workflow settings/)).toBeInTheDocument());
     // Make the doc dirty AND invalid: clear the name field.
     const nameInput = await screen.findByDisplayValue('wf');
     await userEvent.clear(nameInput);
@@ -132,7 +147,7 @@ describe('WorkflowEditorCloud — save flow', () => {
     const gw = makeGateway();
     vi.mocked(getWorkflowGateway).mockReturnValue(gw as any);
     renderAt('/workflow/Customer/1/new');
-    await waitFor(() => expect(screen.getAllByText('Workflow').length).toBeGreaterThan(0));
+    await waitFor(() => expect(screen.getByText(/Workflow settings/)).toBeInTheDocument());
     const nameInput = await screen.findByRole('textbox', { name: /^Name$/i });
     await userEvent.type(nameInput, 'created');
     await userEvent.click(screen.getByRole('button', { name: /^Save$/ }));
@@ -149,7 +164,7 @@ describe('WorkflowEditorCloud — save flow', () => {
     const gw = makeGateway();
     vi.mocked(getWorkflowGateway).mockReturnValue(gw as any);
     renderAt('/workflow/Customer/1/wf');
-    await waitFor(() => expect(screen.getAllByText('Workflow').length).toBeGreaterThan(0));
+    await waitFor(() => expect(screen.getByText(/Workflow settings/)).toBeInTheDocument());
     const descInput = await screen.findByRole('textbox', { name: /description/i });
     await userEvent.type(descInput, 'X');
     await userEvent.click(screen.getByRole('button', { name: /Discard changes/ }));
@@ -159,30 +174,11 @@ describe('WorkflowEditorCloud — save flow', () => {
     await waitFor(() => expect((descInput as HTMLInputElement).value).toBe(''));
   });
 
-  it('preserves selectedPath after save (preserveView)', async () => {
-    const gw = makeGateway();
-    vi.mocked(getWorkflowGateway).mockReturnValue(gw as any);
-    renderAt('/workflow/Customer/1/wf');
-    await waitFor(() => expect(screen.getAllByText('Workflow').length).toBeGreaterThan(0));
-    // Click the transition node labelled 't' to set selectedPath = /states/draft/transitions/0
-    await userEvent.click(screen.getByText('t'));
-    // TransitionForm should now be visible
-    await waitFor(() => expect(screen.getByText('Transition')).toBeInTheDocument());
-    // Make dirty by editing the transition Name input
-    const nameInput = await screen.findByDisplayValue('t');
-    await userEvent.clear(nameInput);
-    await userEvent.type(nameInput, 't-edited');
-    await userEvent.click(screen.getByRole('button', { name: /^Save$/ }));
-    await waitFor(() => expect(gw.saveWorkflow).toHaveBeenCalled());
-    // After save, preserveView keeps selectedPath at the transition; TransitionForm still visible
-    await waitFor(() => expect(screen.getByText('Transition')).toBeInTheDocument());
-  });
-
   it('after save on /new, navigates to canonical URL with replace=true', async () => {
     const gw = makeGateway();
     vi.mocked(getWorkflowGateway).mockReturnValue(gw as any);
     renderAt('/workflow/Customer/1/new');
-    await waitFor(() => expect(screen.getAllByText('Workflow').length).toBeGreaterThan(0));
+    await waitFor(() => expect(screen.getByText(/Workflow settings/)).toBeInTheDocument());
     // Confirm we start at /new
     expect(screen.getByTestId('current-path').textContent).toBe('/workflow/Customer/1/new');
     const nameInput = await screen.findByRole('textbox', { name: /^Name$/i });
@@ -205,7 +201,7 @@ describe('WorkflowEditorCloud — save flow', () => {
     });
     vi.mocked(getWorkflowGateway).mockReturnValue(gw as any);
     renderAt('/workflow/Customer/1/wf');
-    await waitFor(() => expect(screen.getAllByText('Workflow').length).toBeGreaterThan(0));
+    await waitFor(() => expect(screen.getByText(/Workflow settings/)).toBeInTheDocument());
     const descInput = await screen.findByRole('textbox', { name: /description/i });
     await userEvent.type(descInput, 'X');
     await userEvent.click(screen.getByRole('button', { name: /^Save$/ }));
