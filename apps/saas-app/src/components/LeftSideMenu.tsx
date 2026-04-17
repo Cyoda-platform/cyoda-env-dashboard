@@ -173,7 +173,9 @@ export const LeftSideMenu: React.FC<LeftSideMenuProps> = ({ collapsed, onCollaps
   };
 
   const isTrinoEnabled = HelperFeatureFlags.isTrinoSqlSchemaEnabled();
-  const isTasksEnabled = HelperFeatureFlags.isTasksEnabled();
+  const isTasksAvailable = HelperFeatureFlags.isTasksAvailable();
+  const isReportingAvailable = HelperFeatureFlags.isReportingAvailable();
+  const isProcessingManagerAvailable = HelperFeatureFlags.isProcessingManagerAvailable();
 
   const menuItems: MenuItem[] = [
     // Trino SQL Schemas - conditionally shown based on feature flag
@@ -183,7 +185,8 @@ export const LeftSideMenu: React.FC<LeftSideMenuProps> = ({ collapsed, onCollaps
       label: <span data-path="/trino">Trino SQL schemas</span>,
       title: 'Trino SQL schemas',
     }] : []),
-    {
+    // Reporting - hidden under cyoda-go (uses /platform-* endpoints)
+    ...(isReportingAvailable ? [{
       key: 'reporting',
       icon: collapsed ? (
         <Tooltip title="Reporting" placement="right">
@@ -232,7 +235,7 @@ export const LeftSideMenu: React.FC<LeftSideMenuProps> = ({ collapsed, onCollaps
           title: 'Catalog of aliases',
         },
       ],
-    },
+    }] : []),
     {
       key: 'lifecycle',
       icon: collapsed ? (
@@ -277,8 +280,8 @@ export const LeftSideMenu: React.FC<LeftSideMenuProps> = ({ collapsed, onCollaps
         },
       ],
     },
-    // Tasks - conditionally shown based on feature flag
-    ...(isTasksEnabled ? [{
+    // Tasks - hidden under cyoda-go and gated by VITE_FEATURE_FLAG_TASKS
+    ...(isTasksAvailable ? [{
       key: '/tasks',
       icon: <CheckSquareOutlined />,
       label: <span data-path="/tasks">Tasks</span>,
@@ -290,12 +293,13 @@ export const LeftSideMenu: React.FC<LeftSideMenuProps> = ({ collapsed, onCollaps
       label: <span data-path="/entity-viewer">Entity Model Viewer</span>,
       title: 'Entity Model Viewer',
     },
-    {
+    // Processing - hidden under cyoda-go (uses /platform-processing endpoints)
+    ...(isProcessingManagerAvailable ? [{
       key: '/processing-ui',
       icon: <ClusterOutlined />,
       label: <span data-path="/processing-ui">Processing</span>,
       title: 'Processing',
-    },
+    }] : []),
     {
       type: 'divider',
     },

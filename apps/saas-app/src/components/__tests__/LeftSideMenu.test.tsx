@@ -414,5 +414,56 @@ describe('LeftSideMenu', () => {
       });
     });
   });
+
+  describe('Cyoda-Go feature gating', () => {
+    const setEnv = (key: string, value: unknown) => {
+      (import.meta.env as any)[key] = value;
+    };
+    const clearEnv = (key: string) => {
+      delete (import.meta.env as any)[key];
+    };
+
+    beforeEach(() => {
+      // Default: all relevant flags off
+      clearEnv('VITE_FEATURE_FLAG_IS_CYODA_GO');
+      clearEnv('VITE_FEATURE_FLAG_IS_CYODA_CLOUD');
+      clearEnv('VITE_FEATURE_FLAG_TRINO_SQL_SCHEMA');
+      clearEnv('VITE_FEATURE_FLAG_TASKS');
+    });
+
+    it('hides Reporting, Tasks, and Processing when IS_CYODA_GO is true', () => {
+      setEnv('VITE_FEATURE_FLAG_IS_CYODA_GO', true);
+      setEnv('VITE_FEATURE_FLAG_TRINO_SQL_SCHEMA', true);
+      // Even with TASKS explicitly enabled, the GO flag must take precedence:
+      setEnv('VITE_FEATURE_FLAG_TASKS', true);
+
+      renderWithRouter(
+        <LeftSideMenu collapsed={false} onCollapse={mockOnCollapse} />
+      );
+
+      expect(screen.queryByText('Reporting')).not.toBeInTheDocument();
+      expect(screen.queryByText('Tasks')).not.toBeInTheDocument();
+      expect(screen.queryByText('Processing')).not.toBeInTheDocument();
+
+      // Surviving items
+      expect(screen.getByText('Trino SQL schemas')).toBeInTheDocument();
+      expect(screen.getByText('Lifecycle')).toBeInTheDocument();
+      expect(screen.getByText('Entity Model Viewer')).toBeInTheDocument();
+    });
+
+    it('keeps Reporting and Processing visible when IS_CYODA_GO is not set', () => {
+      // Same setup as the existing "should render all main menu items" test
+      setEnv('VITE_FEATURE_FLAG_TRINO_SQL_SCHEMA', true);
+      setEnv('VITE_FEATURE_FLAG_TASKS', true);
+
+      renderWithRouter(
+        <LeftSideMenu collapsed={false} onCollapse={mockOnCollapse} />
+      );
+
+      expect(screen.getByText('Reporting')).toBeInTheDocument();
+      expect(screen.getByText('Tasks')).toBeInTheDocument();
+      expect(screen.getByText('Processing')).toBeInTheDocument();
+    });
+  });
 });
 

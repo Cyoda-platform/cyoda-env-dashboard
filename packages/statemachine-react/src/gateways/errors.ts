@@ -1,0 +1,89 @@
+/**
+ * Typed errors raised by WorkflowGateway implementations.
+ */
+
+/**
+ * Thrown when a delete or deactivate request would leave the entity model
+ * with zero active workflows. Cloud Cyoda requires at least one active
+ * workflow per (entityName, modelVersion).
+ */
+export class MustHaveActiveWorkflowError extends Error {
+  constructor(
+    public readonly entityName: string,
+    public readonly modelVersion: number,
+    public readonly workflowName: string,
+    /** What action triggered the error: 'delete' or 'deactivate'. */
+    public readonly action: 'delete' | 'deactivate'
+  ) {
+    super(
+      `Cannot ${action} workflow "${workflowName}" in model ` +
+        `${entityName} v${modelVersion} — every model must have at least ` +
+        `one active workflow.`
+    );
+    this.name = 'MustHaveActiveWorkflowError';
+  }
+}
+
+/**
+ * Thrown when a rename succeeded in copying the workflow under the new name
+ * but failed to delete the old one. The caller must decide whether to retry
+ * the delete or remove the new copy to undo the rename.
+ */
+export class RenameIncompleteError extends Error {
+  constructor(
+    public readonly oldName: string,
+    public readonly newName: string,
+    public readonly cause: unknown
+  ) {
+    super(
+      `Workflow rename "${oldName}" → "${newName}" left the model in a partial state: ` +
+        `the new copy exists but the old one could not be removed.`
+    );
+    this.name = 'RenameIncompleteError';
+  }
+}
+
+/**
+ * Thrown when a WorkflowGateway operation is invoked on the legacy gateway
+ * but no legacy implementation exists for it (typically because no legacy
+ * UI code path needs the operation today).
+ */
+export class NotImplementedInLegacyError extends Error {
+  constructor(public readonly operation: string) {
+    super(
+      `Operation "${operation}" is not implemented in the legacy workflow gateway. ` +
+        `It is currently only used by cloud-mode code.`
+    );
+    this.name = 'NotImplementedInLegacyError';
+  }
+}
+
+/**
+ * Thrown when a workflow lookup by name returns no match. Generic to any
+ * not-found path (initial load with a bad URL, post-save fetch when the
+ * backend rewrote the name — see CloudWorkflowGateway.loadWorkflow). The
+ * message string is preserved for callers that match on it.
+ */
+export class WorkflowNotFoundError extends Error {
+  constructor(
+    public readonly entityName: string,
+    public readonly modelVersion: number,
+    public readonly workflowName: string
+  ) {
+    super(`Workflow "${workflowName}" not found in model ${entityName} v${modelVersion}`);
+    this.name = 'WorkflowNotFoundError';
+  }
+}
+
+/**
+ * Thrown when the entity-IDs filter receives more IDs than the synthesized
+ * search-condition can practically carry. The cloud `/search/direct` endpoint
+ * accepts a tree of conditions and we synthesize an OR-of-EQUALS group, so
+ * payload size is O(N) — we cap N at 100 to avoid a runaway request.
+ */
+export class TooManyEntityIdsError extends Error {
+  constructor(public readonly count: number, public readonly limit: number = 100) {
+    super(`Too many entity IDs: ${count} (limit: ${limit}). Refine the filter or use Advanced Search.`);
+    this.name = 'TooManyEntityIdsError';
+  }
+}

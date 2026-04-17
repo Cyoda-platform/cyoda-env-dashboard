@@ -58,10 +58,10 @@ Expected: branch created locally and pushed; tracking set.
 - [ ] **Step 3: Cut the Foundation sub-branch from the feature branch**
 
 ```bash
-git checkout -b feature/cyoda-go-support/foundation
+git checkout -b feature/cyoda-go-support-foundation
 ```
 
-Expected: now on `feature/cyoda-go-support/foundation`. Every subsequent commit in this plan lands on this branch.
+Expected: now on `feature/cyoda-go-support-foundation`. Every subsequent commit in this plan lands on this branch.
 
 ---
 
@@ -996,7 +996,7 @@ Expected: no modified or staged files from this plan; the unrelated `docs/cyoda-
 - [ ] **Step 1: Push the sub-branch**
 
 ```bash
-git push -u origin feature/cyoda-go-support/foundation
+git push -u origin feature/cyoda-go-support-foundation
 ```
 
 - [ ] **Step 2: Open the PR against the feature branch (not against main)**
@@ -1041,4 +1041,4 @@ Expected: PR created with base `feature/cyoda-go-support`. Returned URL is what 
 
 ## Done
 
-When the PR is merged into `feature/cyoda-go-support`, this sub-branch is complete. The next sub-branch (`feature/cyoda-go-support/workflow-gateway`) gets its own plan written when ready.
+When the PR is merged into `feature/cyoda-go-support`, this sub-branch is complete. The next sub-branch (`feature/cyoda-go-support-workflow-gateway`) gets its own plan written when ready.

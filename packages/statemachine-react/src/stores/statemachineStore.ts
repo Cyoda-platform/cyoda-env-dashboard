@@ -22,14 +22,17 @@ import type {
   InstancesResponse,
   PersistedType,
 } from '../types';
+import type { ModelRef } from '../gateways/workflowDocTypes';
 
 interface StatemachineState {
   // State
   selectedWorkflow: Workflow | null;
+  selectedModelRef: ModelRef | null;
   selectedEntityClassName: string | null;
-  
+
   // Actions
   setSelectedWorkflow: (workflow: Workflow | null) => void;
+  setSelectedModelRef: (modelRef: ModelRef | null) => void;
   setSelectedEntityClassName: (entityClassName: string | null) => void;
   
   // API Methods - Workflows
@@ -89,10 +92,12 @@ export const useStatemachineStore = create<StatemachineState>()(
     (set, get) => ({
       // Initial State
       selectedWorkflow: null,
+      selectedModelRef: null,
       selectedEntityClassName: null,
-      
+
       // State Actions
       setSelectedWorkflow: (workflow) => set({ selectedWorkflow: workflow }),
+      setSelectedModelRef: (modelRef) => set({ selectedModelRef: modelRef }),
       setSelectedEntityClassName: (entityClassName) => set({ selectedEntityClassName: entityClassName }),
       
       // Workflow API Methods
@@ -358,6 +363,7 @@ export const useStatemachineStore = create<StatemachineState>()(
       partialize: (state) => ({
         selectedWorkflow: state.selectedWorkflow,
         selectedEntityClassName: state.selectedEntityClassName,
+        selectedModelRef: state.selectedModelRef,
       }),
     }
   )
