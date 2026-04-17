@@ -11,6 +11,8 @@ import { HelperFeatureFlags } from '@cyoda/http-api-react';
 import { CloudWorkflowGateway } from './CloudWorkflowGateway';
 import { LegacyPlatformWorkflowGateway } from './LegacyPlatformWorkflowGateway';
 import type { WorkflowGateway } from './WorkflowGateway';
+import { CloudInstancesGateway } from './CloudInstancesGateway';
+import type { InstancesGateway } from './InstancesGateway';
 
 export type { WorkflowGateway } from './WorkflowGateway';
 export {
@@ -49,3 +51,19 @@ export function getWorkflowGateway(): WorkflowGateway {
 }
 
 export type { InstancesGateway, EntitySummary, EntityChange, InstancesPage, EntityEnvelopeResponse } from './InstancesGateway';
+
+/**
+ * Returns a CloudInstancesGateway. Cloud-only — there is no
+ * LegacyPlatformInstancesGateway (see spec §3.4). Callers that reach this
+ * factory outside cloud-business mode are programming errors; the factory
+ * does NOT silently return a no-op shim.
+ *
+ * Why a factory rather than `new CloudInstancesGateway()` inline? It's a DI
+ * seam for tests — vi.mock'ing a factory is the established idiom in this
+ * codebase (mirrors getWorkflowGateway).
+ */
+export function getInstancesGateway(): InstancesGateway {
+  return new CloudInstancesGateway();
+}
+
+export { CloudInstancesGateway } from './CloudInstancesGateway';
