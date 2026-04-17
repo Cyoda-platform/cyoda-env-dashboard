@@ -41,12 +41,10 @@ The work follows the same shape as sub-branches 2 + 3 + 4: a new `InstancesGatew
 ```
 packages/statemachine-react/src/gateways/
   InstancesGateway.ts                            # NEW: interface
-  CloudInstancesGateway.ts                       # NEW
+  CloudInstancesGateway.ts                       # NEW: full impl
   CloudInstancesGateway.test.ts                  # NEW
-  LegacyPlatformInstancesGateway.ts              # NEW: throws for most ops
-  LegacyPlatformInstancesGateway.test.ts         # NEW
-  index.ts                                       # MODIFIED: add getInstancesGateway() factory
-  errors.ts                                      # unchanged (NotImplementedInLegacyError reused)
+  index.ts                                       # MODIFIED: add getInstancesGateway() factory (cloud-only; see §3.4)
+  errors.ts                                      # MODIFIED: add TooManyEntityIdsError (see §3.3)
 
 packages/statemachine-react/src/pages/cloud-instances/
   InstancesCloud.tsx                             # NEW
@@ -100,8 +98,10 @@ import type { ModelRef } from './workflowDocTypes';
 export interface InstancesPage {
   items: EntitySummary[];
   hasMore: boolean;
-  totalCount?: number;       // optional; cloud may not always return
 }
+// No `totalCount` — neither cloud `GET /entity/{entityName}/{modelVersion}` nor
+// `POST /search/direct/...` documents a totalCount in the response. The UI shows
+// "Showing N items" (count of `items` returned) and uses `hasMore` for the Next-page button.
 
 export interface EntitySummary {
   entityId: string;
@@ -157,16 +157,22 @@ export interface InstancesGateway {
 
 | Method | Cloud endpoint | Notes |
 |---|---|---|
-| `list(modelRef, opts)` | `GET /entity/{entityName}/{modelVersion}?pageSize&pageNumber` | If `opts.entityIds` is provided, fall through to `search` with a generated GroupCondition that ORs `EQUALS entityId` for each id (the cloud list endpoint has no entity-IDs param). |
+| `list(modelRef, opts)` | `GET /entity/{entityName}/{modelVersion}?pageSize&pageNumber` | If `opts.entityIds` is provided, fall through to `search` with a generated GroupCondition that ORs `EQUALS entityId` for each id (the cloud list endpoint has no entity-IDs param). **The fall-through path drops pagination** — `pageSize`/`pageNumber` are ignored; the synthesized search returns up to the sync limit (1000 by default) in a single page. The UI in §3.6 disables the pagination controls and shows a "showing N matches" banner when the entity-IDs filter is active. Validation: ≤100 entity IDs accepted; >100 returns a `TooManyEntityIdsError` rather than emitting a runaway payload. |
 | `search(modelRef, criterion, opts)` | `POST /search/direct/{entityName}/{modelVersion}` body=`criterion` query=`limit, pointInTime` | The criterion object is passed through verbatim — it's the user's JSON from the Advanced Search Drawer or the synthesized one from `list(... entityIds)`. |
 | `load(entityId, opts)` | `GET /entity/{entityId}?pointInTime&transactionId` | Returns the cloud entity envelope; the gateway extracts `data` + `meta` (already-existing helpers `extractCyodaEntityData` / `extractCyodaEntityMeta` in `http-api-react`). |
 | `loadChanges(entityId, opts)` | `GET /entity/{entityId}/changes?pointInTime` | Maps response to `EntityChange[]`. |
 | `fireTransition(entityId, transition, body)` | `PUT /entity/JSON/{entityId}/{transition}` body=`body` | `format=JSON` always. Body is the (possibly-edited) entity body the user is firing the transition with. |
 | `delete(entityId)` | `DELETE /entity/{entityId}` | Returns void. |
 
-### 3.4 `LegacyPlatformInstancesGateway`
+### 3.4 No `LegacyPlatformInstancesGateway`
 
-Implements `list` only (wrapping the existing `POST /platform-api/statemachine/instances` flow that the current legacy `Instances.tsx` uses), so cloud-mode test fixtures + parity tests have a sibling implementation. Throws `NotImplementedInLegacyError` for `search`, `loadChanges`, `fireTransition`, `delete`. The legacy UI bypasses this gateway entirely and keeps its existing direct-call code, mirroring SB2's pattern (PR #8) where `LegacyPlatformWorkflowGateway` was symmetric scaffolding never consumed by the legacy page.
+**Deliberate divergence from SB2's pattern.** SB2 introduced `LegacyPlatformWorkflowGateway` for symmetry, and SB3/SB4 never consumed it from a legacy code path. That scaffolding has zero callers today and tends to drift from the interface over time. We're not repeating the mistake here.
+
+`getInstancesGateway()` returns a `CloudInstancesGateway` unconditionally — only `<InstancesCloud />` and `<InstanceDetailCloud />` ever call it, and they're only mounted when `isCloudBusinessActive(entityType)` is true. Callers that reach `getInstancesGateway()` outside cloud-business mode are programming errors; the factory does NOT silently return a no-op shim.
+
+`<InstancesLegacy />` and `<InstanceDetailLegacy />` keep their existing direct-call code paths (`useInstances`, `useEntityLoad`, etc.) — same as today's `Instances.tsx`/`InstanceDetail.tsx`, just renamed/extracted.
+
+(If we ever need a legacy implementation — e.g. to shrink the legacy components onto the same gateway for parity — we add it then; until then YAGNI.)
 
 ### 3.5 Page routers
 
@@ -194,14 +200,14 @@ Layout, top to bottom:
 
 1. **Model picker** (reuses `ModelPicker` from SB3) — selects `(entityName, modelVersion)`.
 2. **Filter toolbar**:
-   - Comma-separated entity-IDs textbox (same affordance as legacy "Search by id"). On Search click → `gateway.list(modelRef, { pageSize: 20, pageNumber: 1, entityIds })`.
+   - Comma-separated entity-IDs textbox (same affordance as legacy "Search by id"). On Search click → `gateway.list(modelRef, { pageSize: 20, pageNumber: 1, entityIds })`. **When the entity-IDs filter is active, pagination is disabled in the UI**; the cloud sync-search returns up to the limit in one shot. ≤100 IDs accepted; >100 surfaces a banner "Too many IDs — refine to ≤100 or use Advanced Search".
    - "Advanced" button → opens `AdvancedSearchDrawer`.
 3. **Table** (per legacy column set, cloud-mapped): Entity Id / Entity / Current Workflow / State / Created / Updated / Action (Open).
-4. **Pagination** (Prev / Next / Page size — same UX as legacy).
+4. **Pagination** (Prev / Next / Page size — same UX as legacy). Hidden / disabled when the entity-IDs filter or Advanced Search is active.
 
-Click "Open" on a row → `navigate(\`/instances/${entityId}?entityName=${entityName}&modelVersion=${v}&workflowName=${currentWorkflowName ?? ''}\`)`. The detail page uses URL params to know the entity context.
+Click "Open" on a row → navigates to `/instances/<entityId>?entityName=<entityName>&modelVersion=<v>&workflowName=<currentWorkflowName>` (URL-encoded). The detail page uses URL params to know the entity context.
 
-URL state: `?entityName=...&modelVersion=...&page=N` so a refresh keeps the selected model + page. Mirrors SB3's URL-state pattern.
+URL state: `?entityName=...&modelVersion=...&page=N` so a refresh keeps the selected model + page. Mirrors SB3's URL-state pattern. **Filter state and Advanced Search results are NOT serialized to the URL** — both are in-memory only. A refresh after running a filter or Advanced Search drops them and re-loads the unfiltered first page. This is deliberate: serializing a free-form JSON criterion to a query string would produce something horrible, and serializing the entity-IDs list scales poorly.
 
 ### 3.7 `AdvancedSearchDrawer`
 
@@ -220,7 +226,9 @@ Right-side AntD `Drawer`, ~720px wide. Body:
 - A "Documentation" link to `https://docs.cyoda.net/guides/query-api/` (per the OpenAPI's contact info).
 - Footer: "Search" button (disabled if JSON parse fails, with an inline error message near the editor) + "Cancel".
 
-On Search click: `gateway.search(modelRef, parsed, {})`. Replaces the table content. The pagination resets; the cloud `/search/direct` returns up to `limit` rows (default 1000) without paging — for v1 we render all returned rows and add a banner "Showing first N of unknown total — refine your search if needed." A real paged search-result API exists at `/search/async/...` but is out of scope.
+On Search click: `gateway.search(modelRef, parsed, {})`. Replaces the table content. The pagination is hidden while Advanced Search results are showing; the cloud `/search/direct` returns up to `limit` rows (default 1000) without paging — for v1 we render all returned rows and add a banner "Showing N matches (sync search; refine if N is at the limit)". A real paged search-result API exists at `/search/async/...` but is out of scope.
+
+**The Drawer's JSON state is component-local.** It's not serialized to the URL or persisted to localStorage. Closing the drawer or refreshing the page loses the typed-in JSON. Acceptable because the Drawer is a power-user affordance and serializing arbitrary JSON to a query string is awful UX.
 
 ### 3.8 `InstanceDetailCloud` page
 
@@ -232,6 +240,10 @@ Top-of-page header (matches legacy):
 
 5 tabs in this order (matches legacy):
 
+**Shared workflow-doc fetch across DetailsTab and WorkflowTab.** Both tabs need `CloudWorkflowGateway.loadWorkflow(modelRef, workflowName)` (DetailsTab uses it for the "Transition Entity" allowed-transitions list; WorkflowTab uses it for the graph). Both call `useQuery({ queryKey: statemachineKeys.workflowDoc(modelRef, workflowName), … })` with the same key — TanStack Query dedupes to a single network request. Reviewers seeing two `useQuery` calls should not flag this as a double-fetch.
+
+**`positionsStorage` location.** SB4 introduced `positionsStorage.ts` inside `pages/cloud-workflow-editor/` for editor use. WorkflowTab consumes it too (so positions move with the user across editor + instance-detail). To avoid coupling SB5 to SB4's internal layout, **this PR relocates `positionsStorage.ts` and its tests from `pages/cloud-workflow-editor/` into `packages/statemachine-react/src/shared/`** (or `pages/cloud-shared/` — implementer's call) and updates SB4's editor imports. The contract (`positionsKey`, `loadPositions`, `savePositions`) is unchanged.
+
 #### 3.8.1 DetailsTab
 
 Reads `gateway.load(entityId)`. Renders:
@@ -241,7 +253,7 @@ Reads `gateway.load(entityId)`. Renders:
 
 #### 3.8.2 WorkflowTab
 
-Similar to legacy. Loads the workflow doc (`CloudWorkflowGateway.loadWorkflow(modelRef, workflowName)`) and adapts via `workflowDocToGraphShape` (SB4). Renders the read-only `GraphicalStateMachine` with `currentState={meta.state}` so the active state highlights. Position dragging persisted via SB4's `positionsStorage` keyed by `(entityName, modelVersion, workflowName)` (the same key SB4's editor uses, so positions are shared between editor and instance-detail).
+Loads the workflow doc (`CloudWorkflowGateway.loadWorkflow(modelRef, workflowName)`) and adapts via `workflowDocToGraphShape` (SB4). Renders the read-only `GraphicalStateMachine` with `currentState={meta.state}` so the active state highlights. Position dragging persists via the relocated `positionsStorage` (see note above) keyed by `(entityName, modelVersion, workflowName)` — same key SB4's editor uses, so positions follow the user between the editor and instance-detail.
 
 Header section: list of available transitions for the current state — same UX as DetailsTab's "Transition Entity" list (simply re-render that subcomponent here).
 
@@ -254,10 +266,14 @@ Reads `gateway.loadChanges(entityId)` (returns `EntityChange[]`). Renders an Ant
 Reads `gateway.loadChanges(entityId)`. Renders:
 
 1. **Filter** — date-range picker (Start date → End date). Filters the timeline.
-2. **Vertical timeline** — one row per change, "newest first" (matching legacy). Each row: timestamp + "No. changed fields [N]" (where N is computed from the diff against the immediately-prior version) + a checkbox.
-3. **Compare button** — enabled when exactly two checkboxes are checked. Click → `Promise.all([gateway.load(entityId, { pointInTime: t1 }), gateway.load(entityId, { pointInTime: t2 })])`, then renders the `CodeEditor` with `diff: true`, original=`older.data` (pretty JSON), modified=`newer.data` (pretty JSON). Same Monaco diff editor + the existing dark/light themes (already styled in `monacoTheme.ts`).
+2. **Vertical timeline** — one row per change, **newest first** (matching legacy). Each row: timestamp + a checkbox.
+3. **Compare button** — enabled iff exactly two checkboxes are checked. Click → `Promise.all([gateway.load(entityId, { pointInTime: olderTimestamp }), gateway.load(entityId, { pointInTime: newerTimestamp })])`, then renders the `CodeEditor` with `diff: true`, `original={olderJson}`, `modified={newerJson}` — so the diff shows additions/deletions in the same direction as a typical "what changed since the older version" reading.
 
-Computing "No. changed fields [N]" lazily: the timeline doesn't pre-fetch every version. The number is shown only after the user clicks Compare on a pair, OR we can fetch sequential pairs as the user expands rows — for v1, ship without the per-row count (hide that label) to avoid the round-trip storm. Show the count only in the diff view header. This is a deliberate scope-cut from legacy parity.
+**Checkbox-pair selection rule:** the user can keep checking boxes; the component maintains a queue of the last-two-checked. Checking a third box automatically un-checks the **older** of the currently-checked pair (FIFO). Visually, the two currently-selected boxes get a distinct highlight (e.g. green); a third click flips the highlight to the new pair without forcing the user to manually un-check first. This UX is more forgiving than "you can only check two at a time" and matches the implicit expectation that "Compare" reads from a moving 2-box window.
+
+**Older/newer derivation:** since the timeline is newest-first, when the user has two checks `[A, B]` (where `A` is positionally above `B` in the rendered list), `A.timestamp >= B.timestamp` and so `older = B.timestamp`, `newer = A.timestamp`. The component sorts the two selected timestamps before passing to the Promise.all to avoid relying on render order.
+
+Computing a "No. changed fields [N]" per-row label is intentionally NOT shipped in v1 — pre-fetching every version to compute deltas is a round-trip storm. The count appears only in the diff view header after Compare runs. Deliberate scope-cut from legacy parity; flagged in §4.3.
 
 #### 3.8.5 JsonTab
 
@@ -275,27 +291,32 @@ Body unchanged: `return this.isCyodaCloud() && entityType === 'BUSINESS';`
 
 Call sites to update (verified via grep at plan-writing time):
 - `packages/statemachine-react/src/pages/Workflows.tsx` (SB3 router)
-- Test mocks in `packages/saas-app/__tests__/edge-cases/error-handling.test.tsx`
-- Other call sites surfaced by `grep -rn "isCloudWorkflowsActive" packages/ apps/`
+- `packages/statemachine-react/src/pages/cloud-workflow-editor/*` references via the helper (SB4)
+- Test mocks in `apps/saas-app/__tests__/edge-cases/error-handling.test.tsx`
+- Any other call sites surfaced by `grep -rn "isCloudWorkflowsActive" packages/ apps/`
 
-This is a mechanical rename. Add a one-line `@deprecated` shim that re-exports the new name under the old name? **No** — sub-branches 1-4 have shipped, but they're all in our PR pipeline. Pure rename, no shim, no compat layer.
+**Blast radius decision:** SB3 (PR #9) and SB4 (PR #10) are merged into `feature/cyoda-go-support`. The rename lands in SB5's PR; SB3/SB4 callers in those merged commits are updated in the same PR. Any still-open child PR off `feature/cyoda-go-support` rebases onto SB5's merge commit and picks up the new name. **No deprecation shim** — the call-site count is small (single-digit), the rename is mechanical, and a shim would just be code-debt with no caller benefit.
 
 ## 4. Testing strategy
 
 ### 4.1 Unit (Vitest)
 
-- `CloudInstancesGateway.test.ts` — `vi.mock`'d axios; assert URLs, query params, body shape for every method. Special cases:
-  - `list(modelRef, { entityIds: [...] })` falls through to `/search/direct` with a synthesized GroupCondition.
-  - `load` extracts `data` + `meta` correctly from the cloud envelope.
-  - `loadChanges` maps the response to the `EntityChange` shape.
-  - `fireTransition` sends `format=JSON` and the body as-is.
-- `LegacyPlatformInstancesGateway.test.ts` — `list` round-trips the platform-api shape; other methods throw `NotImplementedInLegacyError`.
-- `getInstancesGateway()` — flag-flip test mirroring the existing `getWorkflowGateway` test.
-- `InstancesCloud.test.tsx` — render with mocked gateway. Asserts: model picker reflects in URL, table renders one row per item, pagination clicks call `list` with `pageNumber++`/`pageNumber--`, "Open" navigates with the right query string, Advanced button opens the drawer.
-- `AdvancedSearchDrawer.test.tsx` — JSON parse failure disables the Search button + shows error; valid JSON enables Search; Search click calls `gateway.search(modelRef, parsed)` and replaces the table content.
+- `CloudInstancesGateway.test.ts` — `vi.mock`'d axios; assert URLs, query params, body shape for every method. Specific cases:
+  - `list(modelRef, opts)` (no entityIds) → `GET /entity/{name}/{ver}?pageSize&pageNumber` with the right paths.
+  - `list(modelRef, { entityIds: [3 ids] })` → falls through to `/search/direct`; assert the **synthesized criterion** is exactly `{ type: 'group', operator: 'OR', conditions: [{ type:'simple', jsonPath:'$.id', operation:'EQUALS', value: '<id>' }, …] }` for each id (or whatever the chosen jsonPath is — pin it to a literal in this test).
+  - `list(modelRef, { entityIds: 101 ids })` → throws `TooManyEntityIdsError` synchronously, no axios call.
+  - `load` extracts `data` + `meta` correctly from the cloud envelope (uses `extractCyodaEntityData` / `extractCyodaEntityMeta`).
+  - `loadChanges` maps the response to the `EntityChange` shape (assert exact field renames).
+  - `fireTransition` sends to URL path `/entity/JSON/{entityId}/{transition}` (the `JSON` is a path segment, not a query param) and includes the body verbatim.
+  - `delete` sends `DELETE /entity/{entityId}` and returns void.
+- **No `LegacyPlatformInstancesGateway` tests** — see §3.4 (the gateway doesn't exist).
+- `getInstancesGateway()` — single test asserting it returns a `CloudInstancesGateway` instance. No flag-flip branch (see §3.4).
+- `HelperFeatureFlags.test.ts` — **add a test** for the renamed `isCloudBusinessActive(entityType)`: returns true under cloud-mode + `'BUSINESS'`; returns false under cloud-mode + `'PERSISTENCE'`; returns false under legacy mode regardless. Also assert the OLD name `isCloudWorkflowsActive` is no longer exported (catches a botched merge that re-introduces the old method).
+- `InstancesCloud.test.tsx` — render with mocked gateway. Asserts: model picker reflects in URL, table renders one row per item, pagination clicks call `list` with `pageNumber++`/`pageNumber--`, "Open" navigates with the right query string, Advanced button opens the drawer, **entity-IDs filter with >100 IDs surfaces a UI banner and does NOT call the gateway**.
+- `AdvancedSearchDrawer.test.tsx` — JSON parse failure disables the Search button + shows error; valid JSON enables Search; Search click calls `gateway.search(modelRef, parsed)` and replaces the table content. **No test for "drawer state survives close-and-reopen"** — it deliberately doesn't (§4.3).
 - `InstanceDetailCloud.test.tsx` — renders all 5 tabs; clicking each tab loads the right data via the gateway; back-button navigates to `/instances?entityName=...`.
-- Per-tab tests (5 files): fixture-driven render + interaction. The DataLineage tab's diff is asserted by mocking `CodeEditor` to a stub that captures `original` + `modified` props.
-- `Instances.tsx` + `InstanceDetail.tsx` router tests: assert correct branch for `(BUSINESS, cloud-on)` vs other combinations.
+- Per-tab tests (5 files): fixture-driven render + interaction. The DataLineage tab's diff is asserted by mocking `CodeEditor` to a stub that captures `original` + `modified` props. **DataLineage interaction tests:** check 2 boxes → Compare enabled; check a 3rd box → the older of the previous pair gets unchecked + new highlight is on the new pair; Compare passes `older` and `newer` in the right direction (assert via the captured `original` prop = older entity body).
+- `Instances.tsx` + `InstanceDetail.tsx` router tests: assert correct branch for `(BUSINESS, cloud-on)` → cloud component; everything else → legacy component.
 
 ### 4.2 E2E (Playwright)
 
@@ -320,12 +341,14 @@ Recommend **the existing-model approach** for v1 specs since the ingested-data f
 - Async search (`/search/async/...`) — out of scope.
 - The "No. changed fields [N]" per-row label in DataLineage timeline — deferred.
 - Cross-instance bulk actions — not in legacy either.
+- **Advanced Search drawer state survives close-and-reopen** — explicitly a non-feature per §3.7. Drawer JSON is component-local and resets on close. No test asserts persistence; no test asserts the loss either.
+- **Concurrent fireTransition races** — the API is last-write-wins (§5). Not asserted in unit tests; would require an integration test with two simulated actors.
 
 ## 5. Risks & open questions
 
-- **Cloud `/entity/{entityName}/{modelVersion}` response shape** — at spec-write time only the OpenAPI declares it; field names `pageSize`/`pageNumber` are 1-indexed but the response shape (does it return `hasMore`? a `totalCount`?) is unverified. Plan execution opens an axios call against the dev env first to lock down the parser.
+- **Cloud `/entity/{entityName}/{modelVersion}` response shape and pageNumber base** — at spec-write time only the OpenAPI declares it; the response shape (does it return `hasMore`? items? something else?) and whether `pageNumber` is 0-indexed or 1-indexed are unverified. Plan execution opens an axios call against the dev env first to lock both down before the gateway parser hardens. Off-by-one here would show up as "page 1 is empty but page 2 has the first 20 rows" — easy to spot in smoke testing.
 - **`EntityDetailTree` reusability** — the legacy component lives in `@cyoda/ui-lib-react`; if it depends on legacy-specific data shape (e.g. `@bean` envelope), the cloud DetailsTab needs a thin adapter or its own renderer. Decided at plan-writing time after reading the component.
-- **`fireTransition` body** — the cloud `PUT /entity/JSON/{entityId}/{transition}` requires the full entity body in the request payload. For "fire and don't change data" UX, the gateway resends the just-loaded body. Risk: a stale body racing against a concurrent update would silently overwrite. Mitigation: re-load (`gateway.load(entityId)`) immediately before fireTransition; show a brief "Refreshing entity…" before the transition modal opens. The cloud API has no optimistic-concurrency token.
+- **`fireTransition` is last-write-wins.** The cloud `PUT /entity/JSON/{entityId}/{transition}` requires the full entity body in the request payload, and the cloud API has no optimistic-concurrency token (no ETag, no `If-Match`). When the user clicks a transition button, the page (a) re-loads the entity body via `gateway.load(entityId)` BEFORE opening the transition modal, then (b) opens the modal pre-populated with that fresh body, then (c) PUTs the body the user confirmed. The pre-flight reload narrows the user-facing staleness window — opening a stale tab and clicking a transition no longer silently submits ancient data — but **does not prevent concurrent-update races**. If another actor updates the entity between (b) and (c), this PUT overwrites their change. We accept this; the legacy code has the same property; designing optimistic concurrency belongs at the API layer, not the UI.
 - **DataLineage point-in-time precision** — `pointInTime` is ISO-8601. The `/changes` response has timestamps to ms precision; passing those verbatim to `/entity/{entityId}?pointInTime=...` should give the entity state immediately after that change. Verify at plan-execution time that there's no off-by-one between "change at T" and "state retrieved with pointInTime=T".
 - **Entity-IDs filter via `/search/direct`** — synthesizing a GroupCondition with N OR-ed `EQUALS entityId` clauses works for small N but is O(N) in the search payload. Keep a sanity ceiling (e.g. ≤100 IDs) before falling through; for larger N the caller is over-using the filter. Surface a Filter validation error in the UI at >100 IDs.
 - **Helper rename blast radius** — verified at plan-execution time by grep; there are call sites in SB3 + SB4 + saas-app tests. All mechanical.
