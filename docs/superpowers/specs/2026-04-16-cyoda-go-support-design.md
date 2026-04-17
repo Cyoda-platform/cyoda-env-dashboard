@@ -136,9 +136,11 @@ The cloud API has no cross-model workflow list. The Workflows page becomes a two
 
 Every save (create and update) is a `POST .../workflow/import` with `importMode: 'MERGE'` and a single-element `workflows: [doc]`. MERGE updates that one workflow if the `name` already exists in the model and creates it otherwise; other workflows are untouched.
 
-### 5.4 Delete (and the ≥1 invariant)
+### 5.4 Delete and Deactivate (the active-workflow invariant)
 
-A Cyoda entity model requires at least one workflow. Delete is implemented as REPLACE-minus-target: load the current set, remove the target, `POST .../workflow/import` with `importMode: 'REPLACE'` and the remaining workflows. The gateway enforces the ≥1 invariant before the network call.
+A Cyoda entity model requires at least one **active** workflow. This constraint applies to both delete (which removes a workflow entirely) and deactivate (which sets `active: false` on a workflow). The cloud workflow API does not enforce the invariant on the wire; the gateway enforces it client-side before the network call by counting how many active workflows would remain after the action.
+
+Delete is implemented as REPLACE-minus-target: load the current set, remove the target, `POST .../workflow/import` with `importMode: 'REPLACE'` and the remaining workflows. Deactivate is a MERGE-save with `active: false`. Both throw `MustHaveActiveWorkflowError` if the action would leave the model with zero active workflows.
 
 The UI disables the delete button in the list when the list has exactly one row and surfaces a tooltip explaining why. Because the REPLACE-based delete carries a real risk of overwriting a concurrent edit by another user, the confirmation dialog is **disruptive by design** rather than a one-click "Are you sure?":
 
