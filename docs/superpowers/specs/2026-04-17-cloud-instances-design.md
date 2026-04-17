@@ -318,7 +318,7 @@ Concrete call-site count from `grep -rn "isCloudWorkflowsActive" packages/ apps/
 
 - `CloudInstancesGateway.test.ts` — `vi.mock`'d axios; assert URLs, query params, body shape for every method. Specific cases:
   - `list(modelRef, opts)` (no entityIds) → `GET /entity/{name}/{ver}?pageSize&pageNumber` with the right paths.
-  - `list(modelRef, { entityIds: [3 ids] })` → falls through to `/search/direct`; assert the **synthesized criterion** is exactly `{ type: 'group', operator: 'OR', conditions: [{ type:'simple', jsonPath:'$.id', operation:'EQUALS', value: '<id>' }, …] }` for each id (or whatever the chosen jsonPath is — pin it to a literal in this test).
+  - `list(modelRef, { entityIds: [3 ids] })` → falls through to `/search/direct`; assert the **synthesized criterion** is exactly `{ type: 'group', operator: 'OR', conditions: [{ type:'lifecycle', field:'id', operation:'EQUALS', value: '<id>' }, …] }` — `lifecycle` (not `simple`) because entity ID is a lifecycle metadata field per `openapi-common.yml`'s `LifecycleCondition`.
   - `list(modelRef, { entityIds: 101 ids })` → throws `TooManyEntityIdsError` synchronously, no axios call.
   - `load` extracts `data` + `meta` correctly from the cloud envelope (uses `extractCyodaEntityData` / `extractCyodaEntityMeta`).
   - `loadChanges` maps the response to the `EntityChange` shape (assert exact field renames).

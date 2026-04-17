@@ -47,7 +47,7 @@ describe('CloudInstancesGateway.list', () => {
           { type: 'lifecycle', field: 'id', operation: 'EQUALS', value: 'c' },
         ],
       },
-      expect.any(Object),
+      undefined,
     );
     expect(axios.get).not.toHaveBeenCalled();
   });
@@ -85,7 +85,7 @@ describe('CloudInstancesGateway.search', () => {
     expect(axios.post).toHaveBeenCalledWith(
       '/search/direct/Customer/1',
       criterion,
-      expect.any(Object),
+      undefined,
     );
   });
 
@@ -114,7 +114,7 @@ describe('CloudInstancesGateway.load', () => {
     });
     const gw = new CloudInstancesGateway();
     const result = await gw.load('eid');
-    expect(axios.get).toHaveBeenCalledWith('/entity/eid', expect.any(Object));
+    expect(axios.get).toHaveBeenCalledWith('/entity/eid', undefined);
     expect(result.data).toEqual({ name: 'Acme' });
     expect(result.meta).toEqual({ id: 'eid', state: 'ACTIVE', creationDate: '2026-04-01T00:00:00Z' });
   });
@@ -133,7 +133,7 @@ describe('CloudInstancesGateway.load', () => {
     (axios.get as any).mockResolvedValueOnce({ data: { type: 'ENTITY', data: {}, meta: {} } });
     const gw = new CloudInstancesGateway();
     await gw.load('a/b');
-    expect(axios.get).toHaveBeenCalledWith('/entity/a%2Fb', expect.any(Object));
+    expect(axios.get).toHaveBeenCalledWith('/entity/a%2Fb', undefined);
   });
 });
 
@@ -163,7 +163,7 @@ describe('CloudInstancesGateway.loadChanges', () => {
     });
     const gw = new CloudInstancesGateway();
     const changes = await gw.loadChanges('eid');
-    expect(axios.get).toHaveBeenCalledWith('/entity/eid/changes', expect.any(Object));
+    expect(axios.get).toHaveBeenCalledWith('/entity/eid/changes', undefined);
     expect(changes).toHaveLength(2);
     expect(changes[0]).toEqual(expect.objectContaining({
       transactionId: 'tx1',

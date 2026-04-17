@@ -36,9 +36,10 @@ export class CloudInstancesGateway implements InstancesGateway {
       return this.search(modelRef, criterion);
     }
     const url = `/entity/${encodeURIComponent(modelRef.entityName)}/${modelRef.modelVersion}`;
-    const response = await axios.get<InstancesPage>(url, {
-      params: { pageSize: opts.pageSize, pageNumber: opts.pageNumber },
-    });
+    const params: Record<string, unknown> = {};
+    if (opts.pageSize !== undefined) params.pageSize = opts.pageSize;
+    if (opts.pageNumber !== undefined) params.pageNumber = opts.pageNumber;
+    const response = await axios.get<InstancesPage>(url, Object.keys(params).length > 0 ? { params } : undefined);
     return {
       items: response.data.items ?? [],
       hasMore: response.data.hasMore ?? false,
@@ -46,9 +47,10 @@ export class CloudInstancesGateway implements InstancesGateway {
   }
   async search(modelRef: ModelRef, criterion: unknown, opts: { limit?: number; pointInTime?: string } = {}): Promise<InstancesPage> {
     const url = `/search/direct/${encodeURIComponent(modelRef.entityName)}/${modelRef.modelVersion}`;
-    const response = await axios.post<InstancesPage>(url, criterion, {
-      params: { limit: opts.limit, pointInTime: opts.pointInTime },
-    });
+    const sparams: Record<string, unknown> = {};
+    if (opts.limit !== undefined) sparams.limit = opts.limit;
+    if (opts.pointInTime !== undefined) sparams.pointInTime = opts.pointInTime;
+    const response = await axios.post<InstancesPage>(url, criterion, Object.keys(sparams).length > 0 ? { params: sparams } : undefined);
     return {
       items: response.data.items ?? [],
       hasMore: response.data.hasMore ?? false,
@@ -56,9 +58,10 @@ export class CloudInstancesGateway implements InstancesGateway {
   }
   async load(entityId: string, opts: { pointInTime?: string; transactionId?: string } = {}): Promise<EntityEnvelopeResponse> {
     const url = `/entity/${encodeURIComponent(entityId)}`;
-    const response = await axios.get<CyodaCloudEntityEnvelope>(url, {
-      params: { pointInTime: opts.pointInTime, transactionId: opts.transactionId },
-    });
+    const lparams: Record<string, unknown> = {};
+    if (opts.pointInTime !== undefined) lparams.pointInTime = opts.pointInTime;
+    if (opts.transactionId !== undefined) lparams.transactionId = opts.transactionId;
+    const response = await axios.get<CyodaCloudEntityEnvelope>(url, Object.keys(lparams).length > 0 ? { params: lparams } : undefined);
     return {
       data: extractCyodaEntityData(response.data),
       meta: extractCyodaEntityMeta(response.data),
@@ -66,9 +69,9 @@ export class CloudInstancesGateway implements InstancesGateway {
   }
   async loadChanges(entityId: string, opts: { pointInTime?: string } = {}): Promise<EntityChange[]> {
     const url = `/entity/${encodeURIComponent(entityId)}/changes`;
-    const response = await axios.get<any[]>(url, {
-      params: { pointInTime: opts.pointInTime },
-    });
+    const cparams: Record<string, unknown> = {};
+    if (opts.pointInTime !== undefined) cparams.pointInTime = opts.pointInTime;
+    const response = await axios.get<any[]>(url, Object.keys(cparams).length > 0 ? { params: cparams } : undefined);
     return (response.data ?? []).map((c) => ({
       transactionId: String(c.transactionId ?? ''),
       timestamp: String(c.timestamp ?? ''),
