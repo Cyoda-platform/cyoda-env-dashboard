@@ -1,5 +1,6 @@
-import React, { useContext, useMemo, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { App, Button, Collapse, Form, Input, Modal, Select, Space, Switch, Typography } from 'antd';
+import { useShallow } from 'zustand/react/shallow';
 import { WorkflowEditorStoreContext, useWorkflowEditorStore } from '../storeContext';
 import { ProcessorRow } from './ProcessorRow';
 import { QueryConditionEditor } from '../../../components/cloud-workflows/QueryConditionEditor';
@@ -14,9 +15,7 @@ export interface TransitionFormProps {
 export const TransitionForm: React.FC<TransitionFormProps> = ({ stateName, transitionIndex }) => {
   const store = useContext(WorkflowEditorStoreContext)!;
   const t = useWorkflowEditorStore((s) => s.current?.states[stateName]?.transitions?.[transitionIndex]);
-  // Use a stable join-string selector so the subscription doesn't fire every render
-  const stateNamesKey = useWorkflowEditorStore((s) => Object.keys(s.current?.states ?? {}).join('\0'));
-  const stateNames = useMemo(() => stateNamesKey.split('\0').filter(Boolean), [stateNamesKey]);
+  const stateNames = useWorkflowEditorStore(useShallow((s) => Object.keys(s.current?.states ?? {})));
   const [pickerOpen, setPickerOpen] = useState(false);
   if (!t) return null;
 
