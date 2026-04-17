@@ -44,14 +44,17 @@ describe('DataLineageTab', () => {
   it('renders one timeline row per change', async () => {
     vi.mocked(getInstancesGateway).mockReturnValue({
       loadChanges: vi.fn().mockResolvedValue([
-        { transactionId: 'tx2', timestamp: '2026-04-02T00:00:00Z', changeType: 'UPDATE' },
-        { transactionId: 'tx1', timestamp: '2026-04-01T00:00:00Z', changeType: 'CREATE' },
+        { transactionId: 'tx2', timestamp: '2026-04-02T00:00:00Z', changeType: 'UPDATE', fieldsChangedCount: 3 },
+        { transactionId: 'tx1', timestamp: '2026-04-01T00:00:00Z', changeType: 'CREATE', fieldsChangedCount: 10 },
       ]),
       load: vi.fn(),
     } as any);
     renderIt();
-    await waitFor(() => expect(screen.getByText(/2026-04-02/)).toBeInTheDocument());
-    expect(screen.getByText(/2026-04-01/)).toBeInTheDocument();
+    // fieldsChangedCount shown in "No. changed fields [N]" format
+    await waitFor(() => expect(screen.getByText(/No\. changed fields \[3\]/)).toBeInTheDocument());
+    expect(screen.getByText(/No\. changed fields \[10\]/)).toBeInTheDocument();
+    // Two checkboxes rendered (one per change)
+    expect(screen.getAllByRole('checkbox')).toHaveLength(2);
   });
 
   it('Compare with two checks: passes older as oldString, newer as newString', async () => {
@@ -60,8 +63,8 @@ describe('DataLineageTab', () => {
       .mockResolvedValueOnce({ data: { v: 'new' }, meta: {} });
     vi.mocked(getInstancesGateway).mockReturnValue({
       loadChanges: vi.fn().mockResolvedValue([
-        { transactionId: 'tx2', timestamp: '2026-04-02T00:00:00Z', changeType: 'UPDATE' },
-        { transactionId: 'tx1', timestamp: '2026-04-01T00:00:00Z', changeType: 'CREATE' },
+        { transactionId: 'tx2', timestamp: '2026-04-02T00:00:00Z', changeType: 'UPDATE', fieldsChangedCount: 3 },
+        { transactionId: 'tx1', timestamp: '2026-04-01T00:00:00Z', changeType: 'CREATE', fieldsChangedCount: 10 },
       ]),
       load,
     } as any);
@@ -79,9 +82,9 @@ describe('DataLineageTab', () => {
   it('checking a third box un-checks the first-checked (click-order FIFO)', async () => {
     vi.mocked(getInstancesGateway).mockReturnValue({
       loadChanges: vi.fn().mockResolvedValue([
-        { transactionId: 'tx3', timestamp: '2026-04-03T00:00:00Z', changeType: 'UPDATE' },
-        { transactionId: 'tx2', timestamp: '2026-04-02T00:00:00Z', changeType: 'UPDATE' },
-        { transactionId: 'tx1', timestamp: '2026-04-01T00:00:00Z', changeType: 'CREATE' },
+        { transactionId: 'tx3', timestamp: '2026-04-03T00:00:00Z', changeType: 'UPDATE', fieldsChangedCount: 1 },
+        { transactionId: 'tx2', timestamp: '2026-04-02T00:00:00Z', changeType: 'UPDATE', fieldsChangedCount: 2 },
+        { transactionId: 'tx1', timestamp: '2026-04-01T00:00:00Z', changeType: 'CREATE', fieldsChangedCount: 5 },
       ]),
       load: vi.fn(),
     } as any);

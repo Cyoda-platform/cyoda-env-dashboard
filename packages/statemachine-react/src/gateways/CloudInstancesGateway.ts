@@ -9,6 +9,8 @@ import { axios, extractCyodaEntityData, extractCyodaEntityMeta, type CyodaCloudE
 import { TooManyEntityIdsError } from './errors';
 import type { ModelRef } from './workflowDocTypes';
 import type {
+  AuditEvent,
+  AuditEventsPage,
   EntityEnvelopeResponse,
   EntityChange,
   EntitySummary,
@@ -94,17 +96,31 @@ export class CloudInstancesGateway implements InstancesGateway {
   }
   async loadChanges(entityId: string, opts: { pointInTime?: string } = {}): Promise<EntityChange[]> {
     const url = `/entity/${encodeURIComponent(entityId)}/changes`;
-    const cparams: Record<string, unknown> = {};
-    if (opts.pointInTime !== undefined) cparams.pointInTime = opts.pointInTime;
-    const response = await axios.get<any[]>(url, Object.keys(cparams).length > 0 ? { params: cparams } : undefined);
+    const params: Record<string, unknown> = {};
+    if (opts.pointInTime !== undefined) params.pointInTime = opts.pointInTime;
+    const response = await axios.get<any[]>(url, Object.keys(params).length > 0 ? { params } : undefined);
     return (response.data ?? []).map((c) => ({
       transactionId: String(c.transactionId ?? ''),
-      timestamp: String(c.timestamp ?? ''),
+      timestamp: String(c.timeOfChange ?? ''),
       user: c.user,
       changeType: c.changeType,
-      stateFrom: c.stateFrom ?? undefined,
-      stateTo: c.stateTo ?? undefined,
+      fieldsChangedCount: typeof c.fieldsChangedCount === 'number' ? c.fieldsChangedCount : undefined,
     }));
+  }
+  async loadAuditEvents(entityId: string, opts: { cursor?: string; limit?: number; severity?: string } = {}): Promise<AuditEventsPage> {
+    const url = `/audit/entity/${encodeURIComponent(entityId)}`;
+    const params: Record<string, unknown> = {};
+    if (opts.cursor !== undefined) params.cursor = opts.cursor;
+    if (opts.limit !== undefined) params.limit = opts.limit;
+    if (opts.severity !== undefined) params.severity = opts.severity;
+    const response = await axios.get<{ items: AuditEvent[]; pagination?: { hasNext?: boolean; nextCursor?: string } }>(
+      url, Object.keys(params).length > 0 ? { params } : undefined,
+    );
+    return {
+      items: response.data?.items ?? [],
+      hasNext: response.data?.pagination?.hasNext ?? false,
+      nextCursor: response.data?.pagination?.nextCursor,
+    };
   }
   async fireTransition(entityId: string, transition: string, body: unknown): Promise<void> {
     const url = `/entity/JSON/${encodeURIComponent(entityId)}/${encodeURIComponent(transition)}`;

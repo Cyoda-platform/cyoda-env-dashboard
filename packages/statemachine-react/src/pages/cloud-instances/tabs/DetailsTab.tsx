@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Space, Switch, Typography } from 'antd';
+import { Radio, Space, Switch, Typography } from 'antd';
 import { useQuery } from '@tanstack/react-query';
 import { getInstancesGateway, type ModelRef } from '../../../gateways';
 import { CloudEntityTree } from '../CloudEntityTree';
@@ -15,6 +15,7 @@ export interface DetailsTabProps {
 
 export const DetailsTab: React.FC<DetailsTabProps> = ({ entityId, modelRef, workflowName }) => {
   const [showEmpty, setShowEmpty] = useState(true);
+  const [bodyView, setBodyView] = useState<'tree' | 'json'>('tree');
   const query = useQuery({
     queryKey: ['cloud-instances', 'load', entityId],
     queryFn: () => getInstancesGateway().load(entityId),
@@ -30,7 +31,6 @@ export const DetailsTab: React.FC<DetailsTabProps> = ({ entityId, modelRef, work
       <Space direction="vertical">
         <Text><Text strong>Id: </Text>{meta?.id ?? '-'}</Text>
         <Text><Text strong>State: </Text>{meta?.state ?? '-'}</Text>
-        <Text><Text strong>Previous Transition: </Text>{meta?.previousTransition ?? '-'}</Text>
         <Text><Text strong>Created Date: </Text>{meta?.creationDate ?? '-'}</Text>
         <Text><Text strong>Last updated date: </Text>{meta?.lastUpdateTime ?? '-'}</Text>
       </Space>
@@ -44,11 +44,25 @@ export const DetailsTab: React.FC<DetailsTabProps> = ({ entityId, modelRef, work
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Title level={4}>Entity</Title>
         <Space>
-          <Text>Show Empty Fields</Text>
-          <Switch checked={showEmpty} onChange={setShowEmpty} />
+          <Radio.Group value={bodyView} onChange={(e) => setBodyView(e.target.value)} options={[
+            { label: 'Tree', value: 'tree' },
+            { label: 'JSON', value: 'json' },
+          ]} optionType="button" buttonStyle="solid" size="small" />
+          {bodyView === 'tree' && (
+            <>
+              <Text>Show Empty Fields</Text>
+              <Switch checked={showEmpty} onChange={setShowEmpty} />
+            </>
+          )}
         </Space>
       </div>
-      <CloudEntityTree value={data ?? {}} showEmpty={showEmpty} />
+      {bodyView === 'tree' ? (
+        <CloudEntityTree value={data ?? {}} showEmpty={showEmpty} />
+      ) : (
+        <pre style={{ padding: 12, fontSize: 12, lineHeight: 1.4, overflowX: 'auto' }}>
+          {JSON.stringify(data ?? {}, null, 2)}
+        </pre>
+      )}
     </Space>
   );
 };

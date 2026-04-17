@@ -152,24 +152,21 @@ describe('CloudInstancesGateway.load', () => {
 describe('CloudInstancesGateway.loadChanges', () => {
   beforeEach(() => { vi.clearAllMocks(); });
 
-  it('GETs /entity/{entityId}/changes and maps response to EntityChange[]', async () => {
+  it('GETs /entity/{entityId}/changes and maps timeOfChange→timestamp, passes fieldsChangedCount', async () => {
     (axios.get as any).mockResolvedValueOnce({
       data: [
         {
           transactionId: 'tx1',
-          timestamp: '2026-04-01T00:00:00Z',
-          user: 'demo.user',
+          timeOfChange: '2026-04-11T00:43:28.307Z',
+          user: 'USER_EXTERNAL|4f1b06ec',
           changeType: 'CREATE',
-          stateFrom: null,
-          stateTo: 'NEW',
+          fieldsChangedCount: 53,
         },
         {
           transactionId: 'tx2',
-          timestamp: '2026-04-02T00:00:00Z',
+          timeOfChange: '2026-04-12T00:00:00Z',
           user: 'demo.user',
           changeType: 'UPDATE',
-          stateFrom: 'NEW',
-          stateTo: 'DONE',
         },
       ],
     });
@@ -179,9 +176,15 @@ describe('CloudInstancesGateway.loadChanges', () => {
     expect(changes).toHaveLength(2);
     expect(changes[0]).toEqual(expect.objectContaining({
       transactionId: 'tx1',
-      timestamp: '2026-04-01T00:00:00Z',
+      timestamp: '2026-04-11T00:43:28.307Z',
       changeType: 'CREATE',
+      fieldsChangedCount: 53,
     }));
+    // stateFrom/stateTo are NOT present
+    expect(changes[0]).not.toHaveProperty('stateFrom');
+    expect(changes[0]).not.toHaveProperty('stateTo');
+    // fieldsChangedCount undefined when not present in response
+    expect(changes[1].fieldsChangedCount).toBeUndefined();
   });
 
   it('passes pointInTime as query param', async () => {
@@ -192,6 +195,69 @@ describe('CloudInstancesGateway.loadChanges', () => {
       '/entity/eid/changes',
       expect.objectContaining({ params: { pointInTime: '2026-04-01T00:00:00Z' } }),
     );
+  });
+});
+
+describe('CloudInstancesGateway.loadAuditEvents', () => {
+  beforeEach(() => { vi.clearAllMocks(); });
+
+  it('GETs /audit/entity/{entityId} without params when none provided', async () => {
+    (axios.get as any).mockResolvedValueOnce({
+      data: { items: [], pagination: { hasNext: false } },
+    });
+    const gw = new CloudInstancesGateway();
+    const result = await gw.loadAuditEvents('eid');
+    expect(axios.get).toHaveBeenCalledWith('/audit/entity/eid', undefined);
+    expect(result).toEqual({ items: [], hasNext: false, nextCursor: undefined });
+  });
+
+  it('passes cursor, limit, severity as query params', async () => {
+    (axios.get as any).mockResolvedValueOnce({
+      data: { items: [], pagination: { hasNext: false } },
+    });
+    const gw = new CloudInstancesGateway();
+    await gw.loadAuditEvents('eid', { cursor: 'c1', limit: 50, severity: 'DEBUG' });
+    expect(axios.get).toHaveBeenCalledWith(
+      '/audit/entity/eid',
+      expect.objectContaining({ params: { cursor: 'c1', limit: 50, severity: 'DEBUG' } }),
+    );
+  });
+
+  it('maps pagination.hasNext and nextCursor correctly', async () => {
+    (axios.get as any).mockResolvedValueOnce({
+      data: {
+        items: [
+          {
+            auditEventType: 'StateMachine',
+            severity: 'INFO',
+            utcTime: '2026-04-11T00:43:33.886Z',
+            transactionId: 'tx-abc',
+            actor: { name: 'USER_EXTERNAL|x', externalId: 'x' },
+            state: 'SIGNED',
+            eventType: 'FINISHED',
+            details: 'State machine finished',
+          },
+        ],
+        pagination: { hasNext: true, nextCursor: 'cursor-next' },
+      },
+    });
+    const gw = new CloudInstancesGateway();
+    const result = await gw.loadAuditEvents('eid', { severity: 'INFO', limit: 10 });
+    expect(result.hasNext).toBe(true);
+    expect(result.nextCursor).toBe('cursor-next');
+    expect(result.items).toHaveLength(1);
+    expect(result.items[0]).toMatchObject({
+      auditEventType: 'StateMachine',
+      severity: 'INFO',
+      transactionId: 'tx-abc',
+    });
+  });
+
+  it('URL-encodes entityId', async () => {
+    (axios.get as any).mockResolvedValueOnce({ data: { items: [], pagination: {} } });
+    const gw = new CloudInstancesGateway();
+    await gw.loadAuditEvents('a/b');
+    expect(axios.get).toHaveBeenCalledWith('/audit/entity/a%2Fb', undefined);
   });
 });
 

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Button, Checkbox, DatePicker, Space, Typography } from 'antd';
+import { Button, Checkbox, Col, DatePicker, Row, Timeline, Typography } from 'antd';
 import { useQuery } from '@tanstack/react-query';
 import { CodeEditor } from '@cyoda/ui-lib-react';
-import { getInstancesGateway, type EntityChange } from '../../../gateways';
+import { getInstancesGateway } from '../../../gateways';
 
 const { Title, Text } = Typography;
 
@@ -47,33 +47,41 @@ export const DataLineageTab: React.FC<DataLineageTabProps> = ({ entityId }) => {
   const changes = changesQuery.data ?? [];
 
   return (
-    <Space direction="vertical" style={{ width: '100%' }} size="middle">
-      <Title level={4}>Filter</Title>
-      <DatePicker.RangePicker disabled />
-
-      <Title level={4}>Current version</Title>
-      <Space direction="vertical">
-        {changes.map((c: EntityChange) => (
-          <div key={c.timestamp}>
-            <Checkbox checked={checkedQueue.includes(c.timestamp)} onChange={() => onToggle(c.timestamp)}>
-              <Text>{c.timestamp}</Text>
-            </Checkbox>
-          </div>
-        ))}
-      </Space>
-
-      <Button type="primary" disabled={checkedQueue.length !== 2} onClick={onCompare}>Compare</Button>
-
-      {diff && (
-        <CodeEditor
-          diff
-          diffReadonly
-          oldString={diff.older}
-          newString={diff.newer}
-          language="json"
-          height={400}
+    <Row gutter={32}>
+      <Col span={6}>
+        <Title level={5}>Filter</Title>
+        <DatePicker.RangePicker disabled style={{ width: '100%' }} />
+      </Col>
+      <Col span={18}>
+        <Title level={5}>Current version</Title>
+        <Timeline
+          items={changes.map((c) => ({
+            color: 'green',
+            children: (
+              <Row gutter={16} align="middle" style={{ marginBottom: 4 }}>
+                <Col flex="200px"><Text>{c.timestamp ? new Date(c.timestamp).toLocaleString() : ''}</Text></Col>
+                <Col flex="auto"><Text type="secondary">No. changed fields [{c.fieldsChangedCount ?? 0}]</Text></Col>
+                <Col flex="40px">
+                  <Checkbox checked={checkedQueue.includes(c.timestamp)} onChange={() => onToggle(c.timestamp)} />
+                </Col>
+              </Row>
+            ),
+          }))}
         />
-      )}
-    </Space>
+        <Button type="primary" disabled={checkedQueue.length !== 2} onClick={onCompare} style={{ marginTop: 12 }}>Compare</Button>
+        {diff && (
+          <div style={{ marginTop: 16 }}>
+            <CodeEditor
+              diff
+              diffReadonly
+              oldString={diff.older}
+              newString={diff.newer}
+              language="json"
+              height={400}
+            />
+          </div>
+        )}
+      </Col>
+    </Row>
   );
 };

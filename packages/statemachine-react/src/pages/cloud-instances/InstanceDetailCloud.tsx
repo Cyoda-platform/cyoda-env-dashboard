@@ -12,7 +12,7 @@ import { DetailsTab } from './tabs/DetailsTab';
 import { WorkflowTab } from './tabs/WorkflowTab';
 import { AuditTab } from './tabs/AuditTab';
 import { DataLineageTab } from './tabs/DataLineageTab';
-import { JsonTab } from './tabs/JsonTab';
+import { useResolvedWorkflowName } from './useResolvedWorkflowName';
 
 const { Title, Text } = Typography;
 
@@ -23,17 +23,18 @@ export const InstanceDetailCloud: React.FC = () => {
   const entityName = searchParams.get('entityName') ?? '';
   const modelVersionParam = searchParams.get('modelVersion');
   const modelVersion = modelVersionParam === null ? NaN : Number(modelVersionParam);
-  const workflowName = searchParams.get('workflowName') ?? '';
+  const urlWorkflowName = searchParams.get('workflowName') ?? undefined;
   const modelRef = useMemo<ModelRef | null>(() => (
     entityName && !Number.isNaN(modelVersion) ? { entityName, modelVersion } : null
   ), [entityName, modelVersion]);
 
+  const { workflowName, isLoading: workflowNameLoading } = useResolvedWorkflowName(modelRef, urlWorkflowName);
+
   const items = useMemo(() => [
-    { key: 'details', label: 'Details', children: <DetailsTab entityId={entityId!} modelRef={modelRef} workflowName={workflowName} /> },
-    { key: 'workflow', label: 'Workflow', children: <WorkflowTab entityId={entityId!} modelRef={modelRef} workflowName={workflowName} /> },
+    { key: 'details', label: 'Details', children: <DetailsTab entityId={entityId!} modelRef={modelRef} workflowName={workflowName ?? ''} /> },
+    { key: 'workflow', label: 'Workflow', children: <WorkflowTab entityId={entityId!} modelRef={modelRef} workflowName={workflowName ?? ''} /> },
     { key: 'audit', label: 'Audit', children: <AuditTab entityId={entityId!} /> },
     { key: 'lineage', label: 'Data Lineage', children: <DataLineageTab entityId={entityId!} /> },
-    { key: 'json', label: 'JSON', children: <JsonTab entityId={entityId!} /> },
   // eslint-disable-next-line react-hooks/exhaustive-deps
   ], [entityId, modelRef, workflowName]);
 
@@ -44,7 +45,7 @@ export const InstanceDetailCloud: React.FC = () => {
       <Button icon={<ArrowLeftOutlined />} onClick={() => navigate(
         `/instances?entityName=${encodeURIComponent(entityName)}&modelVersion=${modelVersion}`,
       )}>Back to Instances</Button>
-      <Title level={2}>Instances / {workflowName || '(no workflow)'}</Title>
+      <Title level={2}>Instances / {workflowNameLoading ? '…' : (workflowName ?? '(no workflow)')}</Title>
       <Text>ID: <Text strong>{entityId}</Text>{modelRef ? ` | Model: ${modelRef.modelVersion}` : ''}</Text>
       <Tabs items={items} />
     </Space>

@@ -50,7 +50,7 @@ export function getWorkflowGateway(): WorkflowGateway {
     : new LegacyPlatformWorkflowGateway();
 }
 
-export type { InstancesGateway, EntitySummary, EntityChange, InstancesPage, EntityEnvelopeResponse } from './InstancesGateway';
+export type { InstancesGateway, EntitySummary, EntityChange, InstancesPage, EntityEnvelopeResponse, AuditEvent, AuditEventsPage } from './InstancesGateway';
 
 /**
  * Returns a CloudInstancesGateway. Cloud-only — there is no

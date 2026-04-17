@@ -18,12 +18,34 @@ export interface EntitySummary {
 
 export interface EntityChange {
   transactionId: string;
-  /** ISO-8601 timestamp. */
+  /** ISO-8601 timestamp. Mapped from cloud's `timeOfChange` field. */
   timestamp: string;
   user?: string;
-  changeType: 'CREATE' | 'UPDATE' | 'DELETE';
-  stateFrom?: string;
-  stateTo?: string;
+  changeType: 'CREATE' | 'UPDATE' | 'DELETE' | 'CREATED' | 'UPDATED';
+  /** Number of fields changed in this transaction. From cloud's `fieldsChangedCount`. */
+  fieldsChangedCount?: number;
+}
+
+export interface AuditEvent {
+  auditEventType: 'EntityChange' | 'StateMachine';
+  severity: 'INFO' | 'ERROR' | 'DEBUG' | 'WARN';
+  utcTime: string;
+  transactionId: string;
+  actor?: { name?: string; externalId?: string };
+  // StateMachine-only:
+  state?: string;
+  eventType?: string;
+  details?: string;
+  data?: unknown;
+  // EntityChange-only:
+  changeType?: 'CREATED' | 'UPDATED';
+  changes?: { before?: Record<string, unknown>; after?: Record<string, unknown> };
+}
+
+export interface AuditEventsPage {
+  items: AuditEvent[];
+  hasNext: boolean;
+  nextCursor?: string;
 }
 
 export interface InstancesPage {
@@ -70,6 +92,12 @@ export interface InstancesGateway {
   loadChanges(entityId: string, opts?: {
     pointInTime?: string;
   }): Promise<EntityChange[]>;
+
+  loadAuditEvents(entityId: string, opts?: {
+    cursor?: string;
+    limit?: number;
+    severity?: 'INFO' | 'ERROR' | 'DEBUG' | 'WARN';
+  }): Promise<AuditEventsPage>;
 
   fireTransition(entityId: string, transition: string, body: unknown): Promise<void>;
 

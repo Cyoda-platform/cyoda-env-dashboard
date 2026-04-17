@@ -1,7 +1,6 @@
 import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { App } from 'antd';
@@ -40,10 +39,11 @@ describe('InstanceDetailCloud — shell', () => {
         version: '1.0', name: 'wf', initialState: 'NEW',
         states: { NEW: { transitions: [] } },
       }),
+      listWorkflows: vi.fn().mockResolvedValue([{ name: 'wf', active: true }]),
     } as any);
   });
 
-  it('renders Back to Instances + the entity ID + the 5 tabs', () => {
+  it('renders Back to Instances + the entity ID + the 4 tabs', () => {
     renderAt('/instances/eid?entityName=Customer&modelVersion=1&workflowName=wf');
     expect(screen.getByRole('button', { name: /Back to Instances/i })).toBeInTheDocument();
     expect(screen.getByText('eid')).toBeInTheDocument();
@@ -51,18 +51,6 @@ describe('InstanceDetailCloud — shell', () => {
     expect(screen.getByRole('tab', { name: /Workflow/ })).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: /Audit/ })).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: /Data Lineage/ })).toBeInTheDocument();
-    expect(screen.getByRole('tab', { name: /JSON/ })).toBeInTheDocument();
-  });
-
-  it('switching to JSON tab shows loading or content', async () => {
-    renderAt('/instances/eid?entityName=Customer&modelVersion=1&workflowName=wf');
-    await userEvent.click(screen.getByRole('tab', { name: /JSON/ }));
-    // The JSON tab is now real — it renders a <pre> or "Loading…"
-    // (the gateway mock returns data={} so it renders "{}")
-    await waitFor(() => {
-      const pre = document.querySelector('pre');
-      // Either a pre element is rendered or Loading... text appears
-      expect(pre !== null || screen.queryByText(/Loading/) !== null).toBe(true);
-    });
+    expect(screen.queryByRole('tab', { name: /^JSON$/ })).not.toBeInTheDocument();
   });
 });
