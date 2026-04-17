@@ -48,8 +48,9 @@ export interface WorkflowGateway {
   saveWorkflow(modelRef: ModelRef | null, doc: WorkflowDoc, mode: 'MERGE'): Promise<{ key: string }>;
 
   /**
-   * Delete a workflow by name. In cloud mode, enforces the ≥1 invariant
-   * (throws `CannotDeleteLastWorkflowError` rather than emptying the model).
+   * Delete a workflow by name. In cloud mode, enforces the active-workflow
+   * invariant (throws `MustHaveActiveWorkflowError` rather than leaving the
+   * model with zero active workflows).
    */
   deleteWorkflow(modelRef: ModelRef | null, name: string): Promise<void>;
 

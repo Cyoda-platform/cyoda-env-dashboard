@@ -5,7 +5,8 @@
 
 // Pages
 export { Workflows } from './pages/Workflows';
-export { WorkflowsCloudStub } from './pages/WorkflowsCloudStub';
+export { WorkflowsCloud } from './pages/WorkflowsCloud';
+export { WorkflowEditorCloudPlaceholder } from './pages/WorkflowEditorCloudPlaceholder';
 export { Instances } from './pages/Instances';
 export { InstanceDetail } from './pages/InstanceDetail';
 export { WorkflowDetail } from './pages/WorkflowDetail';

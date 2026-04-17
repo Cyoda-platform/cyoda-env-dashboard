@@ -1,21 +1,29 @@
 import { describe, it, expect } from 'vitest';
 import {
-  CannotDeleteLastWorkflowError,
+  MustHaveActiveWorkflowError,
   RenameIncompleteError,
   NotImplementedInLegacyError,
 } from './errors';
 
 describe('gateway errors', () => {
-  describe('CannotDeleteLastWorkflowError', () => {
-    it('is an Error subclass with the expected name and message', () => {
-      const err = new CannotDeleteLastWorkflowError('Customer', 1, 'OnlyWorkflow');
+  describe('MustHaveActiveWorkflowError', () => {
+    it('is an Error subclass with the expected name and message for delete', () => {
+      const err = new MustHaveActiveWorkflowError('Customer', 1, 'OnlyActive', 'delete');
       expect(err).toBeInstanceOf(Error);
-      expect(err.name).toBe('CannotDeleteLastWorkflowError');
+      expect(err.name).toBe('MustHaveActiveWorkflowError');
       expect(err.entityName).toBe('Customer');
       expect(err.modelVersion).toBe(1);
-      expect(err.workflowName).toBe('OnlyWorkflow');
+      expect(err.workflowName).toBe('OnlyActive');
+      expect(err.action).toBe('delete');
       expect(err.message).toContain('Customer');
-      expect(err.message).toContain('OnlyWorkflow');
+      expect(err.message).toContain('OnlyActive');
+      expect(err.message).toContain('delete');
+      expect(err.message).toContain('active workflow');
+    });
+
+    it('formats the message for deactivate too', () => {
+      const err = new MustHaveActiveWorkflowError('Customer', 1, 'X', 'deactivate');
+      expect(err.message).toContain('deactivate');
     });
   });
 

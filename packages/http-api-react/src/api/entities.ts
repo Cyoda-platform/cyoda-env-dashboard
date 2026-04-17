@@ -392,6 +392,33 @@ export function getEntityModelExport(entityName: string, modelVersion: number) {
 }
 
 /**
+ * Item shape returned by `GET /model/` (cloud-native model-list endpoint).
+ *
+ * Used by the cloud Workflows page's stage-A model picker. The `modelName`
+ * field is what becomes `entityName` on `ModelRef`. This is the canonical
+ * declaration; `@cyoda/statemachine-react` re-exports it through its
+ * gateways barrel.
+ */
+export interface EntityModelListItem {
+  id: string;
+  modelName: string;
+  modelVersion: number;
+  currentState: string;
+  modelUpdateDate?: string;
+}
+
+/**
+ * List all entity models in the cloud backend.
+ *
+ * Cloud-native: works on both cyoda-cloud and cyoda-go. Returns
+ * `[{id, modelName, modelVersion, currentState, modelUpdateDate?}]`.
+ * The cloud Workflows page's model picker is the primary consumer.
+ */
+export function getEntityModelList() {
+  return axios.get<EntityModelListItem[]>('/model/');
+}
+
+/**
  * Get entity data by ID (Cyoda Cloud API)
  * Used when VITE_FEATURE_FLAG_IS_CYODA_CLOUD is enabled
  *

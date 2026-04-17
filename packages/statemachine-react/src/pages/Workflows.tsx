@@ -34,7 +34,7 @@ import { HelperStorage } from '@cyoda/ui-lib-react';
 import './Workflows.scss';
 import { useGlobalUiSettingsStore } from '@cyoda/http-api-react';
 import { HelperFeatureFlags } from '@cyoda/http-api-react';
-import { WorkflowsCloudStub } from './WorkflowsCloudStub';
+import { WorkflowsCloud } from './WorkflowsCloud';
 import { getPersistedType } from '../utils/helpers';
 import type { Workflow, WorkflowTableRow } from '../types';
 
@@ -56,13 +56,18 @@ function getTimeFromUuid(uuid: string): number {
   }
 }
 
+// Cloud-vs-legacy dispatch must happen at a parent boundary so each branch
+// owns its own hook list. Returning early from a single component when
+// `entityType` toggles changes the hook count between renders and trips
+// React's "Rendered more hooks than during the previous render" rule.
 export const Workflows: React.FC = () => {
-  // When cyoda-cloud (or cyoda-go) is in use, render the stub cloud page.
-  // The real cloud Workflows UI lands in sub-branch 3.
-  if (HelperFeatureFlags.isCyodaCloud()) {
-    return <WorkflowsCloudStub />;
-  }
+  const { entityType: currentEntityType } = useGlobalUiSettingsStore();
+  return HelperFeatureFlags.isCloudWorkflowsActive(currentEntityType)
+    ? <WorkflowsCloud />
+    : <WorkflowsLegacy />;
+};
 
+const WorkflowsLegacy: React.FC = () => {
   const { modal, message } = App.useApp();
   const navigate = useNavigate();
   const storage = useMemo(() => new HelperStorage(), []);
@@ -133,10 +138,8 @@ export const Workflows: React.FC = () => {
   // creationDate, etc.) than WorkflowGateway.listWorkflows projects into a
   // WorkflowSummary. Bypass the gateway here and call the legacy store
   // directly — same pattern WorkflowForm.tsx already uses for create/update.
-  // The cloud branch above already returns to WorkflowsCloudStub, so this
-  // only runs in legacy mode. Sub-branch 3 replaces this whole list page
-  // with the real cloud Workflows UI; until then, legacy must keep working
-  // against the legacy backend's full record shape.
+  // The cloud branch above already returns to WorkflowsCloud, so this only
+  // runs in legacy mode. Legacy needs the full backend record shape.
   const { data: workflows = [], isLoading, refetch } = useQuery<Workflow[]>({
     queryKey: statemachineKeys.workflowsList(null),
     queryFn: async () => {

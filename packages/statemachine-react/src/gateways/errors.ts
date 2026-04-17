@@ -3,20 +3,24 @@
  */
 
 /**
- * Thrown when a delete request would leave the entity model with zero workflows.
- * Cloud Cyoda requires at least one workflow per (entityName, modelVersion).
+ * Thrown when a delete or deactivate request would leave the entity model
+ * with zero active workflows. Cloud Cyoda requires at least one active
+ * workflow per (entityName, modelVersion).
  */
-export class CannotDeleteLastWorkflowError extends Error {
+export class MustHaveActiveWorkflowError extends Error {
   constructor(
     public readonly entityName: string,
     public readonly modelVersion: number,
-    public readonly workflowName: string
+    public readonly workflowName: string,
+    /** What action triggered the error: 'delete' or 'deactivate'. */
+    public readonly action: 'delete' | 'deactivate'
   ) {
     super(
-      `Cannot delete the last workflow "${workflowName}" of model ` +
-        `${entityName} v${modelVersion} — every model requires at least one workflow.`
+      `Cannot ${action} workflow "${workflowName}" in model ` +
+        `${entityName} v${modelVersion} — every model must have at least ` +
+        `one active workflow.`
     );
-    this.name = 'CannotDeleteLastWorkflowError';
+    this.name = 'MustHaveActiveWorkflowError';
   }
 }
 

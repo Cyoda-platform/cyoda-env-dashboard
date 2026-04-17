@@ -4,6 +4,7 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import * as entitiesApi from './entities';
+import { getEntityModelList } from './entities';
 import axios from '../config/axios';
 import HelperFeatureFlags from '../utils/HelperFeatureFlags';
 
@@ -478,6 +479,21 @@ describe('Entities API', () => {
 
     it('should return undefined for undefined input', () => {
       expect(entitiesApi.extractCyodaEntityMeta(undefined)).toBeUndefined();
+    });
+  });
+
+  describe('getEntityModelList', () => {
+    it('GETs /model/ and returns the array', async () => {
+      const items = [
+        { id: 'a', modelName: 'Customer', modelVersion: 1, currentState: 'LOCKED' },
+        { id: 'b', modelName: 'Order', modelVersion: 2, currentState: 'LOCKED', modelUpdateDate: '2026-04-10T17:43:39.410939-07:00' },
+      ];
+      vi.mocked(axios.get).mockResolvedValueOnce({ data: items, status: 200, statusText: 'OK', headers: {}, config: {} as any });
+
+      const response = await getEntityModelList();
+
+      expect(axios.get).toHaveBeenCalledWith('/model/');
+      expect(response.data).toEqual(items);
     });
   });
 });

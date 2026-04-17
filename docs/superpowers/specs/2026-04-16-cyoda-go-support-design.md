@@ -129,16 +129,18 @@ A cloud workflow is identified by `(entityName, modelVersion, name)`. The doc ha
 
 The cloud API has no cross-model workflow list. The Workflows page becomes a two-stage UX:
 
-- Stage A — entity-model picker: lists `(entityName, modelVersion)` pairs from the existing models-info path that `IS_CYODA_CLOUD=true` already drives in the Entity Viewer. Selection persists in `statemachineStore.selectedModelRef` *and* in the URL (`/workflows?entityName=Customer&modelVersion=1`) so reload and deep links work.
+- Stage A — entity-model picker: lists `(entityName, modelVersion)` pairs from `GET /model/`, which returns `[{id, modelName, modelVersion, currentState, modelUpdateDate?}]`. This is a cloud-native endpoint available on both cyoda-cloud and cyoda-go (it does NOT require the legacy `/platform-api/...` surface). Selection persists in `statemachineStore.selectedModelRef` *and* in the URL (`/workflows?entityName=Customer&modelVersion=1`) so reload and deep links work.
 - Stage B — workflows for the chosen model: renders `workflow/export`'s `workflows[]` as a table.
 
 ### 5.3 Save
 
 Every save (create and update) is a `POST .../workflow/import` with `importMode: 'MERGE'` and a single-element `workflows: [doc]`. MERGE updates that one workflow if the `name` already exists in the model and creates it otherwise; other workflows are untouched.
 
-### 5.4 Delete (and the ≥1 invariant)
+### 5.4 Delete and Deactivate (the active-workflow invariant)
 
-A Cyoda entity model requires at least one workflow. Delete is implemented as REPLACE-minus-target: load the current set, remove the target, `POST .../workflow/import` with `importMode: 'REPLACE'` and the remaining workflows. The gateway enforces the ≥1 invariant before the network call.
+A Cyoda entity model requires at least one **active** workflow. This constraint applies to both delete (which removes a workflow entirely) and deactivate (which sets `active: false` on a workflow). The cloud workflow API does not enforce the invariant on the wire; the gateway enforces it client-side before the network call by counting how many active workflows would remain after the action.
+
+Delete is implemented as REPLACE-minus-target: load the current set, remove the target, `POST .../workflow/import` with `importMode: 'REPLACE'` and the remaining workflows. Deactivate is a MERGE-save with `active: false`. Both throw `MustHaveActiveWorkflowError` if the action would leave the model with zero active workflows.
 
 The UI disables the delete button in the list when the list has exactly one row and surfaces a tooltip explaining why. Because the REPLACE-based delete carries a real risk of overwriting a concurrent edit by another user, the confirmation dialog is **disruptive by design** rather than a one-click "Are you sure?":
 

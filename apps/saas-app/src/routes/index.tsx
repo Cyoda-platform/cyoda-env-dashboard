@@ -14,6 +14,9 @@ const ReportEditorStream = React.lazy(() => import('@cyoda/reporting-react').the
 const CatalogueOfAliases = React.lazy(() => import('@cyoda/reporting-react').then(m => ({ default: m.CatalogueOfAliases })));
 
 const Workflows = React.lazy(() => import('@cyoda/statemachine-react').then(m => ({ default: m.Workflows })));
+const WorkflowEditorCloudPlaceholder = React.lazy(() =>
+  import('@cyoda/statemachine-react').then((m) => ({ default: m.WorkflowEditorCloudPlaceholder }))
+);
 const WorkflowDetail = React.lazy(() => import('@cyoda/statemachine-react').then(m => ({ default: m.WorkflowDetail })));
 const Instances = React.lazy(() => import('@cyoda/statemachine-react').then(m => ({ default: m.Instances })));
 const InstanceDetail = React.lazy(() => import('@cyoda/statemachine-react').then(m => ({ default: m.InstanceDetail })));
@@ -80,6 +83,22 @@ export const AppRoutes: React.FC = () => {
         <Route path="workflows" element={<Workflows />} />
         <Route path="workflow/new" element={<WorkflowDetail />} />
         <Route path="workflow/:workflowId" element={<WorkflowDetail />} />
+
+        {/* Cloud workflow editor (placeholder in sub-branch 3; real editor in sub-branch 4) */}
+        {/* isCyodaCloud() returns true under cyoda-cloud AND cyoda-go; legacy mode falls through to /workflows */}
+        {HelperFeatureFlags.isCyodaCloud() && (
+          <>
+            <Route
+              path="workflow/:entityName/:modelVersion/new"
+              element={<WorkflowEditorCloudPlaceholder />}
+            />
+            <Route
+              path="workflow/:entityName/:modelVersion/:workflowName"
+              element={<WorkflowEditorCloudPlaceholder />}
+            />
+          </>
+        )}
+
         <Route path="instances" element={<Instances />} />
         <Route path="instances/:instanceId" element={<InstanceDetail />} />
         <Route path="state/:stateId" element={<State />} />

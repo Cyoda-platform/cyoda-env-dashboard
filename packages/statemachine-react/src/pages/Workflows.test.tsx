@@ -780,5 +780,70 @@ it('should display version value for Business entities', async () => {
       });
     });
   });
+
+  describe('Cloud-vs-legacy branching by isCloudWorkflowsActive', () => {
+    afterEach(() => {
+      // Restore default for sibling tests — clear cloud flag so the legacy
+      // branch is taken everywhere else.
+      delete (import.meta.env as any).VITE_FEATURE_FLAG_IS_CYODA_CLOUD;
+      delete (import.meta.env as any).VITE_FEATURE_FLAG_IS_CYODA_GO;
+    });
+
+    it('renders the cloud Workflows page when cyoda-cloud is on AND entityType is BUSINESS', async () => {
+      import.meta.env.VITE_FEATURE_FLAG_IS_CYODA_CLOUD = true as any;
+      delete (import.meta.env as any).VITE_FEATURE_FLAG_IS_CYODA_GO;
+      mockEntityType.mockReturnValue('BUSINESS');
+
+      const { container } = render(<Workflows />, { wrapper: createWrapper() });
+
+      // The cloud page renders the model picker (combobox role); the legacy
+      // table renders a "Filter workflows" Input with placeholder. The cloud
+      // page does NOT render that placeholder. Use that as the cloud-mode
+      // signal: legacy header is absent.
+      expect(container.querySelector('input[placeholder="Filter workflows"]')).toBeNull();
+    });
+
+    it('renders the legacy table when cyoda-cloud is on but entityType is PERSISTENCE', async () => {
+      import.meta.env.VITE_FEATURE_FLAG_IS_CYODA_CLOUD = true as any;
+      delete (import.meta.env as any).VITE_FEATURE_FLAG_IS_CYODA_GO;
+      mockEntityType.mockReturnValue('PERSISTENCE');
+
+      mockGetAllWorkflowsList.mockResolvedValue({ data: [] });
+
+      const { container } = render(<Workflows />, { wrapper: createWrapper() });
+
+      // The legacy "Filter workflows" Input must be present — confirms we
+      // fell through to the legacy code path.
+      expect(container.querySelector('input[placeholder="Filter workflows"]')).not.toBeNull();
+    });
+
+    it('toggles between cloud and legacy without violating the Rules of Hooks', async () => {
+      // Regression test for a "Rendered more hooks than during the previous
+      // render" crash that fired when Workflows had an early `return
+      // <WorkflowsCloud />` ahead of the legacy hooks. Toggling entityType in
+      // a single component instance changed the hook count between renders.
+      // The fix routes between two sibling components so each owns its own
+      // hook list.
+      import.meta.env.VITE_FEATURE_FLAG_IS_CYODA_CLOUD = true as any;
+      delete (import.meta.env as any).VITE_FEATURE_FLAG_IS_CYODA_GO;
+      mockEntityType.mockReturnValue('BUSINESS');
+      mockGetAllWorkflowsList.mockResolvedValue({ data: [] });
+
+      const { container, rerender } = render(<Workflows />, { wrapper: createWrapper() });
+
+      // Cloud branch first.
+      expect(container.querySelector('input[placeholder="Filter workflows"]')).toBeNull();
+
+      // Toggle to PERSISTENCE → legacy. Must not throw.
+      mockEntityType.mockReturnValue('PERSISTENCE');
+      rerender(<Workflows />);
+      expect(container.querySelector('input[placeholder="Filter workflows"]')).not.toBeNull();
+
+      // Toggle back to BUSINESS → cloud. Must not throw either.
+      mockEntityType.mockReturnValue('BUSINESS');
+      rerender(<Workflows />);
+      expect(container.querySelector('input[placeholder="Filter workflows"]')).toBeNull();
+    });
+  });
 });
 
