@@ -28,7 +28,7 @@ export const statemachineKeys = {
     [...statemachineKeys.workflows(), 'list', modelRef ?? null, entityClassName] as const,
   workflow: (persistedType: PersistedType, workflowId: string) =>
     [...statemachineKeys.workflows(), persistedType, workflowId] as const,
-  workflowDoc: (modelRef: ModelRef | null, name: string) =>
+  workflowDoc: (modelRef: ModelRef | null, name: string | undefined) =>
     [...statemachineKeys.workflows(), 'doc', modelRef, name] as const,
   workflowEnabledTypes: () => [...statemachineKeys.workflows(), 'enabled-types'] as const,
   
