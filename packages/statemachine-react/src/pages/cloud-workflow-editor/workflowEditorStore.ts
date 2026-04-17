@@ -105,10 +105,66 @@ export function createWorkflowEditorStore(): WorkflowEditorStore {
       setErrors(errors) { set((s) => { s.errors = errors; }); },
 
       // Stubs — implemented in Tasks 5–7.
-      updateWorkflowProps() { throw new Error('not implemented'); },
-      renameState() { throw new Error('not implemented'); },
-      addState() { throw new Error('not implemented'); },
-      deleteState() { throw new Error('not implemented'); },
+      updateWorkflowProps(patch) {
+        set((s) => {
+          if (!s.current) return;
+          Object.assign(s.current, patch);
+          s.errors = [];
+        });
+      },
+
+      renameState(oldName, newName) {
+        if (oldName === newName) return;
+        set((s) => {
+          if (!s.current || !(oldName in s.current.states)) return;
+          s.current.states[newName] = s.current.states[oldName];
+          delete s.current.states[oldName];
+          if (s.current.initialState === oldName) s.current.initialState = newName;
+          // Path rewrites
+          const oldPrefix = `/states/${oldName}`;
+          const newPrefix = `/states/${newName}`;
+          if (s.selectedPath === oldPrefix || s.selectedPath.startsWith(oldPrefix + '/')) {
+            s.selectedPath = newPrefix + s.selectedPath.slice(oldPrefix.length);
+          }
+          const next = new Set<string>();
+          for (const p of s.expandedPaths) {
+            if (p === oldPrefix || p.startsWith(oldPrefix + '/')) {
+              next.add(newPrefix + p.slice(oldPrefix.length));
+            } else {
+              next.add(p);
+            }
+          }
+          s.expandedPaths = next;
+          s.errors = [];
+        });
+      },
+
+      addState(name) {
+        set((s) => {
+          if (!s.current || name in s.current.states) return;
+          s.current.states[name] = { transitions: [] };
+          s.selectedPath = `/states/${name}`;
+          s.expandedPaths.add(`/states/${name}`);
+          s.errors = [];
+        });
+      },
+
+      deleteState(name) {
+        set((s) => {
+          if (!s.current || !(name in s.current.states)) return;
+          delete s.current.states[name];
+          const prefix = `/states/${name}`;
+          if (s.selectedPath === prefix || s.selectedPath.startsWith(prefix + '/')) {
+            s.selectedPath = '/';
+          }
+          const next = new Set<string>();
+          for (const p of s.expandedPaths) {
+            if (p !== prefix && !p.startsWith(prefix + '/')) next.add(p);
+          }
+          s.expandedPaths = next;
+          s.errors = [];
+        });
+      },
       addTransition() { throw new Error('not implemented'); },
       deleteTransition() { throw new Error('not implemented'); },
       updateTransition() { throw new Error('not implemented'); },
