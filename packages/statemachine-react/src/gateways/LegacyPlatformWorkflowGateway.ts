@@ -21,6 +21,10 @@
  * orphan id (so a future UI can offer a "Discard the auto-named copy" action)
  * is a worthwhile follow-up; not implemented here because no current caller
  * could act on it. Track in a follow-up issue when the cloud editor lands.
+ *
+ * Stateless — instantiation is free. The factory creates a fresh instance per
+ * call (see `getWorkflowGateway()`); do not introduce a singleton cache here
+ * without revisiting the HMR-flag-flip behavior the factory test pins.
  */
 
 import { useStatemachineStore } from '../stores/statemachineStore';

@@ -5,6 +5,10 @@
  * `docs/cyoda-cloud/api/openapi-workflow.yml`:
  *   - GET  /model/{entityName}/{modelVersion}/workflow/export
  *   - POST /model/{entityName}/{modelVersion}/workflow/import
+ *
+ * Stateless — instantiation is free. The factory creates a fresh instance per
+ * call (see `getWorkflowGateway()`); do not introduce a singleton cache here
+ * without revisiting the HMR-flag-flip behavior the factory test pins.
  */
 
 import { axios } from '@cyoda/http-api-react';

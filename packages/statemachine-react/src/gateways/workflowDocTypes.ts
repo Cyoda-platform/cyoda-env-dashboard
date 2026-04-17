@@ -76,6 +76,11 @@ export interface StateDefinition {
  * Full cloud workflow document — matches `WorkflowConfiguration` in openapi-workflow.yml.
  */
 export interface WorkflowDoc {
+  /**
+   * Schema version of THIS workflow document (e.g. "1.0"). Distinct from
+   * `ModelRef.modelVersion`, which is the version of the entity model the
+   * workflow belongs to. Default `"1.0"` for new workflows.
+   */
   version: string;
   name: string;
   desc?: string;
