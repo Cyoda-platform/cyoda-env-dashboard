@@ -17,6 +17,8 @@ export {
   MustHaveActiveWorkflowError,
   RenameIncompleteError,
   NotImplementedInLegacyError,
+  TooManyEntityIdsError,
+  WorkflowNotFoundError,
 } from './errors';
 export type {
   ModelRef,

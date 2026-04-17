@@ -74,3 +74,16 @@ export class WorkflowNotFoundError extends Error {
     this.name = 'WorkflowNotFoundError';
   }
 }
+
+/**
+ * Thrown when the entity-IDs filter receives more IDs than the synthesized
+ * search-condition can practically carry. The cloud `/search/direct` endpoint
+ * accepts a tree of conditions and we synthesize an OR-of-EQUALS group, so
+ * payload size is O(N) — we cap N at 100 to avoid a runaway request.
+ */
+export class TooManyEntityIdsError extends Error {
+  constructor(public readonly count: number, public readonly limit: number = 100) {
+    super(`Too many entity IDs: ${count} (limit: ${limit}). Refine the filter or use Advanced Search.`);
+    this.name = 'TooManyEntityIdsError';
+  }
+}
