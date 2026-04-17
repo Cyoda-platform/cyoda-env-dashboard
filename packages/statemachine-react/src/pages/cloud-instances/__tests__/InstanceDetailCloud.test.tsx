@@ -1,11 +1,17 @@
 import React from 'react';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { App } from 'antd';
 import { InstanceDetailCloud } from '../InstanceDetailCloud';
+import { getInstancesGateway } from '../../../gateways';
+
+vi.mock('../../../gateways', async () => {
+  const actual = await vi.importActual<any>('../../../gateways');
+  return { ...actual, getInstancesGateway: vi.fn() };
+});
 
 function renderAt(url: string) {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
@@ -23,6 +29,14 @@ function renderAt(url: string) {
 }
 
 describe('InstanceDetailCloud — shell', () => {
+  beforeEach(() => {
+    vi.mocked(getInstancesGateway).mockReturnValue({
+      load: vi.fn().mockResolvedValue({ data: {}, meta: { id: 'eid', state: 'NEW' } }),
+      loadChanges: vi.fn().mockResolvedValue([]),
+      list: vi.fn(), search: vi.fn(), fireTransition: vi.fn(), delete: vi.fn(),
+    } as any);
+  });
+
   it('renders Back to Instances + the entity ID + the 5 tabs', () => {
     renderAt('/instances/eid?entityName=Customer&modelVersion=1&workflowName=wf');
     expect(screen.getByRole('button', { name: /Back to Instances/i })).toBeInTheDocument();
@@ -34,10 +48,13 @@ describe('InstanceDetailCloud — shell', () => {
     expect(screen.getByRole('tab', { name: /JSON/ })).toBeInTheDocument();
   });
 
-  it('switches tabs via clicks (stubs)', async () => {
+  it('switches tabs via clicks — remaining stubs render', async () => {
     renderAt('/instances/eid?entityName=Customer&modelVersion=1&workflowName=wf');
-    expect(screen.getByText(/Details \(todo\)/)).toBeInTheDocument();
+    // Audit tab is still a stub
     await userEvent.click(screen.getByRole('tab', { name: /Audit/ }));
     expect(screen.getByText(/Audit \(todo\)/)).toBeInTheDocument();
+    // Switch to JSON tab (also still a stub at this point in E3)
+    await userEvent.click(screen.getByRole('tab', { name: /JSON/ }));
+    expect(screen.getByText(/JSON \(todo\)/)).toBeInTheDocument();
   });
 });

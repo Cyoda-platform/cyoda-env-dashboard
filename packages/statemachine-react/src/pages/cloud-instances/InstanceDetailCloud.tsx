@@ -8,6 +8,7 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Button, Space, Tabs, Typography } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import type { ModelRef } from '../../gateways';
+import { DetailsTab } from './tabs/DetailsTab';
 
 const { Title, Text } = Typography;
 
@@ -22,13 +23,13 @@ export const InstanceDetailCloud: React.FC = () => {
     ? { entityName, modelVersion } : null;
 
   const items = useMemo(() => [
-    { key: 'details', label: 'Details', children: <DetailsTab /> },
+    { key: 'details', label: 'Details', children: <DetailsTab entityId={entityId!} modelRef={modelRef} workflowName={workflowName} /> },
     { key: 'workflow', label: 'Workflow', children: <WorkflowTab /> },
     { key: 'audit', label: 'Audit', children: <AuditTab /> },
     { key: 'lineage', label: 'Data Lineage', children: <DataLineageTab /> },
     { key: 'json', label: 'JSON', children: <JsonTab /> },
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  ], []);
+  ], [entityId, modelRef, workflowName]);
 
   if (!entityId) return null;
 
@@ -44,8 +45,7 @@ export const InstanceDetailCloud: React.FC = () => {
   );
 };
 
-// Inline stubs — E3-E7 will replace these with real imports.
-function DetailsTab() { return <div>Details (todo)</div>; }
+// Inline stubs — E4-E7 will replace these with real imports.
 function WorkflowTab() { return <div>Workflow (todo)</div>; }
 function AuditTab() { return <div>Audit (todo)</div>; }
 function DataLineageTab() { return <div>Data Lineage (todo)</div>; }
