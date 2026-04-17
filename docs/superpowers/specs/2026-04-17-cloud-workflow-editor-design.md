@@ -246,9 +246,9 @@ interface QueryConditionEditorProps {
 export function useDirtyGuard(isDirty: boolean): void;
 ```
 
-**In-app navigation:** wraps `useBlocker(isDirty)`. Covers both sidebar/menu navigation and the **browser back button** (RR v6's blocker handles `popstate` as well as imperative navigation). When blocker fires, opens an AntD `Modal.confirm({ title: 'Discard unsaved changes?', okText: 'Discard', cancelText: 'Stay' })`. On Discard, calls `blocker.proceed()`. On Stay, calls `blocker.reset()`.
+**Browser back/forward AND tab close:** `useDirtyGuard` guards `popstate` via a sentinel pushState (the standard pattern) and `beforeunload` via the W3C contract. Both open an AntD `Modal.confirm` (back button) or the browser's native dialog (tab close).
 
-**Tab close / refresh:** `useEffect` registers `window.addEventListener('beforeunload', handler)` while `isDirty`. Handler calls `e.preventDefault()` and sets `e.returnValue = ''` per the standard contract. The browser shows its native dialog (text is browser-controlled and can't be customized).
+**Limitation — sidebar/menu click:** the app uses `BrowserRouter` rather than a data router, so RR v6's `useBlocker` — which would catch internal `navigate()` calls from sidebar `<Link>`s — is unavailable. A user clicking a sidebar menu item from a dirty editor will navigate away without prompting. This is a known regression vs. the originally-specified behavior; closing it requires migrating `apps/saas-app/src/App.tsx` from `BrowserRouter` to `createBrowserRouter`, which is a cross-cutting refactor outside this sub-branch. Tracked for a follow-up.
 
 ### 3.8 Save flow
 
