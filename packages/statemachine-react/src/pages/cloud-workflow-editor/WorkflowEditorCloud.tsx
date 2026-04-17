@@ -13,6 +13,7 @@ import { statemachineKeys } from '../../hooks/useStatemachine';
 import { MustHaveActiveWorkflowError, WorkflowNotFoundError } from '../../gateways/errors';
 import type { WorkflowDoc } from '../../gateways';
 import { WorkflowSettingsForm } from './nodes/WorkflowSettingsForm';
+import { TabularView } from './views/TabularView';
 
 const SCAFFOLD: WorkflowDoc = {
   version: '1.0', name: '', initialState: 'draft',
@@ -92,8 +93,7 @@ const PageBody: React.FC<{ isNew: boolean; entityName: string; modelVersion: num
   );
 };
 
-// Inline stubs — CC1/DD1/EE1 will replace these with real imports.
-function TabularView() { return <div>Tabular (todo)</div>; }
+// Inline stubs — DD1/EE1 will replace these with real imports.
 function GraphicalView(_: { modelRef: { entityName: string; modelVersion: number }; workflowName: string }) {
   return <div>Graphical (todo)</div>;
 }

@@ -93,7 +93,7 @@ describe('WorkflowEditorCloud — load / scaffold / 404', () => {
     renderAt('/workflow/Customer/1/wf');
     await waitFor(() => expect(screen.getByText(/Workflow settings/)).toBeInTheDocument());
     // Default is tabular.
-    expect(screen.getByText(/Tabular \(todo\)/)).toBeInTheDocument();
+    expect(screen.getByText(/Tabular view/)).toBeInTheDocument();
     // Click Graphical — AntD radio buttons wrap the hidden input in a label; click the label text.
     await userEvent.click(screen.getByText('Graphical'));
     expect(screen.getByText(/Graphical \(todo\)/)).toBeInTheDocument();
