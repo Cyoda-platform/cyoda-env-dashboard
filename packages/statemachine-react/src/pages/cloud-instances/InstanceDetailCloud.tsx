@@ -46,7 +46,7 @@ export const InstanceDetailCloud: React.FC = () => {
         `/instances?entityName=${encodeURIComponent(entityName)}&modelVersion=${modelVersion}`,
       )}>Back to Instances</Button>
       <Title level={2}>Instances / {workflowNameLoading ? '…' : (workflowName ?? '(no workflow)')}</Title>
-      <Text>ID: <Text strong>{entityId}</Text>{modelRef ? ` | Model: ${modelRef.modelVersion}` : ''}</Text>
+      <Text>ID: <Text strong>{entityId}</Text>{modelRef ? ` | Model: ${modelRef.entityName}.${modelRef.modelVersion}` : ''}</Text>
       <Tabs items={items} />
     </Space>
   );
