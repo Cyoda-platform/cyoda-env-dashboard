@@ -44,8 +44,15 @@ export class CloudInstancesGateway implements InstancesGateway {
       hasMore: response.data.hasMore ?? false,
     };
   }
-  async search(_modelRef: ModelRef, _criterion: unknown, _opts?: { limit?: number; pointInTime?: string }): Promise<InstancesPage> {
-    throw new Error('not implemented');
+  async search(modelRef: ModelRef, criterion: unknown, opts: { limit?: number; pointInTime?: string } = {}): Promise<InstancesPage> {
+    const url = `/search/direct/${encodeURIComponent(modelRef.entityName)}/${modelRef.modelVersion}`;
+    const response = await axios.post<InstancesPage>(url, criterion, {
+      params: { limit: opts.limit, pointInTime: opts.pointInTime },
+    });
+    return {
+      items: response.data.items ?? [],
+      hasMore: response.data.hasMore ?? false,
+    };
   }
   async load(_entityId: string, _opts?: { pointInTime?: string; transactionId?: string }): Promise<EntityEnvelopeResponse> {
     throw new Error('not implemented');

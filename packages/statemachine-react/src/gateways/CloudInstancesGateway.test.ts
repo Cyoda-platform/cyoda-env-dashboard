@@ -73,3 +73,30 @@ describe('CloudInstancesGateway.list', () => {
     expect(result.items).toHaveLength(2);
   });
 });
+
+describe('CloudInstancesGateway.search', () => {
+  beforeEach(() => { vi.clearAllMocks(); });
+
+  it('POSTs /search/direct/{entityName}/{modelVersion} with the criterion as the body', async () => {
+    (axios.post as any).mockResolvedValueOnce({ data: { items: [{ id: 'e1' }], hasMore: false } });
+    const gw = new CloudInstancesGateway();
+    const criterion = { type: 'simple', jsonPath: '$.x', operation: 'EQUALS', value: 'y' };
+    await gw.search(ref, criterion);
+    expect(axios.post).toHaveBeenCalledWith(
+      '/search/direct/Customer/1',
+      criterion,
+      expect.any(Object),
+    );
+  });
+
+  it('passes limit and pointInTime as query params when provided', async () => {
+    (axios.post as any).mockResolvedValueOnce({ data: { items: [], hasMore: false } });
+    const gw = new CloudInstancesGateway();
+    await gw.search(ref, {}, { limit: 50, pointInTime: '2026-04-17T00:00:00Z' });
+    expect(axios.post).toHaveBeenCalledWith(
+      '/search/direct/Customer/1',
+      {},
+      expect.objectContaining({ params: { limit: 50, pointInTime: '2026-04-17T00:00:00Z' } }),
+    );
+  });
+});
