@@ -201,3 +201,14 @@ describe('CloudInstancesGateway.fireTransition', () => {
     expect(axios.put).toHaveBeenCalledWith('/entity/JSON/a%2Fb/go%20to%20next', {});
   });
 });
+
+describe('CloudInstancesGateway.delete', () => {
+  beforeEach(() => { vi.clearAllMocks(); });
+
+  it('DELETEs /entity/{entityId}', async () => {
+    (axios.delete as any).mockResolvedValueOnce({ data: undefined });
+    const gw = new CloudInstancesGateway();
+    await gw.delete('eid');
+    expect(axios.delete).toHaveBeenCalledWith('/entity/eid');
+  });
+});
