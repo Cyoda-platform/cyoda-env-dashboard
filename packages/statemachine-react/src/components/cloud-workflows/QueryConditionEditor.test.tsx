@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QueryConditionEditor } from './QueryConditionEditor';
 import type { QueryCondition } from '../../gateways';
@@ -116,5 +116,48 @@ describe('QueryConditionEditor — function', () => {
     expect(onChange).toHaveBeenLastCalledWith(expect.objectContaining({
       type: 'function', function: expect.objectContaining({ name: 'isPremium' }),
     }));
+  });
+});
+
+import { App } from 'antd';
+
+function renderWithApp(ui: React.ReactNode) {
+  return render(<App>{ui}</App>);
+}
+
+describe('QueryConditionEditor — destructive type switch', () => {
+  it('switching from a non-trivial group to simple opens the confirm dialog', async () => {
+    const onChange = vi.fn();
+    renderWithApp(<Controlled
+      initialValue={{ type: 'group', operator: 'AND', conditions: [
+        { type: 'simple', jsonPath: '$.a', operation: 'EQUALS', value: '1' },
+      ]} as any}
+      onChangeSpy={onChange}
+    />);
+    // Open the type Select inside the editor's header.
+    const typeSelect = screen.getByTitle('group');
+    fireEvent.mouseDown(typeSelect);
+    // Click the option item div (has title="simple" and the onClick handler).
+    const optionItem = document.querySelector('.ant-select-item-option[title="simple"]') as HTMLElement;
+    fireEvent.click(optionItem);
+    // Confirm dialog should appear (AntD modal text).
+    expect(await screen.findByText(/discard the nested children/i)).toBeInTheDocument();
+    // Cancel — no change emitted.
+    await userEvent.click(screen.getByRole('button', { name: /cancel/i }));
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it('switching from an empty group to simple does NOT open the dialog', async () => {
+    const onChange = vi.fn();
+    renderWithApp(<Controlled
+      initialValue={{ type: 'group', operator: 'AND', conditions: [] } as any}
+      onChangeSpy={onChange}
+    />);
+    const typeSelect = screen.getByTitle('group');
+    fireEvent.mouseDown(typeSelect);
+    const optionItem = document.querySelector('.ant-select-item-option[title="simple"]') as HTMLElement;
+    fireEvent.click(optionItem);
+    // Should have applied directly.
+    expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ type: 'simple' }));
   });
 });

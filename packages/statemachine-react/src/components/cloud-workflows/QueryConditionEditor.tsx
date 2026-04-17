@@ -6,7 +6,7 @@
  * land in Tasks 10 + 11; type-switch confirm in Task 12.
  */
 import React from 'react';
-import { Button, Input, Select, Space, Typography } from 'antd';
+import { App, Button, Input, Select, Space, Typography } from 'antd';
 import type { QueryCondition } from '../../gateways';
 
 const { Text } = Typography;
@@ -35,12 +35,45 @@ export const QueryConditionEditor: React.FC<QueryConditionEditorProps> = ({ valu
     );
   }
 
+  const { modal } = App.useApp();
   const t = (value as any).type;
+
+  function isDestructiveSwitch(from: any, _toType: string): boolean {
+    if (from.type === 'group' && (from.conditions?.length ?? 0) > 0) return true;
+    if (from.type === 'function' && (from.function?.config || from.function?.criterion)) return true;
+    return false;
+  }
+
+  function blankFor(toType: string): QueryCondition {
+    if (toType === 'simple') return { type: 'simple', jsonPath: '', operation: 'EQUALS', value: '' } as any;
+    if (toType === 'group') return { type: 'group', operator: 'AND', conditions: [] } as any;
+    return { type: 'function', function: { name: '' } } as any;
+  }
+
+  const handleTypeChange = (toType: string) => {
+    if (toType === t) return;
+    if (isDestructiveSwitch(value, toType)) {
+      modal.confirm({
+        title: 'Switch condition type',
+        content: 'Switching the condition type will discard the nested children. Continue?',
+        okText: 'Switch',
+        cancelText: 'Cancel',
+        onOk: () => onChange(blankFor(toType)),
+      });
+    } else {
+      onChange(blankFor(toType));
+    }
+  };
   return (
     <Space direction="vertical" style={{ width: '100%' }}>
       <Space>
         <Text strong>Type:</Text>
-        <Text>{t}</Text>
+        <Select
+          style={{ width: 120 }}
+          value={t}
+          onChange={handleTypeChange}
+          options={[{ value: 'simple', label: 'simple' }, { value: 'group', label: 'group' }, { value: 'function', label: 'function' }]}
+        />
         <Button size="small" onClick={() => onChange(undefined)}>Remove criterion</Button>
       </Space>
       {t === 'simple' && (
