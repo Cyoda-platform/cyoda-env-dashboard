@@ -31,9 +31,10 @@ export const InstancesCloud: React.FC = () => {
 
   const query = useQuery({
     queryKey: ['cloud-instances', 'list', modelRef, page, filteredIds],
+    // URL `page` is 1-indexed for humans; cloud API is 0-indexed.
     queryFn: () => filteredIds
       ? getInstancesGateway().list(modelRef!, { entityIds: filteredIds })
-      : getInstancesGateway().list(modelRef!, { pageSize: PAGE_SIZE, pageNumber: page }),
+      : getInstancesGateway().list(modelRef!, { pageSize: PAGE_SIZE, pageNumber: page - 1 }),
     enabled: modelRef !== null,
   });
 

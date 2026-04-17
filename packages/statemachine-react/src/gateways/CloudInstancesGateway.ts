@@ -11,6 +11,7 @@ import type { ModelRef } from './workflowDocTypes';
 import type {
   EntityEnvelopeResponse,
   EntityChange,
+  EntitySummary,
   InstancesGateway,
   InstancesPage,
 } from './InstancesGateway';
@@ -39,10 +40,22 @@ export class CloudInstancesGateway implements InstancesGateway {
     const params: Record<string, unknown> = {};
     if (opts.pageSize !== undefined) params.pageSize = opts.pageSize;
     if (opts.pageNumber !== undefined) params.pageNumber = opts.pageNumber;
-    const response = await axios.get<InstancesPage>(url, Object.keys(params).length > 0 ? { params } : undefined);
+    const response = await axios.get<CyodaCloudEntityEnvelope[]>(
+      url,
+      Object.keys(params).length > 0 ? { params } : undefined,
+    );
+    const envelopes = response.data ?? [];
+    const items: EntitySummary[] = envelopes.map((env) => ({
+      entityId: String(env.meta?.id ?? ''),
+      entityName: modelRef.entityName,
+      modelVersion: modelRef.modelVersion,
+      state: String(env.meta?.state ?? ''),
+      creationDate: env.meta?.creationDate as string | undefined,
+      lastUpdateTime: env.meta?.lastUpdateTime as string | undefined,
+    }));
     return {
-      items: response.data.items ?? [],
-      hasMore: response.data.hasMore ?? false,
+      items,
+      hasMore: opts.pageSize !== undefined && items.length === opts.pageSize,
     };
   }
   async search(modelRef: ModelRef, criterion: unknown, opts: { limit?: number; pointInTime?: string } = {}): Promise<InstancesPage> {
@@ -50,10 +63,22 @@ export class CloudInstancesGateway implements InstancesGateway {
     const sparams: Record<string, unknown> = {};
     if (opts.limit !== undefined) sparams.limit = opts.limit;
     if (opts.pointInTime !== undefined) sparams.pointInTime = opts.pointInTime;
-    const response = await axios.post<InstancesPage>(url, criterion, Object.keys(sparams).length > 0 ? { params: sparams } : undefined);
+    const response = await axios.post<CyodaCloudEntityEnvelope[]>(
+      url, criterion,
+      Object.keys(sparams).length > 0 ? { params: sparams } : undefined,
+    );
+    const envelopes = response.data ?? [];
+    const items: EntitySummary[] = envelopes.map((env) => ({
+      entityId: String(env.meta?.id ?? ''),
+      entityName: modelRef.entityName,
+      modelVersion: modelRef.modelVersion,
+      state: String(env.meta?.state ?? ''),
+      creationDate: env.meta?.creationDate as string | undefined,
+      lastUpdateTime: env.meta?.lastUpdateTime as string | undefined,
+    }));
     return {
-      items: response.data.items ?? [],
-      hasMore: response.data.hasMore ?? false,
+      items,
+      hasMore: opts.limit !== undefined && items.length === opts.limit,
     };
   }
   async load(entityId: string, opts: { pointInTime?: string; transactionId?: string } = {}): Promise<EntityEnvelopeResponse> {

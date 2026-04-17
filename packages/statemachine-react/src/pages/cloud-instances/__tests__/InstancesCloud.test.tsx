@@ -59,7 +59,7 @@ describe('InstancesCloud — basic shell', () => {
     expect(screen.getByText('e2')).toBeInTheDocument();
     expect(list).toHaveBeenCalledWith(
       expect.objectContaining({ entityName: 'Customer', modelVersion: 1 }),
-      expect.objectContaining({ pageSize: 20, pageNumber: 1 }),
+      expect.objectContaining({ pageSize: 20, pageNumber: 0 }),
     );
   });
 
@@ -75,7 +75,7 @@ describe('InstancesCloud — basic shell', () => {
     await waitFor(() => {
       expect(list).toHaveBeenLastCalledWith(
         expect.objectContaining({ entityName: 'Customer', modelVersion: 1 }),
-        expect.objectContaining({ pageSize: 20, pageNumber: 2 }),
+        expect.objectContaining({ pageSize: 20, pageNumber: 1 }),
       );
     });
   });

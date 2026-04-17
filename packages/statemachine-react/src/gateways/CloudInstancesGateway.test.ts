@@ -22,17 +22,17 @@ describe('CloudInstancesGateway.list', () => {
   beforeEach(() => { vi.clearAllMocks(); });
 
   it('GETs /entity/{entityName}/{modelVersion} with pageSize and pageNumber', async () => {
-    (axios.get as any).mockResolvedValueOnce({ data: { items: [], hasMore: false } });
+    (axios.get as any).mockResolvedValueOnce({ data: [] });
     const gw = new CloudInstancesGateway();
-    await gw.list(ref, { pageSize: 20, pageNumber: 1 });
+    await gw.list(ref, { pageSize: 20, pageNumber: 0 });
     expect(axios.get).toHaveBeenCalledWith(
       '/entity/Customer/1',
-      expect.objectContaining({ params: expect.objectContaining({ pageSize: 20, pageNumber: 1 }) }),
+      expect.objectContaining({ params: expect.objectContaining({ pageSize: 20, pageNumber: 0 }) }),
     );
   });
 
   it('with entityIds: falls through to /search/direct with synthesized OR-of-EQUALS group', async () => {
-    (axios.post as any).mockResolvedValueOnce({ data: { items: [], hasMore: false } });
+    (axios.post as any).mockResolvedValueOnce({ data: [] });
     const gw = new CloudInstancesGateway();
     await gw.list(ref, { entityIds: ['a', 'b', 'c'] });
 
@@ -60,17 +60,29 @@ describe('CloudInstancesGateway.list', () => {
     expect(axios.post).not.toHaveBeenCalled();
   });
 
-  it('returns InstancesPage shape with items + hasMore from the response', async () => {
+  it('returns InstancesPage shape with items mapped from envelopes', async () => {
     (axios.get as any).mockResolvedValueOnce({
-      data: {
-        items: [{ id: 'e1', state: 'NEW' }, { id: 'e2', state: 'DONE' }],
-        hasMore: true,
-      },
+      data: [
+        { type: 'ENTITY', data: {}, meta: { id: 'e1', state: 'NEW' } },
+        { type: 'ENTITY', data: {}, meta: { id: 'e2', state: 'DONE' } },
+      ],
     });
     const gw = new CloudInstancesGateway();
-    const result = await gw.list(ref, { pageSize: 20, pageNumber: 1 });
-    expect(result.hasMore).toBe(true);
+    const result = await gw.list(ref, { pageSize: 20, pageNumber: 0 });
+    // hasMore is true iff items.length === pageSize. With pageSize=20 and 2 items, hasMore is false.
+    expect(result.hasMore).toBe(false);
     expect(result.items).toHaveLength(2);
+    expect(result.items[0]).toEqual(expect.objectContaining({ entityId: 'e1', state: 'NEW' }));
+  });
+
+  it('hasMore is true when items.length equals pageSize', async () => {
+    (axios.get as any).mockResolvedValueOnce({
+      data: Array.from({ length: 20 }, (_, i) => ({ type: 'ENTITY', data: {}, meta: { id: `e${i}`, state: 'NEW' } })),
+    });
+    const gw = new CloudInstancesGateway();
+    const result = await gw.list(ref, { pageSize: 20, pageNumber: 0 });
+    expect(result.hasMore).toBe(true);
+    expect(result.items).toHaveLength(20);
   });
 });
 
@@ -78,7 +90,7 @@ describe('CloudInstancesGateway.search', () => {
   beforeEach(() => { vi.clearAllMocks(); });
 
   it('POSTs /search/direct/{entityName}/{modelVersion} with the criterion as the body', async () => {
-    (axios.post as any).mockResolvedValueOnce({ data: { items: [{ id: 'e1' }], hasMore: false } });
+    (axios.post as any).mockResolvedValueOnce({ data: [{ type: 'ENTITY', data: {}, meta: { id: 'e1' } }] });
     const gw = new CloudInstancesGateway();
     const criterion = { type: 'simple', jsonPath: '$.x', operation: 'EQUALS', value: 'y' };
     await gw.search(ref, criterion);
@@ -90,7 +102,7 @@ describe('CloudInstancesGateway.search', () => {
   });
 
   it('passes limit and pointInTime as query params when provided', async () => {
-    (axios.post as any).mockResolvedValueOnce({ data: { items: [], hasMore: false } });
+    (axios.post as any).mockResolvedValueOnce({ data: [] });
     const gw = new CloudInstancesGateway();
     await gw.search(ref, {}, { limit: 50, pointInTime: '2026-04-17T00:00:00Z' });
     expect(axios.post).toHaveBeenCalledWith(
