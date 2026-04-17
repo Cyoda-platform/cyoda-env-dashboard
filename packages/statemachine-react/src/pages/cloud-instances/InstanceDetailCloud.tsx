@@ -12,6 +12,7 @@ import { DetailsTab } from './tabs/DetailsTab';
 import { WorkflowTab } from './tabs/WorkflowTab';
 import { AuditTab } from './tabs/AuditTab';
 import { DataLineageTab } from './tabs/DataLineageTab';
+import { JsonTab } from './tabs/JsonTab';
 
 const { Title, Text } = Typography;
 
@@ -30,7 +31,7 @@ export const InstanceDetailCloud: React.FC = () => {
     { key: 'workflow', label: 'Workflow', children: <WorkflowTab entityId={entityId!} modelRef={modelRef} workflowName={workflowName} /> },
     { key: 'audit', label: 'Audit', children: <AuditTab entityId={entityId!} /> },
     { key: 'lineage', label: 'Data Lineage', children: <DataLineageTab entityId={entityId!} /> },
-    { key: 'json', label: 'JSON', children: <JsonTab /> },
+    { key: 'json', label: 'JSON', children: <JsonTab entityId={entityId!} /> },
   // eslint-disable-next-line react-hooks/exhaustive-deps
   ], [entityId, modelRef, workflowName]);
 
@@ -48,5 +49,4 @@ export const InstanceDetailCloud: React.FC = () => {
   );
 };
 
-// Inline stubs — E7 will replace these with real imports.
-function JsonTab() { return <div>JSON (todo)</div>; }
+

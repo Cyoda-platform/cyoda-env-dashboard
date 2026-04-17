@@ -1,6 +1,6 @@
 import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -54,10 +54,15 @@ describe('InstanceDetailCloud — shell', () => {
     expect(screen.getByRole('tab', { name: /JSON/ })).toBeInTheDocument();
   });
 
-  it('switches tabs via clicks — JSON stub still renders', async () => {
+  it('switching to JSON tab shows loading or content', async () => {
     renderAt('/instances/eid?entityName=Customer&modelVersion=1&workflowName=wf');
-    // JSON tab is still a stub (until E7)
     await userEvent.click(screen.getByRole('tab', { name: /JSON/ }));
-    expect(screen.getByText(/JSON \(todo\)/)).toBeInTheDocument();
+    // The JSON tab is now real — it renders a <pre> or "Loading…"
+    // (the gateway mock returns data={} so it renders "{}")
+    await waitFor(() => {
+      const pre = document.querySelector('pre');
+      // Either a pre element is rendered or Loading... text appears
+      expect(pre !== null || screen.queryByText(/Loading/) !== null).toBe(true);
+    });
   });
 });
