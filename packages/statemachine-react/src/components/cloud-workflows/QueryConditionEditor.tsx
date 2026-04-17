@@ -26,7 +26,21 @@ const OPERATION_OPTIONS = [
   { label: 'Collection', options: COLLECTION_OPS.map((v) => ({ value: v, label: v })) },
 ];
 
+function isDestructiveSwitch(from: any, _toType: string): boolean {
+  if (from.type === 'group' && (from.conditions?.length ?? 0) > 0) return true;
+  if (from.type === 'function' && (from.function?.config || from.function?.criterion)) return true;
+  return false;
+}
+
+function blankFor(toType: string): QueryCondition {
+  if (toType === 'simple') return { type: 'simple', jsonPath: '', operation: 'EQUALS', value: '' } as any;
+  if (toType === 'group') return { type: 'group', operator: 'AND', conditions: [] } as any;
+  return { type: 'function', function: { name: '' } } as any;
+}
+
 export const QueryConditionEditor: React.FC<QueryConditionEditorProps> = ({ value, onChange }) => {
+  const { modal } = App.useApp();
+
   if (value === undefined) {
     return (
       <Button onClick={() => onChange({ type: 'simple', jsonPath: '', operation: 'EQUALS', value: '' } as any)}>
@@ -35,20 +49,7 @@ export const QueryConditionEditor: React.FC<QueryConditionEditorProps> = ({ valu
     );
   }
 
-  const { modal } = App.useApp();
   const t = (value as any).type;
-
-  function isDestructiveSwitch(from: any, _toType: string): boolean {
-    if (from.type === 'group' && (from.conditions?.length ?? 0) > 0) return true;
-    if (from.type === 'function' && (from.function?.config || from.function?.criterion)) return true;
-    return false;
-  }
-
-  function blankFor(toType: string): QueryCondition {
-    if (toType === 'simple') return { type: 'simple', jsonPath: '', operation: 'EQUALS', value: '' } as any;
-    if (toType === 'group') return { type: 'group', operator: 'AND', conditions: [] } as any;
-    return { type: 'function', function: { name: '' } } as any;
-  }
 
   const handleTypeChange = (toType: string) => {
     if (toType === t) return;
