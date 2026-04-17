@@ -105,3 +105,51 @@ describe('workflowEditorStore — hydrate / selection / expansion / errors', () 
     expect(store.getState().errors).toEqual([]);
   });
 });
+
+describe('workflowEditorStore — processors / criterion / reset', () => {
+  let store: ReturnType<typeof createWorkflowEditorStore>;
+  beforeEach(() => { store = createWorkflowEditorStore(); store.getState().hydrate(docA); });
+
+  it('addProcessor appends and clears errors', () => {
+    store.getState().setErrors([{ path: '/x', message: 'y' }]);
+    store.getState().addProcessor('draft', 0, { type: 'externalized', name: 'p' });
+    expect(store.getState().current!.states.draft.transitions![0].processors).toEqual([
+      { type: 'externalized', name: 'p' },
+    ]);
+    expect(store.getState().errors).toEqual([]);
+  });
+
+  it('updateProcessor patches the processor at the path', () => {
+    store.getState().addProcessor('draft', 0, { type: 'externalized', name: 'p' });
+    store.getState().updateProcessor('draft', 0, 0, { name: 'renamed' });
+    expect(store.getState().current!.states.draft.transitions![0].processors![0].name).toBe('renamed');
+  });
+
+  it('deleteProcessor removes the processor at the index', () => {
+    store.getState().addProcessor('draft', 0, { type: 'externalized', name: 'p1' });
+    store.getState().addProcessor('draft', 0, { type: 'externalized', name: 'p2' });
+    store.getState().deleteProcessor('draft', 0, 0);
+    expect(store.getState().current!.states.draft.transitions![0].processors).toEqual([
+      { type: 'externalized', name: 'p2' },
+    ]);
+  });
+
+  it('setTransitionCriterion sets and undefined-clears the criterion', () => {
+    store.getState().setTransitionCriterion('draft', 0, { type: 'simple', jsonPath: '$.x', operation: 'EQUALS', value: 'y' } as any);
+    expect(store.getState().current!.states.draft.transitions![0].criterion).toEqual({
+      type: 'simple', jsonPath: '$.x', operation: 'EQUALS', value: 'y',
+    });
+    store.getState().setTransitionCriterion('draft', 0, undefined);
+    expect(store.getState().current!.states.draft.transitions![0].criterion).toBeUndefined();
+  });
+
+  it('resetToPristine restores the doc and resets selection/expansion to defaults', () => {
+    store.getState().updateWorkflowProps({ name: 'changed' });
+    store.getState().setSelected('/states/draft/transitions/0');
+    store.getState().resetToPristine();
+    expect(store.getState().current).toEqual(docA);
+    expect(store.getState().selectedPath).toBe('/');
+    expect(store.getState().expandedPaths.has('/states/draft')).toBe(true);
+    expect(store.getState().errors).toEqual([]);
+  });
+});

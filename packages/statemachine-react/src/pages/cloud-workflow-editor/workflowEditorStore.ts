@@ -222,11 +222,52 @@ export function createWorkflowEditorStore(): WorkflowEditorStore {
           s.errors = [];
         });
       },
-      addProcessor() { throw new Error('not implemented'); },
-      updateProcessor() { throw new Error('not implemented'); },
-      deleteProcessor() { throw new Error('not implemented'); },
-      setTransitionCriterion() { throw new Error('not implemented'); },
-      resetToPristine() { throw new Error('not implemented'); },
+      addProcessor(stateName, ti, processor) {
+        set((s) => {
+          const t = s.current?.states[stateName]?.transitions?.[ti];
+          if (!t) return;
+          (t.processors ??= []).push(processor);
+          s.errors = [];
+        });
+      },
+
+      updateProcessor(stateName, ti, pi, patch) {
+        set((s) => {
+          const p = s.current?.states[stateName]?.transitions?.[ti]?.processors?.[pi];
+          if (!p) return;
+          Object.assign(p, patch);
+          s.errors = [];
+        });
+      },
+
+      deleteProcessor(stateName, ti, pi) {
+        set((s) => {
+          const list = s.current?.states[stateName]?.transitions?.[ti]?.processors;
+          if (!list || pi < 0 || pi >= list.length) return;
+          list.splice(pi, 1);
+          s.errors = [];
+        });
+      },
+
+      setTransitionCriterion(stateName, ti, criterion) {
+        set((s) => {
+          const t = s.current?.states[stateName]?.transitions?.[ti];
+          if (!t) return;
+          if (criterion === undefined) delete t.criterion;
+          else t.criterion = criterion;
+          s.errors = [];
+        });
+      },
+
+      resetToPristine() {
+        set((s) => {
+          if (!s.pristine) return;
+          s.current = s.pristine;
+          s.selectedPath = '/';
+          s.expandedPaths = defaultExpansion(s.pristine);
+          s.errors = [];
+        });
+      },
     })),
   );
 }
