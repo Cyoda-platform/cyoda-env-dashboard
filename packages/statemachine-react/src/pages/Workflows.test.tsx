@@ -780,5 +780,42 @@ it('should display version value for Business entities', async () => {
       });
     });
   });
+
+  describe('Cloud-vs-legacy branching by isCloudWorkflowsActive', () => {
+    afterEach(() => {
+      // Restore default for sibling tests — clear cloud flag so the legacy
+      // branch is taken everywhere else.
+      delete (import.meta.env as any).VITE_FEATURE_FLAG_IS_CYODA_CLOUD;
+      delete (import.meta.env as any).VITE_FEATURE_FLAG_IS_CYODA_GO;
+    });
+
+    it('renders the cloud Workflows page when cyoda-cloud is on AND entityType is BUSINESS', async () => {
+      import.meta.env.VITE_FEATURE_FLAG_IS_CYODA_CLOUD = true as any;
+      delete (import.meta.env as any).VITE_FEATURE_FLAG_IS_CYODA_GO;
+      mockEntityType.mockReturnValue('BUSINESS');
+
+      const { container } = render(<Workflows />, { wrapper: createWrapper() });
+
+      // The cloud page renders the model picker (combobox role); the legacy
+      // table renders a "Filter workflows" Input with placeholder. The cloud
+      // page does NOT render that placeholder. Use that as the cloud-mode
+      // signal: legacy header is absent.
+      expect(container.querySelector('input[placeholder="Filter workflows"]')).toBeNull();
+    });
+
+    it('renders the legacy table when cyoda-cloud is on but entityType is PERSISTENCE', async () => {
+      import.meta.env.VITE_FEATURE_FLAG_IS_CYODA_CLOUD = true as any;
+      delete (import.meta.env as any).VITE_FEATURE_FLAG_IS_CYODA_GO;
+      mockEntityType.mockReturnValue('PERSISTENCE');
+
+      mockGetAllWorkflowsList.mockResolvedValue({ data: [] });
+
+      const { container } = render(<Workflows />, { wrapper: createWrapper() });
+
+      // The legacy "Filter workflows" Input must be present — confirms we
+      // fell through to the legacy code path.
+      expect(container.querySelector('input[placeholder="Filter workflows"]')).not.toBeNull();
+    });
+  });
 });
 

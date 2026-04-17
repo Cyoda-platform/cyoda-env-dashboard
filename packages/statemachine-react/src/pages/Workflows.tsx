@@ -57,9 +57,16 @@ function getTimeFromUuid(uuid: string): number {
 }
 
 export const Workflows: React.FC = () => {
-  // When cyoda-cloud (or cyoda-go) is in use, render the cloud Workflows page.
-  // The legacy table below only runs when isCyodaCloud() is false.
-  if (HelperFeatureFlags.isCyodaCloud()) {
+  // entityType comes from the global UI toggle (BUSINESS vs PERSISTENCE/Technical).
+  // Drives the cloud-vs-legacy branch below per docs/feature-matrix.md.
+  const { entityType: currentEntityType } = useGlobalUiSettingsStore();
+
+  // Render the cloud Workflows page when cyoda-cloud is active AND the user
+  // has selected the Business entity type. Otherwise fall through to the
+  // legacy table — which works in both Legacy and Cloud+Technical modes
+  // (it uses /platform-* endpoints) but NOT in Go+Technical (no platform-*
+  // there; documented edge case in docs/feature-matrix.md).
+  if (HelperFeatureFlags.isCloudWorkflowsActive(currentEntityType)) {
     return <WorkflowsCloud />;
   }
 
