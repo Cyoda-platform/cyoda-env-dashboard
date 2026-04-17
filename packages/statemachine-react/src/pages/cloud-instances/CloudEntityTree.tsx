@@ -54,7 +54,7 @@ export const CloudEntityTree: React.FC<CloudEntityTreeProps> = ({ value, showEmp
           <div key={k} style={{ marginBottom: 4 }}>
             <Text strong>{k}:</Text>{' '}
             {(v === null || typeof v !== 'object' || (Array.isArray(v) && v.length === 0))
-              ? <CloudEntityTree value={v} showEmpty={showEmpty} level={0} />
+              ? <CloudEntityTree value={v} showEmpty={showEmpty} level={level} />
               : (
                 <div>
                   <CloudEntityTree value={v} showEmpty={showEmpty} level={level + 1} />
