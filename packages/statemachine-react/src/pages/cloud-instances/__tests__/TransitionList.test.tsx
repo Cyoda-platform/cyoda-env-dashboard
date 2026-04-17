@@ -54,7 +54,7 @@ describe('TransitionList', () => {
     } as any);
     renderIt({ entityId: 'eid', modelRef: { entityName: 'C', modelVersion: 1 }, workflowName: 'wf', entityBody: {}, currentState: 'PENDING' });
     expect(await screen.findByText(/No manual transitions from this state/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Save (loopback)' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'loopback' })).toBeInTheDocument();
   });
 
   it('clicking a button confirms then calls fireTransition with the body', async () => {

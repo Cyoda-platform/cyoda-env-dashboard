@@ -66,14 +66,14 @@ export const TransitionList: React.FC<TransitionListProps> = ({ entityId, modelR
 
   const onSaveLoopback = () => {
     modal.confirm({
-      title: 'Save (loopback)?',
+      title: 'Fire loopback?',
       content: `Saves the entity in place (state stays "${currentState}"). An automated exit transition may then run if its criteria pass.`,
-      okText: 'Save',
+      okText: 'Fire',
       onOk: async () => {
         try {
           await getInstancesGateway().fireLoopback(entityId, entityBody ?? {});
           await invalidate();
-          message.success('Saved (loopback)');
+          message.success('Loopback fired');
         } catch (e: any) {
           message.error(`Failed: ${e?.message ?? 'unknown error'}`);
         }
@@ -88,7 +88,7 @@ export const TransitionList: React.FC<TransitionListProps> = ({ entityId, modelR
     <div>
       <Title level={4}>Transition Entity</Title>
       <Space wrap>
-        <Button type="primary" disabled={disabled} onClick={onSaveLoopback}>Save (loopback)</Button>
+        <Button disabled={disabled} onClick={onSaveLoopback}>loopback</Button>
         {transitions.map((t: any) => (
           <Button key={t.name} disabled={disabled} onClick={() => onFire(t.name)}>{t.name}</Button>
         ))}
