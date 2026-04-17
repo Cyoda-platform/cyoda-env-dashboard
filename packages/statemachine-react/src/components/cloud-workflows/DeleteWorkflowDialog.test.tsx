@@ -102,4 +102,37 @@ describe('DeleteWorkflowDialog', () => {
     expect(screen.getByLabelText(/confirm name/i)).toHaveValue('');
     expect(screen.getByRole('button', { name: /^Delete DeleteMe$/ })).toBeDisabled();
   });
+
+  it('forwards confirmLoading to the Modal', () => {
+    renderWithApp(<DeleteWorkflowDialog {...baseProps} confirmLoading />);
+    // The OK button shows a loading spinner; antd renders an .ant-btn-loading class on it
+    // and prepends the spinner's aria-label "loading" to the accessible name.
+    const okButton = screen.getByRole('button', { name: /Delete DeleteMe/ });
+    expect(okButton.className).toMatch(/ant-btn-loading/);
+    expect(okButton).toBeDisabled();
+  });
+
+  it('resets the typed name when Refresh is clicked', async () => {
+    renderWithApp(<DeleteWorkflowDialog {...baseProps} />);
+    await userEvent.type(screen.getByLabelText(/confirm name/i), 'DeleteMe');
+    expect(screen.getByRole('button', { name: /^Delete DeleteMe$/ })).toBeEnabled();
+
+    await userEvent.click(screen.getByRole('button', { name: /refresh snapshot/i }));
+
+    expect(screen.getByLabelText(/confirm name/i)).toHaveValue('');
+    expect(screen.getByRole('button', { name: /^Delete DeleteMe$/ })).toBeDisabled();
+    expect(baseProps.onRefresh).toHaveBeenCalledOnce();
+  });
+
+  it('renders sensibly with an empty keptNames array (defensive — gateway prevents this case)', () => {
+    renderWithApp(<DeleteWorkflowDialog {...baseProps} keptNames={[]} />);
+    // The bordered list renders empty; the typed-confirm gate still works.
+    expect(screen.getByLabelText(/confirm name/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^Delete DeleteMe$/ })).toBeDisabled();
+  });
+
+  it('shows the snapshot timestamp labeled with UTC', () => {
+    renderWithApp(<DeleteWorkflowDialog {...baseProps} />);
+    expect(screen.getByText(/15:30:45 UTC/)).toBeInTheDocument();
+  });
 });

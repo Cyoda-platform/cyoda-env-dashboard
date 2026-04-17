@@ -27,6 +27,8 @@ export interface DeleteWorkflowDialogProps {
   keptNames: string[];
   /** Timestamp of the snapshot the kept-list was built from. */
   snapshotAt: Date;
+  /** When true, the OK button shows a spinner and is disabled. Wire to a mutation's isPending. */
+  confirmLoading?: boolean;
   onConfirm: () => void;
   onCancel: () => void;
   onRefresh: () => void;
@@ -40,6 +42,7 @@ export const DeleteWorkflowDialog: React.FC<DeleteWorkflowDialogProps> = ({
   targetName,
   keptNames,
   snapshotAt,
+  confirmLoading,
   onConfirm,
   onCancel,
   onRefresh,
@@ -53,6 +56,11 @@ export const DeleteWorkflowDialog: React.FC<DeleteWorkflowDialogProps> = ({
 
   const canConfirm = typed.trim() === targetName;
 
+  const handleRefresh = () => {
+    setTyped('');
+    onRefresh();
+  };
+
   return (
     <Modal
       title={`Delete workflow "${targetName}"`}
@@ -62,6 +70,7 @@ export const DeleteWorkflowDialog: React.FC<DeleteWorkflowDialogProps> = ({
       okText={`Delete ${targetName}`}
       okType="danger"
       okButtonProps={{ disabled: !canConfirm }}
+      confirmLoading={confirmLoading}
       destroyOnHidden
       width={640}
     >
@@ -69,16 +78,18 @@ export const DeleteWorkflowDialog: React.FC<DeleteWorkflowDialogProps> = ({
         <Paragraph>
           This delete uses REPLACE on the entity model. Workflows kept after the delete:
         </Paragraph>
-        <List
-          size="small"
-          bordered
-          dataSource={keptNames}
-          renderItem={(name) => <List.Item>{name}</List.Item>}
-        />
+        <div style={{ maxHeight: 240, overflowY: 'auto' }}>
+          <List
+            size="small"
+            bordered
+            dataSource={keptNames}
+            renderItem={(name) => <List.Item>{name}</List.Item>}
+          />
+        </div>
         <Text type="secondary">
-          Snapshot taken at {formatTime(snapshotAt)} — other users' changes after that
+          Snapshot taken at {formatTime(snapshotAt)} UTC — other users' changes after that
           time may be overwritten.{' '}
-          <Button size="small" onClick={onRefresh}>
+          <Button size="small" onClick={handleRefresh}>
             Refresh snapshot
           </Button>
         </Text>
