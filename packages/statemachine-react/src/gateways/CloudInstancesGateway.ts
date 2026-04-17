@@ -64,8 +64,19 @@ export class CloudInstancesGateway implements InstancesGateway {
       meta: extractCyodaEntityMeta(response.data),
     };
   }
-  async loadChanges(_entityId: string, _opts?: { pointInTime?: string }): Promise<EntityChange[]> {
-    throw new Error('not implemented');
+  async loadChanges(entityId: string, opts: { pointInTime?: string } = {}): Promise<EntityChange[]> {
+    const url = `/entity/${encodeURIComponent(entityId)}/changes`;
+    const response = await axios.get<any[]>(url, {
+      params: { pointInTime: opts.pointInTime },
+    });
+    return (response.data ?? []).map((c) => ({
+      transactionId: String(c.transactionId ?? ''),
+      timestamp: String(c.timestamp ?? ''),
+      user: c.user,
+      changeType: c.changeType,
+      stateFrom: c.stateFrom ?? undefined,
+      stateTo: c.stateTo ?? undefined,
+    }));
   }
   async fireTransition(_entityId: string, _transition: string, _body: unknown): Promise<void> {
     throw new Error('not implemented');

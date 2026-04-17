@@ -136,3 +136,49 @@ describe('CloudInstancesGateway.load', () => {
     expect(axios.get).toHaveBeenCalledWith('/entity/a%2Fb', expect.any(Object));
   });
 });
+
+describe('CloudInstancesGateway.loadChanges', () => {
+  beforeEach(() => { vi.clearAllMocks(); });
+
+  it('GETs /entity/{entityId}/changes and maps response to EntityChange[]', async () => {
+    (axios.get as any).mockResolvedValueOnce({
+      data: [
+        {
+          transactionId: 'tx1',
+          timestamp: '2026-04-01T00:00:00Z',
+          user: 'demo.user',
+          changeType: 'CREATE',
+          stateFrom: null,
+          stateTo: 'NEW',
+        },
+        {
+          transactionId: 'tx2',
+          timestamp: '2026-04-02T00:00:00Z',
+          user: 'demo.user',
+          changeType: 'UPDATE',
+          stateFrom: 'NEW',
+          stateTo: 'DONE',
+        },
+      ],
+    });
+    const gw = new CloudInstancesGateway();
+    const changes = await gw.loadChanges('eid');
+    expect(axios.get).toHaveBeenCalledWith('/entity/eid/changes', expect.any(Object));
+    expect(changes).toHaveLength(2);
+    expect(changes[0]).toEqual(expect.objectContaining({
+      transactionId: 'tx1',
+      timestamp: '2026-04-01T00:00:00Z',
+      changeType: 'CREATE',
+    }));
+  });
+
+  it('passes pointInTime as query param', async () => {
+    (axios.get as any).mockResolvedValueOnce({ data: [] });
+    const gw = new CloudInstancesGateway();
+    await gw.loadChanges('eid', { pointInTime: '2026-04-01T00:00:00Z' });
+    expect(axios.get).toHaveBeenCalledWith(
+      '/entity/eid/changes',
+      expect.objectContaining({ params: { pointInTime: '2026-04-01T00:00:00Z' } }),
+    );
+  });
+});
