@@ -9,6 +9,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
+    "test": "cd ../.. && vitest apps/saas-app",
+    "test:run": "cd ../.. && vitest run apps/saas-app",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
