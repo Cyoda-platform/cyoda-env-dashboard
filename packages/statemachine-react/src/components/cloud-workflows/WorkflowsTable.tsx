@@ -2,8 +2,9 @@
  * WorkflowsTable — Stage-B presentation component.
  *
  * Receives an array of WorkflowSummary plus per-row action handlers from the page.
- * The Delete button is disabled when only one workflow remains (≥1 invariant)
- * to surface the constraint client-side; the gateway also enforces it.
+ * Both the Delete and Deactivate buttons are disabled when the action would
+ * leave the model with zero active workflows (the active-workflow invariant);
+ * the gateway also enforces it.
  */
 
 import React from 'react';
@@ -39,7 +40,11 @@ export const WorkflowsTable: React.FC<WorkflowsTableProps> = ({
   onActivate,
   onDelete,
 }) => {
-  const onlyOne = workflows.length === 1;
+  // For both Delete and Deactivate: the model must keep at least one active
+  // workflow. The action is blocked iff this row's removal/deactivation
+  // would leave the model with zero active workflows.
+  const wouldOrphanActive = (rowName: string): boolean =>
+    workflows.filter((w) => w.active && w.name !== rowName).length === 0;
 
   const columns: ColumnsType<WorkflowSummary> = [
     {
@@ -82,14 +87,29 @@ export const WorkflowsTable: React.FC<WorkflowsTableProps> = ({
             Rename
           </Button>
           {row.active ? (
-            <Button
-              size="small"
-              loading={pendingActiveNames?.has(row.name)}
-              disabled={pendingActiveNames?.has(row.name)}
-              onClick={() => onDeactivate(row.name)}
-            >
-              Deactivate
-            </Button>
+            (() => {
+              const orphan = wouldOrphanActive(row.name);
+              const pending = pendingActiveNames?.has(row.name) ?? false;
+              const button = (
+                <Button
+                  size="small"
+                  loading={pending}
+                  disabled={pending || orphan}
+                  onClick={() => onDeactivate(row.name)}
+                >
+                  Deactivate
+                </Button>
+              );
+              return orphan ? (
+                <Tooltip title="Cannot leave the model with no active workflow.">
+                  <span style={{ display: 'inline-block', cursor: 'not-allowed' }}>
+                    {React.cloneElement(button, { style: { pointerEvents: 'none' } })}
+                  </span>
+                </Tooltip>
+              ) : (
+                button
+              );
+            })()
           ) : (
             <Button
               size="small"
@@ -100,30 +120,33 @@ export const WorkflowsTable: React.FC<WorkflowsTableProps> = ({
               Activate
             </Button>
           )}
-          {onlyOne ? (
-            // Disabled <button> elements don't fire mouse events in most
-            // browsers, so antd Tooltip needs a wrapper element with hover
-            // capture. Spec §5.4 calls for a tooltip; native title doesn't
-            // fire on disabled buttons and looks foreign vs the rest of the
-            // app's antd Tooltips.
-            <Tooltip title="A model must have at least one workflow — cannot delete the last one.">
-              <span style={{ display: 'inline-block', cursor: 'not-allowed' }}>
-                <Button
-                  size="small"
-                  danger
-                  disabled
-                  style={{ pointerEvents: 'none' }}
-                  onClick={() => onDelete(row.name)}
-                >
-                  Delete
-                </Button>
-              </span>
-            </Tooltip>
-          ) : (
-            <Button size="small" danger onClick={() => onDelete(row.name)}>
-              Delete
-            </Button>
-          )}
+          {(() => {
+            const orphan = wouldOrphanActive(row.name);
+            return orphan ? (
+              // Disabled <button> elements don't fire mouse events in most
+              // browsers, so antd Tooltip needs a wrapper element with hover
+              // capture. Spec §5.4 calls for a tooltip; native title doesn't
+              // fire on disabled buttons and looks foreign vs the rest of the
+              // app's antd Tooltips.
+              <Tooltip title="Cannot leave the model with no active workflow.">
+                <span style={{ display: 'inline-block', cursor: 'not-allowed' }}>
+                  <Button
+                    size="small"
+                    danger
+                    disabled
+                    style={{ pointerEvents: 'none' }}
+                    onClick={() => onDelete(row.name)}
+                  >
+                    Delete
+                  </Button>
+                </span>
+              </Tooltip>
+            ) : (
+              <Button size="small" danger onClick={() => onDelete(row.name)}>
+                Delete
+              </Button>
+            );
+          })()}
         </Space>
       ),
     },

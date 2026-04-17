@@ -87,31 +87,73 @@ describe('WorkflowsTable', () => {
   });
 
   it('Deactivate button invokes onDeactivate; Activate invokes onActivate', async () => {
+    // Use a fixture where Premium can be safely deactivated (a second active workflow exists).
+    const fixture: WorkflowSummary[] = [
+      { name: 'Premium', desc: 'Premium customers', active: true, initialState: 'draft' },
+      { name: 'AnotherActive', desc: undefined, active: true, initialState: 'pending' },
+    ];
+    renderWithApp(<WorkflowsTable {...baseProps} workflows={fixture} />);
+
+    // Both rows are active; both have Deactivate.
+    const deactivateButtons = screen.getAllByRole('button', { name: /^Deactivate$/ });
+    expect(deactivateButtons).toHaveLength(2);
+    await userEvent.click(deactivateButtons[0]);
+    expect(baseProps.onDeactivate).toHaveBeenCalledWith('Premium');
+  });
+
+  it('Activate button invokes onActivate on an inactive workflow', async () => {
     renderWithApp(<WorkflowsTable {...baseProps} />);
 
-    await userEvent.click(screen.getByRole('button', { name: /^Deactivate$/ }));
-    expect(baseProps.onDeactivate).toHaveBeenCalledWith('Premium');
-
+    // Standard is inactive in the default sampleSummaries. Activate is always enabled.
     await userEvent.click(screen.getByRole('button', { name: /^Activate$/ }));
     expect(baseProps.onActivate).toHaveBeenCalledWith('Standard');
   });
 
-  it('Delete button is disabled when there is only one workflow (>=1 invariant)', () => {
-    const onlyOne = sampleSummaries.slice(0, 1);
-    renderWithApp(<WorkflowsTable {...baseProps} workflows={onlyOne} />);
+  it('Delete button is disabled when this is the only active workflow', () => {
+    const onlyOneActive = sampleSummaries.slice(0, 1); // Premium, active: true
+    renderWithApp(<WorkflowsTable {...baseProps} workflows={onlyOneActive} />);
 
     const deleteBtn = screen.getByRole('button', { name: /^Delete$/ });
     expect(deleteBtn).toBeDisabled();
   });
 
-  it('Delete button is enabled when there are >=2 workflows; click invokes onDelete', async () => {
+  it('Deactivate button is disabled when this is the only active workflow', () => {
+    // Premium is active; nothing else is. Deactivating Premium would leave 0 active.
+    const onlyPremiumActive: WorkflowSummary[] = [
+      { name: 'Premium', desc: 'Premium customers', active: true, initialState: 'draft' },
+      { name: 'AlreadyOff', desc: undefined, active: false, initialState: 'pending' },
+    ];
+    renderWithApp(<WorkflowsTable {...baseProps} workflows={onlyPremiumActive} />);
+
+    const deactivateBtn = screen.getByRole('button', { name: /^Deactivate$/ });
+    expect(deactivateBtn).toBeDisabled();
+  });
+
+  it('Delete is enabled on an inactive workflow when an active one remains', async () => {
     renderWithApp(<WorkflowsTable {...baseProps} />);
 
     const deleteButtons = screen.getAllByRole('button', { name: /^Delete$/ });
-    expect(deleteButtons[0]).toBeEnabled();
-    await userEvent.click(deleteButtons[0]);
+    // Premium (active) is index 0; deleting it would leave 0 active → disabled.
+    expect(deleteButtons[0]).toBeDisabled();
+    // Standard (inactive) is index 1; deleting it leaves Premium (active) → enabled.
+    expect(deleteButtons[1]).toBeEnabled();
+    await userEvent.click(deleteButtons[1]);
+    expect(baseProps.onDelete).toHaveBeenCalledWith('Standard');
+  });
 
-    expect(baseProps.onDelete).toHaveBeenCalledWith('Premium');
+  it('Delete is blocked on the only active workflow even when inactive workflows exist', () => {
+    // Premium (active, target of delete) + AlreadyOff (inactive). Deleting Premium → 0 active.
+    const onlyPremiumActive: WorkflowSummary[] = [
+      { name: 'Premium', desc: undefined, active: true, initialState: 'draft' },
+      { name: 'AlreadyOff', desc: undefined, active: false, initialState: 'pending' },
+    ];
+    renderWithApp(<WorkflowsTable {...baseProps} workflows={onlyPremiumActive} />);
+
+    const deleteButtons = screen.getAllByRole('button', { name: /^Delete$/ });
+    // First row (Premium, active) — disabled (deleting it leaves 0 active).
+    expect(deleteButtons[0]).toBeDisabled();
+    // Second row (AlreadyOff, inactive) — enabled (deleting it leaves Premium active).
+    expect(deleteButtons[1]).toBeEnabled();
   });
 
   it('does not show the empty placeholder while loading=true with no data', () => {
