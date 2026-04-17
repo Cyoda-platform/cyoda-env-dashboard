@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { CloudWorkflowGateway } from './CloudWorkflowGateway';
-import { CannotDeleteLastWorkflowError } from './errors';
+import { MustHaveActiveWorkflowError } from './errors';
 
 vi.mock('@cyoda/http-api-react', () => ({
   axios: {
@@ -166,8 +166,8 @@ describe('CloudWorkflowGateway', () => {
       entityName: 'Customer',
       modelVersion: 1,
       workflows: [
-        { version: '1.0', name: 'KeepMe', initialState: 's', states: { s: { transitions: [] } } },
-        { version: '1.0', name: 'DeleteMe', initialState: 's', states: { s: { transitions: [] } } },
+        { version: '1.0', name: 'KeepMe', initialState: 's', active: true, states: { s: { transitions: [] } } },
+        { version: '1.0', name: 'DeleteMe', initialState: 's', active: true, states: { s: { transitions: [] } } },
       ],
     };
 
@@ -184,24 +184,65 @@ describe('CloudWorkflowGateway', () => {
       });
     });
 
-    it('throws CannotDeleteLastWorkflowError when only the target workflow exists', async () => {
+    it('throws MustHaveActiveWorkflowError when deleting would leave no active workflows', async () => {
+      // Single workflow, active. Deleting it would leave 0 active.
       (axios.get as any).mockResolvedValueOnce({
-        data: { entityName: 'Customer', modelVersion: 1, workflows: [twoWorkflows.workflows[1]] },
+        data: { entityName: 'Customer', modelVersion: 1, workflows: [{ ...twoWorkflows.workflows[1], active: true }] },
       });
 
       await expect(
         gateway.deleteWorkflow({ entityName: 'Customer', modelVersion: 1 }, 'DeleteMe')
-      ).rejects.toThrow(CannotDeleteLastWorkflowError);
+      ).rejects.toThrow(MustHaveActiveWorkflowError);
 
       expect(axios.post).not.toHaveBeenCalled();
     });
 
-    it('treats a missing target as a no-op delete (still throws if it would empty the model)', async () => {
+    it('allows deleting an inactive workflow when at least one other is active', async () => {
+      const data = {
+        entityName: 'Customer',
+        modelVersion: 1,
+        workflows: [
+          { version: '1.0', name: 'KeepMeActive', initialState: 's', active: true, states: { s: { transitions: [] } } },
+          { version: '1.0', name: 'DeleteMe', initialState: 's', active: false, states: { s: { transitions: [] } } },
+        ],
+      };
+      (axios.get as any).mockResolvedValueOnce({ data });
+      (axios.post as any).mockResolvedValueOnce({ data: undefined });
+
+      await gateway.deleteWorkflow({ entityName: 'Customer', modelVersion: 1 }, 'DeleteMe');
+
+      expect(axios.post).toHaveBeenCalledWith('/model/Customer/1/workflow/import', {
+        importMode: 'REPLACE',
+        workflows: [data.workflows[0]],
+      });
+    });
+
+    it('blocks deleting the only active workflow even when other inactive workflows exist', async () => {
+      // 2 workflows: one active (target), one inactive. Deleting target → 0 active.
+      (axios.get as any).mockResolvedValueOnce({
+        data: {
+          entityName: 'Customer',
+          modelVersion: 1,
+          workflows: [
+            { version: '1.0', name: 'DeleteMe', initialState: 's', active: true, states: { s: { transitions: [] } } },
+            { version: '1.0', name: 'StillInactive', initialState: 's', active: false, states: { s: { transitions: [] } } },
+          ],
+        },
+      });
+
+      await expect(
+        gateway.deleteWorkflow({ entityName: 'Customer', modelVersion: 1 }, 'DeleteMe')
+      ).rejects.toThrow(MustHaveActiveWorkflowError);
+
+      expect(axios.post).not.toHaveBeenCalled();
+    });
+
+    it('treats a missing target as a no-op when an active workflow remains', async () => {
       (axios.get as any).mockResolvedValueOnce({
         data: { entityName: 'Customer', modelVersion: 1, workflows: [twoWorkflows.workflows[0]] },
       });
 
-      // The "target" doesn't exist; the remaining set is the full set; that's >= 1, so just no-op.
+      // The "target" doesn't exist; the remaining set is the full set (KeepMe, active), so just no-op.
       await gateway.deleteWorkflow({ entityName: 'Customer', modelVersion: 1 }, 'NoSuchWorkflow');
 
       // Should NOT POST when there is nothing to remove (filter result equals original).
@@ -210,6 +251,100 @@ describe('CloudWorkflowGateway', () => {
 
     it('throws if modelRef is null', async () => {
       await expect(gateway.deleteWorkflow(null, 'X')).rejects.toThrow(/modelRef is required/i);
+    });
+  });
+
+  describe('saveWorkflow active-flag invariant', () => {
+    it('throws MustHaveActiveWorkflowError when MERGE would orphan the model', async () => {
+      // The workflow being saved is going active=false; no other active workflow.
+      (axios.get as any).mockResolvedValueOnce({
+        data: {
+          entityName: 'Customer',
+          modelVersion: 1,
+          workflows: [
+            { version: '1.0', name: 'OnlyActive', initialState: 's', active: true, states: { s: { transitions: [] } } },
+            { version: '1.0', name: 'AlreadyInactive', initialState: 's', active: false, states: { s: { transitions: [] } } },
+          ],
+        },
+      });
+
+      const doc = {
+        version: '1.0',
+        name: 'OnlyActive',
+        initialState: 's',
+        active: false,
+        states: { s: { transitions: [] } },
+      };
+
+      await expect(
+        gateway.saveWorkflow({ entityName: 'Customer', modelVersion: 1 }, doc, 'MERGE')
+      ).rejects.toThrow(MustHaveActiveWorkflowError);
+
+      expect(axios.post).not.toHaveBeenCalled();
+    });
+
+    it('allows MERGE with active=false when another workflow remains active', async () => {
+      (axios.get as any).mockResolvedValueOnce({
+        data: {
+          entityName: 'Customer',
+          modelVersion: 1,
+          workflows: [
+            { version: '1.0', name: 'OneActive', initialState: 's', active: true, states: { s: { transitions: [] } } },
+            { version: '1.0', name: 'TwoActive', initialState: 's', active: true, states: { s: { transitions: [] } } },
+          ],
+        },
+      });
+      (axios.post as any).mockResolvedValueOnce({ data: undefined });
+
+      const doc = {
+        version: '1.0',
+        name: 'OneActive',
+        initialState: 's',
+        active: false,
+        states: { s: { transitions: [] } },
+      };
+
+      const result = await gateway.saveWorkflow({ entityName: 'Customer', modelVersion: 1 }, doc, 'MERGE');
+
+      expect(result).toEqual({ key: 'OneActive' });
+      expect(axios.post).toHaveBeenCalledWith('/model/Customer/1/workflow/import', {
+        importMode: 'MERGE',
+        workflows: [doc],
+      });
+    });
+
+    it('does not fetch when active is true (no invariant check needed)', async () => {
+      (axios.post as any).mockResolvedValueOnce({ data: undefined });
+
+      const doc = {
+        version: '1.0',
+        name: 'NewlyActive',
+        initialState: 's',
+        active: true,
+        states: { s: { transitions: [] } },
+      };
+
+      await gateway.saveWorkflow({ entityName: 'Customer', modelVersion: 1 }, doc, 'MERGE');
+
+      // No GET — the active invariant only fires when active=false.
+      expect(axios.get).not.toHaveBeenCalled();
+      expect(axios.post).toHaveBeenCalledOnce();
+    });
+
+    it('does not fetch when active is undefined (no invariant check needed)', async () => {
+      (axios.post as any).mockResolvedValueOnce({ data: undefined });
+
+      const doc = {
+        version: '1.0',
+        name: 'NoActiveSpecified',
+        initialState: 's',
+        states: { s: { transitions: [] } },
+      };
+
+      await gateway.saveWorkflow({ entityName: 'Customer', modelVersion: 1 }, doc, 'MERGE');
+
+      expect(axios.get).not.toHaveBeenCalled();
+      expect(axios.post).toHaveBeenCalledOnce();
     });
   });
 
@@ -290,7 +425,7 @@ describe('CloudWorkflowGateway', () => {
       entityName: 'Customer',
       modelVersion: 1,
       workflows: [
-        { version: '1.0', name: 'Old', initialState: 's', states: { s: { transitions: [] } } },
+        { version: '1.0', name: 'Old', initialState: 's', active: true, states: { s: { transitions: [] } } },
       ],
     };
 

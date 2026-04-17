@@ -14,7 +14,7 @@ import type { WorkflowGateway } from './WorkflowGateway';
 
 export type { WorkflowGateway } from './WorkflowGateway';
 export {
-  CannotDeleteLastWorkflowError,
+  MustHaveActiveWorkflowError,
   RenameIncompleteError,
   NotImplementedInLegacyError,
 } from './errors';

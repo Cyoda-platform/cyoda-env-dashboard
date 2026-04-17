@@ -12,7 +12,7 @@
  */
 
 import { axios } from '@cyoda/http-api-react';
-import { CannotDeleteLastWorkflowError, RenameIncompleteError } from './errors';
+import { MustHaveActiveWorkflowError, RenameIncompleteError } from './errors';
 import type { WorkflowGateway } from './WorkflowGateway';
 import type {
   ModelRef,
@@ -72,6 +72,23 @@ export class CloudWorkflowGateway implements WorkflowGateway {
     if (modelRef === null) {
       throw new Error('CloudWorkflowGateway.saveWorkflow: modelRef is required');
     }
+    // If this MERGE would deactivate a workflow, ensure at least one OTHER
+    // active workflow remains. We don't know what the existing active state
+    // is without a fetch, so only enforce when the caller is explicitly
+    // setting active=false.
+    if (doc.active === false) {
+      const response = await axios.get<WorkflowExportResponse>(exportUrl(modelRef));
+      const all = response.data.workflows ?? [];
+      const otherActive = all.filter((w) => w.active && w.name !== doc.name);
+      if (otherActive.length === 0) {
+        throw new MustHaveActiveWorkflowError(
+          modelRef.entityName,
+          modelRef.modelVersion,
+          doc.name,
+          'deactivate'
+        );
+      }
+    }
     const body: WorkflowImportRequest = { importMode: mode, workflows: [doc] };
     await axios.post(importUrl(modelRef), body);
     return { key: doc.name };
@@ -84,8 +101,14 @@ export class CloudWorkflowGateway implements WorkflowGateway {
     const response = await axios.get<WorkflowExportResponse>(exportUrl(modelRef));
     const all = response.data.workflows ?? [];
     const remaining = all.filter((w) => w.name !== name);
-    if (remaining.length === 0) {
-      throw new CannotDeleteLastWorkflowError(modelRef.entityName, modelRef.modelVersion, name);
+    const remainingActive = remaining.filter((w) => w.active);
+    if (remainingActive.length === 0) {
+      throw new MustHaveActiveWorkflowError(
+        modelRef.entityName,
+        modelRef.modelVersion,
+        name,
+        'delete'
+      );
     }
     if (remaining.length === all.length) {
       // Target wasn't in the export (already deleted by another caller, or never existed).
