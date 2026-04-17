@@ -4,7 +4,6 @@
   background-color: rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
-  overflow: hidden;
 }
 
 /* Light theme */
@@ -13,35 +12,40 @@
   background-color: rgba(0, 0, 0, 0.02);
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 8px;
-  overflow: hidden;
 }
 
 .trino-edit-table .table-container {
   width: 100%;
+  overflow-x: auto;
+}
+
+.trino-edit-table .row-container {
+  min-width: 720px;
 }
 
 .trino-edit-table .col1 {
-  width: 70px;
+  flex: 0 0 70px;
   display: flex;
   justify-content: center;
   gap: 10px;
 }
 
 .trino-edit-table .col2 {
-  flex: 1;
-}
-
-.trino-edit-table .col3 {
-  word-break: break-all;
+  flex: 1 1 220px;
+  min-width: 160px;
 }
 
 .trino-edit-table .col3,
 .trino-edit-table .col4 {
-  width: 25%;
+  flex: 1 1 180px;
+  min-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .trino-edit-table .col5 {
-  width: 80px;
+  flex: 0 0 80px;
   display: flex;
   justify-content: center;
 }

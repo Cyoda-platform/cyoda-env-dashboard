@@ -91,6 +91,8 @@ const TrinoIndex: React.FC = () => {
       dataIndex: 'schemaName',
       key: 'schemaName',
       sorter: (a, b) => a.schemaName.localeCompare(b.schemaName),
+      width: 280,
+      ellipsis: true,
     },
     {
       title: 'Created',
@@ -103,7 +105,8 @@ const TrinoIndex: React.FC = () => {
     {
       title: 'Actions',
       key: 'actions',
-      width: 220,
+      width: 120,
+      fixed: 'right',
       render: (_, record) => (
         <Space size="small">
           <Tooltip title="Edit">
@@ -177,6 +180,7 @@ const TrinoIndex: React.FC = () => {
                 setPageSize(size);
               },
             }}
+            scroll={{ x: 'max-content' }}
             bordered
           />
         </div>
