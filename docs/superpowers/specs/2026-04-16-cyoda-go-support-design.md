@@ -129,7 +129,7 @@ A cloud workflow is identified by `(entityName, modelVersion, name)`. The doc ha
 
 The cloud API has no cross-model workflow list. The Workflows page becomes a two-stage UX:
 
-- Stage A — entity-model picker: lists `(entityName, modelVersion)` pairs from the existing models-info path that `IS_CYODA_CLOUD=true` already drives in the Entity Viewer. Selection persists in `statemachineStore.selectedModelRef` *and* in the URL (`/workflows?entityName=Customer&modelVersion=1`) so reload and deep links work.
+- Stage A — entity-model picker: lists `(entityName, modelVersion)` pairs from `GET /model/`, which returns `[{id, modelName, modelVersion, currentState, modelUpdateDate?}]`. This is a cloud-native endpoint available on both cyoda-cloud and cyoda-go (it does NOT require the legacy `/platform-api/...` surface). Selection persists in `statemachineStore.selectedModelRef` *and* in the URL (`/workflows?entityName=Customer&modelVersion=1`) so reload and deep links work.
 - Stage B — workflows for the chosen model: renders `workflow/export`'s `workflows[]` as a table.
 
 ### 5.3 Save
