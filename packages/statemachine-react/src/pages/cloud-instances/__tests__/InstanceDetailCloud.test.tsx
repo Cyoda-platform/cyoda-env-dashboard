@@ -20,7 +20,7 @@ function renderAt(url: string) {
       <QueryClientProvider client={client}>
         <MemoryRouter initialEntries={[url]}>
           <Routes>
-            <Route path="/instances/:entityId" element={<InstanceDetailCloud />} />
+            <Route path="/instances/:instanceId" element={<InstanceDetailCloud />} />
           </Routes>
         </MemoryRouter>
       </QueryClientProvider>

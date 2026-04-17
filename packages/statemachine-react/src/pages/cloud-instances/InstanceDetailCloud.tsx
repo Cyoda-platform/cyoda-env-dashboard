@@ -17,7 +17,7 @@ import { JsonTab } from './tabs/JsonTab';
 const { Title, Text } = Typography;
 
 export const InstanceDetailCloud: React.FC = () => {
-  const { entityId } = useParams<{ entityId: string }>();
+  const { instanceId: entityId } = useParams<{ instanceId: string }>();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const entityName = searchParams.get('entityName') ?? '';
