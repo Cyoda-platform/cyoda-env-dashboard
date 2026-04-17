@@ -95,6 +95,22 @@ export const QueryConditionEditor: React.FC<QueryConditionEditorProps> = ({ valu
           </Button>
         </Space>
       )}
+      {t === 'function' && (
+        <Space direction="vertical" style={{ width: '100%' }}>
+          <Input
+            placeholder="Function name"
+            value={(value as any).function?.name ?? ''}
+            onChange={(e) => onChange({
+              ...(value as any),
+              function: { ...((value as any).function ?? {}), name: e.target.value },
+            })}
+          />
+          <Text type="secondary" style={{ fontSize: 12 }}>
+            Optional: nested criterion (cheap pre-check) and config fields are inferred from
+            the existing value structure. To add them, edit the workflow JSON externally for now.
+          </Text>
+        </Space>
+      )}
     </Space>
   );
 };

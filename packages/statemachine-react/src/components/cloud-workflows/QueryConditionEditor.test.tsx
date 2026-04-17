@@ -102,3 +102,19 @@ describe('QueryConditionEditor — group', () => {
     }));
   });
 });
+
+describe('QueryConditionEditor — function', () => {
+  it('renders the function name and emits changes', async () => {
+    const onChange = vi.fn();
+    render(<Controlled
+      initialValue={{ type: 'function', function: { name: 'isVip' } } as any}
+      onChangeSpy={onChange}
+    />);
+    const input = screen.getByDisplayValue('isVip');
+    await userEvent.clear(input);
+    await userEvent.type(input, 'isPremium');
+    expect(onChange).toHaveBeenLastCalledWith(expect.objectContaining({
+      type: 'function', function: expect.objectContaining({ name: 'isPremium' }),
+    }));
+  });
+});
