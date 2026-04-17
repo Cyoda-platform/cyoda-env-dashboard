@@ -54,7 +54,7 @@ describe('DataLineageTab', () => {
     expect(screen.getByText(/2026-04-01/)).toBeInTheDocument();
   });
 
-  it('Compare with two checks: passes older as original, newer as modified', async () => {
+  it('Compare with two checks: passes older as oldString, newer as newString', async () => {
     const load = vi.fn()
       .mockResolvedValueOnce({ data: { v: 'old' }, meta: {} })
       .mockResolvedValueOnce({ data: { v: 'new' }, meta: {} });
@@ -72,8 +72,8 @@ describe('DataLineageTab', () => {
     await userEvent.click(screen.getByRole('button', { name: /^Compare$/ }));
     await waitFor(() => expect(screen.getByTestId('diff-stub')).toBeInTheDocument());
     // Original is older, modified is newer (assert via captured props' textual content)
-    expect(captured.props.original).toContain('"old"');
-    expect(captured.props.modified).toContain('"new"');
+    expect(captured.props.oldString).toContain('"old"');
+    expect(captured.props.newString).toContain('"new"');
   });
 
   it('checking a third box un-checks the first-checked (click-order FIFO)', async () => {

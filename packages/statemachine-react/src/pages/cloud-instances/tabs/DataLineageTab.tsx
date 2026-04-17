@@ -68,8 +68,8 @@ export const DataLineageTab: React.FC<DataLineageTabProps> = ({ entityId }) => {
         <CodeEditor
           diff
           diffReadonly
-          original={diff.older}
-          modified={diff.newer}
+          oldString={diff.older}
+          newString={diff.newer}
           language="json"
           height={400}
         />
