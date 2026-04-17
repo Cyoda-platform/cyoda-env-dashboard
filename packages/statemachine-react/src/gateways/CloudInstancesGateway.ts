@@ -5,6 +5,8 @@
  *
  * Spec: docs/superpowers/specs/2026-04-17-cloud-instances-design.md §3.3
  */
+import { axios } from '@cyoda/http-api-react';
+import { TooManyEntityIdsError } from './errors';
 import type { ModelRef } from './workflowDocTypes';
 import type {
   EntityEnvelopeResponse,
@@ -14,10 +16,33 @@ import type {
 } from './InstancesGateway';
 
 export class CloudInstancesGateway implements InstancesGateway {
-  async list(_modelRef: ModelRef, _opts: {
+  async list(modelRef: ModelRef, opts: {
     pageSize?: number; pageNumber?: number; entityIds?: string[];
   }): Promise<InstancesPage> {
-    throw new Error('not implemented');
+    if (opts.entityIds && opts.entityIds.length > 0) {
+      if (opts.entityIds.length > 100) {
+        throw new TooManyEntityIdsError(opts.entityIds.length);
+      }
+      const criterion = {
+        type: 'group' as const,
+        operator: 'OR' as const,
+        conditions: opts.entityIds.map((id) => ({
+          type: 'lifecycle' as const,
+          field: 'id',
+          operation: 'EQUALS',
+          value: id,
+        })),
+      };
+      return this.search(modelRef, criterion);
+    }
+    const url = `/entity/${encodeURIComponent(modelRef.entityName)}/${modelRef.modelVersion}`;
+    const response = await axios.get<InstancesPage>(url, {
+      params: { pageSize: opts.pageSize, pageNumber: opts.pageNumber },
+    });
+    return {
+      items: response.data.items ?? [],
+      hasMore: response.data.hasMore ?? false,
+    };
   }
   async search(_modelRef: ModelRef, _criterion: unknown, _opts?: { limit?: number; pointInTime?: string }): Promise<InstancesPage> {
     throw new Error('not implemented');
