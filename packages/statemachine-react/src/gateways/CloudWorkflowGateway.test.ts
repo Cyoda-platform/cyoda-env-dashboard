@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { CloudWorkflowGateway } from './CloudWorkflowGateway';
-import { MustHaveActiveWorkflowError } from './errors';
+import { MustHaveActiveWorkflowError, WorkflowNotFoundError } from './errors';
 
 vi.mock('@cyoda/http-api-react', () => ({
   axios: {
@@ -511,5 +511,27 @@ describe('CloudWorkflowGateway', () => {
       expect(axios.get).not.toHaveBeenCalled();
       expect(axios.post).not.toHaveBeenCalled();
     });
+  });
+});
+
+describe('CloudWorkflowGateway loadWorkflow — typed not-found error', () => {
+  it('throws WorkflowNotFoundError when the named workflow is missing', async () => {
+    (axios.get as any).mockResolvedValueOnce({
+      data: { entityName: 'Customer', modelVersion: 1, workflows: [] },
+    });
+    const gw = new CloudWorkflowGateway();
+    await expect(
+      gw.loadWorkflow({ entityName: 'Customer', modelVersion: 1 }, 'missing'),
+    ).rejects.toBeInstanceOf(WorkflowNotFoundError);
+  });
+
+  it('preserves the legacy message string for callers that match on it', async () => {
+    (axios.get as any).mockResolvedValueOnce({
+      data: { entityName: 'Customer', modelVersion: 1, workflows: [] },
+    });
+    const gw = new CloudWorkflowGateway();
+    await expect(
+      gw.loadWorkflow({ entityName: 'Customer', modelVersion: 1 }, 'missing'),
+    ).rejects.toThrow(/Workflow "missing" not found in model Customer v1/);
   });
 });
