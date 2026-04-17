@@ -40,9 +40,10 @@ describe('validateWorkflowDoc', () => {
   });
 
   it('rule 5: initialState references non-existent state → error at /initialState', () => {
-    expect(validateWorkflowDoc({ ...valid, initialState: 'nope' })).toContainEqual(
-      expect.objectContaining({ path: '/initialState' }),
-    );
+    expect(validateWorkflowDoc({ ...valid, initialState: 'nope' })).toContainEqual({
+      path: '/initialState',
+      message: 'Initial state "nope" does not exist.',
+    });
   });
 
   it('rule 6: empty state name (key) → error at /states', () => {
@@ -77,9 +78,10 @@ describe('validateWorkflowDoc', () => {
       ...valid,
       states: { draft: { transitions: [{ name: 't', next: 'nope', manual: false }] } },
     };
-    expect(validateWorkflowDoc(bad)).toContainEqual(
-      expect.objectContaining({ path: '/states/draft/transitions/0/next' }),
-    );
+    expect(validateWorkflowDoc(bad)).toContainEqual({
+      path: '/states/draft/transitions/0/next',
+      message: 'Target state "nope" does not exist.',
+    });
   });
 
   it('rule 7d: transition manual is undefined → error at the manual path', () => {
@@ -180,9 +182,10 @@ describe('validateWorkflowDoc', () => {
         },
       },
     };
-    expect(validateWorkflowDoc(bad)).toContainEqual(
-      expect.objectContaining({ path: '/states/draft/transitions/0/processors/0/config/transition' }),
-    );
+    expect(validateWorkflowDoc(bad)).toContainEqual({
+      path: '/states/draft/transitions/0/processors/0/config/transition',
+      message: 'Scheduled transition "unknown" not found in workflow.',
+    });
   });
 
   it('rule 12: duplicate processor names within one transition → error at second one', () => {
