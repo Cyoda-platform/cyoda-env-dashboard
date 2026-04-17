@@ -7,7 +7,7 @@
  */
 
 import React from 'react';
-import { Table, Button, Space, Tag, Empty } from 'antd';
+import { Table, Button, Space, Tag, Empty, Tooltip } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import type { WorkflowSummary } from '../../gateways';
 
@@ -83,19 +83,30 @@ export const WorkflowsTable: React.FC<WorkflowsTableProps> = ({
               Activate
             </Button>
           )}
-          <Button
-            size="small"
-            danger
-            disabled={onlyOne}
-            title={
-              onlyOne
-                ? 'A model must have at least one workflow — cannot delete the last one.'
-                : undefined
-            }
-            onClick={() => onDelete(row.name)}
-          >
-            Delete
-          </Button>
+          {onlyOne ? (
+            // Disabled <button> elements don't fire mouse events in most
+            // browsers, so antd Tooltip needs a wrapper element with hover
+            // capture. Spec §5.4 calls for a tooltip; native title doesn't
+            // fire on disabled buttons and looks foreign vs the rest of the
+            // app's antd Tooltips.
+            <Tooltip title="A model must have at least one workflow — cannot delete the last one.">
+              <span style={{ display: 'inline-block', cursor: 'not-allowed' }}>
+                <Button
+                  size="small"
+                  danger
+                  disabled
+                  style={{ pointerEvents: 'none' }}
+                  onClick={() => onDelete(row.name)}
+                >
+                  Delete
+                </Button>
+              </span>
+            </Tooltip>
+          ) : (
+            <Button size="small" danger onClick={() => onDelete(row.name)}>
+              Delete
+            </Button>
+          )}
         </Space>
       ),
     },
@@ -111,6 +122,8 @@ export const WorkflowsTable: React.FC<WorkflowsTableProps> = ({
       columns={columns}
       dataSource={workflows}
       loading={loading}
+      // Pagination intentionally off — workflow counts per model are small in
+      // practice (typically <20). Reconsider above ~50 rows.
       pagination={false}
     />
   );

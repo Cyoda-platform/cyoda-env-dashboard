@@ -113,4 +113,11 @@ describe('WorkflowsTable', () => {
 
     expect(baseProps.onDelete).toHaveBeenCalledWith('Premium');
   });
+
+  it('does not show the empty placeholder while loading=true with no data', () => {
+    renderWithApp(<WorkflowsTable {...baseProps} workflows={[]} loading />);
+    // The Empty placeholder must NOT short-circuit while data is in flight,
+    // so the user sees the loading state instead of "No workflows" flashing.
+    expect(screen.queryByText(/no workflows in this model/i)).not.toBeInTheDocument();
+  });
 });
