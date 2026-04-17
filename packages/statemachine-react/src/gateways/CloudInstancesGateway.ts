@@ -107,12 +107,13 @@ export class CloudInstancesGateway implements InstancesGateway {
       fieldsChangedCount: typeof c.fieldsChangedCount === 'number' ? c.fieldsChangedCount : undefined,
     }));
   }
-  async loadAuditEvents(entityId: string, opts: { cursor?: string; limit?: number; severity?: string } = {}): Promise<AuditEventsPage> {
+  async loadAuditEvents(entityId: string, opts: { cursor?: string; limit?: number; severity?: string; transactionId?: string } = {}): Promise<AuditEventsPage> {
     const url = `/audit/entity/${encodeURIComponent(entityId)}`;
     const params: Record<string, unknown> = {};
     if (opts.cursor !== undefined) params.cursor = opts.cursor;
     if (opts.limit !== undefined) params.limit = opts.limit;
     if (opts.severity !== undefined) params.severity = opts.severity;
+    if (opts.transactionId !== undefined) params.transactionId = opts.transactionId;
     const response = await axios.get<{ items: AuditEvent[]; pagination?: { hasNext?: boolean; nextCursor?: string } }>(
       url, Object.keys(params).length > 0 ? { params } : undefined,
     );

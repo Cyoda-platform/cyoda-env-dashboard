@@ -18,7 +18,7 @@ export const AuditTab: React.FC<AuditTabProps> = ({ entityId }) => {
     queryFn: () => getInstancesGateway().loadChanges(entityId),
   });
   const [viewTxn, setViewTxn] = useState<string | null>(null);
-  const [auditOpen, setAuditOpen] = useState(false);
+  const [auditTxn, setAuditTxn] = useState<string | null>(null);
 
   const columns = [
     { title: 'Transaction ID', dataIndex: 'transactionId', key: 'transactionId' },
@@ -40,7 +40,7 @@ export const AuditTab: React.FC<AuditTabProps> = ({ entityId }) => {
       render: (_: any, row: EntityChange) => (
         <Space>
           <Button size="small" icon={<EyeOutlined />} title="View entity at this transaction" onClick={() => setViewTxn(row.transactionId)} />
-          <Button size="small" icon={<BranchesOutlined />} title="State Machine Audit" onClick={() => setAuditOpen(true)} />
+          <Button size="small" icon={<BranchesOutlined />} title="State Machine Audit for this transaction" onClick={() => setAuditTxn(row.transactionId)} />
         </Space>
       ),
     },
@@ -55,7 +55,9 @@ export const AuditTab: React.FC<AuditTabProps> = ({ entityId }) => {
       {viewTxn && (
         <EntityAtTransactionModal open={!!viewTxn} onClose={() => setViewTxn(null)} entityId={entityId} transactionId={viewTxn} />
       )}
-      <StateMachineAuditModal open={auditOpen} onClose={() => setAuditOpen(false)} entityId={entityId} />
+      {auditTxn && (
+        <StateMachineAuditModal open={!!auditTxn} onClose={() => setAuditTxn(null)} entityId={entityId} transactionId={auditTxn} />
+      )}
     </>
   );
 };

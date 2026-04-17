@@ -82,6 +82,6 @@ describe('AuditTab', () => {
     expect(buttons.length).toBeGreaterThanOrEqual(2);
     const titles = buttons.map((b) => b.getAttribute('title'));
     expect(titles).toContain('View entity at this transaction');
-    expect(titles).toContain('State Machine Audit');
+    expect(titles).toContain('State Machine Audit for this transaction');
   });
 });

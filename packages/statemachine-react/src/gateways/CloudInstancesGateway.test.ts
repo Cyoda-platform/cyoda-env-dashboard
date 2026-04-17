@@ -223,6 +223,18 @@ describe('CloudInstancesGateway.loadAuditEvents', () => {
     );
   });
 
+  it('passes transactionId to scope events to a single transaction', async () => {
+    (axios.get as any).mockResolvedValueOnce({
+      data: { items: [], pagination: { hasNext: false } },
+    });
+    const gw = new CloudInstancesGateway();
+    await gw.loadAuditEvents('eid', { transactionId: 'tx-1', severity: 'DEBUG' });
+    expect(axios.get).toHaveBeenCalledWith(
+      '/audit/entity/eid',
+      expect.objectContaining({ params: { severity: 'DEBUG', transactionId: 'tx-1' } }),
+    );
+  });
+
   it('maps pagination.hasNext and nextCursor correctly', async () => {
     (axios.get as any).mockResolvedValueOnce({
       data: {

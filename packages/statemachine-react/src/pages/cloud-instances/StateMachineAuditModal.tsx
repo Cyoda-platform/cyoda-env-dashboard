@@ -9,13 +9,15 @@ export interface StateMachineAuditModalProps {
   open: boolean;
   onClose: () => void;
   entityId: string;
+  /** When provided, the audit query is scoped to a single transaction. */
+  transactionId?: string;
 }
 
-export const StateMachineAuditModal: React.FC<StateMachineAuditModalProps> = ({ open, onClose, entityId }) => {
+export const StateMachineAuditModal: React.FC<StateMachineAuditModalProps> = ({ open, onClose, entityId, transactionId }) => {
   const [severity, setSeverity] = useState<'INFO' | 'ERROR' | 'DEBUG' | 'WARN'>('DEBUG');
   const query = useQuery({
-    queryKey: ['cloud-instances', 'audit', entityId, severity],
-    queryFn: () => getInstancesGateway().loadAuditEvents(entityId, { severity, limit: 50 }),
+    queryKey: ['cloud-instances', 'audit', entityId, transactionId ?? null, severity],
+    queryFn: () => getInstancesGateway().loadAuditEvents(entityId, { severity, limit: 50, transactionId }),
     enabled: open,
   });
   const items = query.data?.items ?? [];
@@ -42,8 +44,12 @@ export const StateMachineAuditModal: React.FC<StateMachineAuditModalProps> = ({ 
     { title: 'Details', dataIndex: 'details', render: (d?: string) => <Text style={{ fontSize: 11 }}>{d ?? ''}</Text> },
   ];
 
+  const title = transactionId
+    ? `State Machine Audit — Transaction: ${transactionId}`
+    : `State Machine Audit — Entity: ${entityId}`;
+
   return (
-    <Modal open={open} onCancel={onClose} footer={null} width={1200} title={`State Machine Audit - Entity: ${entityId}`}>
+    <Modal open={open} onCancel={onClose} footer={null} width={1200} title={title}>
       <Space style={{ marginBottom: 12 }}>
         <Text>Minimum Severity:</Text>
         <Select value={severity} onChange={setSeverity} style={{ width: 120 }}

@@ -97,6 +97,8 @@ export interface InstancesGateway {
     cursor?: string;
     limit?: number;
     severity?: 'INFO' | 'ERROR' | 'DEBUG' | 'WARN';
+    /** Restrict events to a single transaction. */
+    transactionId?: string;
   }): Promise<AuditEventsPage>;
 
   fireTransition(entityId: string, transition: string, body: unknown): Promise<void>;
