@@ -104,5 +104,22 @@ export default class HelperFeatureFlags {
   static isProcessingManagerAvailable(): boolean {
     return !this.isCyodaGo();
   }
+
+  /**
+   * Whether the cloud Workflows UI (list page + cloud editor + cloud row
+   * actions) should be active in the current mode.
+   *
+   * Active iff cyoda-cloud mode is on AND the user's entityType selector is
+   * BUSINESS. Otherwise the page falls back to the legacy Workflows table
+   * (which uses /platform-* endpoints — only reachable in cyoda-cloud, not
+   * cyoda-go).
+   *
+   * See `docs/feature-matrix.md` for the full panel × mode matrix.
+   *
+   * @param entityType — the global UI toggle ('BUSINESS' | 'PERSISTENCE').
+   */
+  static isCloudWorkflowsActive(entityType: 'BUSINESS' | 'PERSISTENCE'): boolean {
+    return this.isCyodaCloud() && entityType === 'BUSINESS';
+  }
 }
 
