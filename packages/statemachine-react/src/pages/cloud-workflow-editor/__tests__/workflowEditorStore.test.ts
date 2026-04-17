@@ -141,6 +141,7 @@ describe('workflowEditorStore — processors / criterion / reset', () => {
     });
     store.getState().setTransitionCriterion('draft', 0, undefined);
     expect(store.getState().current!.states.draft.transitions![0].criterion).toBeUndefined();
+    expect('criterion' in store.getState().current!.states.draft.transitions![0]).toBe(false);
   });
 
   it('resetToPristine restores the doc and resets selection/expansion to defaults', () => {
