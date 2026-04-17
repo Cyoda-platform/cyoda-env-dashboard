@@ -76,3 +76,77 @@ describe('WorkflowEditorCloud — load / scaffold / 404', () => {
     expect(screen.getByRole('button', { name: /Discard changes/ })).toBeDisabled();
   });
 });
+
+import userEvent from '@testing-library/user-event';
+
+describe('WorkflowEditorCloud — save flow', () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  function makeGateway(overrides: any = {}) {
+    return {
+      loadWorkflow: vi.fn().mockResolvedValue(sampleDoc),
+      saveWorkflow: vi.fn().mockResolvedValue({ key: 'wf' }),
+      copyWorkflow: vi.fn(), deleteWorkflow: vi.fn(),
+      renameWorkflow: vi.fn(), listWorkflows: vi.fn(),
+      ...overrides,
+    };
+  }
+
+  it('Save click calls saveWorkflow with the right doc and re-fetches via loadWorkflow', async () => {
+    const gw = makeGateway();
+    vi.mocked(getWorkflowGateway).mockReturnValue(gw as any);
+    renderAt('/workflow/Customer/1/wf');
+    await waitFor(() => expect(screen.getAllByText('Workflow').length).toBeGreaterThan(0));
+    // Make the doc dirty by editing the description field.
+    const descInput = await screen.findByRole('textbox', { name: /description/i });
+    await userEvent.type(descInput, 'X');
+    await userEvent.click(screen.getByRole('button', { name: /^Save$/ }));
+    await waitFor(() => expect(gw.saveWorkflow).toHaveBeenCalled());
+    // initial loadWorkflow via useQuery + post-save fetchQuery = 2 total
+    await waitFor(() => expect(gw.loadWorkflow).toHaveBeenCalledTimes(2));
+  });
+
+  it('Validation failure does not call saveWorkflow and shows the banner', async () => {
+    const gw = makeGateway();
+    vi.mocked(getWorkflowGateway).mockReturnValue(gw as any);
+    renderAt('/workflow/Customer/1/wf');
+    await waitFor(() => expect(screen.getAllByText('Workflow').length).toBeGreaterThan(0));
+    // Make the doc dirty AND invalid: clear the name field.
+    const nameInput = await screen.findByDisplayValue('wf');
+    await userEvent.clear(nameInput);
+    await userEvent.click(screen.getByRole('button', { name: /^Save$/ }));
+    expect(gw.saveWorkflow).not.toHaveBeenCalled();
+    expect(await screen.findByText(/validation failed/i)).toBeInTheDocument();
+  });
+
+  it('after save on /new, calls saveWorkflow with the right doc', async () => {
+    const gw = makeGateway();
+    vi.mocked(getWorkflowGateway).mockReturnValue(gw as any);
+    renderAt('/workflow/Customer/1/new');
+    await waitFor(() => expect(screen.getAllByText('Workflow').length).toBeGreaterThan(0));
+    const nameInput = await screen.findByRole('textbox', { name: /^Name$/i });
+    await userEvent.type(nameInput, 'created');
+    await userEvent.click(screen.getByRole('button', { name: /^Save$/ }));
+    await waitFor(() => {
+      expect(gw.saveWorkflow).toHaveBeenCalledWith(
+        expect.objectContaining({ entityName: 'Customer', modelVersion: 1 }),
+        expect.objectContaining({ name: 'created' }),
+        'MERGE',
+      );
+    });
+  });
+
+  it('Discard-changes confirms then resets to pristine', async () => {
+    const gw = makeGateway();
+    vi.mocked(getWorkflowGateway).mockReturnValue(gw as any);
+    renderAt('/workflow/Customer/1/wf');
+    await waitFor(() => expect(screen.getAllByText('Workflow').length).toBeGreaterThan(0));
+    const descInput = await screen.findByRole('textbox', { name: /description/i });
+    await userEvent.type(descInput, 'X');
+    await userEvent.click(screen.getByRole('button', { name: /Discard changes/ }));
+    // Confirm dialog
+    await userEvent.click(await screen.findByRole('button', { name: /^Discard$/ }));
+    // Doc is back to pristine; description is cleared
+    await waitFor(() => expect((descInput as HTMLInputElement).value).toBe(''));
+  });
+});

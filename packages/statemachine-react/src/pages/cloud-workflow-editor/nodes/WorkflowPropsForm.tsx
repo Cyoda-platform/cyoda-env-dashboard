@@ -17,10 +17,10 @@ export const WorkflowPropsForm: React.FC = () => {
       <Title level={4}>Workflow</Title>
       <Form layout="vertical">
         <Form.Item label="Name">
-          <Input value={doc.name} onChange={(e) => update({ name: e.target.value })} />
+          <Input aria-label="Name" value={doc.name} onChange={(e) => update({ name: e.target.value })} />
         </Form.Item>
         <Form.Item label="Description">
-          <Input.TextArea value={doc.desc ?? ''} onChange={(e) => update({ desc: e.target.value })} rows={2} />
+          <Input.TextArea aria-label="Description" value={doc.desc ?? ''} onChange={(e) => update({ desc: e.target.value })} rows={2} />
         </Form.Item>
         <Form.Item label="Version">
           <Input value={doc.version} onChange={(e) => update({ version: e.target.value })} />
