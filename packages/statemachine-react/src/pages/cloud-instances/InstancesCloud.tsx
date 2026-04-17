@@ -129,7 +129,7 @@ export const InstancesCloud: React.FC = () => {
           <Button disabled={!hasMore} onClick={() => setPage(page + 1)}>Next</Button>
         </Space>
       )}
-      <AdvancedSearchDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} onSearch={onAdvancedSearch} />
+      <AdvancedSearchDrawer key={drawerOpen ? 'open' : 'closed'} open={drawerOpen} onClose={() => setDrawerOpen(false)} onSearch={onAdvancedSearch} />
     </Space>
   );
 };
