@@ -34,7 +34,7 @@ import { HelperStorage } from '@cyoda/ui-lib-react';
 import './Workflows.scss';
 import { useGlobalUiSettingsStore } from '@cyoda/http-api-react';
 import { HelperFeatureFlags } from '@cyoda/http-api-react';
-import { WorkflowsCloudStub } from './WorkflowsCloudStub';
+import { WorkflowsCloud } from './WorkflowsCloud';
 import { getPersistedType } from '../utils/helpers';
 import type { Workflow, WorkflowTableRow } from '../types';
 
@@ -60,7 +60,7 @@ export const Workflows: React.FC = () => {
   // When cyoda-cloud (or cyoda-go) is in use, render the stub cloud page.
   // The real cloud Workflows UI lands in sub-branch 3.
   if (HelperFeatureFlags.isCyodaCloud()) {
-    return <WorkflowsCloudStub />;
+    return <WorkflowsCloud />;
   }
 
   const { modal, message } = App.useApp();
