@@ -78,8 +78,9 @@ export class CloudInstancesGateway implements InstancesGateway {
       stateTo: c.stateTo ?? undefined,
     }));
   }
-  async fireTransition(_entityId: string, _transition: string, _body: unknown): Promise<void> {
-    throw new Error('not implemented');
+  async fireTransition(entityId: string, transition: string, body: unknown): Promise<void> {
+    const url = `/entity/JSON/${encodeURIComponent(entityId)}/${encodeURIComponent(transition)}`;
+    await axios.put(url, body);
   }
   async delete(_entityId: string): Promise<void> {
     throw new Error('not implemented');

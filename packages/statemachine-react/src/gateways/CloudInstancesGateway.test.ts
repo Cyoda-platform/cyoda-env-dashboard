@@ -182,3 +182,22 @@ describe('CloudInstancesGateway.loadChanges', () => {
     );
   });
 });
+
+describe('CloudInstancesGateway.fireTransition', () => {
+  beforeEach(() => { vi.clearAllMocks(); });
+
+  it('PUTs /entity/JSON/{entityId}/{transition} with the body verbatim', async () => {
+    (axios.put as any).mockResolvedValueOnce({ data: {} });
+    const gw = new CloudInstancesGateway();
+    const body = { foo: 'bar', baz: 42 };
+    await gw.fireTransition('eid', 'submit', body);
+    expect(axios.put).toHaveBeenCalledWith('/entity/JSON/eid/submit', body);
+  });
+
+  it('URL-encodes entityId and transition', async () => {
+    (axios.put as any).mockResolvedValueOnce({ data: {} });
+    const gw = new CloudInstancesGateway();
+    await gw.fireTransition('a/b', 'go to next', {});
+    expect(axios.put).toHaveBeenCalledWith('/entity/JSON/a%2Fb/go%20to%20next', {});
+  });
+});
