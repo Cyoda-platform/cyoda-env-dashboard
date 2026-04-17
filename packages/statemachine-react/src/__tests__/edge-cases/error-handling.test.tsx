@@ -34,7 +34,7 @@ vi.mock('@cyoda/http-api-react/utils', () => ({
     isTasksEnabled: () => false,
     // Match isCyodaCloud()=false above so the legacy table renders here
     // (these tests assert on the legacy rendering shape).
-    isCloudWorkflowsActive: () => false,
+    isCloudBusinessActive: () => false,
   },
   eventBus: { on: vi.fn(), off: vi.fn(), emit: vi.fn() },
   EventBus: class EventBus {},

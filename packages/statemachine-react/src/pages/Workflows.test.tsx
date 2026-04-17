@@ -781,7 +781,7 @@ it('should display version value for Business entities', async () => {
     });
   });
 
-  describe('Cloud-vs-legacy branching by isCloudWorkflowsActive', () => {
+  describe('Cloud-vs-legacy branching by isCloudBusinessActive', () => {
     afterEach(() => {
       // Restore default for sibling tests — clear cloud flag so the legacy
       // branch is taken everywhere else.

@@ -358,32 +358,36 @@ describe('HelperFeatureFlags', () => {
     });
   });
 
-  describe('isCloudWorkflowsActive', () => {
+  describe('isCloudBusinessActive', () => {
     it('returns true when isCyodaCloud is true AND entityType is BUSINESS', () => {
       import.meta.env.VITE_FEATURE_FLAG_IS_CYODA_CLOUD = true as any;
 
-      expect(HelperFeatureFlags.isCloudWorkflowsActive('BUSINESS')).toBe(true);
+      expect(HelperFeatureFlags.isCloudBusinessActive('BUSINESS')).toBe(true);
     });
 
     it('returns true under cyoda-go (which implies cloud) with BUSINESS', () => {
       delete (import.meta.env as any).VITE_FEATURE_FLAG_IS_CYODA_CLOUD;
       import.meta.env.VITE_FEATURE_FLAG_IS_CYODA_GO = true as any;
 
-      expect(HelperFeatureFlags.isCloudWorkflowsActive('BUSINESS')).toBe(true);
+      expect(HelperFeatureFlags.isCloudBusinessActive('BUSINESS')).toBe(true);
     });
 
     it('returns false when entityType is PERSISTENCE even in cloud mode', () => {
       import.meta.env.VITE_FEATURE_FLAG_IS_CYODA_CLOUD = true as any;
 
-      expect(HelperFeatureFlags.isCloudWorkflowsActive('PERSISTENCE')).toBe(false);
+      expect(HelperFeatureFlags.isCloudBusinessActive('PERSISTENCE')).toBe(false);
     });
 
     it('returns false in legacy mode regardless of entityType', () => {
       delete (import.meta.env as any).VITE_FEATURE_FLAG_IS_CYODA_CLOUD;
       delete (import.meta.env as any).VITE_FEATURE_FLAG_IS_CYODA_GO;
 
-      expect(HelperFeatureFlags.isCloudWorkflowsActive('BUSINESS')).toBe(false);
-      expect(HelperFeatureFlags.isCloudWorkflowsActive('PERSISTENCE')).toBe(false);
+      expect(HelperFeatureFlags.isCloudBusinessActive('BUSINESS')).toBe(false);
+      expect(HelperFeatureFlags.isCloudBusinessActive('PERSISTENCE')).toBe(false);
+    });
+
+    it('does NOT export the old name isCloudWorkflowsActive (catches a botched merge that re-introduces it)', () => {
+      expect((HelperFeatureFlags as any).isCloudWorkflowsActive).toBeUndefined();
     });
   });
 });
