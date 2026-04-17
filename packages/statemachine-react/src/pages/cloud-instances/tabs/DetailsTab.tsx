@@ -1,12 +1,20 @@
 import React, { useState } from 'react';
-import { Descriptions, Radio, Space, Switch, Typography } from 'antd';
+import { Radio, Space, Switch, Typography } from 'antd';
 import { useQuery } from '@tanstack/react-query';
 import { getInstancesGateway, type ModelRef } from '../../../gateways';
 import { CloudEntityTree } from '../CloudEntityTree';
 import { JsonView } from '../JsonView';
 import { TransitionList } from '../TransitionList';
+import './DetailsTab.css';
 
 const { Title, Text } = Typography;
+
+const MetaRow: React.FC<{ label: string; value?: string | null; mono?: boolean }> = ({ label, value, mono }) => (
+  <div className="cloud-meta-row">
+    <div className="cloud-meta-label">{label}</div>
+    <div className={`cloud-meta-value${mono ? ' cloud-meta-mono' : ''}`}>{value ?? '—'}</div>
+  </div>
+);
 
 export interface DetailsTabProps {
   entityId: string;
@@ -29,18 +37,15 @@ export const DetailsTab: React.FC<DetailsTabProps> = ({ entityId, modelRef, work
 
   return (
     <Space direction="vertical" style={{ width: '100%' }} size="middle">
-      <Descriptions
-        title="Standard fields"
-        bordered
-        size="small"
-        column={{ xs: 1, sm: 1, md: 2 }}
-        styles={{ label: { fontWeight: 600, width: 180 } }}
-      >
-        <Descriptions.Item label="Id">{meta?.id ?? '-'}</Descriptions.Item>
-        <Descriptions.Item label="State">{meta?.state ?? '-'}</Descriptions.Item>
-        <Descriptions.Item label="Created Date">{meta?.creationDate ?? '-'}</Descriptions.Item>
-        <Descriptions.Item label="Last Updated">{meta?.lastUpdateTime ?? '-'}</Descriptions.Item>
-      </Descriptions>
+      <div>
+        <Title level={4}>Standard fields</Title>
+        <div className="cloud-meta-list">
+          <MetaRow label="Id" value={meta?.id} mono />
+          <MetaRow label="State" value={meta?.state} />
+          <MetaRow label="Created Date" value={meta?.creationDate} mono />
+          <MetaRow label="Last Updated" value={meta?.lastUpdateTime} mono />
+        </div>
+      </div>
       <TransitionList
         entityId={entityId}
         modelRef={modelRef}

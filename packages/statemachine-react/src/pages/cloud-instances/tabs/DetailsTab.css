@@ -1,0 +1,25 @@
+.cloud-meta-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.cloud-meta-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.cloud-meta-label {
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  opacity: 0.6;
+}
+.cloud-meta-value {
+  font-size: 14px;
+  word-break: break-all;
+}
+.cloud-meta-mono {
+  font-family: ui-monospace, Menlo, Monaco, Consolas, monospace;
+  font-size: 13px;
+}

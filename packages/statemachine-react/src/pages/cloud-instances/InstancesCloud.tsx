@@ -77,14 +77,16 @@ export const InstancesCloud: React.FC = () => {
   const displayItems = searchResults ?? items;
 
   const columns = [
-    { title: 'Entity Id', dataIndex: 'entityId' },
-    { title: 'Entity', dataIndex: 'entityName' },
-    { title: 'Current Workflow', dataIndex: 'currentWorkflowName' },
-    { title: 'State', dataIndex: 'state' },
-    { title: 'Created', dataIndex: 'creationDate' },
-    { title: 'Updated', dataIndex: 'lastUpdateTime' },
+    { title: 'Entity Id', dataIndex: 'entityId', width: 300, ellipsis: true },
+    { title: 'Entity', dataIndex: 'entityName', width: 140, ellipsis: true },
+    { title: 'Current Workflow', dataIndex: 'currentWorkflowName', width: 180, ellipsis: true },
+    { title: 'State', dataIndex: 'state', width: 120, ellipsis: true },
+    { title: 'Created', dataIndex: 'creationDate', width: 200, ellipsis: true },
+    { title: 'Updated', dataIndex: 'lastUpdateTime', width: 200, ellipsis: true },
     {
       title: 'Action',
+      width: 96,
+      fixed: 'right' as const,
       render: (_: any, row: EntitySummary) => (
         <Button size="small" onClick={() => navigate(
           `/instances/${encodeURIComponent(row.entityId)}` +
@@ -122,6 +124,7 @@ export const InstancesCloud: React.FC = () => {
         pagination={false}
         loading={query.isLoading}
         size="small"
+        scroll={{ x: 'max-content' }}
       />
       {filteredIds === null && searchResults === null && (
         <Space>
