@@ -17,6 +17,10 @@ vi.mock('../../../gateways', async () => {
 // useDirtyGuard uses useBlocker which requires a data router; stub it out for unit tests.
 vi.mock('../useDirtyGuard', () => ({ useDirtyGuard: vi.fn() }));
 
+vi.mock('../../../components/GraphicalStateMachine', () => ({
+  GraphicalStateMachine: () => <div data-testid="graphical-state-machine-stub" />,
+}));
+
 /** Renders the current MemoryRouter pathname into a data-testid for assertions. */
 const LocationSpy: React.FC = () => {
   const loc = useLocation();
@@ -84,7 +88,7 @@ describe('WorkflowEditorCloud — load / scaffold / 404', () => {
     expect(screen.getByRole('button', { name: /Discard changes/ })).toBeDisabled();
   });
 
-  it('view radio toggle switches between Tabular / Graphical / Config (showing stubs)', async () => {
+  it('view radio toggle switches between Tabular / Graphical / Config', async () => {
     vi.mocked(getWorkflowGateway).mockReturnValue({
       loadWorkflow: vi.fn().mockResolvedValue(sampleDoc),
       saveWorkflow: vi.fn(), copyWorkflow: vi.fn(), deleteWorkflow: vi.fn(),
@@ -92,11 +96,11 @@ describe('WorkflowEditorCloud — load / scaffold / 404', () => {
     } as any);
     renderAt('/workflow/Customer/1/wf');
     await waitFor(() => expect(screen.getByText(/Workflow settings/)).toBeInTheDocument());
-    // Default is tabular.
-    expect(screen.getByText(/Tabular view/)).toBeInTheDocument();
+    // Default is tabular — "+ Add transition" button is visible.
+    expect(screen.getByText(/\+ Add transition/)).toBeInTheDocument();
     // Click Graphical — AntD radio buttons wrap the hidden input in a label; click the label text.
     await userEvent.click(screen.getByText('Graphical'));
-    expect(screen.getByText(/Graphical \(todo\)/)).toBeInTheDocument();
+    expect(screen.queryByText(/\+ Add transition/)).not.toBeInTheDocument();
     // Click Config.
     await userEvent.click(screen.getByText('Config'));
     expect(screen.getByText(/Config \(todo\)/)).toBeInTheDocument();

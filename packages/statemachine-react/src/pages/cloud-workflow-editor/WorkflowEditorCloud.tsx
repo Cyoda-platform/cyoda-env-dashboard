@@ -14,6 +14,7 @@ import { MustHaveActiveWorkflowError, WorkflowNotFoundError } from '../../gatewa
 import type { WorkflowDoc } from '../../gateways';
 import { WorkflowSettingsForm } from './nodes/WorkflowSettingsForm';
 import { TabularView } from './views/TabularView';
+import { GraphicalView } from './views/GraphicalView';
 
 const SCAFFOLD: WorkflowDoc = {
   version: '1.0', name: '', initialState: 'draft',
@@ -93,10 +94,7 @@ const PageBody: React.FC<{ isNew: boolean; entityName: string; modelVersion: num
   );
 };
 
-// Inline stubs — DD1/EE1 will replace these with real imports.
-function GraphicalView(_: { modelRef: { entityName: string; modelVersion: number }; workflowName: string }) {
-  return <div>Graphical (todo)</div>;
-}
+// Inline stub — EE1 will replace with a real import.
 function ConfigView() { return <div>Config (todo)</div>; }
 
 const SaveBar: React.FC<{ isNew: boolean; entityName: string; modelVersion: number }> = ({ isNew, entityName, modelVersion }) => {
