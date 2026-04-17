@@ -85,6 +85,7 @@ export const AppRoutes: React.FC = () => {
         <Route path="workflow/:workflowId" element={<WorkflowDetail />} />
 
         {/* Cloud workflow editor (placeholder in sub-branch 3; real editor in sub-branch 4) */}
+        {/* isCyodaCloud() returns true under cyoda-cloud AND cyoda-go; legacy mode falls through to /workflows */}
         {HelperFeatureFlags.isCyodaCloud() && (
           <>
             <Route
