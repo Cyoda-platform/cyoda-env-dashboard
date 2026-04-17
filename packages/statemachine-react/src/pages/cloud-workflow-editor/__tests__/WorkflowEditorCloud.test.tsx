@@ -1,10 +1,12 @@
+import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { App } from 'antd';
 import { WorkflowEditorCloud } from '../WorkflowEditorCloud';
 import { getWorkflowGateway } from '../../../gateways';
+import { WorkflowNotFoundError } from '../../../gateways/errors';
 
 vi.mock('../../../gateways', async () => {
   const actual = await vi.importActual<any>('../../../gateways');
@@ -13,6 +15,12 @@ vi.mock('../../../gateways', async () => {
 
 // useDirtyGuard uses useBlocker which requires a data router; stub it out for unit tests.
 vi.mock('../useDirtyGuard', () => ({ useDirtyGuard: vi.fn() }));
+
+/** Renders the current MemoryRouter pathname into a data-testid for assertions. */
+const LocationSpy: React.FC = () => {
+  const loc = useLocation();
+  return <div data-testid="current-path">{loc.pathname}</div>;
+};
 
 function renderAt(url: string) {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
@@ -24,6 +32,7 @@ function renderAt(url: string) {
             <Route path="/workflow/:entityName/:modelVersion/new" element={<WorkflowEditorCloud />} />
             <Route path="/workflow/:entityName/:modelVersion/:workflowName" element={<WorkflowEditorCloud />} />
           </Routes>
+          <LocationSpy />
         </MemoryRouter>
       </QueryClientProvider>
     </App>,
@@ -148,5 +157,61 @@ describe('WorkflowEditorCloud — save flow', () => {
     await userEvent.click(await screen.findByRole('button', { name: /^Discard$/ }));
     // Doc is back to pristine; description is cleared
     await waitFor(() => expect((descInput as HTMLInputElement).value).toBe(''));
+  });
+
+  it('preserves selectedPath after save (preserveView)', async () => {
+    const gw = makeGateway();
+    vi.mocked(getWorkflowGateway).mockReturnValue(gw as any);
+    renderAt('/workflow/Customer/1/wf');
+    await waitFor(() => expect(screen.getAllByText('Workflow').length).toBeGreaterThan(0));
+    // Click the transition node labelled 't' to set selectedPath = /states/draft/transitions/0
+    await userEvent.click(screen.getByText('t'));
+    // TransitionForm should now be visible
+    await waitFor(() => expect(screen.getByText('Transition')).toBeInTheDocument());
+    // Make dirty by editing the transition Name input
+    const nameInput = await screen.findByDisplayValue('t');
+    await userEvent.clear(nameInput);
+    await userEvent.type(nameInput, 't-edited');
+    await userEvent.click(screen.getByRole('button', { name: /^Save$/ }));
+    await waitFor(() => expect(gw.saveWorkflow).toHaveBeenCalled());
+    // After save, preserveView keeps selectedPath at the transition; TransitionForm still visible
+    await waitFor(() => expect(screen.getByText('Transition')).toBeInTheDocument());
+  });
+
+  it('after save on /new, navigates to canonical URL with replace=true', async () => {
+    const gw = makeGateway();
+    vi.mocked(getWorkflowGateway).mockReturnValue(gw as any);
+    renderAt('/workflow/Customer/1/new');
+    await waitFor(() => expect(screen.getAllByText('Workflow').length).toBeGreaterThan(0));
+    // Confirm we start at /new
+    expect(screen.getByTestId('current-path').textContent).toBe('/workflow/Customer/1/new');
+    const nameInput = await screen.findByRole('textbox', { name: /^Name$/i });
+    await userEvent.type(nameInput, 'fresh');
+    await userEvent.click(screen.getByRole('button', { name: /^Save$/ }));
+    await waitFor(() => expect(gw.saveWorkflow).toHaveBeenCalled());
+    // After save, navigate replaces /new with the canonical workflow URL
+    await waitFor(() =>
+      expect(screen.getByTestId('current-path').textContent).toBe('/workflow/Customer/1/fresh'),
+    );
+  });
+
+  it('after save, WorkflowNotFoundError surfaces a warning toast and does not navigate', async () => {
+    const gw = makeGateway();
+    let call = 0;
+    gw.loadWorkflow = vi.fn().mockImplementation(() => {
+      call++;
+      if (call === 1) return Promise.resolve(sampleDoc);
+      return Promise.reject(new WorkflowNotFoundError('Customer', 1, 'wf'));
+    });
+    vi.mocked(getWorkflowGateway).mockReturnValue(gw as any);
+    renderAt('/workflow/Customer/1/wf');
+    await waitFor(() => expect(screen.getAllByText('Workflow').length).toBeGreaterThan(0));
+    const descInput = await screen.findByRole('textbox', { name: /description/i });
+    await userEvent.type(descInput, 'X');
+    await userEvent.click(screen.getByRole('button', { name: /^Save$/ }));
+    await waitFor(() => expect(gw.saveWorkflow).toHaveBeenCalled());
+    await waitFor(() => expect(gw.loadWorkflow).toHaveBeenCalledTimes(2));
+    // The warning toast should appear
+    expect(await screen.findByText(/saved workflow could not be re-loaded by name/i)).toBeInTheDocument();
   });
 });
