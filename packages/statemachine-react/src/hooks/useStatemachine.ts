@@ -17,6 +17,8 @@ import type {
 } from '../types';
 import { getWorkflowGateway } from '../gateways';
 import type { ModelRef, WorkflowDoc, WorkflowSummary } from '../gateways/workflowDocTypes';
+import { getEntityModelList } from '@cyoda/http-api-react';
+import type { EntityModelListItem } from '@cyoda/http-api-react';
 
 // Query Keys
 export const statemachineKeys = {
@@ -52,6 +54,7 @@ export const statemachineKeys = {
 
   entityInfo: () => [...statemachineKeys.all, 'entity-info'] as const,
   entityParentClasses: (entityClassName: string) => [...statemachineKeys.entityInfo(), 'parent-classes', entityClassName] as const,
+  entityModelList: () => [...statemachineKeys.all, 'entity-model-list'] as const,
 };
 
 // ============================================================================
@@ -735,6 +738,20 @@ export function useEntityParentClasses(entityClassName: string, enabled = true) 
       return response.data;
     },
     enabled: enabled && !!entityClassName,
+  });
+}
+
+/**
+ * Lists all entity models in the cloud backend via GET /model/.
+ * Used by the cloud Workflows page's model picker (Stage A).
+ */
+export function useEntityModelList() {
+  return useQuery<EntityModelListItem[]>({
+    queryKey: statemachineKeys.entityModelList(),
+    queryFn: async () => {
+      const response = await getEntityModelList();
+      return response.data ?? [];
+    },
   });
 }
 

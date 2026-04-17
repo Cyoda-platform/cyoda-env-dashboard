@@ -25,15 +25,25 @@ import {
   useProcessesList,
   useCriteriaList,
   statemachineKeys,
+  useEntityModelList,
 } from './useStatemachine';
 import { getWorkflowGateway } from '../gateways';
 import { makeMockGateway } from '../gateways/__test_utils__/mockGateway';
+import { getEntityModelList } from '@cyoda/http-api-react';
 
 vi.mock('../gateways', async () => {
   const actual = await vi.importActual<any>('../gateways');
   return {
     ...actual,
     getWorkflowGateway: vi.fn(),
+  };
+});
+
+vi.mock('@cyoda/http-api-react', async () => {
+  const actual = await vi.importActual<any>('@cyoda/http-api-react');
+  return {
+    ...actual,
+    getEntityModelList: vi.fn(),
   };
 });
 
@@ -464,6 +474,28 @@ describe('useStatemachine hooks', () => {
       await result.current.mutateAsync({ modelRef, oldName: 'A', newName: 'B' });
 
       expect(renameWorkflow).toHaveBeenCalledWith(modelRef, 'A', 'B');
+    });
+  });
+
+  describe('useEntityModelList', () => {
+    it('calls getEntityModelList and returns the data', async () => {
+      const items = [
+        { id: 'a', modelName: 'Customer', modelVersion: 1, currentState: 'LOCKED' },
+      ];
+      vi.mocked(getEntityModelList).mockResolvedValue({
+        data: items,
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as any,
+      });
+
+      const { result } = renderHook(() => useEntityModelList(), { wrapper });
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+      expect(getEntityModelList).toHaveBeenCalledTimes(1);
+      expect(result.current.data).toEqual(items);
     });
   });
 });
