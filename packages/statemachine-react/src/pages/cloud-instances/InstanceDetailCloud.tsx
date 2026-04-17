@@ -9,6 +9,7 @@ import { Button, Space, Tabs, Typography } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import type { ModelRef } from '../../gateways';
 import { DetailsTab } from './tabs/DetailsTab';
+import { WorkflowTab } from './tabs/WorkflowTab';
 
 const { Title, Text } = Typography;
 
@@ -24,7 +25,7 @@ export const InstanceDetailCloud: React.FC = () => {
 
   const items = useMemo(() => [
     { key: 'details', label: 'Details', children: <DetailsTab entityId={entityId!} modelRef={modelRef} workflowName={workflowName} /> },
-    { key: 'workflow', label: 'Workflow', children: <WorkflowTab /> },
+    { key: 'workflow', label: 'Workflow', children: <WorkflowTab entityId={entityId!} modelRef={modelRef} workflowName={workflowName} /> },
     { key: 'audit', label: 'Audit', children: <AuditTab /> },
     { key: 'lineage', label: 'Data Lineage', children: <DataLineageTab /> },
     { key: 'json', label: 'JSON', children: <JsonTab /> },
@@ -45,8 +46,7 @@ export const InstanceDetailCloud: React.FC = () => {
   );
 };
 
-// Inline stubs — E4-E7 will replace these with real imports.
-function WorkflowTab() { return <div>Workflow (todo)</div>; }
+// Inline stubs — E5-E7 will replace these with real imports.
 function AuditTab() { return <div>Audit (todo)</div>; }
 function DataLineageTab() { return <div>Data Lineage (todo)</div>; }
 function JsonTab() { return <div>JSON (todo)</div>; }
