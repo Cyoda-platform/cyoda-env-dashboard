@@ -66,9 +66,9 @@ export class NotImplementedInLegacyError extends Error {
  */
 export class WorkflowNotFoundError extends Error {
   constructor(
-    public readonly workflowName: string,
     public readonly entityName: string,
     public readonly modelVersion: number,
+    public readonly workflowName: string
   ) {
     super(`Workflow "${workflowName}" not found in model ${entityName} v${modelVersion}`);
     this.name = 'WorkflowNotFoundError';

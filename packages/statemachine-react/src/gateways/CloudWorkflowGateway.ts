@@ -57,7 +57,7 @@ export class CloudWorkflowGateway implements WorkflowGateway {
     const response = await axios.get<WorkflowExportResponse>(exportUrl(modelRef));
     const found = (response.data.workflows ?? []).find((w) => w.name === name);
     if (!found) {
-      throw new WorkflowNotFoundError(name, modelRef.entityName, modelRef.modelVersion);
+      throw new WorkflowNotFoundError(modelRef.entityName, modelRef.modelVersion, name);
     }
     return found;
   }
@@ -137,7 +137,7 @@ export class CloudWorkflowGateway implements WorkflowGateway {
 
     const source = all.find((w) => w.name === sourceName);
     if (!source) {
-      throw new WorkflowNotFoundError(sourceName, modelRef.entityName, modelRef.modelVersion);
+      throw new WorkflowNotFoundError(modelRef.entityName, modelRef.modelVersion, sourceName);
     }
 
     const clone: WorkflowDoc = { ...source, name: newName };
