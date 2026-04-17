@@ -75,3 +75,30 @@ describe('QueryConditionEditor — empty / simple', () => {
     expect(onChange).toHaveBeenCalledWith(undefined);
   });
 });
+
+describe('QueryConditionEditor — group', () => {
+  it('renders operator + nested children for a group', () => {
+    render(<QueryConditionEditor
+      value={{ type: 'group', operator: 'AND', conditions: [
+        { type: 'simple', jsonPath: '$.a', operation: 'EQUALS', value: '1' },
+        { type: 'simple', jsonPath: '$.b', operation: 'EQUALS', value: '2' },
+      ]} as any}
+      onChange={vi.fn()}
+    />);
+    expect(screen.getByDisplayValue('$.a')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('$.b')).toBeInTheDocument();
+  });
+
+  it('"+ Add condition" appends a default simple to the group', async () => {
+    const onChange = vi.fn();
+    render(<Controlled
+      initialValue={{ type: 'group', operator: 'AND', conditions: [] } as any}
+      onChangeSpy={onChange}
+    />);
+    await userEvent.click(screen.getByRole('button', { name: /add condition/i }));
+    expect(onChange).toHaveBeenLastCalledWith(expect.objectContaining({
+      type: 'group', operator: 'AND',
+      conditions: expect.arrayContaining([expect.objectContaining({ type: 'simple' })]),
+    }));
+  });
+});

@@ -66,6 +66,35 @@ export const QueryConditionEditor: React.FC<QueryConditionEditorProps> = ({ valu
           </Text>
         </Space>
       )}
+      {t === 'group' && (
+        <Space direction="vertical" style={{ width: '100%' }}>
+          <Select
+            style={{ width: 120 }}
+            value={(value as any).operator}
+            onChange={(op) => onChange({ ...(value as any), operator: op })}
+            options={[{ value: 'AND', label: 'AND' }, { value: 'OR', label: 'OR' }, { value: 'NOT', label: 'NOT' }]}
+          />
+          {((value as any).conditions ?? []).map((c: QueryCondition, i: number) => (
+            <div key={i} style={{ paddingLeft: 16, borderLeft: '2px solid #eee' }}>
+              <QueryConditionEditor
+                value={c}
+                onChange={(next) => {
+                  const arr = [...((value as any).conditions ?? [])];
+                  if (next === undefined) arr.splice(i, 1);
+                  else arr[i] = next;
+                  onChange({ ...(value as any), conditions: arr });
+                }}
+              />
+            </div>
+          ))}
+          <Button onClick={() => onChange({
+            ...(value as any),
+            conditions: [...((value as any).conditions ?? []), { type: 'simple', jsonPath: '', operation: 'EQUALS', value: '' }],
+          })}>
+            + Add condition
+          </Button>
+        </Space>
+      )}
     </Space>
   );
 };
