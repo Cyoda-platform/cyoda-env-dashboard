@@ -21,7 +21,20 @@
 import type { ModelRef, WorkflowDoc, WorkflowSummary } from './workflowDocTypes';
 
 export interface WorkflowGateway {
-  /** List all workflows for the given model. In legacy mode, lists across all entity classes. */
+  /**
+   * List all workflows for the given model.
+   *
+   * In legacy mode (modelRef === null) this lists across all entity classes —
+   * the legacy gateway has no equivalent of the cloud's per-model scoping.
+   *
+   * **Known limitation:** the prior `getAllWorkflowsList(entityClassName)` API
+   * supported server-side filtering by entity class. The gateway interface
+   * currently exposes no equivalent. The Instances page (which previously
+   * filtered) now lists all workflows; sub-branch 5 (Instances port to the
+   * cloud entity-search API) will reintroduce filtering — likely by extending
+   * this interface with an optional filter, by adding a separate `searchWorkflows`
+   * method, or by switching the Instances page off this gateway entirely.
+   */
   listWorkflows(modelRef: ModelRef | null): Promise<WorkflowSummary[]>;
 
   /** Load a full workflow document by name within the given model. */
