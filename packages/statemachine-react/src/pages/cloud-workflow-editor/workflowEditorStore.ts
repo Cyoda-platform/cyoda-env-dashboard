@@ -26,7 +26,6 @@ export interface WorkflowEditorState {
   toggleExpand(path: string): void;
   setErrors(errors: ValidationIssue[]): void;
 
-  // Mutations come in Tasks 5–7.
   updateWorkflowProps(patch: Partial<WorkflowDoc>): void;
   renameState(oldName: string, newName: string): void;
   addState(name: string): void;
@@ -104,7 +103,6 @@ export function createWorkflowEditorStore(): WorkflowEditorStore {
       },
       setErrors(errors) { set((s) => { s.errors = errors; }); },
 
-      // Stubs — implemented in Tasks 5–7.
       updateWorkflowProps(patch) {
         set((s) => {
           if (!s.current) return;
