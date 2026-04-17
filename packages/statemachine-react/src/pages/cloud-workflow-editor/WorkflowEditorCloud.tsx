@@ -15,6 +15,7 @@ import type { WorkflowDoc } from '../../gateways';
 import { WorkflowSettingsForm } from './nodes/WorkflowSettingsForm';
 import { TabularView } from './views/TabularView';
 import { GraphicalView } from './views/GraphicalView';
+import { ConfigView } from './views/ConfigView';
 
 const SCAFFOLD: WorkflowDoc = {
   version: '1.0', name: '', initialState: 'draft',
@@ -94,8 +95,6 @@ const PageBody: React.FC<{ isNew: boolean; entityName: string; modelVersion: num
   );
 };
 
-// Inline stub — EE1 will replace with a real import.
-function ConfigView() { return <div>Config (todo)</div>; }
 
 const SaveBar: React.FC<{ isNew: boolean; entityName: string; modelVersion: number }> = ({ isNew, entityName, modelVersion }) => {
   const store = useContext(WorkflowEditorStoreContext)!;

@@ -101,9 +101,12 @@ describe('WorkflowEditorCloud — load / scaffold / 404', () => {
     // Click Graphical — AntD radio buttons wrap the hidden input in a label; click the label text.
     await userEvent.click(screen.getByText('Graphical'));
     expect(screen.queryByText(/\+ Add transition/)).not.toBeInTheDocument();
-    // Click Config.
+    // Click Config — real ConfigView renders a <pre> with JSON.
     await userEvent.click(screen.getByText('Config'));
-    expect(screen.getByText(/Config \(todo\)/)).toBeInTheDocument();
+    expect(screen.queryByText(/\+ Add transition/)).not.toBeInTheDocument();
+    // The ConfigView <pre> contains the serialised doc.
+    const { container } = { container: document.body };
+    expect(container.textContent).toContain('"version"');
   });
 });
 
