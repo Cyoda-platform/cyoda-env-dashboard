@@ -21,12 +21,19 @@ export const ModelPicker: React.FC<ModelPickerProps> = ({ value, onChange }) => 
 
   const options = useMemo(() => {
     const items = data ?? [];
+    // Sort: most-recently-updated first, then alphabetical by name, then highest
+    // version first as a final tiebreaker. modelUpdateDate is ISO-8601, so
+    // lexical compare is equivalent to chronological. The version tiebreaker
+    // matters when two records share a date AND a name (e.g., a same-second
+    // version bump), preventing insertion-order surprises.
     return [...items]
       .sort((a, b) => {
         const da = a.modelUpdateDate ?? '';
         const db = b.modelUpdateDate ?? '';
         if (da !== db) return db.localeCompare(da); // recent first
-        return a.modelName.localeCompare(b.modelName);
+        const byName = a.modelName.localeCompare(b.modelName);
+        if (byName !== 0) return byName;
+        return b.modelVersion - a.modelVersion; // higher version first
       })
       .map((item) => ({
         value: `${item.modelName}::${item.modelVersion}`,

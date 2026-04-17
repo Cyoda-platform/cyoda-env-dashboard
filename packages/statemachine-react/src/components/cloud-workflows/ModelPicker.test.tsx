@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ModelPicker } from './ModelPicker';
@@ -116,5 +116,39 @@ describe('ModelPicker', () => {
     return userEvent.click(screen.getByRole('combobox')).then(() => {
       expect(screen.getByText(/Failed to load: boom/)).toBeInTheDocument();
     });
+  });
+
+  it('shows "No models" placeholder when the data is loaded but empty', async () => {
+    vi.mocked(useEntityModelList).mockReturnValue({
+      data: [],
+      isLoading: false,
+      isSuccess: true,
+      isError: false,
+    } as any);
+
+    renderWithClient(<ModelPicker value={null} onChange={vi.fn()} />);
+
+    await userEvent.click(screen.getByRole('combobox'));
+
+    expect(screen.getByText('No models')).toBeInTheDocument();
+  });
+
+  it('sorts equal-date workflows by version desc as a final tiebreaker', async () => {
+    vi.mocked(useEntityModelList).mockReturnValue({
+      data: [
+        { id: '1', modelName: 'Customer', modelVersion: 1, currentState: 'LOCKED', modelUpdateDate: '2026-04-12T10:00:00Z' },
+        { id: '2', modelName: 'Customer', modelVersion: 2, currentState: 'LOCKED', modelUpdateDate: '2026-04-12T10:00:00Z' },
+      ],
+      isLoading: false,
+      isSuccess: true,
+      isError: false,
+    } as any);
+
+    renderWithClient(<ModelPicker value={null} onChange={vi.fn()} />);
+
+    await userEvent.click(screen.getByRole('combobox'));
+    const options = await screen.findAllByText(/v\d+\)/);
+    expect(options[0]).toHaveTextContent('Customer (v2)');
+    expect(options[1]).toHaveTextContent('Customer (v1)');
   });
 });
