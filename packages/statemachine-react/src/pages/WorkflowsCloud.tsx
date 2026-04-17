@@ -18,7 +18,7 @@
  */
 
 import React, { useState } from 'react';
-import { Space, Typography, App as AntApp } from 'antd';
+import { Space, Typography, Button, App as AntApp } from 'antd';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ModelPicker } from '../components/cloud-workflows/ModelPicker';
 import { WorkflowsTable } from '../components/cloud-workflows/WorkflowsTable';
@@ -175,7 +175,21 @@ export const WorkflowsCloud: React.FC = () => {
       <Space direction="vertical" size="large" style={{ width: '100%' }}>
         <div>
           <Paragraph>Select an entity model to view its workflows.</Paragraph>
-          <ModelPicker value={modelRef} onChange={setModelRef} />
+          <Space>
+            <ModelPicker value={modelRef} onChange={setModelRef} />
+            {modelRef && (
+              <Button
+                type="primary"
+                onClick={() =>
+                  navigate(
+                    `/workflow/${encodeURIComponent(modelRef.entityName)}/${modelRef.modelVersion}/new`
+                  )
+                }
+              >
+                + Create new workflow
+              </Button>
+            )}
+          </Space>
         </div>
 
         {modelRef && (
