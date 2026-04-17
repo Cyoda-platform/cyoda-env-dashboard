@@ -69,3 +69,43 @@ describe('workflowEditorStore — state mutations + path rewrites', () => {
     expect(store.getState().errors).toEqual([]);
   });
 });
+
+describe('workflowEditorStore — transition mutations', () => {
+  let store: ReturnType<typeof createWorkflowEditorStore>;
+  beforeEach(() => { store = createWorkflowEditorStore(); store.getState().hydrate(baseDoc); });
+
+  it('addTransition appends a transition, selects it, expands the parent state and the new transition', () => {
+    store.getState().addTransition('draft');
+    const draft = store.getState().current!.states.draft;
+    expect(draft.transitions).toHaveLength(2);
+    expect(store.getState().selectedPath).toBe('/states/draft/transitions/1');
+    expect(store.getState().expandedPaths.has('/states/draft')).toBe(true);
+    expect(store.getState().expandedPaths.has('/states/draft/transitions/1')).toBe(true);
+  });
+
+  it('deleteTransition shifts indices in selectedPath and expandedPaths', () => {
+    // Add a second transition first so indices > 0 exist.
+    store.getState().addTransition('draft');             // selects /states/draft/transitions/1
+    store.getState().toggleExpand('/states/draft/transitions/1'); // toggle off
+    store.getState().toggleExpand('/states/draft/transitions/1'); // toggle on
+    store.getState().setSelected('/states/draft/transitions/1');
+    store.getState().deleteTransition('draft', 0);
+    // The transition at index 1 became index 0.
+    expect(store.getState().current!.states.draft.transitions).toHaveLength(1);
+    expect(store.getState().selectedPath).toBe('/states/draft/transitions/0');
+    expect(store.getState().expandedPaths.has('/states/draft/transitions/0')).toBe(true);
+  });
+
+  it('deleteTransition resets selection to parent state if the deleted index was selected', () => {
+    store.getState().setSelected('/states/draft/transitions/0');
+    store.getState().deleteTransition('draft', 0);
+    expect(store.getState().selectedPath).toBe('/states/draft');
+  });
+
+  it('updateTransition patches the transition and clears errors', () => {
+    store.getState().setErrors([{ path: '/states/draft/transitions/0/name', message: 'x' }]);
+    store.getState().updateTransition('draft', 0, { name: 'renamed' });
+    expect(store.getState().current!.states.draft.transitions![0].name).toBe('renamed');
+    expect(store.getState().errors).toEqual([]);
+  });
+});

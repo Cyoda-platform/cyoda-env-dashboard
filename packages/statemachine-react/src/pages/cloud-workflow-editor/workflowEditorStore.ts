@@ -165,9 +165,63 @@ export function createWorkflowEditorStore(): WorkflowEditorStore {
           s.errors = [];
         });
       },
-      addTransition() { throw new Error('not implemented'); },
-      deleteTransition() { throw new Error('not implemented'); },
-      updateTransition() { throw new Error('not implemented'); },
+      addTransition(stateName) {
+        set((s) => {
+          if (!s.current || !(stateName in s.current.states)) return;
+          const list = s.current.states[stateName].transitions ??= [];
+          list.push({ name: '', next: stateName, manual: false });
+          const newIndex = list.length - 1;
+          const newPath = `/states/${stateName}/transitions/${newIndex}`;
+          s.selectedPath = newPath;
+          s.expandedPaths.add(`/states/${stateName}`);
+          s.expandedPaths.add(newPath);
+          s.errors = [];
+        });
+      },
+
+      deleteTransition(stateName, index) {
+        set((s) => {
+          if (!s.current || !(stateName in s.current.states)) return;
+          const list = s.current.states[stateName].transitions ?? [];
+          if (index < 0 || index >= list.length) return;
+          list.splice(index, 1);
+
+          const deletedPath = `/states/${stateName}/transitions/${index}`;
+          // Selection: if it was the deleted one or a descendant, jump to parent.
+          if (s.selectedPath === deletedPath || s.selectedPath.startsWith(deletedPath + '/')) {
+            s.selectedPath = `/states/${stateName}`;
+          } else {
+            // If selection was at a higher index in the same state, decrement.
+            const m = s.selectedPath.match(new RegExp(`^/states/${stateName}/transitions/(\\d+)(.*)$`));
+            if (m) {
+              const j = Number(m[1]);
+              if (j > index) s.selectedPath = `/states/${stateName}/transitions/${j - 1}${m[2]}`;
+            }
+          }
+          // Expansion: drop the deleted path + descendants; shift higher indices.
+          const next = new Set<string>();
+          for (const p of s.expandedPaths) {
+            if (p === deletedPath || p.startsWith(deletedPath + '/')) continue;
+            const m = p.match(new RegExp(`^/states/${stateName}/transitions/(\\d+)(.*)$`));
+            if (m) {
+              const j = Number(m[1]);
+              if (j > index) { next.add(`/states/${stateName}/transitions/${j - 1}${m[2]}`); continue; }
+            }
+            next.add(p);
+          }
+          s.expandedPaths = next;
+          s.errors = [];
+        });
+      },
+
+      updateTransition(stateName, index, patch) {
+        set((s) => {
+          const t = s.current?.states[stateName]?.transitions?.[index];
+          if (!t) return;
+          Object.assign(t, patch);
+          s.errors = [];
+        });
+      },
       addProcessor() { throw new Error('not implemented'); },
       updateProcessor() { throw new Error('not implemented'); },
       deleteProcessor() { throw new Error('not implemented'); },
