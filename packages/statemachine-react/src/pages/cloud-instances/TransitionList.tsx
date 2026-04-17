@@ -27,9 +27,11 @@ export interface TransitionListProps {
   entityBody: Record<string, unknown> | undefined;
   /** Current state from entity meta — used to filter transitions. */
   currentState: string;
+  /** When true, transition buttons are disabled (e.g. JSON in editor is invalid). */
+  disabled?: boolean;
 }
 
-export const TransitionList: React.FC<TransitionListProps> = ({ entityId, modelRef, workflowName, entityBody, currentState }) => {
+export const TransitionList: React.FC<TransitionListProps> = ({ entityId, modelRef, workflowName, entityBody, currentState, disabled = false }) => {
   const { modal, message } = App.useApp();
   const queryClient = useQueryClient();
   const wf = useQuery({
@@ -69,7 +71,7 @@ export const TransitionList: React.FC<TransitionListProps> = ({ entityId, modelR
       ) : (
         <Space wrap>
           {transitions.map((t: any) => (
-            <Button key={t.name} onClick={() => onFire(t.name)}>{t.name}</Button>
+            <Button key={t.name} disabled={disabled} onClick={() => onFire(t.name)}>{t.name}</Button>
           ))}
         </Space>
       )}

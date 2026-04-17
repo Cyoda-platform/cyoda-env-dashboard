@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { Radio, Space, Switch, Typography } from 'antd';
+import { Alert, Typography } from 'antd';
 import { useQuery } from '@tanstack/react-query';
 import { getInstancesGateway, type ModelRef } from '../../../gateways';
-import { CloudEntityTree } from '../CloudEntityTree';
-import { JsonView } from '../JsonView';
+import { JsonEditor } from '../JsonEditor';
 import { TransitionList } from '../TransitionList';
 import './DetailsTab.css';
 
@@ -23,56 +22,58 @@ export interface DetailsTabProps {
 }
 
 export const DetailsTab: React.FC<DetailsTabProps> = ({ entityId, modelRef, workflowName }) => {
-  const [showEmpty, setShowEmpty] = useState(true);
-  const [bodyView, setBodyView] = useState<'tree' | 'json'>('json');
   const query = useQuery({
     queryKey: ['cloud-instances', 'load', entityId],
     queryFn: () => getInstancesGateway().load(entityId),
   });
 
+  const [editedBody, setEditedBody] = useState<Record<string, unknown> | undefined>(undefined);
+  const [parseValid, setParseValid] = useState(true);
+
   if (query.isLoading) return <Text>Loading…</Text>;
   if (query.isError) return <Text type="danger">Failed to load: {(query.error as Error).message}</Text>;
 
   const { data, meta } = query.data!;
+  const dataUpdatedAt = query.dataUpdatedAt;
+
+  const onJsonChange = ({ parsed, valid }: { parsed: unknown; valid: boolean }) => {
+    setParseValid(valid);
+    if (valid && parsed && typeof parsed === 'object') {
+      setEditedBody(parsed as Record<string, unknown>);
+    }
+  };
+
+  const bodyForFire = editedBody ?? data;
 
   return (
-    <Space direction="vertical" style={{ width: '100%' }} size="middle">
-      <div>
-        <Title level={4}>Standard fields</Title>
-        <div className="cloud-meta-list">
-          <MetaRow label="Id" value={meta?.id} mono />
-          <MetaRow label="State" value={meta?.state} />
-          <MetaRow label="Created Date" value={meta?.creationDate} mono />
-          <MetaRow label="Last Updated" value={meta?.lastUpdateTime} mono />
-        </div>
+    <div className="cloud-details-tab">
+      <Title level={4}>Standard fields</Title>
+      <div className="cloud-meta-list">
+        <MetaRow label="Id" value={meta?.id} mono />
+        <MetaRow label="State" value={meta?.state} />
+        <MetaRow label="Created Date" value={meta?.creationDate} mono />
+        <MetaRow label="Last Updated" value={meta?.lastUpdateTime} mono />
       </div>
       <TransitionList
         entityId={entityId}
         modelRef={modelRef}
         workflowName={workflowName}
-        entityBody={data}
+        entityBody={bodyForFire}
         currentState={meta?.state ?? ''}
+        disabled={!parseValid}
       />
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Title level={4} style={{ margin: 0 }}>Entity</Title>
-        <Space>
-          <Radio.Group value={bodyView} onChange={(e) => setBodyView(e.target.value)} options={[
-            { label: 'JSON', value: 'json' },
-            { label: 'Tree', value: 'tree' },
-          ]} optionType="button" buttonStyle="solid" size="small" />
-          {bodyView === 'tree' && (
-            <>
-              <Text>Show Empty Fields</Text>
-              <Switch checked={showEmpty} onChange={setShowEmpty} />
-            </>
-          )}
-        </Space>
+      <div>
+        <div className="cloud-entity-header">
+          <Title level={4} style={{ margin: 0 }}>Entity</Title>
+          {!parseValid && <Alert type="warning" message="Invalid JSON — fix to enable transitions" showIcon />}
+        </div>
+        <JsonEditor
+          value={data}
+          onChange={onJsonChange}
+          height={520}
+          resetKey={dataUpdatedAt}
+        />
       </div>
-      {bodyView === 'tree' ? (
-        <CloudEntityTree value={data ?? {}} showEmpty={showEmpty} />
-      ) : (
-        <JsonView value={data} maxHeight={600} />
-      )}
-    </Space>
+    </div>
   );
 };

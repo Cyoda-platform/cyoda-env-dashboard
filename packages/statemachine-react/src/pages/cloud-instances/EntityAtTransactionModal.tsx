@@ -2,7 +2,7 @@ import React from 'react';
 import { Modal, Spin } from 'antd';
 import { useQuery } from '@tanstack/react-query';
 import { getInstancesGateway } from '../../gateways';
-import { JsonView } from './JsonView';
+import { JsonEditor } from './JsonEditor';
 
 export interface EntityAtTransactionModalProps {
   open: boolean;
@@ -19,7 +19,9 @@ export const EntityAtTransactionModal: React.FC<EntityAtTransactionModalProps> =
   });
   return (
     <Modal open={open} onCancel={onClose} footer={null} width={900} title={`Entity at Transaction: ${transactionId}`} destroyOnHidden>
-      {query.isLoading ? <Spin /> : <JsonView value={query.data?.data} maxHeight="60vh" />}
+      {query.isLoading ? <Spin /> : (
+        <JsonEditor value={query.data?.data} height="60vh" resetKey={transactionId} />
+      )}
     </Modal>
   );
 };

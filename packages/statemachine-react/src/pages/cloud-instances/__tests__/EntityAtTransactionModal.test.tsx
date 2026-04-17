@@ -11,6 +11,12 @@ vi.mock('../../../gateways', async () => {
   return { ...actual, getInstancesGateway: vi.fn() };
 });
 
+vi.mock('@monaco-editor/react', () => ({
+  default: ({ defaultValue }: { defaultValue?: string }) => (
+    <div data-testid="json-editor">{defaultValue}</div>
+  ),
+}));
+
 function renderIt(props: { open: boolean; entityId: string; transactionId: string }) {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
