@@ -1,9 +1,9 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { Descriptions, Radio, Space, Switch, Typography } from 'antd';
 import { useQuery } from '@tanstack/react-query';
-import { CodeEditor } from '@cyoda/ui-lib-react';
 import { getInstancesGateway, type ModelRef } from '../../../gateways';
 import { CloudEntityTree } from '../CloudEntityTree';
+import { JsonView } from '../JsonView';
 import { TransitionList } from '../TransitionList';
 
 const { Title, Text } = Typography;
@@ -22,11 +22,10 @@ export const DetailsTab: React.FC<DetailsTabProps> = ({ entityId, modelRef, work
     queryFn: () => getInstancesGateway().load(entityId),
   });
 
-  const { data, meta } = query.data ?? {};
-  const json = useMemo(() => JSON.stringify(data ?? {}, null, 2), [data]);
-
   if (query.isLoading) return <Text>Loading…</Text>;
   if (query.isError) return <Text type="danger">Failed to load: {(query.error as Error).message}</Text>;
+
+  const { data, meta } = query.data!;
 
   return (
     <Space direction="vertical" style={{ width: '100%' }} size="middle">
@@ -67,7 +66,7 @@ export const DetailsTab: React.FC<DetailsTabProps> = ({ entityId, modelRef, work
       {bodyView === 'tree' ? (
         <CloudEntityTree value={data ?? {}} showEmpty={showEmpty} />
       ) : (
-        <CodeEditor value={json} language="json" readOnly height={480} />
+        <JsonView value={data} maxHeight={600} />
       )}
     </Space>
   );

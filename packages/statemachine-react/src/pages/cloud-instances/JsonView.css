@@ -1,0 +1,16 @@
+.cloud-json-view .json-key { color: #9cdcfe; }
+.cloud-json-view .json-string { color: #ce9178; }
+.cloud-json-view .json-number { color: #b5cea8; }
+.cloud-json-view .json-bool { color: #569cd6; }
+.cloud-json-view .json-null { color: #d16969; }
+
+[data-theme='light'] .cloud-json-view {
+  background: #ffffff !important;
+  color: #24292e;
+  border-color: #e1e4e8 !important;
+}
+[data-theme='light'] .cloud-json-view .json-key { color: #005cc5; }
+[data-theme='light'] .cloud-json-view .json-string { color: #032f62; }
+[data-theme='light'] .cloud-json-view .json-number { color: #d73a49; }
+[data-theme='light'] .cloud-json-view .json-bool { color: #005cc5; }
+[data-theme='light'] .cloud-json-view .json-null { color: #6f42c1; }

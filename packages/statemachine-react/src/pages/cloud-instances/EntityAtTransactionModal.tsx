@@ -1,8 +1,8 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Modal, Spin } from 'antd';
 import { useQuery } from '@tanstack/react-query';
-import { CodeEditor } from '@cyoda/ui-lib-react';
 import { getInstancesGateway } from '../../gateways';
+import { JsonView } from './JsonView';
 
 export interface EntityAtTransactionModalProps {
   open: boolean;
@@ -17,12 +17,9 @@ export const EntityAtTransactionModal: React.FC<EntityAtTransactionModalProps> =
     queryFn: () => getInstancesGateway().load(entityId, { transactionId }),
     enabled: open,
   });
-  const json = useMemo(() => JSON.stringify(query.data?.data ?? {}, null, 2), [query.data]);
   return (
     <Modal open={open} onCancel={onClose} footer={null} width={900} title={`Entity at Transaction: ${transactionId}`} destroyOnHidden>
-      {query.isLoading ? <Spin /> : (
-        <CodeEditor value={json} language="json" readOnly height={520} />
-      )}
+      {query.isLoading ? <Spin /> : <JsonView value={query.data?.data} maxHeight="60vh" />}
     </Modal>
   );
 };
