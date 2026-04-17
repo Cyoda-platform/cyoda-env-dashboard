@@ -32,6 +32,7 @@
     "axios": "^1.7.9",
     "buffer": "^6.0.3",
     "cytoscape": "^3.31.0",
+    "immer": "^11.1.4",
     "js-beautify": "^1.15.1",
     "prismjs": "^1.29.0",
     "react": "^18.3.1",
