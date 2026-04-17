@@ -56,10 +56,10 @@ describe('InstanceDetailCloud — shell', () => {
 
   it('switches tabs via clicks — remaining stubs render', async () => {
     renderAt('/instances/eid?entityName=Customer&modelVersion=1&workflowName=wf');
-    // Audit tab is still a stub
-    await userEvent.click(screen.getByRole('tab', { name: /Audit/ }));
-    expect(screen.getByText(/Audit \(todo\)/)).toBeInTheDocument();
-    // Switch to JSON tab (also still a stub at this point in E3)
+    // Data Lineage tab is still a stub
+    await userEvent.click(screen.getByRole('tab', { name: /Data Lineage/ }));
+    expect(screen.getByText(/Data Lineage \(todo\)/)).toBeInTheDocument();
+    // Switch to JSON tab (also still a stub)
     await userEvent.click(screen.getByRole('tab', { name: /JSON/ }));
     expect(screen.getByText(/JSON \(todo\)/)).toBeInTheDocument();
   });

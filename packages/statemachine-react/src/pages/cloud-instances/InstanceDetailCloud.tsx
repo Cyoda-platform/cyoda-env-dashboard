@@ -10,6 +10,7 @@ import { ArrowLeftOutlined } from '@ant-design/icons';
 import type { ModelRef } from '../../gateways';
 import { DetailsTab } from './tabs/DetailsTab';
 import { WorkflowTab } from './tabs/WorkflowTab';
+import { AuditTab } from './tabs/AuditTab';
 
 const { Title, Text } = Typography;
 
@@ -26,7 +27,7 @@ export const InstanceDetailCloud: React.FC = () => {
   const items = useMemo(() => [
     { key: 'details', label: 'Details', children: <DetailsTab entityId={entityId!} modelRef={modelRef} workflowName={workflowName} /> },
     { key: 'workflow', label: 'Workflow', children: <WorkflowTab entityId={entityId!} modelRef={modelRef} workflowName={workflowName} /> },
-    { key: 'audit', label: 'Audit', children: <AuditTab /> },
+    { key: 'audit', label: 'Audit', children: <AuditTab entityId={entityId!} /> },
     { key: 'lineage', label: 'Data Lineage', children: <DataLineageTab /> },
     { key: 'json', label: 'JSON', children: <JsonTab /> },
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -46,7 +47,6 @@ export const InstanceDetailCloud: React.FC = () => {
   );
 };
 
-// Inline stubs — E5-E7 will replace these with real imports.
-function AuditTab() { return <div>Audit (todo)</div>; }
+// Inline stubs — E6-E7 will replace these with real imports.
 function DataLineageTab() { return <div>Data Lineage (todo)</div>; }
 function JsonTab() { return <div>JSON (todo)</div>; }
