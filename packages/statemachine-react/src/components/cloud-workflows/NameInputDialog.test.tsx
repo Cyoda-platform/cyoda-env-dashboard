@@ -114,4 +114,86 @@ describe('NameInputDialog', () => {
     await userEvent.click(screen.getByRole('button', { name: /cancel/i }));
     expect(onCancel).toHaveBeenCalledOnce();
   });
+
+  it('clears stale form state when reopened', async () => {
+    const { rerender } = renderWithApp(
+      <NameInputDialog
+        open
+        title="Rename"
+        existingNames={[]}
+        initialValue="Foo"
+        onSubmit={onSubmit}
+        onCancel={onCancel}
+      />
+    );
+    const input = screen.getByLabelText(/new name/i);
+    await userEvent.clear(input);
+    await userEvent.type(input, 'Bar');
+
+    // Close, then reopen with a different initial value.
+    rerender(
+      <App>
+        <NameInputDialog
+          open={false}
+          title="Rename"
+          existingNames={[]}
+          initialValue="Foo"
+          onSubmit={onSubmit}
+          onCancel={onCancel}
+        />
+      </App>
+    );
+    rerender(
+      <App>
+        <NameInputDialog
+          open
+          title="Rename"
+          existingNames={[]}
+          initialValue=""
+          onSubmit={onSubmit}
+          onCancel={onCancel}
+        />
+      </App>
+    );
+
+    expect(screen.getByLabelText(/new name/i)).toHaveValue('');
+  });
+
+  it('blocks submit when name is whitespace-only (trim-before-required)', async () => {
+    renderWithApp(
+      <NameInputDialog
+        open
+        title="Duplicate"
+        existingNames={[]}
+        onSubmit={onSubmit}
+        onCancel={onCancel}
+      />
+    );
+    await userEvent.type(screen.getByLabelText(/new name/i), '   ');
+    await userEvent.click(screen.getByRole('button', { name: /ok/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/name is required/i)).toBeInTheDocument();
+    });
+    expect(onSubmit).not.toHaveBeenCalled();
+  });
+
+  it('allows submitting the allowedValue without a uniqueness error', async () => {
+    renderWithApp(
+      <NameInputDialog
+        open
+        title="Rename"
+        existingNames={['Premium', 'Standard']}
+        initialValue="Premium"
+        allowedValue="Premium"
+        onSubmit={onSubmit}
+        onCancel={onCancel}
+      />
+    );
+    // The dialog opens with Premium pre-filled and Premium also in existingNames.
+    // Without the allowedValue, this would reject as a conflict against itself.
+    await userEvent.click(screen.getByRole('button', { name: /ok/i }));
+
+    expect(onSubmit).toHaveBeenCalledWith('Premium');
+  });
 });
