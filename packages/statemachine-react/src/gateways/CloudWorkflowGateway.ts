@@ -12,7 +12,7 @@
  */
 
 import { axios } from '@cyoda/http-api-react';
-import { MustHaveActiveWorkflowError, RenameIncompleteError } from './errors';
+import { MustHaveActiveWorkflowError, RenameIncompleteError, WorkflowNotFoundError } from './errors';
 import type { WorkflowGateway } from './WorkflowGateway';
 import type {
   ModelRef,
@@ -57,9 +57,7 @@ export class CloudWorkflowGateway implements WorkflowGateway {
     const response = await axios.get<WorkflowExportResponse>(exportUrl(modelRef));
     const found = (response.data.workflows ?? []).find((w) => w.name === name);
     if (!found) {
-      throw new Error(
-        `Workflow "${name}" not found in model ${modelRef.entityName} v${modelRef.modelVersion}`
-      );
+      throw new WorkflowNotFoundError(name, modelRef.entityName, modelRef.modelVersion);
     }
     return found;
   }
@@ -139,10 +137,7 @@ export class CloudWorkflowGateway implements WorkflowGateway {
 
     const source = all.find((w) => w.name === sourceName);
     if (!source) {
-      throw new Error(
-        `Source workflow "${sourceName}" not found in model ` +
-          `${modelRef.entityName} v${modelRef.modelVersion}`
-      );
+      throw new WorkflowNotFoundError(sourceName, modelRef.entityName, modelRef.modelVersion);
     }
 
     const clone: WorkflowDoc = { ...source, name: newName };

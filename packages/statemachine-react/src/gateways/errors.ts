@@ -57,3 +57,20 @@ export class NotImplementedInLegacyError extends Error {
     this.name = 'NotImplementedInLegacyError';
   }
 }
+
+/**
+ * Thrown when a workflow lookup by name returns no match. Generic to any
+ * not-found path (initial load with a bad URL, post-save fetch when the
+ * backend rewrote the name — see CloudWorkflowGateway.loadWorkflow). The
+ * message string is preserved for callers that match on it.
+ */
+export class WorkflowNotFoundError extends Error {
+  constructor(
+    public readonly workflowName: string,
+    public readonly entityName: string,
+    public readonly modelVersion: number,
+  ) {
+    super(`Workflow "${workflowName}" not found in model ${entityName} v${modelVersion}`);
+    this.name = 'WorkflowNotFoundError';
+  }
+}

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { CloudWorkflowGateway } from './CloudWorkflowGateway';
-import { MustHaveActiveWorkflowError } from './errors';
+import { MustHaveActiveWorkflowError, WorkflowNotFoundError } from './errors';
 
 vi.mock('@cyoda/http-api-react', () => ({
   axios: {
@@ -10,6 +10,7 @@ vi.mock('@cyoda/http-api-react', () => ({
 }));
 
 const { axios } = await import('@cyoda/http-api-react');
+const mockedAxios = axios as { get: ReturnType<typeof vi.fn>; post: ReturnType<typeof vi.fn> };
 
 describe('CloudWorkflowGateway', () => {
   let gateway: CloudWorkflowGateway;
@@ -511,5 +512,27 @@ describe('CloudWorkflowGateway', () => {
       expect(axios.get).not.toHaveBeenCalled();
       expect(axios.post).not.toHaveBeenCalled();
     });
+  });
+});
+
+describe('CloudWorkflowGateway loadWorkflow — typed not-found error', () => {
+  it('throws WorkflowNotFoundError when the named workflow is missing', async () => {
+    mockedAxios.get.mockResolvedValueOnce({
+      data: { entityName: 'Customer', modelVersion: 1, workflows: [] },
+    } as any);
+    const gw = new CloudWorkflowGateway();
+    await expect(
+      gw.loadWorkflow({ entityName: 'Customer', modelVersion: 1 }, 'missing'),
+    ).rejects.toBeInstanceOf(WorkflowNotFoundError);
+  });
+
+  it('preserves the legacy message string for callers that match on it', async () => {
+    mockedAxios.get.mockResolvedValueOnce({
+      data: { entityName: 'Customer', modelVersion: 1, workflows: [] },
+    } as any);
+    const gw = new CloudWorkflowGateway();
+    await expect(
+      gw.loadWorkflow({ entityName: 'Customer', modelVersion: 1 }, 'missing'),
+    ).rejects.toThrow(/Workflow "missing" not found in model Customer v1/);
   });
 });
