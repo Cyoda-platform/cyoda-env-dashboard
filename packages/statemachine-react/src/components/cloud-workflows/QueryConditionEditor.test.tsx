@@ -1,7 +1,29 @@
+import { useState } from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QueryConditionEditor } from './QueryConditionEditor';
+import type { QueryCondition } from '../../gateways';
+
+/**
+ * Wraps QueryConditionEditor with state so controlled inputs behave as they do
+ * in production. The spy captures every onChange call for assertions.
+ */
+function Controlled({
+  initialValue,
+  onChangeSpy,
+}: {
+  initialValue: QueryCondition | undefined;
+  onChangeSpy: (next: QueryCondition | undefined) => void;
+}) {
+  const [v, setV] = useState<QueryCondition | undefined>(initialValue);
+  return (
+    <QueryConditionEditor
+      value={v}
+      onChange={(next) => { setV(next); onChangeSpy(next); }}
+    />
+  );
+}
 
 describe('QueryConditionEditor — empty / simple', () => {
   it('renders an "Add criterion" button when value is undefined', () => {
@@ -11,7 +33,7 @@ describe('QueryConditionEditor — empty / simple', () => {
 
   it('clicking "Add criterion" emits a default simple condition', async () => {
     const onChange = vi.fn();
-    render(<QueryConditionEditor value={undefined} onChange={onChange} />);
+    render(<Controlled initialValue={undefined} onChangeSpy={onChange} />);
     await userEvent.click(screen.getByRole('button', { name: /add criterion/i }));
     expect(onChange).toHaveBeenCalledWith({
       type: 'simple', jsonPath: '', operation: 'EQUALS', value: '',
@@ -31,9 +53,9 @@ describe('QueryConditionEditor — empty / simple', () => {
 
   it('typing into jsonPath emits the change', async () => {
     const onChange = vi.fn();
-    render(<QueryConditionEditor
-      value={{ type: 'simple', jsonPath: '$.x', operation: 'EQUALS', value: 'y' } as any}
-      onChange={onChange}
+    render(<Controlled
+      initialValue={{ type: 'simple', jsonPath: '$.x', operation: 'EQUALS', value: 'y' } as any}
+      onChangeSpy={onChange}
     />);
     const input = screen.getByDisplayValue('$.x');
     await userEvent.clear(input);
@@ -45,9 +67,9 @@ describe('QueryConditionEditor — empty / simple', () => {
 
   it('"Remove criterion" emits undefined', async () => {
     const onChange = vi.fn();
-    render(<QueryConditionEditor
-      value={{ type: 'simple', jsonPath: '$.x', operation: 'EQUALS', value: 'y' } as any}
-      onChange={onChange}
+    render(<Controlled
+      initialValue={{ type: 'simple', jsonPath: '$.x', operation: 'EQUALS', value: 'y' } as any}
+      onChangeSpy={onChange}
     />);
     await userEvent.click(screen.getByRole('button', { name: /remove criterion/i }));
     expect(onChange).toHaveBeenCalledWith(undefined);

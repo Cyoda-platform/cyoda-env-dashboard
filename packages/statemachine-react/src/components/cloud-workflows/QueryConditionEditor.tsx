@@ -5,8 +5,8 @@
  * This task (Task 9) implements the empty + simple branches. Group + function
  * land in Tasks 10 + 11; type-switch confirm in Task 12.
  */
-import React, { useState } from 'react';
-import { Button, Select, Space, Typography } from 'antd';
+import React from 'react';
+import { Button, Input, Select, Space, Typography } from 'antd';
 import type { QueryCondition } from '../../gateways';
 
 const { Text } = Typography;
@@ -26,51 +26,6 @@ const OPERATION_OPTIONS = [
   { label: 'Collection', options: COLLECTION_OPS.map((v) => ({ value: v, label: v })) },
 ];
 
-interface SimpleCondition {
-  type: 'simple';
-  jsonPath: string;
-  operation: string;
-  value: string;
-}
-
-const SimpleConditionEditor: React.FC<{
-  condition: SimpleCondition;
-  onChange: (next: QueryCondition) => void;
-}> = ({ condition, onChange }) => {
-  const [jsonPath, setJsonPath] = useState(condition.jsonPath);
-  const [condValue, setCondValue] = useState(condition.value);
-
-  return (
-    <Space direction="vertical" style={{ width: '100%' }}>
-      <input
-        placeholder="JSONPath e.g. $.field"
-        value={jsonPath}
-        onChange={(e) => {
-          setJsonPath(e.target.value);
-          onChange({ ...condition, jsonPath: e.target.value } as any);
-        }}
-      />
-      <Select
-        style={{ width: 240 }}
-        value={condition.operation}
-        onChange={(op) => onChange({ ...condition, operation: op } as any)}
-        options={OPERATION_OPTIONS}
-      />
-      <input
-        placeholder="Value"
-        value={condValue}
-        onChange={(e) => {
-          setCondValue(e.target.value);
-          onChange({ ...condition, value: e.target.value } as any);
-        }}
-      />
-      <Text type="secondary" style={{ fontSize: 12 }}>
-        Compared as a string. For typed comparisons (numeric, boolean), use a function condition.
-      </Text>
-    </Space>
-  );
-};
-
 export const QueryConditionEditor: React.FC<QueryConditionEditorProps> = ({ value, onChange }) => {
   if (value === undefined) {
     return (
@@ -89,10 +44,27 @@ export const QueryConditionEditor: React.FC<QueryConditionEditorProps> = ({ valu
         <Button size="small" onClick={() => onChange(undefined)}>Remove criterion</Button>
       </Space>
       {t === 'simple' && (
-        <SimpleConditionEditor
-          condition={value as any}
-          onChange={onChange}
-        />
+        <Space direction="vertical" style={{ width: '100%' }}>
+          <Input
+            placeholder="JSONPath e.g. $.field"
+            value={(value as any).jsonPath ?? ''}
+            onChange={(e) => onChange({ ...(value as any), jsonPath: e.target.value })}
+          />
+          <Select
+            style={{ width: 240 }}
+            value={(value as any).operation}
+            onChange={(op) => onChange({ ...(value as any), operation: op })}
+            options={OPERATION_OPTIONS}
+          />
+          <Input
+            placeholder="Value"
+            value={(value as any).value ?? ''}
+            onChange={(e) => onChange({ ...(value as any), value: e.target.value })}
+          />
+          <Text type="secondary" style={{ fontSize: 12 }}>
+            Compared as a string. For typed comparisons (numeric, boolean), use a function condition.
+          </Text>
+        </Space>
       )}
     </Space>
   );
