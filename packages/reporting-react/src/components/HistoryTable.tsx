@@ -241,8 +241,9 @@ const HistoryTable: React.FC<HistoryTableProps> = ({
     }
 
     let data = reportHistoryData.map((report) => {
-      // Safely handle configName
-      const configName = report.configName || report.name || 'Unknown';
+      // Safely handle configName. The backend sometimes returns `name` instead
+      // of `configName` — not in the typed shape, so treat as loosely-typed.
+      const configName = report.configName || (report as any).name || 'Unknown';
       const reportName: string[] = configName.split('-');
       const configShortName: string =
         reportName.length < 3
@@ -258,8 +259,9 @@ const HistoryTable: React.FC<HistoryTableProps> = ({
       const createTimeStr = createTime.format('YYYY.MM.DD HH:mm:ss');
       const executionStr = duration ? formatDuration(duration) || 'Not yet run' : 'Not yet run';
 
-      // Safely handle user
-      const username = report.user?.username || report.userId || 'Unknown';
+      // Safely handle user. `userId` is a fallback field when the embedded
+      // `user` object is not present (tolerated from the API, not in the type).
+      const username = report.user?.username || (report as any).userId || 'Unknown';
 
       // Find entity type info
       const reportType = report.type || '';
@@ -629,7 +631,7 @@ const HistoryTable: React.FC<HistoryTableProps> = ({
   return (
     <div className="history-table">
       <Table
-        columns={resizableColumns}
+        columns={resizableColumns as any}
         dataSource={tableData}
         loading={isLoading}
         rowKey="id"

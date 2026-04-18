@@ -288,7 +288,9 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
         label: report.gridConfigFields.user.username,
       }));
 
-    return Array.from(new Map(users.map((u: { value: string; label: string }) => [u.value, u])).values());
+    return Array.from(
+      new Map(users.map((u: { value: string; label: string }) => [u.value, u])).values(),
+    ) as { value: string; label: string }[];
   }, [definitions]);
 
   // Extract unique entities for filter
@@ -298,7 +300,9 @@ const ReportConfigs: React.FC<ReportConfigsProps> = ({ onResetState }) => {
       label: report.gridConfigFields.type,
     }));
 
-    return Array.from(new Map(entities.map((e: { value: string; label: string }) => [e.value, e])).values());
+    return Array.from(
+      new Map(entities.map((e: { value: string; label: string }) => [e.value, e])).values(),
+    ) as { value: string; label: string }[];
   }, [definitions]);
 
   // State options for filter

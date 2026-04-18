@@ -55,7 +55,10 @@ export interface ReportGroup {
   };
 }
 
-export interface TableColumn {
+// Duplicate of the public `TableColumn` in ../types — kept local to avoid
+// a barrel-export collision; this module re-exports from ../types if callers
+// need it.
+interface TableColumn {
   label: string;
   prop: string;
 }

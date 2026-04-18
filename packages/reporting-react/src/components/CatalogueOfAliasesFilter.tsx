@@ -111,9 +111,11 @@ const CatalogueOfAliasesFilter: React.FC<CatalogueOfAliasesFilterProps> = ({
               <DatePicker
                 showTime
                 placeholder="Select from date and time"
-                value={value.time_custom ? moment(value.time_custom) : null}
+                // antd v5 DatePicker is Dayjs-typed; Moment values flow through
+                // this component — cast at the boundary.
+                value={value.time_custom ? (moment(value.time_custom) as any) : null}
                 onChange={handleDateChange}
-                presets={presets}
+                presets={presets as any}
                 style={{ width: '100%' }}
               />
             </Form.Item>

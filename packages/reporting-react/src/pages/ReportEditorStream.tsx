@@ -160,7 +160,7 @@ const updateMutation = useMutation({
         streamDataDef.rangeColDefs = [];
       }
 
-      setConfigDefinition(streamDataDef);
+      setConfigDefinition(streamDataDef as any);
     }
   }, [reportData]);
 
