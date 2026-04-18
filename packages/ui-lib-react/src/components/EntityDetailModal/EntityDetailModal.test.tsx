@@ -49,6 +49,10 @@ vi.mock('@cyoda/http-api-react', () => {
     axiosGrafana: mockAxiosInstance,
     axiosAI: mockAxiosInstance,
     getEntityLoad: vi.fn(),
+    getCyodaCloudEntity: vi.fn(),
+    extractCyodaEntityData: vi.fn((envelope: any) => envelope?.data ?? envelope),
+    extractCyodaEntityMeta: vi.fn((envelope: any) => envelope?.meta ?? {}),
+    HelperFeatureFlags: { isCyodaCloud: () => false },
   };
 });
 import { axios as httpApiAxios, getEntityLoad } from '@cyoda/http-api-react';

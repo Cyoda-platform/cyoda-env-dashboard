@@ -68,6 +68,15 @@ vi.mock('../../hooks/useStatemachine', () => ({
     data: [],
     isLoading: false,
   }),
+  statemachineKeys: {
+    all: ['statemachine'],
+    workflows: () => ['statemachine', 'workflows'],
+    workflow: () => ['statemachine', 'workflow'],
+    states: () => ['statemachine', 'states'],
+    statesList: () => ['statemachine', 'states', 'list'],
+    transitions: () => ['statemachine', 'transitions'],
+    transitionsList: () => ['statemachine', 'transitions', 'list'],
+  },
 }));
 
 // Mock components

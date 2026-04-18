@@ -107,6 +107,15 @@ vi.mock('../../hooks/useStatemachine', () => ({
     mutateAsync: vi.fn(),
     isPending: false,
   })),
+  statemachineKeys: {
+    all: ['statemachine'],
+    workflows: () => ['statemachine', 'workflows'],
+    workflow: () => ['statemachine', 'workflow'],
+    states: () => ['statemachine', 'states'],
+    statesList: () => ['statemachine', 'states', 'list'],
+    transitions: () => ['statemachine', 'transitions'],
+    transitionsList: () => ['statemachine', 'transitions', 'list'],
+  },
 }));
 
 // Mock HelperDictionary

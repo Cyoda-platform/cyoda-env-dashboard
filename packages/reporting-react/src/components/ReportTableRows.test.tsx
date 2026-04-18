@@ -39,6 +39,7 @@ vi.mock('@cyoda/http-api-react', () => {
     getReportConfig: vi.fn(),
     getReportingFetchTypes: vi.fn(),
     getHistory: vi.fn(),
+    HelperFeatureFlags: { isCyodaCloud: () => false, isWorkflowEnabled: () => true, workflowEnabledTypes: () => [] },
   };
 });
 

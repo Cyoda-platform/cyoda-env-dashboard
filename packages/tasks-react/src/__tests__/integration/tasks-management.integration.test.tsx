@@ -120,6 +120,7 @@ vi.mock('@cyoda/ui-lib-react', () => {
       toLowerCase: (str: string) => str.toLowerCase(),
       date: (date: string) => new Date(date).toLocaleDateString(),
     },
+    ResizableTitle: (props: any) => <th {...props} />,
   };
 });
 
