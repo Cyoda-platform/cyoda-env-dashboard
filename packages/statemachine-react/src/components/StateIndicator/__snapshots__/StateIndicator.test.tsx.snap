@@ -17,7 +17,7 @@ exports[`StateIndicator > Snapshot Tests > should match snapshot for active defa
   class="state-indicator"
 >
   <span
-    class="ant-badge ant-badge-status ant-badge-not-a-wrapper css-dev-only-do-not-override-ac2jek"
+    class="ant-badge ant-badge-status ant-badge-not-a-wrapper css-dev-only-do-not-override-mncuj7"
   >
     <span
       class="ant-badge-status-dot ant-badge-status-success"
@@ -43,7 +43,7 @@ exports[`StateIndicator > Snapshot Tests > should match snapshot for inactive de
   class="state-indicator"
 >
   <span
-    class="ant-badge ant-badge-status ant-badge-not-a-wrapper css-dev-only-do-not-override-ac2jek"
+    class="ant-badge ant-badge-status ant-badge-not-a-wrapper css-dev-only-do-not-override-mncuj7"
   >
     <span
       class="ant-badge-status-dot ant-badge-status-default"
@@ -57,7 +57,7 @@ exports[`StateIndicator > Snapshot Tests > should match snapshot with text shown
   class="state-indicator"
 >
   <span
-    class="ant-badge ant-badge-status ant-badge-not-a-wrapper css-dev-only-do-not-override-ac2jek"
+    class="ant-badge ant-badge-status ant-badge-not-a-wrapper css-dev-only-do-not-override-mncuj7"
   >
     <span
       class="ant-badge-status-dot ant-badge-status-success"

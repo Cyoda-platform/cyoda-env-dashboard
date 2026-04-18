@@ -67,7 +67,7 @@ describe('Tasks Page', () => {
     it('should render Subscribe button when not subscribed', () => {
       render(<Tasks />);
 
-      expect(screen.getByRole('button', { name: /Subscribe to live data updates/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /Subscribe to live data/i })).toBeInTheDocument();
     });
 
     it('should render Unsubscribe button when subscribed', () => {
@@ -81,14 +81,14 @@ describe('Tasks Page', () => {
 
       render(<Tasks />);
 
-      expect(screen.getByRole('button', { name: /Unsubscribe from live data updates/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /Unsubscribe to live data/i })).toBeInTheDocument();
     });
 
     it('should display correct icon for Subscribe button', () => {
       const { container } = render(<Tasks />);
 
-      const button = screen.getByRole('button', { name: /Subscribe to live data updates/i });
-      expect(button.querySelector('.anticon-api')).not.toBeNull();
+      const button = screen.getByRole('button', { name: /Subscribe to live data/i });
+      expect(button.querySelector('.anticon-sync')).not.toBeNull();
     });
 
     it('should display correct icon for Unsubscribe button', () => {
@@ -102,8 +102,8 @@ describe('Tasks Page', () => {
 
       const { container } = render(<Tasks />);
 
-      const button = screen.getByRole('button', { name: /Unsubscribe from live data updates/i });
-      expect(button.querySelector('.anticon-close')).not.toBeNull();
+      const button = screen.getByRole('button', { name: /Unsubscribe to live data/i });
+      expect(button.querySelector('.anticon-stop')).not.toBeNull();
     });
   });
 
@@ -112,7 +112,7 @@ describe('Tasks Page', () => {
       const user = userEvent.setup();
       render(<Tasks />);
 
-      const subscribeButton = screen.getByRole('button', { name: /Subscribe to live data updates/i });
+      const subscribeButton = screen.getByRole('button', { name: /Subscribe to live data/i });
       await user.click(subscribeButton);
 
       expect(mockSetIsApplyRealData).toHaveBeenCalledWith(true);
@@ -130,7 +130,7 @@ describe('Tasks Page', () => {
 
       render(<Tasks />);
 
-      const unsubscribeButton = screen.getByRole('button', { name: /Unsubscribe from live data updates/i });
+      const unsubscribeButton = screen.getByRole('button', { name: /Unsubscribe to live data/i });
       await user.click(unsubscribeButton);
 
       expect(mockSetIsApplyRealData).toHaveBeenCalledWith(false);
@@ -226,7 +226,7 @@ describe('Tasks Page', () => {
 
       const { container } = render(<Tasks />);
 
-      const button = screen.getByRole('button', { name: /Unsubscribe from live data updates/i });
+      const button = screen.getByRole('button', { name: /Unsubscribe to live data/i });
       expect(button.classList.contains('ant-btn-dangerous')).toBe(true);
     });
   });

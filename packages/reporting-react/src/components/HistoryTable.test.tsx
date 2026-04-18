@@ -124,7 +124,8 @@ describe('HistoryTable', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    // Mock entity types API call (used by global axios)
+    // Default: entity-types route uses axiosPlatform.get too. Individual tests use
+    // mockResolvedValueOnce to override the /reporting/history call.
     mockedAxios.get.mockResolvedValue({
       data: {
         _embedded: {
@@ -134,6 +135,23 @@ describe('HistoryTable', () => {
           ],
         },
       },
+    });
+
+    mockedAxiosPlatform.get.mockImplementation((url: string) => {
+      if (url.includes('/entity/types')) {
+        return Promise.resolve({
+          data: {
+            _embedded: {
+              entityTypes: [
+                { name: 'test.Entity1', type: 'BUSINESS' },
+                { name: 'test.Entity2', type: 'BUSINESS' },
+                { name: 'test.Entity3', type: 'BUSINESS' },
+              ],
+            },
+          },
+        });
+      }
+      return Promise.resolve({ data: mockReportHistory });
     });
 
     // Mock users API call (used by axiosPlatform)
@@ -164,8 +182,6 @@ describe('HistoryTable', () => {
     });
 
     it('should display report data in table', async () => {
-      mockedAxiosPlatform.get.mockResolvedValueOnce({ data: mockReportHistory });
-
       render(
         <HistoryTable
           filter={mockFilter}
@@ -484,7 +500,18 @@ describe('HistoryTable', () => {
         },
       };
 
-      mockedAxiosPlatform.get.mockResolvedValueOnce({ data: dataWithoutGrouping });
+      mockedAxiosPlatform.get.mockImplementation((url: string) => {
+        if (url.includes('/entity/types')) {
+          return Promise.resolve({
+            data: { _embedded: { entityTypes: [
+              { name: 'test.Entity1', type: 'BUSINESS' },
+              { name: 'test.Entity2', type: 'BUSINESS' },
+              { name: 'test.Entity3', type: 'BUSINESS' },
+            ] } },
+          });
+        }
+        return Promise.resolve({ data: dataWithoutGrouping });
+      });
 
       const { container } = render(
         <HistoryTable

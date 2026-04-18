@@ -71,11 +71,20 @@ vi.mock('../../hooks/useStatemachine', () => ({
   statemachineKeys: {
     all: ['statemachine'],
     workflows: () => ['statemachine', 'workflows'],
+    workflowsList: () => ['statemachine', 'workflows', 'list'],
     workflow: () => ['statemachine', 'workflow'],
+    workflowDoc: () => ['statemachine', 'workflows', 'doc'],
+    workflowEnabledTypes: () => ['statemachine', 'workflows', 'enabled-types'],
     states: () => ['statemachine', 'states'],
     statesList: () => ['statemachine', 'states', 'list'],
+    state: () => ['statemachine', 'states', 'state'],
     transitions: () => ['statemachine', 'transitions'],
     transitionsList: () => ['statemachine', 'transitions', 'list'],
+    transition: () => ['statemachine', 'transitions', 'transition'],
+    criteria: () => ['statemachine', 'criteria'],
+    criteriaList: () => ['statemachine', 'criteria', 'list'],
+    criteriaItem: () => ['statemachine', 'criteria', 'item'],
+    criteriacheckers: () => ['statemachine', 'criteria', 'checkers'],
   },
 }));
 
