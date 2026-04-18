@@ -129,7 +129,7 @@ describe('TransitionsList', () => {
       isPending: false,
     } as any);
 
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
 
     render(
       <TransitionsList
@@ -165,7 +165,7 @@ describe('TransitionsList', () => {
   });
 
   it('should show states list modal when button clicked', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
 
     render(
       <TransitionsList

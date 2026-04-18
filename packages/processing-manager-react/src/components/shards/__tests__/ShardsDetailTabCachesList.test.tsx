@@ -276,7 +276,7 @@ describe('ShardsDetailTabCachesList', () => {
         isPending: false,
       } as any);
 
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       const { container } = render(<ShardsDetailTabCachesList />, { wrapper });
 
       const invalidateButtons = container.querySelectorAll('.anticon-sync');
@@ -295,7 +295,7 @@ describe('ShardsDetailTabCachesList', () => {
         refetch: vi.fn(),
       } as any);
 
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       const { container } = render(<ShardsDetailTabCachesList />, { wrapper });
 
       const invalidateButton = container.querySelector('.anticon-sync')?.closest('button');
@@ -321,7 +321,7 @@ describe('ShardsDetailTabCachesList', () => {
     });
 
     it('should fetch cache keys when row is expanded', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       const { container } = render(<ShardsDetailTabCachesList />, { wrapper });
 
       const expandIcons = container.querySelectorAll('.anticon-right');
@@ -335,7 +335,7 @@ describe('ShardsDetailTabCachesList', () => {
     });
 
     it('should display cache keys after expansion', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       const { container } = render(<ShardsDetailTabCachesList />, { wrapper });
 
       const expandIcons = container.querySelectorAll('.anticon-right');
@@ -349,7 +349,7 @@ describe('ShardsDetailTabCachesList', () => {
     });
 
     it('should change icon to down when expanded', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       const { container } = render(<ShardsDetailTabCachesList />, { wrapper });
 
       const expandIcon = container.querySelector('.anticon-right') as HTMLElement;
@@ -361,7 +361,7 @@ describe('ShardsDetailTabCachesList', () => {
     });
 
     it('should not fetch keys again if already loaded', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       const { container } = render(<ShardsDetailTabCachesList />, { wrapper });
 
       const expandIcon = container.querySelector('.anticon-right') as HTMLElement;

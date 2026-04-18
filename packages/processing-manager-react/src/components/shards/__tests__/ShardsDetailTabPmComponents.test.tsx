@@ -45,7 +45,7 @@ describe('ShardsDetailTabPmComponents', () => {
   });
 
   it('should switch to Execution Monitors tab when clicked', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     const { container } = render(<ShardsDetailTabPmComponents />, { wrapper });
 
     const tab = screen.getByText('Execution Monitors');
@@ -56,7 +56,7 @@ describe('ShardsDetailTabPmComponents', () => {
   });
 
   it('should switch to Service Processes View tab when clicked', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     const { container } = render(<ShardsDetailTabPmComponents />, { wrapper });
 
     const tab = screen.getByText('Service Processes View');
@@ -67,7 +67,7 @@ describe('ShardsDetailTabPmComponents', () => {
   });
 
   it('should switch to Cyoda Runnable Components tab when clicked', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     const { container } = render(<ShardsDetailTabPmComponents />, { wrapper });
 
     const tab = screen.getByText('Cyoda Runnable Components');

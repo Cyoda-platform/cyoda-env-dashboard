@@ -45,7 +45,7 @@ describe('GraphicalStateMachinePanel', () => {
   })
 
   it('calls onToggleListOfTransitions when button is clicked', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     const onToggle = vi.fn()
     
     render(<GraphicalStateMachinePanel onToggleListOfTransitions={onToggle} />)
@@ -57,7 +57,7 @@ describe('GraphicalStateMachinePanel', () => {
   })
 
   it('calls onToggleProcesses when button is clicked', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     const onToggle = vi.fn()
     
     render(<GraphicalStateMachinePanel onToggleProcesses={onToggle} />)
@@ -69,7 +69,7 @@ describe('GraphicalStateMachinePanel', () => {
   })
 
   it('calls onToggleCriteria when button is clicked', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     const onToggle = vi.fn()
     
     render(<GraphicalStateMachinePanel onToggleCriteria={onToggle} />)
@@ -81,7 +81,7 @@ describe('GraphicalStateMachinePanel', () => {
   })
 
   it('calls onToggleTitles when button is clicked', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     const onToggle = vi.fn()
     
     render(<GraphicalStateMachinePanel onToggleTitles={onToggle} />)
@@ -93,7 +93,7 @@ describe('GraphicalStateMachinePanel', () => {
   })
 
   it('calls onToggleEdgesTitles when button is clicked', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     const onToggle = vi.fn()
     
     render(<GraphicalStateMachinePanel onToggleEdgesTitles={onToggle} />)
@@ -105,7 +105,7 @@ describe('GraphicalStateMachinePanel', () => {
   })
 
   it('calls onResetPositions when button is clicked', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     const onReset = vi.fn()
     
     render(<GraphicalStateMachinePanel onResetPositions={onReset} />)

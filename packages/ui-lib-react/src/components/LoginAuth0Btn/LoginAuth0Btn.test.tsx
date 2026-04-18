@@ -29,7 +29,7 @@ describe('LoginAuth0Btn', () => {
   })
 
   it('calls loginWithRedirect when clicked', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     const mockLoginWithRedirect = vi.fn()
     
     renderLoginAuth0Btn({ loginWithRedirect: mockLoginWithRedirect })

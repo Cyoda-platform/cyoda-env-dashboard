@@ -217,7 +217,7 @@ describe('ConfigEditorStreamGrid - Entity Detail Modal Integration', () => {
   })
 
   it('should open entity detail modal on row double-click', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     const ref = createRef<ConfigEditorStreamGridRef>()
 
     render(
@@ -251,7 +251,7 @@ describe('ConfigEditorStreamGrid - Entity Detail Modal Integration', () => {
   })
 
   it('should close entity detail modal when close button is clicked', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     const ref = createRef<ConfigEditorStreamGridRef>()
 
     render(

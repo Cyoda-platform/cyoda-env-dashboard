@@ -81,7 +81,7 @@ describe('ChatBotFormInfo', () => {
   })
 
   it('calls onClose when close button is clicked', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     const onClose = vi.fn()
     
     render(<ChatBotFormInfo visible={true} onClose={onClose} />)
@@ -97,7 +97,7 @@ describe('ChatBotFormInfo', () => {
   })
 
   it('calls onClose when modal is cancelled', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     const onClose = vi.fn()
     const { container } = render(<ChatBotFormInfo visible={true} onClose={onClose} />)
     

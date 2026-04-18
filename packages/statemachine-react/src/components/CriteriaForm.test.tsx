@@ -142,7 +142,7 @@ describe('CriteriaForm Component', () => {
   });
 
   it.skip('should handle form submission for new criteria', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     mockCreateCriteriaMutateAsync.mockResolvedValue({ id: 'criteria-1' });
 
     render(
@@ -191,7 +191,7 @@ describe('CriteriaForm Component', () => {
   });
 
   it.skip('should handle form submission for updating criteria', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     const statemachineHooks = await import('../hooks/useStatemachine');
 
     vi.mocked(statemachineHooks.useCriteria).mockReturnValue({
@@ -318,7 +318,7 @@ describe('CriteriaForm Component', () => {
   });
 
   it.skip('should call onSubmitted callback with created criteria ID', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     mockCreateCriteriaMutateAsync.mockResolvedValue({ id: 'new-criteria-id' });
 
     render(

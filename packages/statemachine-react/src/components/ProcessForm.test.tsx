@@ -152,7 +152,7 @@ describe('ProcessForm Component', () => {
   });
 
   it('should handle form submission for new process', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     mockCreateProcessMutateAsync.mockResolvedValue({ id: 'process-1' });
 
     render(
@@ -195,7 +195,7 @@ describe('ProcessForm Component', () => {
   });
 
   it('should handle form submission for updating process', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     const statemachineHooks = await import('../hooks/useStatemachine');
 
     vi.mocked(statemachineHooks.useProcess).mockReturnValueOnce({
@@ -251,7 +251,7 @@ describe('ProcessForm Component', () => {
   });
 
   it('should show processor input when template is enabled', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     
     render(
       <ProcessForm
@@ -333,7 +333,7 @@ describe('ProcessForm Component', () => {
   });
 
   it('should call onSubmitted callback with created process ID', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     mockCreateProcessMutateAsync.mockResolvedValue({ id: 'new-process-id' });
 
     render(
@@ -359,7 +359,7 @@ describe('ProcessForm Component', () => {
   });
 
   it('should handle toggle changes', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     
     render(
       <ProcessForm

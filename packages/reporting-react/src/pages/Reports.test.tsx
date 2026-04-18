@@ -143,7 +143,7 @@ describe('Reports Page', () => {
 
   describe('Tab Navigation', () => {
     it('should switch to History tab when clicked', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       renderWithProviders(<Reports />);
 
       const historyTab = screen.getByRole('tab', { name: /^History$/i });
@@ -155,7 +155,7 @@ describe('Reports Page', () => {
     });
 
     it('should switch back to Report Config tab', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       renderWithProviders(<Reports />);
 
       // Switch to History tab
@@ -176,7 +176,7 @@ describe('Reports Page', () => {
     });
 
     it('should persist active tab in storage', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       renderWithProviders(<Reports />);
 
       const historyTab = screen.getByRole('tab', { name: /^History$/i });
@@ -192,7 +192,7 @@ describe('Reports Page', () => {
 
   describe('History Tab Content', () => {
     beforeEach(async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       renderWithProviders(<Reports />);
 
       const historyTab = screen.getByRole('tab', { name: /^History$/i });
@@ -234,7 +234,7 @@ describe('Reports Page', () => {
 
   describe('Report Selection in History Tab', () => {
     it('should show ReportUISettings after selecting a report', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       renderWithProviders(<Reports />);
 
       // Switch to History tab
@@ -258,7 +258,7 @@ describe('Reports Page', () => {
 
   describe('Reset State', () => {
     it('should reset to Report Config tab when reset is triggered', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       renderWithProviders(<Reports />);
 
       // Switch to History tab

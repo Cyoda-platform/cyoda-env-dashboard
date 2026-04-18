@@ -34,7 +34,7 @@ describe('EntityTypeSwitch', () => {
   })
 
   it('calls onChange with PERSISTENCE when switched on', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     const onChange = vi.fn()
     
     render(<EntityTypeSwitch value="BUSINESS" onChange={onChange} />)
@@ -46,7 +46,7 @@ describe('EntityTypeSwitch', () => {
   })
 
   it('calls onChange with BUSINESS when switched off', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     const onChange = vi.fn()
     
     render(<EntityTypeSwitch value="PERSISTENCE" onChange={onChange} />)

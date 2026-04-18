@@ -136,7 +136,7 @@ describe('HeaderProxyRequest', () => {
   });
 
   it('should display popover content when hovering over info icon', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     
     render(<HeaderProxyRequest />);
     

@@ -83,7 +83,7 @@ describe('ErrorDetailView', () => {
   })
 
   it('calls onClose when close button is clicked', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     const onClose = vi.fn()
     
     render(
@@ -105,7 +105,7 @@ describe('ErrorDetailView', () => {
   })
 
   it('calls onExport when export button is clicked', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     const onExport = vi.fn()
     
     render(

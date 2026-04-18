@@ -60,7 +60,7 @@ describe('HomeDrawer', () => {
   })
 
   it('opens drawer when menu icon is clicked', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     const { container } = renderHomeDrawer({}, '/test')
 
     const menuIcon = container.querySelector('.wrap-bars')
@@ -71,7 +71,7 @@ describe('HomeDrawer', () => {
   })
 
   it('renders custom menus in drawer', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     const { container } = renderHomeDrawer({ menus: mockMenus }, '/test')
 
     const menuIcon = container.querySelector('.wrap-bars')
@@ -83,7 +83,7 @@ describe('HomeDrawer', () => {
   })
 
   it('does not display descriptions in drawer', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     const { container } = renderHomeDrawer({ menus: mockMenus }, '/test')
 
     const menuIcon = container.querySelector('.wrap-bars')

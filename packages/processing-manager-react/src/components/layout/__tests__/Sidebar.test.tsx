@@ -100,7 +100,7 @@ describe('Sidebar', () => {
   });
 
   it('should toggle minimize on button click', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     const { container } = renderWithRouter(<Sidebar />);
 
     const minimizeButton = container.querySelector('.c-sidebar-minimizer');

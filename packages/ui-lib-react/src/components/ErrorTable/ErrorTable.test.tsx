@@ -86,7 +86,7 @@ describe('ErrorTable', () => {
   })
 
   it('calls onClearErrors when clear button is clicked', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     const onClearErrors = vi.fn()
     
     render(
@@ -109,7 +109,7 @@ describe('ErrorTable', () => {
   })
 
   it('calls onExportAll when export all button is clicked', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     const onExportAll = vi.fn()
     
     render(

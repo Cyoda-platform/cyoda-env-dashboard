@@ -112,7 +112,7 @@ describe('Tasks Page', () => {
 
   describe('Live Data Subscription', () => {
     it('should toggle subscription when Subscribe button is clicked', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       render(<Tasks />);
 
       const subscribeButton = screen.getByRole('button', { name: /Subscribe to live data/i });
@@ -122,7 +122,7 @@ describe('Tasks Page', () => {
     });
 
     it('should toggle subscription when Unsubscribe button is clicked', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       vi.mocked(useTasks.useTasksState).mockReturnValue({
         isApplyRealData: true,
         setIsApplyRealData: mockSetIsApplyRealData,
@@ -170,7 +170,7 @@ describe('Tasks Page', () => {
     });
 
     it('should update filter when TasksFilter changes', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       render(<Tasks />);
 
       const applyFilterButton = screen.getByRole('button', { name: /Apply Filter/i });
@@ -180,7 +180,7 @@ describe('Tasks Page', () => {
     });
 
     it('should pass updated filter to TasksGrid', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       render(<Tasks />);
 
       const applyFilterButton = screen.getByRole('button', { name: /Apply Filter/i });
@@ -239,7 +239,7 @@ describe('Tasks Page', () => {
 
   describe('Edge Cases', () => {
     it('should handle multiple filter changes', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       render(<Tasks />);
 
       const applyFilterButton = screen.getByRole('button', { name: /Apply Filter/i });
@@ -252,7 +252,7 @@ describe('Tasks Page', () => {
     });
 
     it('should handle rapid subscription toggles', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       render(<Tasks />);
 
       const subscribeButton = screen.getByRole('button', { name: /Subscribe to live data/i });

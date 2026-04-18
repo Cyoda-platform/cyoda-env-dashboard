@@ -93,7 +93,7 @@ describe('ProcessingEventsErrorViewFilter', () => {
   });
 
   it('should render queue options from hook data', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<ProcessingEventsErrorViewFilter onChange={mockOnChange} />);
 
     const queueSelects = screen.getAllByRole('combobox');
@@ -110,7 +110,7 @@ describe('ProcessingEventsErrorViewFilter', () => {
   });
 
   it('should render shard options from hook data', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<ProcessingEventsErrorViewFilter onChange={mockOnChange} />);
 
     const shardSelects = screen.getAllByRole('combobox');
@@ -127,7 +127,7 @@ describe('ProcessingEventsErrorViewFilter', () => {
   });
 
   it('should render sort options', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<ProcessingEventsErrorViewFilter onChange={mockOnChange} />);
 
     const sortSelects = screen.getAllByRole('combobox');
@@ -142,7 +142,7 @@ describe('ProcessingEventsErrorViewFilter', () => {
   });
 
   it('should handle queue selection', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<ProcessingEventsErrorViewFilter onChange={mockOnChange} />);
 
     mockOnChange.mockClear();
@@ -166,7 +166,7 @@ describe('ProcessingEventsErrorViewFilter', () => {
   }, 15000);
 
   it('should handle shard selection', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<ProcessingEventsErrorViewFilter onChange={mockOnChange} />);
 
     mockOnChange.mockClear();
@@ -190,7 +190,7 @@ describe('ProcessingEventsErrorViewFilter', () => {
   }, 15000);
 
   it('should handle sort selection', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<ProcessingEventsErrorViewFilter onChange={mockOnChange} />);
 
     // Wait for initial call
@@ -208,7 +208,7 @@ describe('ProcessingEventsErrorViewFilter', () => {
   });
 
   it('should call onChange when Load button is clicked', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<ProcessingEventsErrorViewFilter onChange={mockOnChange} />);
     
     mockOnChange.mockClear();
@@ -247,7 +247,7 @@ describe('ProcessingEventsErrorViewFilter', () => {
   });
 
   it('should have allowClear on queue select', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     const { container } = render(<ProcessingEventsErrorViewFilter onChange={mockOnChange} />);
 
     // Wait for initial call

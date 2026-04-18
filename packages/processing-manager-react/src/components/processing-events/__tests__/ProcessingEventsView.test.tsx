@@ -320,7 +320,7 @@ describe('ProcessingEventsView', () => {
   });
 
   it('should open modal when UUID is clicked', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
 
     const link1 = screen.getByText('uuid-1');
@@ -333,7 +333,7 @@ describe('ProcessingEventsView', () => {
   });
 
   it('should pass correct params to modal when UUID is clicked', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
 
     const link1 = screen.getByText('uuid-1');
@@ -347,7 +347,7 @@ describe('ProcessingEventsView', () => {
   });
 
   it('should close modal when close button is clicked', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
 
     const link1 = screen.getByText('uuid-1');
@@ -366,7 +366,7 @@ describe('ProcessingEventsView', () => {
   });
 
   it('should open modal with correct queue from queueName field', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
 
     const link2 = screen.getByText('uuid-2');

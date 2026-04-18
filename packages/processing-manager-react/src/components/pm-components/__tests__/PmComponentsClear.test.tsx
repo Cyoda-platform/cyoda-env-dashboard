@@ -68,7 +68,7 @@ describe('PmComponentsClear', () => {
   });
 
   it('should open dropdown on click', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<PmComponentsClear />);
     
     const button = screen.getByRole('button', { name: /clear/i });
@@ -80,7 +80,7 @@ describe('PmComponentsClear', () => {
   });
 
   it('should show modal on Clear Caches click', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<PmComponentsClear />);
 
     const button = screen.getByRole('button', { name: /clear/i });
@@ -95,7 +95,7 @@ describe('PmComponentsClear', () => {
   });
 
   it('should show modal on menu item click', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<PmComponentsClear />);
 
     const button = screen.getByRole('button', { name: /clear/i });
@@ -111,7 +111,7 @@ describe('PmComponentsClear', () => {
   });
 
   it('should have dropdown menu item', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<PmComponentsClear />);
 
     const button = screen.getByRole('button', { name: /clear/i });
@@ -130,7 +130,7 @@ describe('PmComponentsClear', () => {
   });
 
   it('should have one menu item', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<PmComponentsClear />);
     
     const button = screen.getByRole('button', { name: /clear/i });

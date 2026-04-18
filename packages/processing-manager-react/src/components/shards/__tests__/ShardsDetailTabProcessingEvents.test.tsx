@@ -66,7 +66,7 @@ describe('ShardsDetailTabProcessingEvents', () => {
   });
 
   it('should switch to Polling info tab when clicked', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<ShardsDetailTabProcessingEvents />, { wrapper });
 
     const tab = screen.getByText('Polling info');
@@ -76,7 +76,7 @@ describe('ShardsDetailTabProcessingEvents', () => {
   });
 
   it('should switch to Processing events view tab when clicked', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<ShardsDetailTabProcessingEvents />, { wrapper });
 
     const tab = screen.getByText('Processing events view');
@@ -86,7 +86,7 @@ describe('ShardsDetailTabProcessingEvents', () => {
   });
 
   it('should switch to Processing events error view tab when clicked', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<ShardsDetailTabProcessingEvents />, { wrapper });
 
     const tab = screen.getByText('Processing events error view');
@@ -96,7 +96,7 @@ describe('ShardsDetailTabProcessingEvents', () => {
   });
 
   it('should switch to Entities error list view tab when clicked', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<ShardsDetailTabProcessingEvents />, { wrapper });
 
     const tab = screen.getByText('Entities error list view');
@@ -106,7 +106,7 @@ describe('ShardsDetailTabProcessingEvents', () => {
   });
 
   it('should switch to SIFT logger conf view tab when clicked', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<ShardsDetailTabProcessingEvents />, { wrapper });
 
     const tab = screen.getByText('SIFT logger conf view');
@@ -133,7 +133,7 @@ describe('ShardsDetailTabProcessingEvents', () => {
   });
 
   it('should maintain active tab state', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<ShardsDetailTabProcessingEvents />, { wrapper });
 
     // Click second tab
@@ -155,7 +155,7 @@ describe('ShardsDetailTabProcessingEvents', () => {
   });
 
   it('should render implemented tabs with components', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<ShardsDetailTabProcessingEvents />, { wrapper });
     
     // First tab (default)
@@ -171,7 +171,7 @@ describe('ShardsDetailTabProcessingEvents', () => {
   });
 
   it('should render all implemented tabs with components', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<ShardsDetailTabProcessingEvents />, { wrapper });
 
     // Fourth tab

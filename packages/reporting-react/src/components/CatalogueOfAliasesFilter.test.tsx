@@ -68,7 +68,7 @@ describe('CatalogueOfAliasesFilter', () => {
   });
 
   it('should handle search input change', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(
       <CatalogueOfAliasesFilter
         value={{}}
@@ -190,7 +190,7 @@ describe('CatalogueOfAliasesFilter', () => {
   });
 
   it('should clear search input', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(
       <CatalogueOfAliasesFilter
         value={{ search: 'test' }}

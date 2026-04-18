@@ -49,7 +49,7 @@ describe('PmComponentsExecutionMonitorsFilter', () => {
   });
 
   it('should update name filter and call onFilter', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
 
     const nameInput = screen.getByPlaceholderText('Filter by name');
@@ -64,7 +64,7 @@ describe('PmComponentsExecutionMonitorsFilter', () => {
   });
 
   it('should update interval value', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
 
     const intervalInput = screen.getByPlaceholderText('Update Interval');
@@ -84,7 +84,7 @@ describe('PmComponentsExecutionMonitorsFilter', () => {
   });
 
   it('should call onFilter when Update button is clicked', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
 
     // Clear the initial call
@@ -109,7 +109,7 @@ describe('PmComponentsExecutionMonitorsFilter', () => {
   });
 
   it('should clear name input when clear icon is clicked', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
 
     const nameInput = screen.getByPlaceholderText('Filter by name');
@@ -127,7 +127,7 @@ describe('PmComponentsExecutionMonitorsFilter', () => {
   });
 
   it('should enforce minimum value of 1 for interval', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
 
     const intervalInput = screen.getByPlaceholderText('Update Interval');
@@ -146,7 +146,7 @@ describe('PmComponentsExecutionMonitorsFilter', () => {
   });
 
   it('should update filter immediately when name changes', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
 
     mockOnFilter.mockClear();
@@ -163,7 +163,7 @@ describe('PmComponentsExecutionMonitorsFilter', () => {
   });
 
   it('should handle multiple name changes', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
 
     mockOnFilter.mockClear();
@@ -194,7 +194,7 @@ describe('PmComponentsExecutionMonitorsFilter', () => {
   });
 
   it('should handle rapid filter changes', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
 
     mockOnFilter.mockClear();
@@ -212,7 +212,7 @@ describe('PmComponentsExecutionMonitorsFilter', () => {
   });
 
   it('should preserve interval value when name changes', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
 
     const intervalInput = screen.getByPlaceholderText('Update Interval');

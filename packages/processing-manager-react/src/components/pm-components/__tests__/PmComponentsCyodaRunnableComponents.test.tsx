@@ -168,7 +168,7 @@ describe('PmComponentsCyodaRunnableComponents', () => {
   });
 
   it('should call startComponent on start button click', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     const { container } = render(<PmComponentsCyodaRunnableComponents />);
     
     await waitFor(() => {
@@ -187,7 +187,7 @@ describe('PmComponentsCyodaRunnableComponents', () => {
   });
 
   it('should call stopComponent on stop button click', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     const { container } = render(<PmComponentsCyodaRunnableComponents />);
     
     await waitFor(() => {
@@ -206,7 +206,7 @@ describe('PmComponentsCyodaRunnableComponents', () => {
   });
 
   it('should call refetch after start', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     const { container } = render(<PmComponentsCyodaRunnableComponents />);
     
     await waitFor(() => {
@@ -225,7 +225,7 @@ describe('PmComponentsCyodaRunnableComponents', () => {
   });
 
   it('should call refetch after stop', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     const { container } = render(<PmComponentsCyodaRunnableComponents />);
     
     await waitFor(() => {

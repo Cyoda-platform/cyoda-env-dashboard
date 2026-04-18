@@ -277,7 +277,7 @@ describe('EntityDetailModal', () => {
 
   describe('Data Lineage Tab', () => {
     it('should render data lineage component when tab is clicked', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       renderWithQueryClient(<EntityDetailModal {...defaultProps} />);
 
       await waitFor(() => {
@@ -293,7 +293,7 @@ describe('EntityDetailModal', () => {
     });
 
     it('should pass correct props to EntityDataLineage', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       renderWithQueryClient(<EntityDetailModal {...defaultProps} />);
 
       await user.click(screen.getByText('Data lineage'));
@@ -331,7 +331,7 @@ describe('EntityDetailModal', () => {
 
   describe('Audit Tab', () => {
     it('should render audit component when tab is clicked', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       renderWithQueryClient(<EntityDetailModal {...defaultProps} />);
 
       await waitFor(() => {
@@ -347,7 +347,7 @@ describe('EntityDetailModal', () => {
     });
 
     it('should pass correct props to EntityAudit', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       renderWithQueryClient(<EntityDetailModal {...defaultProps} />);
 
       await user.click(screen.getByText('Audit'));
@@ -362,7 +362,7 @@ describe('EntityDetailModal', () => {
 
   describe('Modal Interactions', () => {
     it('should call onClose when close button is clicked', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       const onClose = vi.fn();
       renderWithQueryClient(
         <EntityDetailModal {...defaultProps} onClose={onClose} />
@@ -399,7 +399,7 @@ describe('EntityDetailModal', () => {
     });
 
     it('should switch between tabs correctly', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       renderWithQueryClient(<EntityDetailModal {...defaultProps} />);
 
       // Initially on Details tab

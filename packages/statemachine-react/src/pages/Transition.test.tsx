@@ -187,7 +187,7 @@ describe('Transition Page', () => {
   });
 
   it('should open criteria modal when "Add new +" is clicked', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<Transition />, { wrapper: createWrapper() });
     
     // Find the "Add new +" button for criteria
@@ -207,7 +207,7 @@ describe('Transition Page', () => {
   });
 
   it('should open process modal when "Add new +" is clicked', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<Transition />, { wrapper: createWrapper() });
     
     // Find the "Add new +" button for process
@@ -254,7 +254,7 @@ describe('Transition Page', () => {
   });
 
   it('should show new state form when "Create new State" is clicked', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
 
     render(<Transition />, { wrapper: createWrapper() });
 

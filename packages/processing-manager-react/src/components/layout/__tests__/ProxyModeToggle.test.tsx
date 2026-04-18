@@ -64,7 +64,7 @@ describe('ProxyModeToggle', () => {
 
   it('should show popover when info icon is clicked', async () => {
     vi.useRealTimers(); // Use real timers for this test
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<ProxyModeToggle />);
 
     const infoIcon = document.querySelector('.anticon-info-circle');
@@ -82,7 +82,7 @@ describe('ProxyModeToggle', () => {
 
   it('should display popover with content', async () => {
     vi.useRealTimers(); // Use real timers for this test
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<ProxyModeToggle />);
 
     const infoIcon = document.querySelector('.anticon-info-circle');
@@ -100,7 +100,7 @@ describe('ProxyModeToggle', () => {
 
   it('should toggle proxyRequest state when clicked', async () => {
     vi.useRealTimers(); // Use real timers for this test
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<ProxyModeToggle />);
 
     const switchElement = document.querySelector('.ant-switch');
@@ -157,7 +157,7 @@ describe('ProxyModeToggle', () => {
   it('should call setProxyRequest when switch is toggled', async () => {
     vi.useRealTimers(); // Use real timers for this test
     const setProxyRequestSpy = vi.spyOn(useAppStore.getState(), 'setProxyRequest');
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
 
     render(<ProxyModeToggle />);
 
@@ -177,7 +177,7 @@ describe('ProxyModeToggle', () => {
 
   it('should toggle from OFF to ON', async () => {
     vi.useRealTimers(); // Use real timers for this test
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     useAppStore.setState({ proxyRequest: false });
 
     render(<ProxyModeToggle />);
@@ -197,7 +197,7 @@ describe('ProxyModeToggle', () => {
 
   it('should persist state changes', async () => {
     vi.useRealTimers(); // Use real timers for this test
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<ProxyModeToggle />);
 
     const switchElement = document.querySelector('.ant-switch');

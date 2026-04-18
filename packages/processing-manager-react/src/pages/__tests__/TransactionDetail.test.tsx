@@ -112,7 +112,7 @@ describe('TransactionDetail', () => {
   });
 
   it('should switch to Members tab when clicked', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
 
     renderWithRouter();
 
@@ -126,7 +126,7 @@ describe('TransactionDetail', () => {
   });
 
   it('should switch to Events tab when clicked', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
 
     renderWithRouter();
 
@@ -164,7 +164,7 @@ describe('TransactionDetail', () => {
   });
 
   it('should render TransitionDetailStatisticsTransactionMembers on Members tab', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
 
     renderWithRouter();
 
@@ -177,7 +177,7 @@ describe('TransactionDetail', () => {
   });
 
   it('should render TransitionDetailStatisticsTransactionEvents on Events tab', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
 
     renderWithRouter();
 
@@ -196,7 +196,7 @@ describe('TransactionDetail', () => {
   });
 
   it('should handle tab switching multiple times', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
 
     renderWithRouter();
 

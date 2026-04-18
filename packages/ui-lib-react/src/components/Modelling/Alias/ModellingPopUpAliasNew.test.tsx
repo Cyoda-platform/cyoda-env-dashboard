@@ -264,7 +264,7 @@ describe('ModellingPopUpAliasNew', () => {
   });
 
   it('should display auto-detected alias type in Name step', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     const ref = React.createRef<any>();
     render(
       <ModellingPopUpAliasNew
@@ -314,7 +314,7 @@ describe('ModellingPopUpAliasNew', () => {
   });
 
   it('should navigate to next step when Next is clicked', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     const ref = React.createRef<any>();
     render(
       <ModellingPopUpAliasNew
@@ -344,7 +344,7 @@ describe('ModellingPopUpAliasNew', () => {
   });
 
   it('should have Previous button on later steps', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     const ref = React.createRef<any>();
     render(
       <ModellingPopUpAliasNew
@@ -373,7 +373,7 @@ describe('ModellingPopUpAliasNew', () => {
   });
 
   it('should close modal when Cancel is clicked', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     const ref = React.createRef<any>();
     render(
       <ModellingPopUpAliasNew
@@ -413,7 +413,7 @@ describe('ModellingPopUpAliasNew', () => {
   });
 
   it('should pre-fill form when editing existing alias', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     const editItem = {
       id: 'alias-1',
       aliasDef: {

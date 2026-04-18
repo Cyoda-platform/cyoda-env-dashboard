@@ -115,7 +115,7 @@ describe('CriteriaList', () => {
       isPending: false,
     } as any);
 
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
 
     render(
       <CriteriaList
@@ -177,7 +177,7 @@ describe('CriteriaList', () => {
       isPending: false,
     } as any);
 
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
 
     render(
       <CriteriaList

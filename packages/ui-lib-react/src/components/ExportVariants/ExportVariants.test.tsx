@@ -84,7 +84,7 @@ describe('ExportVariants', () => {
   })
 
   it('allows selecting different format', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     const onClose = vi.fn()
     const onExport = vi.fn()
     
@@ -109,7 +109,7 @@ describe('ExportVariants', () => {
   })
 
   it('calls onExport with selected format when Export button is clicked', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     const onClose = vi.fn()
     const onExport = vi.fn()
     
@@ -134,7 +134,7 @@ describe('ExportVariants', () => {
   })
 
   it('calls onExport with selected format after changing selection', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     const onClose = vi.fn()
     const onExport = vi.fn()
     
@@ -163,7 +163,7 @@ describe('ExportVariants', () => {
   })
 
   it('calls onClose when Close button is clicked', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     const onClose = vi.fn()
     const onExport = vi.fn()
     

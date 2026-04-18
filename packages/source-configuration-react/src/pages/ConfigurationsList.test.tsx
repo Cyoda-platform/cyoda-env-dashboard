@@ -149,8 +149,10 @@ describe('ConfigurationsList', () => {
 
   it('should display creation date', () => {
     renderWithProviders(<ConfigurationsList />);
-    // Date formatting may vary, just check that dates are displayed
-    expect(screen.getByText(/2024/)).toBeInTheDocument();
+    // Multiple configs all have 2024 creationDate; date formatting may
+    // also include the year in other cells. Assert at least one match
+    // — `getByText` would flake on locale-dependent formatting.
+    expect(screen.getAllByText(/2024/).length).toBeGreaterThan(0);
   });
 
   it('should display creator user', () => {

@@ -45,7 +45,7 @@ describe('DataLineageFilter', () => {
   })
 
   it('calls onChange when start date changes', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     const onChange = vi.fn()
     const filter = {}
     

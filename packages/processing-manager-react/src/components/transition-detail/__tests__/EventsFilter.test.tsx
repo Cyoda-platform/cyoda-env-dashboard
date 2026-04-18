@@ -73,7 +73,7 @@ describe('EventsFilter', () => {
   });
 
   it('should call onChange when Load button is clicked', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<EventsFilter onChange={mockOnChange} />);
     
     const loadButton = screen.getByRole('button', { name: /load/i });
@@ -91,7 +91,7 @@ describe('EventsFilter', () => {
   });
 
   it('should render queue select with options', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<EventsFilter onChange={mockOnChange} />);
 
     const queueSelects = screen.getAllByRole('combobox');
@@ -106,7 +106,7 @@ describe('EventsFilter', () => {
   });
 
   it('should render entity class select with options', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<EventsFilter onChange={mockOnChange} />);
 
     const selects = screen.getAllByRole('combobox');
@@ -121,7 +121,7 @@ describe('EventsFilter', () => {
   });
 
   it('should render transaction status select with options', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<EventsFilter onChange={mockOnChange} />);
 
     const selects = screen.getAllByRole('combobox');
@@ -136,7 +136,7 @@ describe('EventsFilter', () => {
   });
 
   it('should update has error field', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<EventsFilter onChange={mockOnChange} />);
     
     const selects = screen.getAllByRole('combobox');
@@ -158,7 +158,7 @@ describe('EventsFilter', () => {
   });
 
   it('should update sort field', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<EventsFilter onChange={mockOnChange} />);
     
     const selects = screen.getAllByRole('combobox');
@@ -268,7 +268,7 @@ describe('EventsFilter', () => {
   });
 
   it('should handle onChange not provided', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<EventsFilter />);
     
     const loadButton = screen.getByRole('button', { name: /load/i });

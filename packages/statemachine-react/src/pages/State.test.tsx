@@ -182,7 +182,7 @@ describe('State Page', () => {
     });
 
     it('should allow submission with valid name', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       mockCreateStateMutateAsync.mockResolvedValue({ id: 'new-state' });
 
       render(<State />, { wrapper: createWrapper() });
@@ -201,7 +201,7 @@ describe('State Page', () => {
 
   describe('Create State', () => {
     it('should create new state with form data', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       mockCreateStateMutateAsync.mockResolvedValue({ id: 'new-state' });
 
       render(<State />, { wrapper: createWrapper() });
@@ -230,7 +230,7 @@ describe('State Page', () => {
     });
 
     it('should show success message after creating state', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       mockCreateStateMutateAsync.mockResolvedValue({ id: 'new-state' });
 
       render(<State />, { wrapper: createWrapper() });
@@ -247,7 +247,7 @@ describe('State Page', () => {
     });
 
     it('should navigate to workflow detail after creating state', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       mockCreateStateMutateAsync.mockResolvedValue({ id: 'new-state' });
 
       render(<State />, { wrapper: createWrapper() });
@@ -264,7 +264,7 @@ describe('State Page', () => {
     });
 
     it('should show error message on create failure', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       mockCreateStateMutateAsync.mockRejectedValue(new Error('API Error'));
 
       render(<State />, { wrapper: createWrapper() });
@@ -294,7 +294,7 @@ describe('State Page', () => {
     });
 
     it('should update existing state with form data', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       mockUpdateStateMutateAsync.mockResolvedValue({ id: 'state-123' });
 
       render(<State />, { wrapper: createWrapper('state-123') });
@@ -384,7 +384,7 @@ describe('State Page', () => {
     });
 
     it('should preserve query parameters in navigation', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       mockCreateStateMutateAsync.mockResolvedValue({ id: 'new-state' });
 
       render(

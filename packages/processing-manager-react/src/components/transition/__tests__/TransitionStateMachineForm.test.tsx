@@ -126,7 +126,7 @@ describe('TransitionStateMachineForm', () => {
   });
 
   it('should render all possible transitions in dropdown', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
 
     const { container } = render(
       <BrowserRouter>
@@ -151,7 +151,7 @@ describe('TransitionStateMachineForm', () => {
   });
 
   it('should enable Submit button when state is selected', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
 
     const { container } = render(
       <BrowserRouter>
@@ -175,7 +175,7 @@ describe('TransitionStateMachineForm', () => {
   });
 
   it('should call mutateAsync with correct parameters on submit', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
 
     const { container } = render(
       <BrowserRouter>
@@ -212,7 +212,7 @@ describe('TransitionStateMachineForm', () => {
   });
 
   it('should call onUpdated callback after successful submission', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
 
     const { container } = render(
       <BrowserRouter>
@@ -242,7 +242,7 @@ describe('TransitionStateMachineForm', () => {
   });
 
   it('should reset selected state after successful submission', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
 
     const { container } = render(
       <BrowserRouter>
@@ -298,7 +298,7 @@ describe('TransitionStateMachineForm', () => {
   });
 
   it('should not call onUpdated if not provided', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
 
     const { container } = render(
       <BrowserRouter>
@@ -325,7 +325,7 @@ describe('TransitionStateMachineForm', () => {
   });
 
   it('should handle mutation error gracefully', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     mockMutateAsync.mockRejectedValue(new Error('Transition failed'));

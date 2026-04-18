@@ -23,7 +23,7 @@ describe('ErrorNotification', () => {
   })
 
   it('calls onClick when clicked', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     const onClick = vi.fn()
     render(<ErrorNotification visible={true} onClick={onClick} />)
     

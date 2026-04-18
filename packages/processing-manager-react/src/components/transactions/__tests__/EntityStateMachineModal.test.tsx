@@ -107,7 +107,7 @@ describe('EntityStateMachineModal', () => {
   });
 
   it('should call onClose when modal is closed', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     vi.mocked(hooks.useEntityStateMachine).mockReturnValue({
       data: {
         entityVersions: [],
@@ -308,7 +308,7 @@ describe('EntityStateMachineModal', () => {
   });
 
   it('should handle update action', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     vi.mocked(hooks.useEntityStateMachine).mockReturnValue({
       data: {
         entityVersions: [],
@@ -337,7 +337,7 @@ describe('EntityStateMachineModal', () => {
   });
 
   it('should show loading spinner during update', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     vi.mocked(hooks.useEntityStateMachine).mockReturnValue({
       data: {
         entityVersions: [],

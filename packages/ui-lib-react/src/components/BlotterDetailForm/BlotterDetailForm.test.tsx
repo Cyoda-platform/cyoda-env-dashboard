@@ -34,7 +34,7 @@ describe('BlotterDetailForm', () => {
   })
 
   it('calls onChange when switch is toggled', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     const onChange = vi.fn()
     const { container } = render(<BlotterDetailForm onChange={onChange} />)
     
@@ -47,7 +47,7 @@ describe('BlotterDetailForm', () => {
   })
 
   it('toggles switch from checked to unchecked', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     const onChange = vi.fn()
     const value = { isShowEmpty: true }
     const { container } = render(<BlotterDetailForm value={value} onChange={onChange} />)
@@ -84,7 +84,7 @@ describe('BlotterDetailForm', () => {
   })
 
   it('maintains state across multiple toggles', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     const onChange = vi.fn()
     const { container } = render(<BlotterDetailForm onChange={onChange} />)
     

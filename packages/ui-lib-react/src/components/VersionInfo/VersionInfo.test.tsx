@@ -27,7 +27,7 @@ describe('VersionInfo', () => {
   })
 
   it('opens modal on link click', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     render(<VersionInfo platform={mockPlatform} client={mockClient} />)
 
     const link = screen.getByText('Version App')
@@ -41,7 +41,7 @@ describe('VersionInfo', () => {
   })
 
   it('displays platform version info', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     render(<VersionInfo platform={mockPlatform} />)
 
     const link = screen.getByText('Version App')
@@ -60,7 +60,7 @@ describe('VersionInfo', () => {
   })
 
   it('displays client version info', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     render(<VersionInfo client={mockClient} />)
 
     const link = screen.getByText('Version App')
@@ -79,7 +79,7 @@ describe('VersionInfo', () => {
   })
 
   it('displays UI version info', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     render(<VersionInfo uiVersion="3.4.5" uiBuildTime="2024-01-03" uiBranchName="feature" />)
 
     const link = screen.getByText('Version App')
@@ -98,7 +98,7 @@ describe('VersionInfo', () => {
   })
 
   it('calls onLoadPlatform when modal opens', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     const onLoadPlatform = vi.fn().mockResolvedValue(mockPlatform)
     render(<VersionInfo onLoadPlatform={onLoadPlatform} />)
 
@@ -111,7 +111,7 @@ describe('VersionInfo', () => {
   })
 
   it('calls onLoadClient when modal opens', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     const onLoadClient = vi.fn().mockResolvedValue(mockClient)
     render(<VersionInfo onLoadClient={onLoadClient} />)
 
@@ -124,7 +124,7 @@ describe('VersionInfo', () => {
   })
 
   it('closes modal on close button click', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     render(<VersionInfo />)
 
     const link = screen.getByText('Version App')
@@ -146,7 +146,7 @@ describe('VersionInfo', () => {
   })
 
   it('displays dash for missing values', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     render(<VersionInfo />)
 
     const link = screen.getByText('Version App')

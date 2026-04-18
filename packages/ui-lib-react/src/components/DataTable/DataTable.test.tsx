@@ -40,7 +40,7 @@ describe('DataTable', () => {
   })
 
   it('handles page size change', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     const onPageSizeChange = vi.fn()
 
     render(

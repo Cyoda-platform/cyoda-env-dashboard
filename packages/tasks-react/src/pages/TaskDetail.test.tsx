@@ -131,7 +131,7 @@ describe('TaskDetail Page', () => {
     });
 
     it('should navigate to tasks when Back to Tasks is clicked', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       mockUseTask.mockReturnValue({
         data: null,
         isLoading: false,
@@ -192,7 +192,7 @@ describe('TaskDetail Page', () => {
 
   describe('Edit Mode', () => {
     it('should enter edit mode when Edit button is clicked', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       renderWithRouter(<TaskDetail />);
 
       const editButton = screen.getByRole('button', { name: /Edit task/i });
@@ -203,7 +203,7 @@ describe('TaskDetail Page', () => {
     });
 
     it('should show Cancel and Update buttons in edit mode', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       renderWithRouter(<TaskDetail />);
 
       const editButton = screen.getByRole('button', { name: /Edit task/i });
@@ -215,7 +215,7 @@ describe('TaskDetail Page', () => {
     });
 
     it('should exit edit mode when Cancel is clicked', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       renderWithRouter(<TaskDetail />);
 
       const editButton = screen.getByRole('button', { name: /Edit task/i });
@@ -229,7 +229,7 @@ describe('TaskDetail Page', () => {
     });
 
     it('should enable form fields in edit mode', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       renderWithRouter(<TaskDetail />);
 
       const editButton = screen.getByRole('button', { name: /Edit task/i });
@@ -243,7 +243,7 @@ describe('TaskDetail Page', () => {
 
   describe('Update Task', () => {
     it('should show confirmation modal when Update is clicked', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       const { container } = renderWithRouter(<TaskDetail />);
 
       const editButton = screen.getByRole('button', { name: /Edit task/i });
@@ -279,7 +279,7 @@ describe('TaskDetail Page', () => {
     it('should call update mutation when confirmed', async () => {
       // This test is complex due to Ant Design Select interaction
       // Let's simplify it to just check that the mutation function exists
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       renderWithRouter(<TaskDetail />);
 
       const editButton = screen.getByRole('button', { name: /Edit task/i });
@@ -311,7 +311,7 @@ describe('TaskDetail Page', () => {
 
   describe('Navigation', () => {
     it('should navigate back when Back button is clicked', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       renderWithRouter(<TaskDetail />);
 
       const backButton = screen.getAllByRole('button', { name: /Back/i })[0];

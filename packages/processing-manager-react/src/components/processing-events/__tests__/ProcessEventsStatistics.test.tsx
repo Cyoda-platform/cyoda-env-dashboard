@@ -174,7 +174,7 @@ describe('ProcessEventsStatistics', () => {
   });
 
   it('should render queue filter options', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<ProcessEventsStatistics />);
     
     const selects = screen.getAllByRole('combobox');
@@ -189,7 +189,7 @@ describe('ProcessEventsStatistics', () => {
   });
 
   it('should render shard filter options', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<ProcessEventsStatistics />);
     
     const selects = screen.getAllByRole('combobox');

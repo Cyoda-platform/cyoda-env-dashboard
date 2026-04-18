@@ -51,7 +51,7 @@ describe('MembersFilter', () => {
   });
 
   it('should call onChange when Load button is clicked', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<MembersFilter onChange={mockOnChange} />);
     
     const loadButton = screen.getByRole('button', { name: /load/i });
@@ -66,7 +66,7 @@ describe('MembersFilter', () => {
   });
 
   it('should render entity type select with options', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<MembersFilter onChange={mockOnChange} />);
     
     const selects = screen.getAllByRole('combobox');
@@ -81,7 +81,7 @@ describe('MembersFilter', () => {
   });
 
   it('should render action type select with options', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<MembersFilter onChange={mockOnChange} />);
     
     const selects = screen.getAllByRole('combobox');
@@ -97,7 +97,7 @@ describe('MembersFilter', () => {
   });
 
   it('should render version check result select with options', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<MembersFilter onChange={mockOnChange} />);
     
     const selects = screen.getAllByRole('combobox');
@@ -111,7 +111,7 @@ describe('MembersFilter', () => {
   });
 
   it('should render sort select with options', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<MembersFilter onChange={mockOnChange} />);
     
     const selects = screen.getAllByRole('combobox');
@@ -183,7 +183,7 @@ describe('MembersFilter', () => {
   });
 
   it('should handle onChange not provided', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<MembersFilter />);
     
     const loadButton = screen.getByRole('button', { name: /load/i });

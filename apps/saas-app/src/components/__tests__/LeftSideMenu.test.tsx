@@ -142,7 +142,7 @@ describe('LeftSideMenu', () => {
 
   describe('Submenu Behavior', () => {
     it('should render submenu items for Reporting', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       renderWithRouter(
         <LeftSideMenu collapsed={false} onCollapse={mockOnCollapse} />
       );
@@ -158,7 +158,7 @@ describe('LeftSideMenu', () => {
     });
 
     it('should render submenu items for Lifecycle', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       renderWithRouter(
         <LeftSideMenu collapsed={false} onCollapse={mockOnCollapse} />
       );
@@ -173,7 +173,7 @@ describe('LeftSideMenu', () => {
     });
 
     it('should allow multiple submenus to be open simultaneously', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       renderWithRouter(
         <LeftSideMenu collapsed={false} onCollapse={mockOnCollapse} />
       );
@@ -200,7 +200,7 @@ describe('LeftSideMenu', () => {
     });
 
     it('should close submenu when clicked again', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       const { container } = renderWithRouter(
         <LeftSideMenu collapsed={false} onCollapse={mockOnCollapse} />
       );
@@ -225,7 +225,7 @@ describe('LeftSideMenu', () => {
 
   describe('Collapsed Submenu Behavior', () => {
     it('should show submenu items inline when collapsed and submenu is opened', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       const { container } = renderWithRouter(
         <LeftSideMenu collapsed={true} onCollapse={mockOnCollapse} />
       );
@@ -249,7 +249,7 @@ describe('LeftSideMenu', () => {
     });
 
     it('should show dots for submenu items in collapsed mode', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       const { container } = renderWithRouter(
         <LeftSideMenu collapsed={true} onCollapse={mockOnCollapse} />
       );
@@ -306,7 +306,7 @@ describe('LeftSideMenu', () => {
 
   describe('Logout Modal', () => {
     it('should open logout modal when clicking logout menu item', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       renderWithRouter(
         <LeftSideMenu collapsed={false} onCollapse={mockOnCollapse} />
       );
@@ -321,7 +321,7 @@ describe('LeftSideMenu', () => {
     });
 
     it('should show both logout buttons in modal', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       renderWithRouter(
         <LeftSideMenu collapsed={false} onCollapse={mockOnCollapse} />
       );
@@ -393,7 +393,7 @@ describe('LeftSideMenu', () => {
     });
 
     it('should hide indicator dot when submenu is opened in collapsed mode', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       const { container } = renderWithRouter(
         <LeftSideMenu collapsed={true} onCollapse={mockOnCollapse} />,
         '/reporting/reports'

@@ -184,7 +184,7 @@ describe('ReportEditor Page', () => {
 
   describe('Update Report - Success', () => {
     it('should update report successfully', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       mockPut.mockResolvedValueOnce({ data: { success: true } });
 
       renderWithProviders(
@@ -211,7 +211,7 @@ describe('ReportEditor Page', () => {
 
   describe('Existing Report Dialog - 422 Error', () => {
     it('should show "Existing report" dialog when 422 error occurs', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
 
       // Mock 422 error response
       mockPut.mockRejectedValueOnce({
@@ -247,7 +247,7 @@ describe('ReportEditor Page', () => {
     });
 
     it('should have Cancel button that can be clicked', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
 
       mockPut.mockRejectedValueOnce({
         response: {
@@ -282,7 +282,7 @@ describe('ReportEditor Page', () => {
     });
 
     it('should delete existing reports and save when "Delete existing reports and save" is clicked', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
 
       // First call - 422 error
       mockPut.mockRejectedValueOnce({
@@ -330,7 +330,7 @@ describe('ReportEditor Page', () => {
     });
 
     it('should show "Create new" dialog when "Create new report definition" is clicked', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
 
       mockPut.mockRejectedValueOnce({
         response: {
@@ -370,7 +370,7 @@ describe('ReportEditor Page', () => {
     });
 
     it('should create new report definition with entered name', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
 
       mockPut.mockRejectedValueOnce({
         response: {
@@ -431,7 +431,7 @@ describe('ReportEditor Page', () => {
 
   describe('Navigation', () => {
     it('should navigate back when Back button is clicked', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
 
       renderWithProviders(
         <TestWrapper>
@@ -451,7 +451,7 @@ describe('ReportEditor Page', () => {
 
   describe('Scheduling', () => {
     it('should open scheduling modal when Schedule button is clicked', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
 
       renderWithProviders(
         <TestWrapper>
