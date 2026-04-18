@@ -33,15 +33,38 @@ export interface ColDef {
 export interface AliasDef {
   '@bean'?: string;
   name: string;
-  aliasType?: 'SIMPLE' | 'COMPLEX';
+  // The backend enumerates 'SIMPLE' and 'COMPLEX' today, but the field is
+  // typed as plain `string` on the wire (http-api-react.AliasDef). Keep the
+  // known values discoverable while permitting the looser on-wire shape.
+  aliasType?: 'SIMPLE' | 'COMPLEX' | (string & {});
+  /**
+   * On the wire each path entry wraps a `colDef` object; the mapper class
+   * and parameters sit alongside it at the top level of the entry.
+   * `fullPath`/`colType` are retained at the top level for compatibility
+   * with the legacy flat shape (pre-colDef refactor).
+   */
   aliasPaths?: {
     '@bean'?: string;
     value: Array<{
       '@bean'?: string;
-      fullPath: string;
-      colType?: string;
+      colDef?: {
+        fullPath: string;
+        colType?: string;
+        parts?: {
+          '@meta'?: string;
+          value: Array<{
+            rootClass?: string;
+            path?: string;
+            type?: string;
+          }>;
+        };
+      };
       mapperClass?: string;
       mapperParameters?: string;
+      // Legacy flat fields (pre-colDef refactor); still written by some
+      // older backends. Kept optional so both shapes type-check.
+      fullPath?: string;
+      colType?: string;
     }>;
   };
   [key: string]: any;
