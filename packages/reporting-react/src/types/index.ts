@@ -4,13 +4,25 @@
 
 export interface ReportHistoryData {
   id: string;
+  /**
+   * Canonical name of the config run. Some older backend versions emit
+   * `name` instead; both paths are handled at the component level.
+   */
   configName: string;
+  /** Legacy/alternate name field served by older backends. */
+  name?: string;
   createTime: string;
   finishTime: string;
   type: string;
-  user: {
+  /**
+   * Embedded user record. When the backend can't resolve it (e.g. the
+   * requesting principal isn't in the directory), only `userId` comes back.
+   */
+  user?: {
     username: string;
   };
+  /** Fallback user identifier when `user` can't be resolved. */
+  userId?: string;
   status: string;
   totalRowsCount: number;
   groupingColumns: string[];
