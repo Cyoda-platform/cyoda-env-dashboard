@@ -26,7 +26,7 @@ export const TimeStatisticsClear: React.FC<TimeStatisticsClearProps> = ({ onRelo
       cancelText: 'Cancel',
       onOk: async () => {
         try {
-          await clearTimeStats(undefined as any);
+          await clearTimeStats(undefined);
           message.success('Clear time stats completed');
           onReload?.();
         } catch (e) {

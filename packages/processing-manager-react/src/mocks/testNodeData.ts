@@ -682,21 +682,31 @@ export const mockCachesList = [
   },
 ];
 
-// Network Info
+// Network Info.
+//
+// The backend exposes three related endpoints:
+//   GET /platform-common/net-info                 → whole envelope
+//   GET /platform-common/net-info/server/<node>   → server sub-object
+//   GET /platform-common/net-info/clients/<node>  → clients array
+//
+// The mock mirrors that shape so consumers reading `.server` / `.clients`
+// don't have to cast.
 export const mockNetworkInfo = {
-  hostname: TEST_NODE_NAME,
-  ipAddress: '192.168.1.100',
-  port: 8080,
-  protocol: 'HTTP',
-  connections: {
-    active: 45,
-    idle: 15,
-    total: 60,
-    maxAllowed: 200,
-  },
-  bandwidth: {
-    inbound: 1250000, // bytes/sec
-    outbound: 850000,
+  server: {
+    hostname: TEST_NODE_NAME,
+    ipAddress: '192.168.1.100',
+    port: 8080,
+    protocol: 'HTTP',
+    connections: {
+      active: 45,
+      idle: 15,
+      total: 60,
+      maxAllowed: 200,
+    },
+    bandwidth: {
+      inbound: 1250000, // bytes/sec
+      outbound: 850000,
+    },
   },
   clients: [
     { ip: '192.168.1.10', connections: 5, lastActivity: new Date().toISOString() },
