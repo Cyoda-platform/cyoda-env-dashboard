@@ -128,7 +128,7 @@ export default class HelperDictionary {
 
   public static getLabel(dictName: string, key: string | number) {
     if (dictName in this) {
-      // @ts-ignore
+      // @ts-expect-error dynamic property access on this
       const row = (this[dictName] as any).find((el: any) => {
         // Handle both string and number comparisons
         return el.key == key || el.key === key.toString() || el.key.toString() === key.toString();
@@ -142,7 +142,7 @@ export default class HelperDictionary {
 
   public static getOptions(dictName: string) {
     if (dictName in this) {
-      // @ts-ignore
+      // @ts-expect-error dynamic property access on this
       return this[dictName] as any[];
     }
     return [];

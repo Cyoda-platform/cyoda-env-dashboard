@@ -170,7 +170,7 @@ export function exportCatalogItemsByClass(entityClasses: string) {
  */
 export function importCatalogItems(container: CatalogItemExportImportContainer, needRewrite: boolean = true) {
   return axios.post(`/platform-api/catalog/item/import?needRewrite=${needRewrite}`, container, {
-    // @ts-ignore - muteErrors is a custom property
+    // @ts-expect-error - muteErrors is a custom property
     muteErrors: true
   });
 }
@@ -188,7 +188,7 @@ export function exportReportsByIds(ids: string[]) {
 export function importReports(data: any, params?: any) {
   return axios.post('/platform-api/reporting/import', data, {
     params,
-    // @ts-ignore - muteErrors is a custom property
+    // @ts-expect-error - muteErrors is a custom property
     muteErrors: true
   });
 }

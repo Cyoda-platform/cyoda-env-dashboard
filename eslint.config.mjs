@@ -24,6 +24,7 @@ export default tseslint.config(
       'vitest.setup.ts',
       'vitest.monaco-mock.ts',
       'vitest.worker-mock.ts',
+      'e2e/**',
     ],
   },
   js.configs.recommended,

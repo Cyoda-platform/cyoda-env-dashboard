@@ -425,7 +425,7 @@ export const ReportConfigsStream: React.FC = () => {
       importData,
       {
         params: { failOnExists },
-        // @ts-ignore - muteErrors is a custom property
+        // @ts-expect-error - muteErrors is a custom property
         muteErrors: true
       }
     );

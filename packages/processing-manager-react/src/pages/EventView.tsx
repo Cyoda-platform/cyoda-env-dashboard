@@ -127,7 +127,7 @@ export default function EventView() {
           </Descriptions.Item>
 
           <Descriptions.Item label={<strong>Core event data</strong>}>
-            {/* @ts-ignore - react-syntax-highlighter type compatibility issue */}
+            {/* @ts-expect-error - react-syntax-highlighter type compatibility issue */}
             <SyntaxHighlighter
               language="javascript"
               style={prism}
