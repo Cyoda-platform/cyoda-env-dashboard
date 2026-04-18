@@ -120,7 +120,7 @@ export const TasksFilter: React.FC<TasksFilterProps> = memo(({ onChangeFilter })
           </Col>
         </Row>
       </Form>
-      <Divider role="separator" />
+      <Divider />
     </div>
   );
 });
