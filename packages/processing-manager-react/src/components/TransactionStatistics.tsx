@@ -180,7 +180,7 @@ export default function TransactionStatistics({ transaction }: TransactionStatis
           </Descriptions.Item>
 
           {transaction.user && (
-            <Descriptions.Item label="User" icon={<UserOutlined />}>
+            <Descriptions.Item label={<><UserOutlined /> User</>}>
               {transaction.user}
             </Descriptions.Item>
           )}

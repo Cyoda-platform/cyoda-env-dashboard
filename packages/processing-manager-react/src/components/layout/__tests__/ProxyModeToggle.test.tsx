@@ -23,13 +23,13 @@ describe('ProxyModeToggle', () => {
     
     // Mock window.location.reload
     delete (window as any).location;
-    window.location = { ...originalLocation, reload: vi.fn() };
+    (window as any).location = { ...originalLocation, reload: vi.fn() };
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
     vi.useRealTimers();
-    window.location = originalLocation;
+    (window as any).location = originalLocation;
   });
 
   it('should render the component', () => {

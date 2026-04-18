@@ -40,11 +40,7 @@ function createTestQueryClient() {
         staleTime: 0,
       },
     },
-    logger: {
-      log: console.log,
-      warn: console.warn,
-      error: () => {},
-    },
+    // Note: React Query v5 removed the `logger` option.
   });
 }
 

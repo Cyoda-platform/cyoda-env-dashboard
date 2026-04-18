@@ -79,8 +79,8 @@ export const TransactionsViewFilter: React.FC<TransactionsViewFilterProps> = ({
               options={transactionStatusOptions}
               placeholder="Select status"
               popupMatchSelectWidth={false}
-              classNames={{ popup: 'transactions-view-filter-dropdown' }}
-              styles={{ popup: { minWidth: '400px' } }}
+              classNames={{ popup: { root: 'transactions-view-filter-dropdown' } }}
+              styles={{ popup: { root: { minWidth: '400px' } } }}
             />
           </Form.Item>
         </Col>
@@ -122,8 +122,8 @@ export const TransactionsViewFilter: React.FC<TransactionsViewFilterProps> = ({
                 { value: 'DESC', label: 'Desc' },
               ]}
               popupMatchSelectWidth={false}
-              classNames={{ popup: 'transactions-view-filter-dropdown' }}
-              styles={{ popup: { minWidth: '300px' } }}
+              classNames={{ popup: { root: 'transactions-view-filter-dropdown' } }}
+              styles={{ popup: { root: { minWidth: '300px' } } }}
             />
           </Form.Item>
         </Col>

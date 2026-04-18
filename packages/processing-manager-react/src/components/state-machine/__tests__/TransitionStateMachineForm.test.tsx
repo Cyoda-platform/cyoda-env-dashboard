@@ -19,9 +19,11 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
+// Cast as any — Location<any> requires more fields than the fixtures provide,
+// and the component only reads pathname/search.
 const mockUseLocation = vi.mocked(
   (await import('react-router-dom')).useLocation
-);
+) as unknown as { mockReturnValue: (value: any) => any };
 
 const mockPossibleTransitions = ['DRAFT', 'REVIEW', 'PUBLISHED', 'ARCHIVED'];
 
@@ -42,7 +44,7 @@ describe('TransitionStateMachineForm (state-machine)', () => {
 
     (hooks.useDoManualTransition as any).mockReturnValue({
       mutate: mockMutate,
-      isLoading: false,
+      isPending: false,
     });
   });
 
@@ -225,7 +227,7 @@ describe('TransitionStateMachineForm (state-machine)', () => {
         mockMutate(params);
         mockOnUpdated();
       },
-      isLoading: false,
+      isPending: false,
     });
 
     const { container } = render(
@@ -262,7 +264,7 @@ describe('TransitionStateMachineForm (state-machine)', () => {
       mutate: () => {
         onSuccess();
       },
-      isLoading: false,
+      isPending: false,
     }));
 
     const { container } = render(
@@ -296,7 +298,7 @@ describe('TransitionStateMachineForm (state-machine)', () => {
   it('should show loading state on Submit button', () => {
     (hooks.useDoManualTransition as any).mockReturnValue({
       mutate: mockMutate,
-      isLoading: true,
+      isPending: true,
     });
 
     const { container } = render(

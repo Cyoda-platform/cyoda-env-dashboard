@@ -93,11 +93,11 @@ export const TransactionsEntitiesTable: React.FC<TransactionsEntitiesTableProps>
     return '';
   };
 
-  const parseQueryParams = (queryString: string): { entityId: string; type: string } => {
+  const parseQueryParams = (queryString: string): { entityId: string; entityType: string } => {
     const params = new URLSearchParams(queryString);
     return {
       entityId: params.get('entityId') || '',
-      type: params.get('type') || '',
+      entityType: params.get('type') || '',
     };
   };
 
@@ -232,20 +232,20 @@ export const TransactionsEntitiesTable: React.FC<TransactionsEntitiesTableProps>
             visible={versionsModalVisible}
             onClose={() => setVersionsModalVisible(false)}
             entityId={selectedEntity.entityId}
-            entityType={selectedEntity.type}
+            entityType={selectedEntity.entityType}
           />
           <EntityChangesModal
             visible={changesModalVisible}
             onClose={() => setChangesModalVisible(false)}
             entityId={selectedEntity.entityId}
-            entityType={selectedEntity.type}
+            entityType={selectedEntity.entityType}
             nodeName={name}
           />
           <EntityStateMachineModal
             visible={stateMachineModalVisible}
             onClose={() => setStateMachineModalVisible(false)}
             entityId={selectedEntity.entityId}
-            entityType={selectedEntity.type}
+            entityType={selectedEntity.entityType}
           />
         </>
       )}

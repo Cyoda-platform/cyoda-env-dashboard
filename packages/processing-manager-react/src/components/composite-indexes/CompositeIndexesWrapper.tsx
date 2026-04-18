@@ -102,7 +102,7 @@ export const CompositeIndexesWrapper: React.FC = () => {
   }, []);
 
   const entityClassOptions = useMemo(() => {
-    return entityTypes.map((type: string) => ({ label: type, value: type }));
+    return (entityTypes as string[]).map((type: string) => ({ label: type, value: type }));
   }, [entityTypes]);
 
   const filteredData = useMemo(() => {

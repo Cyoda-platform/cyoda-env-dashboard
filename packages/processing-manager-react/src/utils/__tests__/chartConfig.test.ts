@@ -39,7 +39,7 @@ describe('chartConfig', () => {
     });
 
     it('should have y-axis beginAtZero set to true', () => {
-      expect(defaultChartOptions.scales?.y?.beginAtZero).toBe(true);
+      expect((defaultChartOptions.scales?.y as any)?.beginAtZero).toBe(true);
     });
 
     it('should have x-axis grid display set to false', () => {
@@ -69,7 +69,7 @@ describe('chartConfig', () => {
     });
 
     it('should have y-axis beginAtZero set to true', () => {
-      expect(barChartOptions.scales?.y?.beginAtZero).toBe(true);
+      expect((barChartOptions.scales?.y as any)?.beginAtZero).toBe(true);
     });
 
     it('should have legend position set to top', () => {

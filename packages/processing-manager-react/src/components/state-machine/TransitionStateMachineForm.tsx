@@ -48,7 +48,8 @@ export const TransitionStateMachineForm: React.FC<TransitionStateMachineFormProp
     return entityClassRaw;
   }, [entityClassRaw]);
 
-  const { mutate: doManualTransition, isLoading } = useDoManualTransition({
+  // React Query v5 renamed `isLoading` on mutation results to `isPending`.
+  const { mutate: doManualTransition, isPending: isLoading } = useDoManualTransition({
     onSuccess: () => {
       setState('');
       onUpdated?.();

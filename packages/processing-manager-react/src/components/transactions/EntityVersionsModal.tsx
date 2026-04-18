@@ -40,8 +40,8 @@ export const EntityVersionsModal: React.FC<EntityVersionsModalProps> = ({
   const firstPage = data?.firstPage || false;
   const lastPage = data?.lastPage || false;
 
-  const prevCursor = rows.length > 0 ? rows[0].transactionId : '';
-  const nextCursor = rows.length > 0 ? rows[rows.length - 1].transactionId : '';
+  const prevCursor = rows.length > 0 ? (rows[0] as any).transactionId : '';
+  const nextCursor = rows.length > 0 ? (rows[rows.length - 1] as any).transactionId : '';
 
   const handleFilterChange = (values: any) => {
     setFilterParams(values);
@@ -90,8 +90,8 @@ export const EntityVersionsModal: React.FC<EntityVersionsModalProps> = ({
           </div>
         ) : (
           <>
-            <TransitionVersionsAggregated rows={rows} />
-            <TransitionVersionsSorted rows={rows} />
+            <TransitionVersionsAggregated rows={rows as any} />
+            <TransitionVersionsSorted rows={rows as any} />
             <Card variant="borderless">
               <Pagination
                 firstPage={firstPage}

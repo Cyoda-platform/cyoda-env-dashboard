@@ -8,9 +8,11 @@ import TransactionStatistics from '../TransactionStatistics';
 import type { Transaction } from '../../types';
 
 describe('TransactionStatistics', () => {
-  const mockTransaction: Transaction = {
+  // Cast to any — the fixture includes memberCount/eventCount which the
+  // component renders but the narrow Transaction type does not yet model.
+  const mockTransaction = {
     id: 'txn-123',
-    status: 'COMPLETED',
+    status: 'COMPLETED' as const,
     startTime: '2024-01-01T10:00:00Z',
     endTime: '2024-01-01T10:05:00Z',
     duration: 300000, // 5 minutes in ms
@@ -19,7 +21,7 @@ describe('TransactionStatistics', () => {
     user: 'john.doe@example.com',
     memberCount: 5,
     eventCount: 10,
-  };
+  } as Transaction;
 
   it('should render transaction statistics', () => {
     render(<TransactionStatistics transaction={mockTransaction} />);
@@ -46,7 +48,7 @@ describe('TransactionStatistics', () => {
   });
 
   it('should display completed status with success color', () => {
-    const completedTxn = { ...mockTransaction, status: 'COMPLETED' };
+    const completedTxn = { ...mockTransaction, status: 'COMPLETED' as const };
     render(<TransactionStatistics transaction={completedTxn} />);
 
     const statusTags = screen.getAllByText('COMPLETED');
@@ -54,7 +56,7 @@ describe('TransactionStatistics', () => {
   });
 
   it('should display failed status with error color', () => {
-    const failedTxn = { ...mockTransaction, status: 'FAILED' };
+    const failedTxn = { ...mockTransaction, status: 'FAILED' as const };
     render(<TransactionStatistics transaction={failedTxn} />);
 
     const statusTags = screen.getAllByText('FAILED');
@@ -62,7 +64,7 @@ describe('TransactionStatistics', () => {
   });
 
   it('should display running status with processing color', () => {
-    const runningTxn = { ...mockTransaction, status: 'RUNNING' };
+    const runningTxn = { ...mockTransaction, status: 'RUNNING' as const };
     render(<TransactionStatistics transaction={runningTxn} />);
 
     const statusTags = screen.getAllByText('RUNNING');
@@ -70,7 +72,7 @@ describe('TransactionStatistics', () => {
   });
 
   it('should display pending status with warning color', () => {
-    const pendingTxn = { ...mockTransaction, status: 'PENDING' };
+    const pendingTxn = { ...mockTransaction, status: 'PENDING' as const };
     render(<TransactionStatistics transaction={pendingTxn} />);
 
     const statusTags = screen.getAllByText('PENDING');
@@ -124,10 +126,10 @@ describe('TransactionStatistics', () => {
   });
 
   it('should handle transaction with minimal data', () => {
-    const minimalTxn: Transaction = {
+    const minimalTxn = {
       id: 'txn-minimal',
-      status: 'PENDING',
-    };
+      status: 'PENDING' as const,
+    } as Transaction;
 
     render(<TransactionStatistics transaction={minimalTxn} />);
 

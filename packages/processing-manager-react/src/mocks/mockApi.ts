@@ -415,11 +415,11 @@ function setupMockInterceptorsForDefaultAxios(axiosInstance: AxiosInstance) {
 
       // Network info
       if (url.includes('/platform-common/net-info/server')) {
-        return { ...response, data: mockNetworkInfo.server };
+        return { ...response, data: (mockNetworkInfo as any).server };
       }
 
       if (url.includes('/platform-common/net-info/clients')) {
-        return { ...response, data: mockNetworkInfo.clients };
+        return { ...response, data: (mockNetworkInfo as any).clients };
       }
 
       // ZooKeeper info

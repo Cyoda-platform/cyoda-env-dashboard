@@ -26,7 +26,7 @@ Are you sure you want to hard reset consistency time?`,
       okText: 'OK',
       cancelText: 'Cancel',
       onOk: () => {
-        doHardResetConsistencyTime();
+        doHardResetConsistencyTime(undefined);
       },
       onCancel: () => {
         message.info('Hard reset consistency time canceled');

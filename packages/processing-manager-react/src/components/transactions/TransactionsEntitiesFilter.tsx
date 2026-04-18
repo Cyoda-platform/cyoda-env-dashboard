@@ -71,8 +71,8 @@ export const TransactionsEntitiesFilter: React.FC<TransactionsEntitiesFilterProp
               onChange={(value) => handleFieldChange('entityClass', value)}
               options={entityClassOptions}
               popupMatchSelectWidth={false}
-              classNames={{ popup: 'transactions-entities-filter-dropdown' }}
-              styles={{ popup: { minWidth: '400px' } }}
+              classNames={{ popup: { root: 'transactions-entities-filter-dropdown' } }}
+              styles={{ popup: { root: { minWidth: '400px' } } }}
             />
           </Form.Item>
         </Col>

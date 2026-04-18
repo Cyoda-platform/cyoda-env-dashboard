@@ -12,7 +12,7 @@ import './CassandraService.scss';
 export const CassandraService: React.FC = () => {
   const { name } = useParams<{ name: string }>();
   const [up, setUp] = useState<boolean | null>(null);
-  const nodes = useProcessingStore((state) => state.nodes);
+  const nodes = useProcessingStore((state) => state.nodesProcessing);
 
   useEffect(() => {
     const loadServiceStatus = async () => {

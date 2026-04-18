@@ -61,7 +61,7 @@ export const ProcessingEventsView: React.FC = () => {
     timeUUID: string;
   } | null>(null);
 
-  const { data: eventsData, isLoading } = useProcessingQueueEvents(filters);
+  const { data: eventsData, isLoading } = useProcessingQueueEvents(filters as any);
   const { data: summaryData } = useSummary({});
   const { data: queuesData } = useProcessingQueues({});
 

@@ -244,7 +244,10 @@ export interface EntityChange {
 // Grafana Types
 // ============================================================================
 
-export interface GrafanaChart {
+// Renamed from `GrafanaChartConfig` to avoid colliding with the component export of
+// the same name from ./components/grafana. Consumers should prefer the
+// component import; this shape is kept as a type-only helper.
+export interface GrafanaChartConfig {
   id: string;
   name?: string;
   title?: string;
@@ -270,18 +273,22 @@ export interface GrafanaQuery {
 
 export interface SshConnection {
   host: string;
-  port: number;
-  username: string;
-  connected: boolean;
+  port?: number;
+  username?: string;
+  password?: string;
+  privateKey?: string;
+  passphrase?: string;
+  connected?: boolean;
   lastConnected?: string;
 }
 
 export interface SshCommand {
+  id?: string;
   command: string;
   output?: string;
   error?: string;
   exitCode?: number;
-  timestamp: string;
+  timestamp?: string;
 }
 
 // ============================================================================
@@ -355,8 +362,8 @@ export interface SshState {
 }
 
 export interface GrafanaState {
-  charts: GrafanaChart[];
-  selectedChart: GrafanaChart | null;
+  charts: GrafanaChartConfig[];
+  selectedChart: GrafanaChartConfig | null;
   loading: boolean;
   error: string | null;
 }
