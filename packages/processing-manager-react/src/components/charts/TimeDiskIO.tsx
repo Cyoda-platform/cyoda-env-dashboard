@@ -75,7 +75,7 @@ export default function TimeDiskIO({
     ],
   };
 
-  const options: ChartOptions<'line'> = {
+  const options: ChartOptions<'line'> = ({
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
@@ -137,7 +137,7 @@ export default function TimeDiskIO({
         },
       },
     },
-  };
+  }) as ChartOptions<'line'>;
 
   return (
     <div style={{ height: `${height}px` }}>

@@ -23,7 +23,7 @@ export const PmComponentsClear: React.FC = () => {
       okText: 'OK',
       cancelText: 'Cancel',
       onOk: () => {
-        doClearAllCaches();
+        doClearAllCaches(undefined);
       },
       onCancel: () => {
         message.info('Clear Caches canceled');

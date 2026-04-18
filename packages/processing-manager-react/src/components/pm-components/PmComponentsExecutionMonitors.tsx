@@ -20,8 +20,10 @@ export const PmComponentsExecutionMonitors: React.FC = () => {
   const { data, refetch } = useExecMonitorsInfo();
 
   const tableData = useMemo(() => {
-    if (!data?.data) return [];
-    return data.data.filter(
+    // The hook is typed as ExecutionMonitor[] but the runtime envelope is
+    // `{ data: ExecutionMonitor[] }`; treat as loose.
+    const rows = (data as any)?.data ?? [];
+    return rows.filter(
       (item: any) => !form.name || item.name.toLowerCase().includes(form.name.toLowerCase())
     );
   }, [data, form.name]);

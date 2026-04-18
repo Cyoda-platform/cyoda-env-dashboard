@@ -202,7 +202,7 @@ export const ShardsDetailTabCachesList: React.FC = () => {
         expandable={{
           expandedRowRender,
           expandedRowKeys,
-          onExpandedRowsChange: (keys) => setExpandedRowKeys(keys),
+          onExpandedRowsChange: (keys) => setExpandedRowKeys([...keys]),
           onExpand: handleExpand,
           expandIcon: ({ expanded, onExpand, record }) =>
             expanded ? (

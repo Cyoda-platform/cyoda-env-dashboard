@@ -94,8 +94,8 @@ export const TransitionVersionsFilter: React.FC<TransitionVersionsFilterProps> =
                 placeholder="Action Type"
                 options={actionTypeOptions.map((type) => ({ value: type, label: type }))}
                 popupMatchSelectWidth={false}
-                classNames={{ popup: 'transition-versions-filter-dropdown' }}
-                styles={{ popup: { minWidth: '300px' } }}
+                classNames={{ popup: { root: 'transition-versions-filter-dropdown' } }}
+                styles={{ popup: { root: { minWidth: '300px' } } }}
               />
             </Form.Item>
           </Col>
@@ -110,8 +110,8 @@ export const TransitionVersionsFilter: React.FC<TransitionVersionsFilterProps> =
                   { value: 'DESC', label: 'Desc' },
                 ]}
                 popupMatchSelectWidth={false}
-                classNames={{ popup: 'transition-versions-filter-dropdown' }}
-                styles={{ popup: { minWidth: '300px' } }}
+                classNames={{ popup: { root: 'transition-versions-filter-dropdown' } }}
+                styles={{ popup: { root: { minWidth: '300px' } } }}
               />
             </Form.Item>
           </Col>

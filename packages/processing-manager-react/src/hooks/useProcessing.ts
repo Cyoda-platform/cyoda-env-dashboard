@@ -343,7 +343,7 @@ export function useTransactions(params?: any) {
   return useQuery({
     queryKey: processingKeys.transactions(params),
     queryFn: async () => {
-      const { data } = await axiosProcessing.get<Transaction[]>(
+      const { data } = await axiosProcessing.get<{ rows: Transaction[]; firstPage: boolean; lastPage: boolean }>(
         HelperUrl.getLinkToServer('/platform-processing/transactions/view'),
         { params }
       );
@@ -500,7 +500,7 @@ export function useEntityVersions(params?: any) {
   return useQuery({
     queryKey: processingKeys.entityVersions(apiParams),
     queryFn: async () => {
-      const { data } = await axiosProcessing.get<EntityVersion[]>(
+      const { data } = await axiosProcessing.get<{ rows: EntityVersion[]; firstPage: boolean; lastPage: boolean }>(
         HelperUrl.getLinkToServer('/platform-processing/transactions/view/entity-versions'),
         { params: apiParams }
       );
@@ -649,8 +649,8 @@ export function useProcessingQueueEventsError(params: any, options?: any) {
         HelperUrl.getLinkToServer(
           `/platform-processing/processing-queue/events/error.json?queue=${params.queue}&shard=${
             params.shard
-          }&from=${moment(params.from).format('x') * 1000}&to=${
-            moment(params.to).format('x') * 1000
+          }&from=${Number(moment(params.from).format('x')) * 1000}&to=${
+            Number(moment(params.to).format('x')) * 1000
           }&sort=${params.sort}&pageSize=9999999&pageNum=${params.pageNum}`
         )
       );
@@ -788,7 +788,7 @@ export function useManualTransition() {
  */
 export function useSiftLogger(params: any) {
   return useQuery({
-    queryKey: processingKeys.all.concat(['sift-logger', params]),
+    queryKey: [...processingKeys.all, 'sift-logger', params],
     queryFn: async () => {
       const { data } = await axiosProcessing.get(
         HelperUrl.getLinkToServer('/platform-processing/processing-queue/sift-logger.do'),
@@ -858,11 +858,11 @@ export function useClearTimeStats() {
  *
  * @returns Mutation result
  */
-export function useDoClearAllCaches() {
+export function useDoClearAllCaches(options?: { onSuccess?: () => void }) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (params: any) => {
+    mutationFn: async (params?: any) => {
       const { data } = await axiosProcessing.get(
         HelperUrl.getLinkToServer('/platform-processing/clear-all-caches.do'),
         { params }
@@ -871,6 +871,7 @@ export function useDoClearAllCaches() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: processingKeys.all });
+      options?.onSuccess?.();
     },
   });
 }
@@ -882,11 +883,11 @@ export function useDoClearAllCaches() {
  *
  * @returns Mutation result
  */
-export function useDoHardResetConsistencyTime() {
+export function useDoHardResetConsistencyTime(options?: { onSuccess?: () => void }) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (params: any) => {
+    mutationFn: async (params?: any) => {
       const { data } = await axiosProcessing.get(
         HelperUrl.getLinkToServer('/platform-processing/transactions/hard-reset-consistency-time.do'),
         { params }
@@ -895,6 +896,7 @@ export function useDoHardResetConsistencyTime() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: processingKeys.all });
+      options?.onSuccess?.();
     },
   });
 }
@@ -902,7 +904,7 @@ export function useDoHardResetConsistencyTime() {
 /**
  * Manual Transition (alias for useManualTransition)
  */
-export function useDoManualTransition() {
+export function useDoManualTransition(_options?: { onSuccess?: () => void }) {
   return useManualTransition();
 }
 
@@ -931,7 +933,7 @@ export function usePlatformCommonNetInfoServer() {
   const { selectedNode } = useProcessingStore();
 
   return useQuery({
-    queryKey: processingKeys.all.concat(['net-info-server', selectedNode]),
+    queryKey: [...processingKeys.all, 'net-info-server', selectedNode],
     queryFn: async () => {
       const { data } = await axiosProcessing.get(
         HelperUrl.getLinkToServer(`/platform-api/net-info/server/${selectedNode}`)
@@ -953,7 +955,7 @@ export function usePlatformCommonNetInfoClients() {
   const { selectedNode } = useProcessingStore();
 
   return useQuery({
-    queryKey: processingKeys.all.concat(['net-info-clients', selectedNode]),
+    queryKey: [...processingKeys.all, 'net-info-clients', selectedNode],
     queryFn: async () => {
       const { data } = await axiosProcessing.get(
         HelperUrl.getLinkToServer(`/platform-api/net-info/clients/${selectedNode}`)
@@ -975,7 +977,7 @@ export function usePlatformCommonZkInfoCurrNodeInfo() {
   const { selectedNode } = useProcessingStore();
 
   return useQuery({
-    queryKey: processingKeys.all.concat(['zk-info-curr-node', selectedNode]),
+    queryKey: [...processingKeys.all, 'zk-info-curr-node', selectedNode],
     queryFn: async () => {
       const { data } = await axiosProcessing.get(
         HelperUrl.getLinkToServer(`/platform-api/zk-info/curr-node/${selectedNode}`)
@@ -997,7 +999,7 @@ export function usePlatformCommonZkInfoLoadedOnlineNodes() {
   const { selectedNode } = useProcessingStore();
 
   return useQuery({
-    queryKey: processingKeys.all.concat(['zk-info-online-nodes', selectedNode]),
+    queryKey: [...processingKeys.all, 'zk-info-online-nodes', selectedNode],
     queryFn: async () => {
       const { data } = await axiosProcessing.get(
         HelperUrl.getLinkToServer(`/platform-api/zk-info/online-nodes/${selectedNode}`)
@@ -1079,7 +1081,7 @@ export function usePlatformCommonZkInfoLoadedShardsDistribution() {
   const { selectedNode } = useProcessingStore();
 
   return useQuery({
-    queryKey: processingKeys.all.concat(['zk-info-shards-distribution', selectedNode]),
+    queryKey: [...processingKeys.all, 'zk-info-shards-distribution', selectedNode],
     queryFn: async () => {
       const { data } = await axiosProcessing.get(
         HelperUrl.getLinkToServer(`/platform-api/zk-info/shards-distribution/${selectedNode}`)

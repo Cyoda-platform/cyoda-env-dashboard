@@ -29,9 +29,9 @@ export const PmComponentsExecutionQueuesInfo: React.FC = () => {
     // Transform queue names into table rows
     // Note: API returns array of queue names (strings)
     // We create rows with queue name as executorName
-    return data.map((queueName, index) => ({
-      executorName: queueName,
-      index: index,
+    return data.map((queueName: any, index): ExecutionQueueRow => ({
+      executorName: typeof queueName === 'string' ? queueName : String(queueName?.name ?? queueName),
+      index,
       queueSize: 0, // API doesn't provide queue size
       details: '', // API doesn't provide details
     }));
@@ -83,7 +83,7 @@ export const PmComponentsExecutionQueuesInfo: React.FC = () => {
     };
   }, []);
 
-  const columns: ColumnsType<ExecutionQueue> = useMemo(() => [
+  const columns: ColumnsType<ExecutionQueueRow> = useMemo(() => [
     {
       title: 'Executor Name',
       dataIndex: 'executorName',

@@ -6,7 +6,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import axios from 'axios';
-import type { GrafanaState, GrafanaChart } from '../types';
+import type { GrafanaState, GrafanaChartConfig } from '../types';
 
 interface GrafanaNode {
   instance: string;
@@ -14,10 +14,10 @@ interface GrafanaNode {
 }
 
 interface GrafanaStore extends GrafanaState {
-  setCharts: (charts: GrafanaChart[]) => void;
-  addChart: (chart: GrafanaChart) => void;
+  setCharts: (charts: GrafanaChartConfig[]) => void;
+  addChart: (chart: GrafanaChartConfig) => void;
   removeChart: (chartId: string) => void;
-  setSelectedChart: (chart: GrafanaChart | null) => void;
+  setSelectedChart: (chart: GrafanaChartConfig | null) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
   loadUp: (node: GrafanaNode) => Promise<boolean>;

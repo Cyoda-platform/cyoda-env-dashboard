@@ -173,8 +173,8 @@ export const ProcessEventsStatistics: React.FC = () => {
                 allowClear
                 showSearch
                 popupMatchSelectWidth={false}
-                classNames={{ popup: 'process-events-statistics-dropdown' }}
-                styles={{ popup: { minWidth: '400px' } }}
+                classNames={{ popup: { root: 'process-events-statistics-dropdown' } }}
+                styles={{ popup: { root: { minWidth: '400px' } } }}
               >
                 {queueOptions.map((item: string) => (
                   <Select.Option key={item} value={item} style={{ whiteSpace: 'normal', height: 'auto' }}>
@@ -194,8 +194,8 @@ export const ProcessEventsStatistics: React.FC = () => {
                 showSearch
                 options={shardOptions}
                 popupMatchSelectWidth={false}
-                classNames={{ popup: 'process-events-statistics-dropdown' }}
-                styles={{ popup: { minWidth: '400px' } }}
+                classNames={{ popup: { root: 'process-events-statistics-dropdown' } }}
+                styles={{ popup: { root: { minWidth: '400px' } } }}
               />
             </Form.Item>
           </Col>
@@ -209,8 +209,8 @@ export const ProcessEventsStatistics: React.FC = () => {
                 showSearch
                 options={classOptions}
                 popupMatchSelectWidth={false}
-                classNames={{ popup: 'process-events-statistics-dropdown' }}
-                styles={{ popup: { minWidth: '400px' } }}
+                classNames={{ popup: { root: 'process-events-statistics-dropdown' } }}
+                styles={{ popup: { root: { minWidth: '400px' } } }}
               />
             </Form.Item>
           </Col>

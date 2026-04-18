@@ -63,11 +63,7 @@ function createTestQueryClient() {
         retry: false,
       },
     },
-    logger: {
-      log: console.log,
-      warn: console.warn,
-      error: () => {}, // Suppress error logs
-    },
+    // Note: React Query v5 removed the `logger` option.
   });
 }
 
@@ -558,7 +554,7 @@ describe('useProcessing Hooks', () => {
           { wrapper: createWrapper(queryClient) }
         );
 
-        result.current.mutate();
+        result.current.mutate(undefined as any);
 
         await waitFor(() => expect(result.current.isSuccess).toBe(true));
 

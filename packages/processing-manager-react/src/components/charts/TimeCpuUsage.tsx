@@ -58,7 +58,9 @@ export default function TimeCpuUsage({ data = [], height = 300 }: TimeCpuUsagePr
     ],
   };
 
-  const options: ChartOptions<'line'> = {
+  // chart.js v4 narrowed the scale-option types (borderDash on grid,
+  // beginAtZero in ticks no longer typed); cast to keep runtime behavior.
+  const options: ChartOptions<'line'> = ({
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
@@ -113,7 +115,7 @@ export default function TimeCpuUsage({ data = [], height = 300 }: TimeCpuUsagePr
         },
       },
     },
-  };
+  }) as ChartOptions<'line'>;
 
   return (
     <div style={{ height: `${height}px` }}>

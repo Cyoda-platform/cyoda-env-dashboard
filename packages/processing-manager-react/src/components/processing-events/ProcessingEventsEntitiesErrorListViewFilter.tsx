@@ -30,7 +30,7 @@ export const ProcessingEventsEntitiesErrorListViewFilter: React.FC<
   useEffect(() => {
     // Handle both formats: array directly or { data: array }
     if (data) {
-      const entities = Array.isArray(data) ? data : data.data;
+      const entities = Array.isArray(data) ? data : (data as any).data;
       if (entities && Array.isArray(entities)) {
         setEntityClassOptions([...entities, 'ALL']);
         onChange(form);
@@ -54,8 +54,8 @@ export const ProcessingEventsEntitiesErrorListViewFilter: React.FC<
               onChange={(value) => setForm({ ...form, type: value })}
               options={entityClassOptions.map((item) => ({ label: item, value: item }))}
               popupMatchSelectWidth={false}
-              classNames={{ popup: 'processing-events-entities-error-list-view-filter-dropdown' }}
-              styles={{ popup: { minWidth: '400px' } }}
+              classNames={{ popup: { root: 'processing-events-entities-error-list-view-filter-dropdown' } }}
+              styles={{ popup: { root: { minWidth: '400px' } } }}
             />
           </Form.Item>
         </Col>

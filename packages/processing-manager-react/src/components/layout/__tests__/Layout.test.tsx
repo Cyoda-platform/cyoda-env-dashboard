@@ -127,7 +127,7 @@ describe('Layout', () => {
     ];
 
     // Set nodes in the store
-    useProcessingStore.setState({ nodes: mockNodes });
+    useProcessingStore.setState({ nodesProcessing: mockNodes });
 
     renderWithRouter(
       <Layout>
@@ -144,7 +144,7 @@ describe('Layout', () => {
 
   it('should not set baseUrl when there are no nodes', () => {
     // Ensure nodes array is empty
-    useProcessingStore.setState({ nodes: [] });
+    useProcessingStore.setState({ nodesProcessing: [] });
 
     // Ensure baseUrl is reset
     useAppStore.setState({ baseUrl: '' });
@@ -168,7 +168,7 @@ describe('Layout', () => {
     ];
 
     // Set nodes in the store
-    useProcessingStore.setState({ nodes: mockNodes });
+    useProcessingStore.setState({ nodesProcessing: mockNodes });
 
     renderWithRouter(
       <Layout>

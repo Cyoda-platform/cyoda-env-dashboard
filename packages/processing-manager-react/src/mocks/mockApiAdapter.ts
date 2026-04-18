@@ -61,7 +61,7 @@ function getMockData(url: string): any | null {
   // Count statistics
   if (url.includes('/platform-processing/stats/count')) {
     return {
-      total: mockProcessingEvents.total,
+      total: (mockProcessingEvents as any).total ?? mockProcessingEvents.length,
       byStatus: {
         PENDING: 200,
         PROCESSING: 50,
@@ -142,12 +142,12 @@ function getMockData(url: string): any | null {
 
   // Network info - server
   if (url.includes('/platform-common/net-info/server')) {
-    return mockNetworkInfo.server;
+    return (mockNetworkInfo as any).server;
   }
 
   // Network info - clients
   if (url.includes('/platform-common/net-info/clients')) {
-    return mockNetworkInfo.clients;
+    return (mockNetworkInfo as any).clients;
   }
 
   // ZooKeeper info
@@ -218,7 +218,7 @@ export function createMockAdapter(originalAdapter: AxiosAdapter): AxiosAdapter {
     }
     
     // No mock data, use original adapter
-    return originalAdapter(config);
+    return originalAdapter(config as any);
   };
 }
 

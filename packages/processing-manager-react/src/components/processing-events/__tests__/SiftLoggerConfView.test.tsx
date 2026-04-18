@@ -43,7 +43,7 @@ describe('SiftLoggerConfView', () => {
 
     vi.mocked(hooks.useUpdateSiftLogger).mockReturnValue({
       mutate: mockUpdateSiftLogger,
-      isLoading: false,
+      isPending: false,
     } as any);
   });
 
@@ -237,7 +237,7 @@ describe('SiftLoggerConfView', () => {
   it('should show loading state on submit button', () => {
     vi.mocked(hooks.useUpdateSiftLogger).mockReturnValue({
       mutate: mockUpdateSiftLogger,
-      isLoading: true,
+      isPending: true,
     } as any);
 
     renderComponent();

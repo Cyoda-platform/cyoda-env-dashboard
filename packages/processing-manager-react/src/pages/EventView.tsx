@@ -26,8 +26,8 @@ export default function EventView() {
 
   const { data, refetch, isLoading } = useProcessingQueueErrorEventByEntity(queryParams);
 
-  const event = data?.event || {};
-  const isDone = data?.done || false;
+  const event = ((data as any)?.event) || {};
+  const isDone = ((data as any)?.done) || false;
 
   const formattedCoreData = useMemo(() => {
     if (!event.coreData) return '{}';
@@ -127,7 +127,6 @@ export default function EventView() {
           </Descriptions.Item>
 
           <Descriptions.Item label={<strong>Core event data</strong>}>
-            {/* @ts-expect-error - react-syntax-highlighter type compatibility issue */}
             <SyntaxHighlighter
               language="javascript"
               style={prism}
