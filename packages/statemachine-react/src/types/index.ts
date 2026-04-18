@@ -54,6 +54,10 @@ export interface StateForm {
   description?: string;
   initial?: boolean;
   terminal?: boolean;
+  // Present on the legacy `/state/:stateId` page payload; backend ignores
+  // them when creating/updating a state via the transition-bound flow.
+  workflowId?: string;
+  entityClassName?: string;
 }
 
 // Transition Types

@@ -53,7 +53,7 @@ export const State: React.FC = () => {
     try {
       const values = await form.validateFields();
       
-      const formData = {
+      const formData: StateFormType = {
         name: values.name,
         description: values.description,
         workflowId,
@@ -61,16 +61,14 @@ export const State: React.FC = () => {
       };
 
       if (isNew) {
-        // The hook signature type-wise expects {persistedType, workflowId,
-        // transitionId, form}, but this page predates that refactor and the
-        // tests document the existing runtime contract (persistedType,
-        // workflowId, stateData). Cast until State.tsx is migrated to the
-        // new transitionId-aware flow.
+        // Legacy create path — the `/state/:stateId` page has no transition
+        // context, so we call the hook via its `stateData` variant. See
+        // CreateStateVariables in useStatemachine.ts for the two shapes.
         await createStateMutation.mutateAsync({
           persistedType,
           workflowId,
           stateData: formData,
-        } as any);
+        });
         message.success('State created successfully');
       } else {
         await updateStateMutation.mutateAsync({
@@ -78,7 +76,7 @@ export const State: React.FC = () => {
           workflowId,
           stateId: stateId!,
           stateData: formData,
-        } as any);
+        });
         message.success('State updated successfully');
       }
       

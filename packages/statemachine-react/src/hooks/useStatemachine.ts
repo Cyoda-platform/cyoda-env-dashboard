@@ -227,33 +227,67 @@ export function useState(persistedType: PersistedType, workflowId: string, state
   });
 }
 
+/**
+ * Variables accepted by `useCreateState` / `useUpdateState`.
+ *
+ * Two call shapes coexist:
+ *   - The modern "graphical" flow, where a state is created **on** a
+ *     transition (so a `transitionId` is available) and the payload is
+ *     under `form`.
+ *   - The legacy `/state/:stateId` page, which has no transitionId and
+ *     carries the payload under `stateData`.
+ *
+ * The store-level API takes the modern shape; the hook bridges the legacy
+ * shape by treating `stateData` as `form` and defaulting `transitionId` to
+ * an empty string. State.tsx tests assert the legacy shape, so both paths
+ * are first-class.
+ */
+export type CreateStateVariables =
+  & { persistedType: PersistedType; workflowId: string }
+  & (
+    | { transitionId: string; form: StateForm; stateData?: never }
+    | { stateData: StateForm; transitionId?: string; form?: never }
+  );
+
+export type UpdateStateVariables =
+  & { persistedType: PersistedType; workflowId: string; stateId: string }
+  & (
+    | { form: StateForm; stateData?: never }
+    | { stateData: StateForm; form?: never }
+  );
+
 export function useCreateState() {
   const queryClient = useQueryClient();
   const store = useStatemachineStore();
 
   return useMutation({
-    mutationFn: async ({
-      persistedType,
-      workflowId,
-      transitionId,
-      form,
-    }: {
-      persistedType: PersistedType;
-      workflowId: string;
-      transitionId: string;
-      form: StateForm;
-    }) => {
-      const response = await store.postState(persistedType, workflowId, transitionId, form);
+    mutationFn: async (vars: CreateStateVariables) => {
+      const formPayload = 'form' in vars && vars.form ? vars.form : vars.stateData!;
+      const transitionId = vars.transitionId ?? '';
+      const response = await store.postState(
+        vars.persistedType,
+        vars.workflowId,
+        transitionId,
+        formPayload,
+      );
       return response.data;
     },
     onSuccess: (_, variables) => {
       // Invalidate states list
-      queryClient.invalidateQueries({ queryKey: statemachineKeys.statesList(variables.persistedType, variables.workflowId) });
-      // Invalidate the transition that was used to create this state
-      // The backend automatically updates the transition's endStateId
-      queryClient.invalidateQueries({ queryKey: statemachineKeys.transition(variables.persistedType, variables.workflowId, variables.transitionId) });
-      // Also invalidate transitions list
-      queryClient.invalidateQueries({ queryKey: statemachineKeys.transitionsList(variables.persistedType, variables.workflowId) });
+      queryClient.invalidateQueries({
+        queryKey: statemachineKeys.statesList(variables.persistedType, variables.workflowId),
+      });
+      // If the modern flow passed a transitionId, invalidate that transition
+      // and the transitions list so the new state surfaces on its edges.
+      const transitionId = variables.transitionId;
+      if (transitionId) {
+        queryClient.invalidateQueries({
+          queryKey: statemachineKeys.transition(variables.persistedType, variables.workflowId, transitionId),
+        });
+        queryClient.invalidateQueries({
+          queryKey: statemachineKeys.transitionsList(variables.persistedType, variables.workflowId),
+        });
+      }
     },
   });
 }
@@ -261,25 +295,25 @@ export function useCreateState() {
 export function useUpdateState() {
   const queryClient = useQueryClient();
   const store = useStatemachineStore();
-  
+
   return useMutation({
-    mutationFn: async ({
-      persistedType,
-      workflowId,
-      stateId,
-      form,
-    }: {
-      persistedType: PersistedType;
-      workflowId: string;
-      stateId: string;
-      form: StateForm;
-    }) => {
-      const response = await store.putState(persistedType, workflowId, stateId, form);
+    mutationFn: async (vars: UpdateStateVariables) => {
+      const formPayload = 'form' in vars && vars.form ? vars.form : vars.stateData!;
+      const response = await store.putState(
+        vars.persistedType,
+        vars.workflowId,
+        vars.stateId,
+        formPayload,
+      );
       return response.data;
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: statemachineKeys.statesList(variables.persistedType, variables.workflowId) });
-      queryClient.invalidateQueries({ queryKey: statemachineKeys.state(variables.persistedType, variables.workflowId, variables.stateId) });
+      queryClient.invalidateQueries({
+        queryKey: statemachineKeys.statesList(variables.persistedType, variables.workflowId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: statemachineKeys.state(variables.persistedType, variables.workflowId, variables.stateId),
+      });
     },
   });
 }
