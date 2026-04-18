@@ -76,7 +76,7 @@ export const StatesListModal: React.FC<StatesListModalProps> = ({
   
   // Handlers
   const handleEdit = (record: StateRow) => {
-    const statePersistedType = record.persisted ? 'persisted' : 'transient';
+    const statePersistedType = record.persisted ? 'persisted' : 'runtime';
     navigate(
       `/state/${record.id}?workflowId=${workflowId}&persistedType=${statePersistedType}&entityClassName=${entityClassName}`
     );

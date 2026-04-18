@@ -449,7 +449,7 @@ export const Transition: React.FC = () => {
                   options={startStateOptions}
                   showSearch
                   filterOption={(input, option) =>
-                    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                    String(option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                   }
                 />
               </Form.Item>
@@ -497,7 +497,7 @@ export const Transition: React.FC = () => {
                       options={endStateOptions}
                       showSearch
                       filterOption={(input, option) =>
-                        (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                        String(option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                       }
                     />
                   </Form.Item>
@@ -524,7 +524,7 @@ export const Transition: React.FC = () => {
                   options={criteriaOptions}
                   showSearch
                   filterOption={(input, option) =>
-                    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                    String(option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                   }
                 />
               </Form.Item>
@@ -587,7 +587,7 @@ export const Transition: React.FC = () => {
                   options={processOptions}
                   showSearch
                   filterOption={(input, option) =>
-                    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                    String(option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                   }
                 />
               </Form.Item>

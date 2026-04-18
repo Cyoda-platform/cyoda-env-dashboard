@@ -4,7 +4,10 @@
  * Updated: Added theme support for light/dark modes
  */
 
-import type { Stylesheet as CytoscapeStylesheet } from 'cytoscape';
+// cytoscape's recent d.ts renamed `Stylesheet`; the shapes returned here are
+// the canonical cytoscape selector/style object form. Use `any` for the
+// element type — the runtime value is validated by cytoscape on init.
+type CytoscapeStylesheet = any;
 
 export const getStyleForTheme = (theme: 'light' | 'dark'): CytoscapeStylesheet[] => {
   const labelTextColor = theme === 'light' ? '#111827' : '#ffffff';

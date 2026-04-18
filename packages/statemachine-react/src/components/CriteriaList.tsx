@@ -69,7 +69,7 @@ export const CriteriaList: React.FC<CriteriaListProps> = ({
   };
 
   const handleViewCriteria = (record: CriteriaRow) => {
-    const criteriaPersistedType = record.persisted ? 'persisted' : 'transient';
+    const criteriaPersistedType = record.persisted ? 'persisted' : 'runtime';
     navigate(
       `/criteria/${record.id}?persistedType=${criteriaPersistedType}&entityClassName=${entityClassName}&workflowPersistedType=${persistedType}&workflowId=${workflowId}`
     );
@@ -77,7 +77,7 @@ export const CriteriaList: React.FC<CriteriaListProps> = ({
 
   const handleCopy = async (record: CriteriaRow) => {
     try {
-      const criteriaPersistedType = record.persisted ? 'persisted' : 'transient';
+      const criteriaPersistedType = record.persisted ? 'persisted' : 'runtime';
       const newCriteriaId = await copyCriteriaMutation.mutateAsync({
         persistedType: criteriaPersistedType,
         criteriaId: record.id,
@@ -104,7 +104,7 @@ export const CriteriaList: React.FC<CriteriaListProps> = ({
       cancelText: 'Cancel',
       onOk: async () => {
         try {
-          const criteriaPersistedType = record.persisted ? 'persisted' : 'transient';
+          const criteriaPersistedType = record.persisted ? 'persisted' : 'runtime';
           await deleteCriteriaMutation.mutateAsync({
             persistedType: criteriaPersistedType,
             criteriaId: record.id,

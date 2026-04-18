@@ -95,7 +95,7 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
   // Update Cytoscape styles when theme changes
   useEffect(() => {
     if (cyRef.current) {
-      cyRef.current.style(getStyleForTheme(currentTheme));
+      cyRef.current.style(getStyleForTheme(currentTheme) as any);
     }
   }, [currentTheme]);
 
@@ -132,9 +132,9 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
 
     const cy = cytoscape({
       container: containerRef.current,
-      elements,
-      style: getStyleForTheme(currentTheme),
-      layout: allElementsHavePositions ? { name: 'preset' } : {
+      elements: elements as any,
+      style: getStyleForTheme(currentTheme) as any,
+      layout: (allElementsHavePositions ? { name: 'preset' } : {
         name: 'breadthfirst',
         directed: true,
         nodeDimensionsIncludeLabels: true,
@@ -143,7 +143,7 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
         fit: true,
         avoidOverlap: true, // Prevent nodes from overlapping
         avoidOverlapPadding: 100, // Minimum distance between nodes
-      },
+      }) as any,
       zoom: 1,
       pan: { x: 0, y: 0 }, // Start at origin like Vue version
       minZoom: 0.1,
@@ -160,7 +160,7 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
     // Listen for layout stop event to fit the graph (matching Vue implementation)
     cy.one('layoutstop', () => {
       setTimeout(() => {
-        cy.fit(50);
+        cy.fit(undefined, 50);
       }, 50);
     });
 
@@ -191,7 +191,7 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
       cy.nodes('.node-state').unlock();
     }
 
-    cy.fit(50);
+    cy.fit(undefined, 50);
     // Limit max zoom for small graphs
     if (cy.zoom() > 1.2) {
       cy.zoom(1.2);
@@ -211,7 +211,7 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
     } else {
       // If we have saved positions, fit immediately since layout is preset
       setTimeout(() => {
-        cy.fit(50);
+        cy.fit(undefined, 50);
         // Limit max zoom for small graphs
         if (cy.zoom() > 1.2) {
           cy.zoom(1.2);
@@ -487,7 +487,7 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
               if (endpoint) {
                 const sourceEle = compoundEle.children('[id$="-source"]');
                 if (sourceEle && sourceEle.length > 0) {
-                  sourceEle.position(endpoint);
+                  (sourceEle as any).position(endpoint);
                 }
               }
             }
@@ -634,7 +634,7 @@ export const GraphicalStateMachine: React.FC<GraphicalStateMachineProps> = ({
       if (cyRef.current) {
         setTimeout(() => {
           cyRef.current?.resize();
-          cyRef.current?.fit(50);
+          cyRef.current?.fit(undefined, 50);
         }, 100);
       }
     };

@@ -266,11 +266,11 @@ describe('CriteriaForm Component', () => {
     expect(screen.getByText('Criteria Checker')).toBeInTheDocument();
   });
 
-  it('should disable fields when persistedType is transient', () => {
+  it('should disable fields when persistedType is runtime', () => {
     render(
       <CriteriaForm
         entityClassName="com.example.Order"
-        persistedType="transient"
+        persistedType="runtime"
         mode="embedded"
       />,
       { wrapper: createWrapper() }

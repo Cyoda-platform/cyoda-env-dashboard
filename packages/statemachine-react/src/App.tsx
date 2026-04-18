@@ -19,7 +19,7 @@ const queryClient = new QueryClient({
       refetchOnWindowFocus: false,
       retry: 1,
       staleTime: 0, // Always refetch - important for mock data development
-      cacheTime: 0, // Don't cache - ensures fresh data after mutations
+      gcTime: 0, // Don't cache - ensures fresh data after mutations (renamed from cacheTime in React Query v5)
     },
   },
 });
