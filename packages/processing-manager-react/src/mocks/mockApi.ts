@@ -119,8 +119,6 @@ function setupMockInterceptors(axios: AxiosInstance) {
   // Request interceptor - log requests
   requestInterceptorId = axios.interceptors.request.use(
     (config) => {
-      if (mockEnabled) {
-      }
       return config;
     },
     (error) => Promise.reject(error)
@@ -377,8 +375,6 @@ function setupMockInterceptorsForDefaultAxios(axiosInstance: AxiosInstance) {
   // Request interceptor - log requests
   axiosRequestInterceptorId = axiosInstance.interceptors.request.use(
     (config) => {
-      if (mockEnabled) {
-      }
       return config;
     },
     (error) => Promise.reject(error)
