@@ -168,7 +168,7 @@ const WorkflowsLegacy: React.FC = () => {
 
   // Table data with filtering and sorting
   const tableData = useMemo<WorkflowTableRow[]>(() => {
-    let filtered = workflows
+    const filtered = workflows
     .map((workflow: Workflow) => {
       const parts = workflow.entityClassName.split('.');
       let entityClassNameLabel: string;

@@ -320,7 +320,7 @@ const ReportEditorTabJson: React.FC<ReportEditorTabJsonProps> = ({
 
       // Find the main sticky scroll container (not individual lines)
       // Try different possible selectors
-      let stickyContainer = editorDom.querySelector('.editor-sticky-scroll-container') ||
+      const stickyContainer = editorDom.querySelector('.editor-sticky-scroll-container') ||
                            editorDom.querySelector('[class*="sticky-scroll-container"]') ||
                            editorDom.querySelector('[class*="sticky-scroll"]');
 
