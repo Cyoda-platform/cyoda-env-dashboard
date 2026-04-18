@@ -281,9 +281,19 @@ export function usePollingInfo(params?: any) {
 }
 
 /**
+ * Params for `useProcessingQueueEvents`. Widens `status` to `string` so the
+ * form's free-form filter value (including the `'ALL'` sentinel) can pass
+ * through without a cast — the strictly-typed `ProcessEventStatus` on
+ * `ProcessingFilter` doesn't cover the sentinel.
+ */
+export interface ProcessingQueueEventsParams extends Omit<ProcessingFilter, 'status'> {
+  status?: string;
+}
+
+/**
  * Load processing queue events
  */
-export function useProcessingQueueEvents(params?: ProcessingFilter) {
+export function useProcessingQueueEvents(params?: ProcessingQueueEventsParams) {
   const queryParams = {
     ...params,
     queue: params?.queue || 'ALL',
@@ -844,7 +854,11 @@ export function useUpdateSiftLogger(options?: any) {
 export function useClearTimeStats() {
   const queryClient = useQueryClient();
 
-  return useMutation({
+  // Explicit generics so `mutate()` / `mutateAsync()` accept `undefined` as
+  // the variables without a cast. React Query v5 infers TVariables from the
+  // mutationFn param — `url?: string` narrows to `string`, which blocks
+  // no-arg calls. Declaring TVariables as `string | undefined` reopens it.
+  return useMutation<unknown, Error, string | undefined>({
     mutationFn: async (url?: string) => {
       const targetUrl = url
         ? `${url}/platform-processing/stats/clear-time-stats`

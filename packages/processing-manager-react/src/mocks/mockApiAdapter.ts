@@ -61,7 +61,7 @@ function getMockData(url: string): any | null {
   // Count statistics
   if (url.includes('/platform-processing/stats/count')) {
     return {
-      total: (mockProcessingEvents as any).total ?? mockProcessingEvents.length,
+      total: mockProcessingEvents.length,
       byStatus: {
         PENDING: 200,
         PROCESSING: 50,
@@ -142,12 +142,12 @@ function getMockData(url: string): any | null {
 
   // Network info - server
   if (url.includes('/platform-common/net-info/server')) {
-    return (mockNetworkInfo as any).server;
+    return mockNetworkInfo.server;
   }
 
   // Network info - clients
   if (url.includes('/platform-common/net-info/clients')) {
-    return (mockNetworkInfo as any).clients;
+    return mockNetworkInfo.clients;
   }
 
   // ZooKeeper info
