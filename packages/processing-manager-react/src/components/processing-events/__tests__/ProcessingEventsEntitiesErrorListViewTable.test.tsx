@@ -148,7 +148,7 @@ describe('ProcessingEventsEntitiesErrorListViewTable', () => {
   });
 
   it('should handle sorting by entity class', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent({ tableData: mockTableData });
     
     const headers = screen.getAllByRole('columnheader');
@@ -164,7 +164,7 @@ describe('ProcessingEventsEntitiesErrorListViewTable', () => {
   });
 
   it('should handle sorting by entity ID', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent({ tableData: mockTableData });
     
     const headers = screen.getAllByRole('columnheader');
@@ -180,7 +180,7 @@ describe('ProcessingEventsEntitiesErrorListViewTable', () => {
   });
 
   it('should handle sorting by shard ID', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent({ tableData: mockTableData });
     
     const headers = screen.getAllByRole('columnheader');

@@ -113,7 +113,7 @@ describe('ProcessesList', () => {
       isPending: false,
     } as any);
 
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
 
     render(
       <ProcessesList
@@ -176,7 +176,7 @@ describe('ProcessesList', () => {
       isPending: false,
     } as any);
 
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
 
     render(
       <ProcessesList

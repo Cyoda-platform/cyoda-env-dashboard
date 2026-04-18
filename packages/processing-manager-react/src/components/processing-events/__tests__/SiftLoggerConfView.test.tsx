@@ -127,7 +127,7 @@ describe('SiftLoggerConfView', () => {
   });
 
   it('should handle enabled switch toggle', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     const { container } = renderComponent();
     
     await waitFor(() => {
@@ -143,7 +143,7 @@ describe('SiftLoggerConfView', () => {
   });
 
   it('should call updateSiftLogger on submit', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
     
     await waitFor(() => {
@@ -157,7 +157,7 @@ describe('SiftLoggerConfView', () => {
   });
 
   it('should pass node name to updateSiftLogger', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
     
     await waitFor(() => {
@@ -175,7 +175,7 @@ describe('SiftLoggerConfView', () => {
   });
 
   it('should include queuesInclude in submit data', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
     
     await waitFor(() => {
@@ -195,7 +195,7 @@ describe('SiftLoggerConfView', () => {
   });
 
   it('should include queuesExclude in submit data', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
     
     await waitFor(() => {
@@ -215,7 +215,7 @@ describe('SiftLoggerConfView', () => {
   });
 
   it('should include loggerEnabled in submit data', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
     
     await waitFor(() => {

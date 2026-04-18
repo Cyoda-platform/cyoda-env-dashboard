@@ -41,7 +41,7 @@ describe('LiveUpdateToggle', () => {
   });
 
   it('should toggle liveUpdate state when clicked', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<LiveUpdateToggle />);
     
     const switchElement = document.querySelector('.ant-switch');
@@ -64,7 +64,7 @@ describe('LiveUpdateToggle', () => {
   });
 
   it('should call setLiveUpdate when switch is toggled', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     const setLiveUpdateSpy = vi.spyOn(useAppStore.getState(), 'setLiveUpdate');
     
     render(<LiveUpdateToggle />);
@@ -83,7 +83,7 @@ describe('LiveUpdateToggle', () => {
   });
 
   it('should persist state changes', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<LiveUpdateToggle />);
     
     const switchElement = document.querySelector('.ant-switch');

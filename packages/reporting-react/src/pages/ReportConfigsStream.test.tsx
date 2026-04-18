@@ -225,7 +225,7 @@ describe('ReportConfigsStream Page', () => {
 
   describe('Create New Stream Report', () => {
     it('should open create dialog when clicking Create New', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       renderWithProviders(<ReportConfigsStream />);
 
       await waitFor(() => {
@@ -241,7 +241,7 @@ describe('ReportConfigsStream Page', () => {
 
     it.skip('should create new stream report and navigate to editor', async () => {
       // TODO: Fix this test - dialog is not opening properly in test environment
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       renderWithProviders(<ReportConfigsStream />);
 
       await waitFor(() => {
@@ -305,7 +305,7 @@ describe('ReportConfigsStream Page', () => {
     });
 
     it('should enable export button when rows are selected', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       renderWithProviders(<ReportConfigsStream />);
 
       await waitFor(() => {
@@ -336,7 +336,7 @@ describe('ReportConfigsStream Page', () => {
   describe('Delete Stream Report', () => {
     it.skip('should delete stream report when clicking delete button', async () => {
       // TODO: Fix this test - delete button is not being found/clicked properly
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       renderWithProviders(<ReportConfigsStream />);
 
       await waitFor(() => {
@@ -359,7 +359,7 @@ describe('ReportConfigsStream Page', () => {
 
   describe('Reset State', () => {
     it('should reset filters when clicking reset state', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       renderWithProviders(<ReportConfigsStream />);
 
       await waitFor(() => {

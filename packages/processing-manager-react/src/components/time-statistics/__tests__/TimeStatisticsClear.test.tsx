@@ -100,7 +100,7 @@ describe('TimeStatisticsClear', () => {
   });
 
   it('should show dropdown menu when button is clicked', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
     
     const button = screen.getByRole('button', { name: /clear/i });
@@ -113,7 +113,7 @@ describe('TimeStatisticsClear', () => {
   });
 
   it('should show confirmation modal when "Clear time stats" is clicked', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
     
     const button = screen.getByRole('button', { name: /clear/i });
@@ -133,7 +133,7 @@ describe('TimeStatisticsClear', () => {
   });
 
   it('should call clearTimeStats when OK is clicked in confirmation modal', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
     
     const button = screen.getByRole('button', { name: /clear/i });
@@ -159,7 +159,7 @@ describe('TimeStatisticsClear', () => {
   });
 
   it('should call onReload after successful clear', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
     
     const button = screen.getByRole('button', { name: /clear/i });
@@ -185,7 +185,7 @@ describe('TimeStatisticsClear', () => {
   });
 
   it('should show info message when Cancel is clicked', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     const { message } = await import('antd');
     renderComponent();
 
@@ -212,7 +212,7 @@ describe('TimeStatisticsClear', () => {
   });
 
   it('should show confirmation modal when "Clear time stats (ALL nodes)" is clicked', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
     
     const button = screen.getByRole('button', { name: /clear/i });
@@ -232,7 +232,7 @@ describe('TimeStatisticsClear', () => {
   });
 
   it('should call clearTimeStats for all nodes when OK is clicked', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
 
     const button = screen.getByRole('button', { name: /clear/i });
@@ -260,7 +260,7 @@ describe('TimeStatisticsClear', () => {
   });
 
   it('should call onReload after successful clear all', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
 
     const button = screen.getByRole('button', { name: /clear/i });
@@ -286,7 +286,7 @@ describe('TimeStatisticsClear', () => {
   });
 
   it('should handle errors gracefully', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     mockMutateAsync.mockRejectedValueOnce(new Error('Clear failed'));
     
@@ -317,7 +317,7 @@ describe('TimeStatisticsClear', () => {
   });
 
   it('should work without onReload callback', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(
       <QueryClientProvider client={queryClient}>
         <TimeStatisticsClear />

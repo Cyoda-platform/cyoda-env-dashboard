@@ -62,7 +62,7 @@ describe('ShardsDetailTabTimeStatistics', () => {
   });
 
   it('should switch to Count stats tab when clicked', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<ShardsDetailTabTimeStatistics />, { wrapper });
     
     const tab = screen.getByText('Count stats');
@@ -94,7 +94,7 @@ describe('ShardsDetailTabTimeStatistics', () => {
   });
 
   it('should maintain active tab state', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<ShardsDetailTabTimeStatistics />, { wrapper });
     
     // Click second tab

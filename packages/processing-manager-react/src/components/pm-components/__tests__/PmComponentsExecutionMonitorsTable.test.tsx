@@ -139,7 +139,7 @@ describe('PmComponentsExecutionMonitorsTable', () => {
   });
 
   it('should have sortable columns', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
 
     // Find the Name column header
@@ -228,7 +228,7 @@ describe('PmComponentsExecutionMonitorsTable', () => {
   });
 
   it('should handle sorting by index', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
 
     const headers = screen.getAllByRole('columnheader');
@@ -244,7 +244,7 @@ describe('PmComponentsExecutionMonitorsTable', () => {
   });
 
   it('should handle sorting by name', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
 
     const headers = screen.getAllByRole('columnheader');
@@ -260,7 +260,7 @@ describe('PmComponentsExecutionMonitorsTable', () => {
   });
 
   it('should handle sorting by thread counts', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
 
     const headers = screen.getAllByRole('columnheader');

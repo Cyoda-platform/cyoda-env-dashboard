@@ -92,7 +92,7 @@ describe('TransitionVersionsFilter', () => {
   });
 
   it('should call onChange when Load button is clicked', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(
       <BrowserRouter>
         <TransitionVersionsFilter onChange={mockOnChange} />
@@ -120,7 +120,7 @@ describe('TransitionVersionsFilter', () => {
   });
 
   it('should render Action Type dropdown options', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(
       <BrowserRouter>
         <TransitionVersionsFilter />
@@ -139,7 +139,7 @@ describe('TransitionVersionsFilter', () => {
   });
 
   it('should render Sort dropdown options', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(
       <BrowserRouter>
         <TransitionVersionsFilter />

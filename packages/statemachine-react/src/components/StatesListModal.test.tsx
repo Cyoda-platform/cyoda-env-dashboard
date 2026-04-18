@@ -101,7 +101,7 @@ describe('StatesListModal', () => {
       refetch: mockRefetch,
     } as any);
 
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     
     render(
       <StatesListModal
@@ -143,7 +143,7 @@ describe('StatesListModal', () => {
       refetch: mockRefetch,
     } as any);
 
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     
     render(
       <StatesListModal
@@ -255,7 +255,7 @@ describe('StatesListModal', () => {
   });
 
   it('should close modal when close button clicked', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     
     render(
       <StatesListModal

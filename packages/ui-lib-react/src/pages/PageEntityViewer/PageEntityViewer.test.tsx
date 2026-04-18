@@ -191,7 +191,7 @@ describe('PageEntityViewer', () => {
 
   describe('Entity Selection', () => {
     it('should add entity when class is selected', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       render(<PageEntityViewer />);
 
       await waitFor(() => {
@@ -243,7 +243,7 @@ describe('PageEntityViewer', () => {
 
   describe('Dynamic/Non-Dynamic Toggle', () => {
     it('should toggle onlyDynamic when checkbox is clicked', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       render(<PageEntityViewer />);
 
       await waitFor(() => {
@@ -497,7 +497,7 @@ describe('PageEntityViewer', () => {
     });
 
     it('should switch to JSON view when JSON tab is clicked', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       (useEntityViewerStore as any).mockReturnValue({
         entitys: [{ from: '', to: 'com.cyoda.core.Entity' }],
         onlyDynamic: true,
@@ -545,7 +545,7 @@ describe('PageEntityViewer', () => {
         setOnlyDynamic: mockSetOnlyDynamic,
       });
 
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       render(<PageEntityViewer />);
 
       await waitFor(() => {
@@ -571,7 +571,7 @@ describe('PageEntityViewer', () => {
 
   describe('Monaco Editor Integration', () => {
     it('should render Monaco Editor with correct language', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       (useEntityViewerStore as any).mockReturnValue({
         entitys: [{ from: '', to: 'com.cyoda.core.Entity' }],
         onlyDynamic: true,
@@ -598,7 +598,7 @@ describe('PageEntityViewer', () => {
     });
 
     it('should pass correct theme to Monaco Editor', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       (useEntityViewerStore as any).mockReturnValue({
         entitys: [{ from: '', to: 'com.cyoda.core.Entity' }],
         onlyDynamic: true,
@@ -626,7 +626,7 @@ describe('PageEntityViewer', () => {
     });
 
     it('should be read-only', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       (useEntityViewerStore as any).mockReturnValue({
         entitys: [{ from: '', to: 'com.cyoda.core.Entity' }],
         onlyDynamic: true,
@@ -669,7 +669,7 @@ describe('PageEntityViewer', () => {
     });
 
     it('should update theme when document theme attribute changes', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       (useEntityViewerStore as any).mockReturnValue({
         entitys: [{ from: '', to: 'com.cyoda.core.Entity' }],
         onlyDynamic: true,

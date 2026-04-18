@@ -132,7 +132,7 @@ describe('CatalogueAliasChangeStateDialog', () => {
   });
 
   it('should display transitions in select dropdown', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     const ref = React.createRef<any>();
     render(
       <CatalogueAliasChangeStateDialog
@@ -161,7 +161,7 @@ describe('CatalogueAliasChangeStateDialog', () => {
   });
 
   it('should handle transition selection', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     const ref = React.createRef<any>();
     render(
       <CatalogueAliasChangeStateDialog
@@ -215,7 +215,7 @@ describe('CatalogueAliasChangeStateDialog', () => {
   });
 
   it('should execute transition when OK is clicked', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     const ref = React.createRef<any>();
     render(
       <CatalogueAliasChangeStateDialog
@@ -242,7 +242,7 @@ describe('CatalogueAliasChangeStateDialog', () => {
   });
 
   it('should call onStateChanged after successful transition', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     const ref = React.createRef<any>();
     render(
       <CatalogueAliasChangeStateDialog
@@ -269,7 +269,7 @@ describe('CatalogueAliasChangeStateDialog', () => {
   });
 
   it('should handle cancel button', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     const ref = React.createRef<any>();
     render(
       <CatalogueAliasChangeStateDialog
@@ -297,7 +297,7 @@ describe('CatalogueAliasChangeStateDialog', () => {
   });
 
   it('should show warning when OK is clicked without selection', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     const ref = React.createRef<any>();
     render(
       <CatalogueAliasChangeStateDialog
@@ -373,7 +373,7 @@ describe('CatalogueAliasChangeStateDialog', () => {
   });
 
   it('should handle API error when executing transition', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     (httpApiReact.executeEntityTransition as any).mockRejectedValue(
       new Error('Transition failed')
     );
@@ -404,7 +404,7 @@ describe('CatalogueAliasChangeStateDialog', () => {
   });
 
   it('should reset state when dialog is closed and reopened', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     const ref = React.createRef<any>();
     render(
       <CatalogueAliasChangeStateDialog

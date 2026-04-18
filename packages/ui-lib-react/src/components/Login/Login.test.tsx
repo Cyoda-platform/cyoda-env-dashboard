@@ -35,7 +35,7 @@ describe('Login', () => {
   })
 
   it('shows validation errors for empty fields', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     renderLogin()
 
     const loginButton = screen.getByRole('button', { name: /login/i })
@@ -48,7 +48,7 @@ describe('Login', () => {
   })
 
   it('calls onLogin with form data when submitted', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     const mockOnLogin = vi.fn().mockResolvedValue(undefined)
     
     renderLogin({ onLogin: mockOnLogin })
@@ -70,7 +70,7 @@ describe('Login', () => {
   })
 
   it('navigates to home after successful login', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     const mockOnLogin = vi.fn().mockResolvedValue(undefined)
     
     renderLogin({ onLogin: mockOnLogin })
@@ -95,7 +95,7 @@ describe('Login', () => {
   })
 
   it('handles login errors gracefully', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     const mockOnLogin = vi.fn().mockRejectedValue(new Error('Login failed'))
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     

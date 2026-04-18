@@ -254,7 +254,7 @@ describe('FilterBuilderCondition', () => {
 
   describe('Remove Button', () => {
     it('should call onRemove when delete button is clicked', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
 
       render(
         <FilterBuilderCondition

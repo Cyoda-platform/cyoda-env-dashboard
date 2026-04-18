@@ -77,7 +77,7 @@ describe('TransactionsEntities', () => {
   });
 
   it('should load data when filter changes', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     const mockData = {
       entities: [
         { entityId: 'entity-1', cretionDate: '2024-01-01', shardId: 'shard-1' },
@@ -105,7 +105,7 @@ describe('TransactionsEntities', () => {
   });
 
   it('should handle API errors gracefully', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     vi.mocked(axiosProcessing.get).mockRejectedValue(new Error('API Error'));
@@ -129,7 +129,7 @@ describe('TransactionsEntities', () => {
   });
 
   it('should show loading state during API call', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     let resolvePromise: (value: any) => void;
     const promise = new Promise((resolve) => {
       resolvePromise = resolve;

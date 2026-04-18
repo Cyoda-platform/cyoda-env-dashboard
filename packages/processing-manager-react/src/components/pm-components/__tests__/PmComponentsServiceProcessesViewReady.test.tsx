@@ -150,7 +150,7 @@ describe('PmComponentsServiceProcessesViewReady', () => {
   });
 
   it('should have sortable columns', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
 
     const headers = screen.getAllByRole('columnheader');
@@ -193,7 +193,7 @@ describe('PmComponentsServiceProcessesViewReady', () => {
   });
 
   it('should handle sorting by shard', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
 
     const headers = screen.getAllByRole('columnheader');
@@ -210,7 +210,7 @@ describe('PmComponentsServiceProcessesViewReady', () => {
   });
 
   it('should handle sorting by duration', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
 
     const headers = screen.getAllByRole('columnheader');
@@ -227,7 +227,7 @@ describe('PmComponentsServiceProcessesViewReady', () => {
   });
 
   it('should handle sorting by timestamps', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
 
     const headers = screen.getAllByRole('columnheader');
@@ -242,7 +242,7 @@ describe('PmComponentsServiceProcessesViewReady', () => {
   });
 
   it('should handle sorting by boolean values', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
 
     const headers = screen.getAllByRole('columnheader');

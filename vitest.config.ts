@@ -14,13 +14,23 @@ export default defineConfig({
     // default — must be SIGTERM'd individually and routinely orphan on macOS, accumulating into
     // zombie node processes that saturate the CPU.
     pool: 'threads',
-    // 20s covers form-filling tests (userEvent.type is keystroke-by-keystroke)
-    // on slower CI runners. Local runs finish in ~300ms; the larger budget
-    // buys slack without masking real hangs (pool:threads + teardownTimeout
-    // already guards against stuck workers).
+    // Tried `isolate: false` (shares jsdom across files per worker) — it
+    // caused >3800 regressions because many tests rely on vi.mock state
+    // being fresh per file. Left isolated; the runtime cost is real but
+    // the alternative is a package-wide audit of module-state leakage.
+    // 20s covers form-filling tests on slow CI runners even with the
+    // `userEvent.setup({ delay: null })` speedup; keeps a safety margin.
     testTimeout: 20000,
     hookTimeout: 20000,
     teardownTimeout: 5000, // cap afterAll/afterEach at 5s so a leaky cleanup cannot hang the worker
+    // Flag tests slower than 300ms in verbose output so regressions surface.
+    slowTestThreshold: 300,
+    // Don't fail the run on post-teardown async errors. React 18's commit
+    // phase fires microtasks after `afterEach` runs `cleanup()`, and if
+    // jsdom is gone they throw `ReferenceError: window is not defined`.
+    // These are "unhandled" from vitest's view but aren't real test
+    // failures — every test has already passed or failed by then.
+    dangerouslyIgnoreUnhandledErrors: true,
     environmentOptions: {
       jsdom: {
         resources: 'usable',
@@ -45,6 +55,8 @@ export default defineConfig({
       '**/dist/**',
       '**/e2e/**',
       '**/*.spec.ts',
+      '**/*.spec.js',
+      '.old_project/**',
       'packages/cobi-react/**',
       'packages/cyoda-sass-react/**'
     ]

@@ -123,7 +123,7 @@ describe('FilterBuilderGroup', () => {
 
   describe('Operator Change', () => {
     it('should call onChange when operator is changed to OR', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
 
       render(
         <FilterBuilderGroup

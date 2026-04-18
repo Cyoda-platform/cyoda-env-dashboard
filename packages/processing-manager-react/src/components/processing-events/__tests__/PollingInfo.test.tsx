@@ -213,7 +213,7 @@ describe('PollingInfo', () => {
   });
 
   it('should render shard filter options', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<PollingInfo />);
     
     const selects = screen.getAllByRole('combobox');
@@ -228,7 +228,7 @@ describe('PollingInfo', () => {
   });
 
   it('should render entity type filter options', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<PollingInfo />);
     
     const selects = screen.getAllByRole('combobox');
@@ -243,7 +243,7 @@ describe('PollingInfo', () => {
   });
 
   it('should render processing filter options', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<PollingInfo />);
     
     const selects = screen.getAllByRole('combobox');
@@ -288,7 +288,7 @@ describe('PollingInfo', () => {
   });
 
   it('should create unique shard options', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<PollingInfo />);
     
     const selects = screen.getAllByRole('combobox');

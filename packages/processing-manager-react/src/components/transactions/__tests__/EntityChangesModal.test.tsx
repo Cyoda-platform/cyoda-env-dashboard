@@ -71,7 +71,7 @@ describe('EntityChangesModal', () => {
   });
 
   it('should call onClose when modal is closed', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
 
     render(
       <EntityChangesModal

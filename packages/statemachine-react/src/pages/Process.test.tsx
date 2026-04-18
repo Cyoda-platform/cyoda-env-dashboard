@@ -240,7 +240,7 @@ describe('Process Page', () => {
     });
 
     it('should require processor selection', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       render(<Process />, { wrapper: createWrapper() });
 
       const nameInput = screen.getByLabelText(/^name$/i);
@@ -295,7 +295,7 @@ describe('Process Page', () => {
     });
 
     it('should update existing process with form data', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       mockUpdateProcessMutateAsync.mockResolvedValue({ id: 'process-123' });
 
       render(<Process />, { wrapper: createWrapper('process-123') });

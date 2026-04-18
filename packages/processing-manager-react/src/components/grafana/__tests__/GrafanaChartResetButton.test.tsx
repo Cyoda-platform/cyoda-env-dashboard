@@ -23,7 +23,7 @@ describe('GrafanaChartResetButton', () => {
   });
 
   it('should dispatch reset event on click', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     const eventListener = vi.fn();
     window.addEventListener('grafana:chart:reset', eventListener);
 
@@ -38,7 +38,7 @@ describe('GrafanaChartResetButton', () => {
   });
 
   it('should show loading state after click', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<GrafanaChartResetButton />);
 
     const button = screen.getByRole('button', { name: /reset/i });

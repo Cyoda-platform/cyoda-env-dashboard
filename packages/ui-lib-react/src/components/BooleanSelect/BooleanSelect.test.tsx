@@ -15,7 +15,7 @@ describe('BooleanSelect', () => {
   })
 
   it('displays true and false options', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     const { container } = render(<BooleanSelect />)
 
     // Click on the select element itself, not the text
@@ -27,7 +27,7 @@ describe('BooleanSelect', () => {
   })
 
   it('calls onChange with true when true is selected', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     const onChange = vi.fn()
 
     const { container } = render(<BooleanSelect onChange={onChange} />)
@@ -42,7 +42,7 @@ describe('BooleanSelect', () => {
   })
 
   it('calls onChange with false when false is selected', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     const onChange = vi.fn()
 
     const { container } = render(<BooleanSelect onChange={onChange} />)
@@ -77,7 +77,7 @@ describe('BooleanSelect', () => {
   })
 
   it('supports custom labels', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     const { container } = render(
       <BooleanSelect
         labels={{ true: 'Yes', false: 'No' }}

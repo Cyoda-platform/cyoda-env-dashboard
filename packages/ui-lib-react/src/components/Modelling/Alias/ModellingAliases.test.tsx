@@ -166,7 +166,7 @@ describe('ModellingAliases', () => {
   });
 
   it('should handle alias deletion with confirmation', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(
       <ModellingAliases configDefinition={mockConfigDefinition} onChange={mockOnChange} />,
       { wrapper: createWrapper() }
@@ -239,7 +239,7 @@ describe('ModellingAliases', () => {
   });
 
   it('should show bulk delete button when rows are selected', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(
       <ModellingAliases configDefinition={mockConfigDefinition} onChange={mockOnChange} />,
       { wrapper: createWrapper() }
@@ -345,7 +345,7 @@ describe('ModellingAliases', () => {
   });
 
   it('should add newly created alias to report', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(
       <ModellingAliases configDefinition={mockConfigDefinition} onChange={mockOnChange} />,
       { wrapper: createWrapper() }

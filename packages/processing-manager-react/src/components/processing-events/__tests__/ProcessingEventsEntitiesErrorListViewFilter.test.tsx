@@ -74,7 +74,7 @@ describe('ProcessingEventsEntitiesErrorListViewFilter', () => {
   });
 
   it('should populate entity class options from hook data', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
 
     const select = screen.getByRole('combobox');
@@ -87,7 +87,7 @@ describe('ProcessingEventsEntitiesErrorListViewFilter', () => {
   });
 
   it('should handle entity class selection', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
 
     // Wait for initial call
@@ -112,7 +112,7 @@ describe('ProcessingEventsEntitiesErrorListViewFilter', () => {
   });
 
   it('should call onChange when Load button is clicked', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
     
     // Wait for initial onChange call
@@ -131,7 +131,7 @@ describe('ProcessingEventsEntitiesErrorListViewFilter', () => {
   });
 
   it('should call onChange with selected entity type', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
     
     // Wait for initial onChange
@@ -209,7 +209,7 @@ describe('ProcessingEventsEntitiesErrorListViewFilter', () => {
       error: null,
     } as any);
     
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
     
     const select = screen.getByRole('combobox');
@@ -241,7 +241,7 @@ describe('ProcessingEventsEntitiesErrorListViewFilter', () => {
   });
 
   it('should handle multiple Load button clicks', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
     
     // Wait for initial onChange
@@ -261,7 +261,7 @@ describe('ProcessingEventsEntitiesErrorListViewFilter', () => {
   });
 
   it('should update form state when entity type changes', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
 
     // Wait for initial call

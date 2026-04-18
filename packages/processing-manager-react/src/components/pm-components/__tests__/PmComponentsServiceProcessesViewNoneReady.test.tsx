@@ -91,7 +91,7 @@ describe('PmComponentsServiceProcessesViewNoneReady', () => {
   });
 
   it('should have sortable name column', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
     
     const nameHeader = screen.getByText('Name');
@@ -103,7 +103,7 @@ describe('PmComponentsServiceProcessesViewNoneReady', () => {
   });
 
   it('should have sortable shard column', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
     
     const shardHeader = screen.getByText('Shard');
@@ -199,7 +199,7 @@ describe('PmComponentsServiceProcessesViewNoneReady', () => {
   });
 
   it('should handle sorting by name alphabetically', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
     
     const nameHeader = screen.getByText('Name');
@@ -214,7 +214,7 @@ describe('PmComponentsServiceProcessesViewNoneReady', () => {
   });
 
   it('should handle sorting by shard', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
     
     const shardHeader = screen.getByText('Shard');

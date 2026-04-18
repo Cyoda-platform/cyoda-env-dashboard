@@ -37,7 +37,7 @@ describe('DateTimePicker', () => {
   })
 
   it('calls onChange with ISO format when date is selected', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     const onChange = vi.fn()
     
     render(<DateTimePicker onChange={onChange} />)

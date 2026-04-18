@@ -133,7 +133,7 @@ describe('TransitionVersionsAggregated', () => {
   });
 
   it('should render expandable rows', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     const { container } = render(
       <BrowserRouter>
         <Routes>

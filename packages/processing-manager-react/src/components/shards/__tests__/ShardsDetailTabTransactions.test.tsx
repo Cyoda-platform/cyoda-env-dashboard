@@ -63,7 +63,7 @@ describe('ShardsDetailTabTransactions', () => {
   });
 
   it('should switch to Transactions view tab when clicked', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<ShardsDetailTabTransactions />, { wrapper });
     
     const tab = screen.getByText('Transactions view');
@@ -74,7 +74,7 @@ describe('ShardsDetailTabTransactions', () => {
   });
 
   it('should switch to Entities list view tab when clicked', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<ShardsDetailTabTransactions />, { wrapper });
     
     const tab = screen.getByText('Entities list view');
@@ -85,7 +85,7 @@ describe('ShardsDetailTabTransactions', () => {
   });
 
   it('renders a Clear button that can be clicked without error', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<ShardsDetailTabTransactions />, { wrapper });
 
     const clearButton = screen.getByRole('button', { name: /clear/i });
@@ -120,7 +120,7 @@ describe('ShardsDetailTabTransactions', () => {
   });
 
   it('should maintain active tab state', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<ShardsDetailTabTransactions />, { wrapper });
     
     // Click second tab

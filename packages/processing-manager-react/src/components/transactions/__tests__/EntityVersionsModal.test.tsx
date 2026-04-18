@@ -103,7 +103,7 @@ describe('EntityVersionsModal', () => {
   });
 
   it('should call onClose when modal is closed', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     vi.mocked(hooks.useEntityVersions).mockReturnValue({
       data: { rows: [], firstPage: true, lastPage: true },
       isLoading: false,
@@ -299,7 +299,7 @@ describe('EntityVersionsModal', () => {
   });
 
   it('should handle filter changes', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     vi.mocked(hooks.useEntityVersions).mockReturnValue({
       data: { rows: [], firstPage: true, lastPage: true },
       isLoading: false,

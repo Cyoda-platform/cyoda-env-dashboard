@@ -231,7 +231,7 @@ describe('CatalogueOfAliases', () => {
   });
 
   it('should handle create new alias', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<CatalogueOfAliases />, { wrapper: createWrapper() });
 
     await waitFor(() => {
@@ -246,7 +246,7 @@ describe('CatalogueOfAliases', () => {
   });
 
   it('should handle delete alias with confirmation', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     (httpApiReact.deleteCatalogItem as any).mockResolvedValue({});
 
     render(<CatalogueOfAliases />, { wrapper: createWrapper() });
@@ -289,7 +289,7 @@ describe('CatalogueOfAliases', () => {
   }, 15000);
 
   it('should handle export when items are selected', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     const mockExportData = {
       '@bean': 'com.cyoda.core.model.catalog.CatalogItemExportImportContainer',
       aliases: mockCatalogItems,

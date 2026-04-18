@@ -93,7 +93,7 @@ describe('Node', () => {
   });
 
   it('should navigate to node detail on click', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderWithRouter(<Node node={mockNode} />);
 
     const nodeCard = screen.getByText('test-node-01').closest('.row-item');

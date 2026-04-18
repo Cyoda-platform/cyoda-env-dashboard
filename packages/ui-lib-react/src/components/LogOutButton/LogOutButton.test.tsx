@@ -39,7 +39,7 @@ describe('LogOutButton', () => {
   })
 
   it('shows confirmation modal on click', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     const { container } = renderLogOutButton()
 
     const button = container.querySelector('.ant-btn')
@@ -54,7 +54,7 @@ describe('LogOutButton', () => {
   })
 
   it('shows custom confirmation message', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     const { container } = renderLogOutButton({ confirmMessage: 'Are you sure you want to leave?' })
 
     const button = container.querySelector('.ant-btn')
@@ -69,7 +69,7 @@ describe('LogOutButton', () => {
   })
 
   it('shows OK and Cancel buttons in modal', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     const { container } = renderLogOutButton()
 
     const button = container.querySelector('.ant-btn')

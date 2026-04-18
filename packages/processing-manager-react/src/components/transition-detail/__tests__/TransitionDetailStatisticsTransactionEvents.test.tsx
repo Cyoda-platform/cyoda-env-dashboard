@@ -149,7 +149,7 @@ describe('TransitionDetailStatisticsTransactionEvents', () => {
   });
 
   it('should call refetch when filter changes', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     
     render(
       <BrowserRouter>

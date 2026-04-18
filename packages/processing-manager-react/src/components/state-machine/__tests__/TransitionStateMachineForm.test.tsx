@@ -134,7 +134,7 @@ describe('TransitionStateMachineForm (state-machine)', () => {
   });
 
   it('should render all possible transitions in dropdown', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
 
     const { container } = render(
       <BrowserRouter>
@@ -159,7 +159,7 @@ describe('TransitionStateMachineForm (state-machine)', () => {
   });
 
   it('should enable Submit button when state is selected', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
 
     const { container } = render(
       <BrowserRouter>
@@ -183,7 +183,7 @@ describe('TransitionStateMachineForm (state-machine)', () => {
   });
 
   it('should call mutate with correct parameters on submit', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
 
     const { container } = render(
       <BrowserRouter>
@@ -219,7 +219,7 @@ describe('TransitionStateMachineForm (state-machine)', () => {
   });
 
   it('should call onUpdated callback after successful submission', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
 
     // Mock successful mutation
     (hooks.useDoManualTransition as any).mockReturnValue({
@@ -257,7 +257,7 @@ describe('TransitionStateMachineForm (state-machine)', () => {
   });
 
   it('should reset selected state after successful submission', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
 
     // Mock successful mutation that calls onSuccess
     (hooks.useDoManualTransition as any).mockImplementation(({ onSuccess }: any) => ({
@@ -323,7 +323,7 @@ describe('TransitionStateMachineForm (state-machine)', () => {
   });
 
   it('should not call onUpdated if not provided', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
 
     const { container } = render(
       <BrowserRouter>
@@ -349,7 +349,7 @@ describe('TransitionStateMachineForm (state-machine)', () => {
   });
 
   it('should use location search params for entityClass and entityId', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
 
     mockUseLocation.mockReturnValue({
       pathname: '/test',
@@ -390,7 +390,7 @@ describe('TransitionStateMachineForm (state-machine)', () => {
   });
 
   it('should handle missing query params gracefully', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
 
     mockUseLocation.mockReturnValue({
       pathname: '/test',

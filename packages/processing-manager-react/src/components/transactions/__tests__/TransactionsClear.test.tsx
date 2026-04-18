@@ -92,7 +92,7 @@ describe('TransactionsClear', () => {
   });
 
   it('should show dropdown menu when clicked', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
     
     const button = screen.getByRole('button', { name: /reset/i });
@@ -105,7 +105,7 @@ describe('TransactionsClear', () => {
   });
 
   it('should show confirmation modal when "Hard reset consistency time" is clicked', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
 
     // Open dropdown
@@ -124,7 +124,7 @@ describe('TransactionsClear', () => {
   });
 
   it('should display warning message in modal', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
 
     const button = screen.getByRole('button', { name: /reset/i });
@@ -143,7 +143,7 @@ describe('TransactionsClear', () => {
   });
 
   it('should call mutation when OK is clicked in modal', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
 
     // Open dropdown
@@ -171,7 +171,7 @@ describe('TransactionsClear', () => {
   });
 
   it('should not call mutation when Cancel is clicked in modal', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
     
     // Open dropdown
@@ -191,7 +191,7 @@ describe('TransactionsClear', () => {
   });
 
   it('should close modal when Cancel is clicked', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
 
     const button = screen.getByRole('button', { name: /reset/i });
@@ -238,7 +238,7 @@ describe('TransactionsClear', () => {
   });
 
   it('should handle multiple dropdown opens/closes', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
     
     const button = screen.getByRole('button', { name: /reset/i });
