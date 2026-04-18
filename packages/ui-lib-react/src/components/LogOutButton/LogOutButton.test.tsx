@@ -1,7 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, waitFor } from '../../test-utils'
 import userEvent from '@testing-library/user-event'
-import { BrowserRouter } from 'react-router-dom'
 import { LogOutButton } from './LogOutButton'
 
 // Mock useNavigate
@@ -26,11 +25,7 @@ describe('LogOutButton', () => {
   })
 
   const renderLogOutButton = (props = {}) => {
-    return render(
-      <BrowserRouter>
-        <LogOutButton {...props} />
-      </BrowserRouter>
-    )
+    return render(<LogOutButton {...props} />)
   }
 
   it('renders logout button', () => {

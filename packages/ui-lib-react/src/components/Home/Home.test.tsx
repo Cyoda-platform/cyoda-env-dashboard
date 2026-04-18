@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest'
 import { render, screen } from '../../test-utils'
-import { BrowserRouter } from 'react-router-dom'
 import { Home } from './Home'
 import type { MenuItem } from './types'
 
@@ -24,16 +23,12 @@ describe('Home', () => {
   ]
 
   const renderHome = (props = {}) => {
-    return render(
-      <BrowserRouter>
-        <Home {...props} />
-      </BrowserRouter>
-    )
+    return render(<Home {...props} />)
   }
 
   it('renders without crashing', () => {
     renderHome()
-    expect(screen.getByText('Entity Viewer')).toBeInTheDocument()
+    expect(screen.getByText('Entity Model Viewer')).toBeInTheDocument()
   })
 
   it('renders custom menus', () => {

@@ -34,7 +34,9 @@ export default defineConfig({
       '**/node_modules/**',
       '**/dist/**',
       '**/e2e/**',
-      '**/*.spec.ts'
+      '**/*.spec.ts',
+      'packages/cobi-react/**',
+      'packages/cyoda-sass-react/**'
     ]
   },
   resolve: {

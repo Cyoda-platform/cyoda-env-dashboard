@@ -2,7 +2,6 @@ import { describe, it, expect, vi } from 'vitest'
 import { render, screen, waitFor } from '../../test-utils'
 import userEvent from '@testing-library/user-event'
 import { Login } from './Login'
-import { BrowserRouter } from 'react-router-dom'
 
 // Mock useNavigate
 const mockNavigate = vi.fn()
@@ -16,11 +15,7 @@ vi.mock('react-router-dom', async () => {
 
 describe('Login', () => {
   const renderLogin = (props = {}) => {
-    return render(
-      <BrowserRouter>
-        <Login {...props} />
-      </BrowserRouter>
-    )
+    return render(<Login {...props} />)
   }
 
   it('renders login form with title', () => {
