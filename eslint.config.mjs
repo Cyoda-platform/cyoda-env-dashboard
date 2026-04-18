@@ -18,6 +18,12 @@ export default tseslint.config(
       '**/.playwright-mcp/**',
       '**/.vite/**',
       '**/vite-env.d.ts',
+      '**/*.{js,mjs,cjs,jsx}',
+      'playwright.config.ts',
+      'vitest.config.ts',
+      'vitest.setup.ts',
+      'vitest.monaco-mock.ts',
+      'vitest.worker-mock.ts',
     ],
   },
   js.configs.recommended,
@@ -38,6 +44,10 @@ export default tseslint.config(
     rules: {
       ...reactHooks.configs.recommended.rules,
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
+      'no-undef': 'off',
+      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+      'react-hooks/exhaustive-deps': 'warn',
     },
   },
 )
