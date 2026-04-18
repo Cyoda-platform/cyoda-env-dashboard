@@ -74,6 +74,10 @@ describe('useAuth', () => {
           userId: 'user-123',
           legalEntityId: 'entity-123',
         },
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as any,
       };
 
       vi.mocked(authApi.login).mockResolvedValue(mockAuthResponse);

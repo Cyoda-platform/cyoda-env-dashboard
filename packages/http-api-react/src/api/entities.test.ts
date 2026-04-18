@@ -143,7 +143,14 @@ describe('Entities API', () => {
   describe('validateEntity', () => {
     it('should call POST /platform-api/entity/validate', async () => {
       const mockResponse = { data: { valid: true, errors: [] } };
-      const entityRequest = { entityClass: 'TestClass', values: { name: 'Test' } };
+      const entityRequest = {
+        entityClass: 'TestClass',
+        entityId: 'test-id',
+        transition: '',
+        transactional: false,
+        async: false,
+        values: [{ columnPath: 'name', value: 'Test' }],
+      };
       vi.mocked(axios.post).mockResolvedValue(mockResponse);
 
       const result = await entitiesApi.validateEntity(entityRequest);
