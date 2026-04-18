@@ -14,8 +14,12 @@ export default defineConfig({
     // default — must be SIGTERM'd individually and routinely orphan on macOS, accumulating into
     // zombie node processes that saturate the CPU.
     pool: 'threads',
-    testTimeout: 10000, // 10 seconds for async operations
-    hookTimeout: 10000, // 10 seconds for setup/teardown hooks
+    // 20s covers form-filling tests (userEvent.type is keystroke-by-keystroke)
+    // on slower CI runners. Local runs finish in ~300ms; the larger budget
+    // buys slack without masking real hangs (pool:threads + teardownTimeout
+    // already guards against stuck workers).
+    testTimeout: 20000,
+    hookTimeout: 20000,
     teardownTimeout: 5000, // cap afterAll/afterEach at 5s so a leaky cleanup cannot hang the worker
     environmentOptions: {
       jsdom: {
