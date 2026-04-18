@@ -2,6 +2,7 @@ import React, { Suspense, useEffect } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ConfigProvider, Spin, theme as antdTheme, App as AntdApp } from 'antd';
+import type { ThemeConfig } from 'antd';
 import { Auth0Provider } from '@auth0/auth0-react';
 import { AppRoutes } from './routes';
 import { auth0Config } from './config/auth0';
@@ -22,7 +23,7 @@ const queryClient = new QueryClient({
 });
 
 // Ant Design theme configuration - CYODA AI Assistant Theme
-const getDarkTheme = () => ({
+const getDarkTheme = (): ThemeConfig => ({
   token: {
     colorPrimary: '#00D4AA',
     colorSuccess: '#00D4AA',
@@ -106,13 +107,11 @@ const getDarkTheme = () => ({
       controlItemBgActive: 'rgba(0, 212, 170, 0.15)',
       colorBorder: 'rgba(255, 255, 255, 0.1)',
     },
-    Transfer: {
-      listBg: '#1E2A3A',
-      listHeaderBg: '#243142',
-      itemBg: 'transparent',
-      itemHoverBg: 'rgba(0, 212, 170, 0.1)',
-      itemSelectedBg: 'rgba(0, 212, 170, 0.15)',
-    },
+    // Transfer component-token overrides (`listBg`, `listHeaderBg`,
+    // `itemBg`, `itemHoverBg`, `itemSelectedBg`) are not in antd v5's
+    // Transfer ComponentToken interface — the runtime was silently
+    // ignoring them. Style Transfer via CSS if it needs theme-specific
+    // tweaks; leaving the key out so the ThemeConfig type-checks.
     Input: {
       colorBgContainer: 'rgba(255, 255, 255, 0.05)',
       colorBorder: 'rgba(255, 255, 255, 0.1)',
@@ -142,7 +141,7 @@ const getDarkTheme = () => ({
 });
 
 // Light theme configuration - Variant 1: Classic light theme
-const getLightTheme = () => ({
+const getLightTheme = (): ThemeConfig => ({
   token: {
     colorPrimary: '#00D4AA',
     colorSuccess: '#00D4AA',
@@ -225,13 +224,7 @@ const getLightTheme = () => ({
       controlItemBgActive: 'rgba(0, 212, 170, 0.1)',
       colorBorder: 'rgba(0, 0, 0, 0.1)',
     },
-    Transfer: {
-      listBg: '#FFFFFF',
-      listHeaderBg: '#F9FAFB',
-      itemBg: 'transparent',
-      itemHoverBg: 'rgba(0, 212, 170, 0.05)',
-      itemSelectedBg: 'rgba(0, 212, 170, 0.1)',
-    },
+    // See dark-theme comment above re: Transfer tokens — same situation here.
     Input: {
       colorBgContainer: '#FFFFFF',
       colorBorder: 'rgba(0, 0, 0, 0.15)',

@@ -21,14 +21,16 @@ Downstream packages import ui-lib-react directly via relative path, so `tsc` fol
 | Package | Local | Total (pre-ui-lib fix) | Total (post-ui-lib fix) | Order | Status |
 |---|---:|---:|---:|---:|---|
 | `packages/http-api-react` | 0 | 0 | 0 | — | ✅ PR #16 merged |
-| `packages/ui-lib-react` | 35 | 35 | 0 | 1 | ✅ Task 2 done, PR pending |
-| `apps/saas-app` | 7 | 163 | 136 | 2 | |
-| `packages/source-configuration-react` | 8 | 35 | 8 | 3 | |
-| `packages/tasks-react` | 10 | 37 | 10 | 4 | |
-| `packages/reporting-react` | 10 | 56 | 29 | 5 | |
-| `packages/statemachine-react` | 77 | 123 | 96 | 6 | |
-| `packages/processing-manager-react` | 124 | 151 | 124 | 7 | |
+| `packages/ui-lib-react` | 35 | 35 | 0 | 1 | ✅ PR #17 merged |
+| `packages/source-configuration-react` | 8 | 35 | 8 | 2 | next |
+| `packages/tasks-react` | 10 | 37 | 10 | 3 | |
+| `packages/reporting-react` | 10 | 56 | 29 | 4 | |
+| `packages/statemachine-react` | 77 | 123 | 96 | 5 | |
+| `packages/processing-manager-react` | 124 | 151 | 124 | 6 | |
+| `apps/saas-app` | 7 | 163 | 136 | 7 | last |
 | **Remaining total** | — | — | **403** | | |
+
+**Note:** saas-app is ordered last because every package depends on it being green only after all upstream packages are clean — saas-app's tsc surfaces errors from every other package's src/ via its imports. Its 7 local errors will be trivial to close once no cross-package noise leaks in.
 
 **Why ui-lib-react first** (re-ordered 2026-04-18 after Task 2 baseline): it has no upstream deps inside this repo, it's imported by every other in-scope package via `../ui-lib-react/src/`, and its fixes cascade. Running Task 2 revealed 27 of source-configuration-react's 35 errors lived in ui-lib-react — we can't get source-configuration-react's tsc green without fixing ui-lib-react first.
 
