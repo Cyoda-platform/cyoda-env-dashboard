@@ -71,8 +71,10 @@ export const LeftSideMenu: React.FC<LeftSideMenuProps> = ({ collapsed, onCollaps
     setVersionModalVisible(true);
   };
 
-  // Handle menu item clicks (left-click only)
-  const handleMenuClick = (info: { key: string; domEvent: React.MouseEvent }) => {
+  // Handle menu item clicks (left-click only).
+  // `MenuInfo` widens `domEvent` to `KeyboardEvent | MouseEvent` — we only
+  // ever use the mouse variant here, but take it loosely and narrow below.
+  const handleMenuClick: MenuProps['onClick'] = (info) => {
     const { key, domEvent } = info;
 
     // Special handlers for non-navigation items

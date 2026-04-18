@@ -22,17 +22,33 @@
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
 
-    /* Path aliases */
+    /* Path aliases.
+     *
+     * Each `@/` alias is multi-path: tsc falls back to the next candidate
+     * when the first doesn't resolve. This matters because `tsc --noEmit`
+     * follows relative imports into the workspace packages (ui-lib-react,
+     * reporting-react, etc.), and those packages use `@/types` etc. as
+     * their own internal aliases. Without the fallback, a `@/types`
+     * import inside reporting-react resolves against saas-app's src.
+     */
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
+      "@/*": [
+        "./src/*",
+        "../../packages/reporting-react/src/*",
+        "../../packages/statemachine-react/src/*",
+        "../../packages/tasks-react/src/*",
+        "../../packages/processing-manager-react/src/*",
+        "../../packages/ui-lib-react/src/*"
+      ],
       "@cyoda/ui-lib-react": ["../../packages/ui-lib-react/src"],
       "@cyoda/http-api-react": ["../../packages/http-api-react/src"],
       "@cyoda/cyoda-sass-react": ["../../packages/cyoda-sass-react/src"],
       "@cyoda/reporting-react": ["../../packages/reporting-react/src"],
       "@cyoda/statemachine-react": ["../../packages/statemachine-react/src"],
       "@cyoda/tasks-react": ["../../packages/tasks-react/src"],
-      "@cyoda/processing-manager-react": ["../../packages/processing-manager-react/src"]
+      "@cyoda/processing-manager-react": ["../../packages/processing-manager-react/src"],
+      "@cyoda/cobi-react": ["./src/cobi-react.d.ts"]
     },
 
     /* Types */

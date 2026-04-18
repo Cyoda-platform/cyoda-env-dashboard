@@ -196,9 +196,9 @@ export function enableStatemachineMock() {
       if (url.includes('/platform-api/statemachine/') || url.includes('/platform-api/entity-info/fetch/models-info')) {
         console.log('🔄 Mock intercepting:', config.method?.toUpperCase(), url);
 
-        // Mark this request as mocked so we can handle it in response interceptor
-        config.headers = config.headers || {};
-        (config.headers as any)['X-Mock-Intercepted'] = 'true';
+        // Mark this request as mocked so we can handle it in the response
+        // interceptor. axios v1+ always populates `headers`; no fallback needed.
+        config.headers['X-Mock-Intercepted'] = 'true';
 
         // Mute errors for mocked requests so error handler doesn't log them
         (config as any).muteErrors = true;
