@@ -321,7 +321,7 @@ export const ModellingPopUpAlias = forwardRef<ModellingPopUpAliasRef, ModellingP
 
           <Table
             rowSelection={rowSelection}
-            columns={columns}
+            columns={columns as any}
             dataSource={tableData}
             loading={isLoading}
             pagination={false}

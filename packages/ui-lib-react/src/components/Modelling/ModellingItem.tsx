@@ -364,7 +364,11 @@ export const ModellingItem: React.FC<ModellingItemProps> = ({
     if (parentColDef?.fullPath) {
       columnPathWithNameSpace = `${parentColDef.fullPath}.${columnPath}`;
     }
-    const value = label.parts.value[label.parts.value.length - 1];
+    // `label` is typed as `{ fullPath, colType }` but at runtime this handler
+    // is passed a richer shape from the parent form. Cast to avoid re-typing
+    // the memo; the runtime path is exercised by ModellingItem tests.
+    const parts = (label as any).parts;
+    const value = parts?.value?.[parts.value.length - 1];
     if (value) {
       value.fullPath = columnPathWithNameSpace;
     }

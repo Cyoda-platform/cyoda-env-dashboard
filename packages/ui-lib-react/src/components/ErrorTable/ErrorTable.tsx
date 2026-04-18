@@ -141,7 +141,7 @@ export const ErrorTable: React.FC<ErrorTableProps> = ({
         pageSize={10}
         bordered
         tableProps={{
-          scroll: { y: 220 }
+          height: 220
         }}
       />
     </Drawer>

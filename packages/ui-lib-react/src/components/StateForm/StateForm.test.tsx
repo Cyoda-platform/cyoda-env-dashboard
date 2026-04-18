@@ -200,7 +200,7 @@ describe('StateForm', () => {
   })
 
   it('shows loading state on submit', async () => {
-    const onSubmit = vi.fn(() => new Promise(resolve => setTimeout(resolve, 100)))
+    const onSubmit = vi.fn(() => new Promise<void>(resolve => { setTimeout(() => resolve(), 100) }))
     const mockData = {
       name: 'Test State',
       description: 'Description'

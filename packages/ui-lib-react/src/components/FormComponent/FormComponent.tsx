@@ -15,8 +15,12 @@ export const FormComponent: React.FC<FormComponentProps> = ({
   className = '',
   ...props
 }) => {
+  // antd v5's `Form` export resolves to a narrowly-typed wrapper whose props
+  // type is inferred as `{ children?: ReactNode }` at the call site. Cast the
+  // component so we can spread the real FormProps.
+  const AnyForm = Form as React.FC<FormProps>
   return (
-    <Form
+    <AnyForm
       className={`form-component ${className}`}
       {...props}
     />

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Checkbox } from 'antd'
-import type { CheckboxValueType } from 'antd/es/checkbox/Group'
+// antd v5 no longer exports CheckboxValueType by name; inline the shape.
+type CheckboxValueType = string | number | boolean
 import './List.scss'
 
 export interface ListOption {

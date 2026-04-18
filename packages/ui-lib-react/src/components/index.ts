@@ -80,10 +80,17 @@ export * from './ChatMessageText'
 export * from './ExportVariants'
 
 // Data Lineage
-export * from './DataLineageFilter'
-export * from './DataLineageCompare'
-export * from './DataLineageTransactions'
-export * from './DataLineage'
+// DataLineageFilter/DataLineage both re-export a `DataLineageFilter` name
+// (value vs type) and DataLineageCompare/Transactions both export `Transaction`
+// — re-export explicitly so the ambiguous names disambiguate.
+export { DataLineageFilter } from './DataLineageFilter'
+export type { DataLineageFilterProps, DataLineageFilterValue } from './DataLineageFilter'
+export { DataLineageCompare } from './DataLineageCompare'
+export type { DataLineageCompareProps, DataLineageCompareRef, CompareData, ChangedField } from './DataLineageCompare'
+export { DataLineageTransactions } from './DataLineageTransactions'
+export type { DataLineageTransactionsProps, Transaction } from './DataLineageTransactions'
+export { DataLineage } from './DataLineage'
+export type { DataLineageProps } from './DataLineage'
 
 // Cyoda Modelling
 export * from './Modelling'

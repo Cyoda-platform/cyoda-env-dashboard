@@ -14,19 +14,23 @@
 
 ## Scope & Baseline
 
-**Recorded on 2026-04-18 from `main` at HEAD** (post-PR #15 merge):
+**Recorded on 2026-04-18 from `main` at HEAD** (post-PR #15 merge, updated post-PR #16):
 
-| Package | Errors | Order |
-|---|---:|---:|
-| `packages/http-api-react` | 8 | 1 |
-| `packages/source-configuration-react` | 36 | 2 |
-| `packages/ui-lib-react` | 36 | 3 |
-| `packages/tasks-react` | 38 | 4 |
-| `packages/reporting-react` | 57 | 5 |
-| `packages/statemachine-react` | 124 | 6 |
-| `packages/processing-manager-react` | 152 | 7 |
-| `apps/saas-app` | 164 | 8 |
-| **Total** | **615** | |
+Downstream packages import ui-lib-react directly via relative path, so `tsc` follows into it. Each package's "total" errors therefore include cross-package type leakage. What matters is the _local_ error count (errors in the package's own `src/`) — those are what each PR must close. Fixing ui-lib-react cascade-clears errors in every consumer.
+
+| Package | Local | Total (pre-ui-lib fix) | Total (post-ui-lib fix) | Order | Status |
+|---|---:|---:|---:|---:|---|
+| `packages/http-api-react` | 0 | 0 | 0 | — | ✅ PR #16 merged |
+| `packages/ui-lib-react` | 35 | 35 | 0 | 1 | ✅ Task 2 done, PR pending |
+| `apps/saas-app` | 7 | 163 | 136 | 2 | |
+| `packages/source-configuration-react` | 8 | 35 | 8 | 3 | |
+| `packages/tasks-react` | 10 | 37 | 10 | 4 | |
+| `packages/reporting-react` | 10 | 56 | 29 | 5 | |
+| `packages/statemachine-react` | 77 | 123 | 96 | 6 | |
+| `packages/processing-manager-react` | 124 | 151 | 124 | 7 | |
+| **Remaining total** | — | — | **403** | | |
+
+**Why ui-lib-react first** (re-ordered 2026-04-18 after Task 2 baseline): it has no upstream deps inside this repo, it's imported by every other in-scope package via `../ui-lib-react/src/`, and its fixes cascade. Running Task 2 revealed 27 of source-configuration-react's 35 errors lived in ui-lib-react — we can't get source-configuration-react's tsc green without fixing ui-lib-react first.
 
 **Out of scope (deprecated, will be deleted):**
 - `packages/cobi-react` (62 errors)
@@ -252,75 +256,121 @@ Then check the box at the top of this task and move to Task 2.
 
 ---
 
-### Task 2: `packages/source-configuration-react` (36 errors)
-
-- [ ] Package complete and merged
-
-**Baseline errors** (not yet enumerated — record on first pass):
-
-- [ ] **Step 1: Branch**
-
-```bash
-git switch main && git pull --ff-only
-git switch -c fix/ts-source-configuration-react
-```
-
-- [ ] **Step 2: Enumerate errors into this file**
-
-```bash
-pnpm --filter '@cyoda/source-configuration-react' exec tsc --noEmit 2>&1 | tee /tmp/ts-scr-errors.txt | grep -c "error TS"
-```
-
-Paste a condensed summary (grouped by TS code and file) into the "Baseline errors" section above. Update error count if it has drifted from 36.
-
-- [ ] **Step 3: Group errors by pattern**
-
-Skim the list. Tag each against Patterns A–E above. Note any NEW patterns seen and add them to the "Common Error Patterns" section so later packages benefit. If a new pattern appears in ≥2 places here or is likely to recur, add it.
-
-- [ ] **Step 4: Fix errors file-by-file**
-
-Work one file at a time. For each file:
-1. Read the full file (or the section around the error).
-2. Apply the relevant pattern.
-3. Re-run `pnpm --filter '@cyoda/source-configuration-react' exec tsc --noEmit 2>&1 | grep "<filename>" | wc -l` to confirm the count dropped.
-
-Avoid the temptation to refactor. The goal is zero errors, not pretty code.
-
-- [ ] **Step 5: Verify green**
-
-```bash
-pnpm --filter '@cyoda/source-configuration-react' exec tsc --noEmit
-pnpm exec vitest run packages/source-configuration-react
-```
-
-Both exit 0.
-
-- [ ] **Step 6: Commit, push, PR, merge**
-
-Use the Task 1 template, substituting package name and the actual fix summary in the commit body.
-
----
-
-### Task 3: `packages/ui-lib-react` (36 errors)
+### Task 2: `packages/ui-lib-react` (35 local errors, cascade-fixes many downstream)
 
 - [ ] Package complete and merged
 
 **Baseline errors:** (enumerate on first pass)
 
-Follow the Task 2 recipe, substituting `ui-lib-react` throughout. Watch for ui-lib-specific patterns (Ant Design types, `HelperStorage`/`HelperDictionary` class shapes) — document any new pattern you discover.
-
 Branch: `fix/ts-ui-lib-react`.
+
+**Why this first:** No upstream deps; every other in-scope package imports from it via `../ui-lib-react/src/`. Fixing it here will clear ~150 errors currently surfaced in downstream packages' tsc runs.
+
+**Recipe:** Follow the Task 1 pattern. Steps:
+
+- [ ] **Step 1: Branch**
+
+```bash
+git switch main && git pull --ff-only
+git switch -c fix/ts-ui-lib-react
+```
+
+- [ ] **Step 2: Enumerate errors**
+
+```bash
+pnpm --filter '@cyoda/ui-lib-react' exec tsc --noEmit 2>&1 | tee /tmp/ts-uilib.txt | grep -c "error TS"
+```
+
+Paste a condensed summary (by TS code + file) into the "Baseline errors" section above.
+
+- [ ] **Step 3: Group by pattern**
+
+Tag each error against Patterns A–E. Add new patterns to the "Common Error Patterns" section if they'll recur. Known ui-lib-specific candidates:
+- Duplicate barrel re-exports (Pattern C) — `components/index.ts` has two.
+- Unused `@ts-expect-error` directives (TS2578) — remove them.
+- Ant Design type version drift (`CheckboxValueType`, `RangeValueType<Dayjs>` vs Moment, `scroll` prop on DataTable).
+- Modelling widget receives union types where it expects a concrete shape — narrow with type guards.
+
+- [ ] **Step 4: Fix file-by-file**
+
+Work one file at a time. After each file, run:
+
+```bash
+pnpm --filter '@cyoda/ui-lib-react' exec tsc --noEmit 2>&1 | grep "^<filename>" | wc -l
+```
+
+to confirm that file's count dropped to 0.
+
+- [ ] **Step 5: Verify green + tests**
+
+```bash
+pnpm --filter '@cyoda/ui-lib-react' exec tsc --noEmit && echo OK
+pnpm exec vitest run packages/ui-lib-react
+```
+
+- [ ] **Step 6: Commit, push, PR, merge**
+
+Use the Task 1 commit/PR templates. Title: `fix(types): clean up ui-lib-react TypeScript errors`.
+
+After merge, update the baseline table at the top of this plan with the new downstream totals (they should be much smaller). Use this script:
+
+```bash
+for pkg in source-configuration-react tasks-react reporting-react statemachine-react processing-manager-react; do
+  total=$(pnpm --filter "@cyoda/$pkg" exec tsc --noEmit 2>&1 | grep -c "error TS")
+  echo "$pkg: total=$total"
+done
+pnpm --filter '@cyoda/saas-app' exec tsc --noEmit 2>&1 | grep -c "error TS" | xargs -I {} echo "saas-app: total={}"
+```
+
+---
+
+### Task 3: `apps/saas-app` (7 local errors)
+
+- [ ] Package complete and merged
+
+**Baseline errors:** (enumerate on first pass — confirm count matches or update it)
+
+Branch: `fix/ts-saas-app`.
+
+**Recipe:**
+
+- [ ] **Step 1: Branch from main (post ui-lib-react merge)**
+- [ ] **Step 2: Enumerate errors**
+
+```bash
+pnpm --filter '@cyoda/saas-app' exec tsc --noEmit 2>&1 | tee /tmp/ts-saas.txt | grep -c "error TS"
+```
+
+- [ ] **Step 3: Group by pattern** (Patterns A–E; add new ones as needed)
+- [ ] **Step 4: Fix file-by-file**
+- [ ] **Step 5: Verify green:** `pnpm --filter '@cyoda/saas-app' exec tsc --noEmit` and `pnpm exec vitest run apps/saas-app`
+- [ ] **Step 6: Commit, push, PR, merge**
+
+---
+
+### Task 4: `packages/source-configuration-react` (8 local errors)
+
+- [ ] Package complete and merged
+
+**Baseline errors:** (enumerate on first pass)
+
+Branch: `fix/ts-source-configuration-react`.
+
+Recipe: identical to Task 3 with substituted package name. Key files from pre-reorder scouting:
+- `src/components/FileUploadDialog.test.tsx` (1 error)
+- `src/components/FileUploadDialog.tsx` (4 errors — `UploadConfig.fileType` and `FileUploadProgress` as ReactNode)
+- `src/hooks/useSourceConfig.ts` (3 errors — missing `displayName` on `MapperInfo`)
 
 - [ ] Step 1: Branch
 - [ ] Step 2: Enumerate errors
 - [ ] Step 3: Group by pattern
 - [ ] Step 4: Fix file-by-file
-- [ ] Step 5: Verify green (`tsc --noEmit` + `vitest run`)
+- [ ] Step 5: Verify green
 - [ ] Step 6: Commit, push, PR, merge
 
 ---
 
-### Task 4: `packages/tasks-react` (38 errors)
+### Task 5: `packages/tasks-react` (10 local errors)
 
 - [ ] Package complete and merged
 
@@ -337,7 +387,7 @@ Branch: `fix/ts-tasks-react`.
 
 ---
 
-### Task 5: `packages/reporting-react` (57 errors)
+### Task 6: `packages/reporting-react` (10 local errors)
 
 - [ ] Package complete and merged
 
@@ -354,7 +404,7 @@ Branch: `fix/ts-reporting-react`.
 
 ---
 
-### Task 6: `packages/statemachine-react` (124 errors)
+### Task 7: `packages/statemachine-react` (77 local errors)
 
 - [ ] Package complete and merged
 
@@ -373,7 +423,7 @@ Branch: `fix/ts-statemachine-react`.
 
 ---
 
-### Task 7: `packages/processing-manager-react` (152 errors)
+### Task 8: `packages/processing-manager-react` (124 local errors)
 
 - [ ] Package complete and merged
 
@@ -389,26 +439,6 @@ Branch: `fix/ts-processing-manager-react`.
 - [ ] Step 4: Fix file-by-file
 - [ ] Step 5: Verify green
 - [ ] Step 6: Commit, push, PR, merge
-
----
-
-### Task 8: `apps/saas-app` (164 errors)
-
-- [ ] Package complete and merged
-
-**Baseline errors:** (enumerate on first pass)
-
-Branch: `fix/ts-saas-app`.
-
-**Heads-up:** This is the app shell — it composes every other package. Many errors here will disappear automatically as upstream packages tighten their types. Run the baseline AFTER all seven packages above are merged; only the true app-level errors should remain.
-
-- [ ] Step 1: Re-run full baseline (see bottom) — confirm only `apps/saas-app` has errors
-- [ ] Step 2: Branch
-- [ ] Step 3: Enumerate errors
-- [ ] Step 4: Group by pattern
-- [ ] Step 5: Fix file-by-file
-- [ ] Step 6: Verify green: `pnpm --filter '@cyoda/saas-app' exec tsc --noEmit` and `pnpm exec vitest run apps/saas-app`
-- [ ] Step 7: Commit, push, PR, merge
 
 ---
 

@@ -159,7 +159,10 @@ const EntityDataLineage: React.FC<EntityDataLineageProps> = ({ entityClass, enti
               <h4>Filter</h4>
               <RangePicker
                 style={{ width: '100%' }}
-                value={dateRange}
+                // antd v5's RangePicker is Dayjs-typed; this component still
+                // carries Moment internally. Cast at the boundary rather than
+                // migrate the whole component in a type-cleanup PR.
+                value={dateRange as any}
                 onChange={(dates) => setDateRange(dates as [moment.Moment | null, moment.Moment | null])}
                 format="DD/MM/YYYY"
               />
