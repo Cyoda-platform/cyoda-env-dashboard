@@ -345,9 +345,11 @@ export function getStreamData(request: any) {
 }
 
 /**
- * User type for usersList response
+ * User type for usersList response. Kept local to avoid colliding with the
+ * auth `User` in `types/index.ts` — consumers can still destructure fields
+ * via the inferred return type of `usersList`.
  */
-export interface User {
+interface User {
   userId: string;
   username: string;
   email?: string;

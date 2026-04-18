@@ -98,7 +98,7 @@ describe('useReportStatus', () => {
         queryKey: ['reports', 'report-123', undefined, 'status'],
       })[0];
 
-      const refetchInterval = query?.options?.refetchInterval as (query: ReturnType<typeof makeFakeQuery>) => number;
+      const refetchInterval = (query?.options as any)?.refetchInterval as (query: ReturnType<typeof makeFakeQuery>) => number;
       expect(refetchInterval).toBeTypeOf('function');
 
       // Simulate the v5 callback with a Query-shaped object
@@ -121,7 +121,7 @@ describe('useReportStatus', () => {
         queryKey: ['reports', 'report-123', undefined, 'status'],
       })[0];
 
-      const refetchInterval = query?.options?.refetchInterval as (query: ReturnType<typeof makeFakeQuery>) => number;
+      const refetchInterval = (query?.options as any)?.refetchInterval as (query: ReturnType<typeof makeFakeQuery>) => number;
       const result = refetchInterval(makeFakeQuery({ content: { status: 'STARTED' } }));
       expect(result).toBe(2000);
     });
@@ -141,7 +141,7 @@ describe('useReportStatus', () => {
         queryKey: ['reports', 'report-123', undefined, 'status'],
       })[0];
 
-      const refetchInterval = query?.options?.refetchInterval as (query: ReturnType<typeof makeFakeQuery>) => number;
+      const refetchInterval = (query?.options as any)?.refetchInterval as (query: ReturnType<typeof makeFakeQuery>) => number;
       const result = refetchInterval(makeFakeQuery({ content: { status: 'SUCCESSFUL' } }));
       expect(result).toBe(false);
     });
@@ -161,7 +161,7 @@ describe('useReportStatus', () => {
         queryKey: ['reports', 'report-123', undefined, 'status'],
       })[0];
 
-      const refetchInterval = query?.options?.refetchInterval as (query: ReturnType<typeof makeFakeQuery>) => number;
+      const refetchInterval = (query?.options as any)?.refetchInterval as (query: ReturnType<typeof makeFakeQuery>) => number;
       const result = refetchInterval(makeFakeQuery({ content: { status: 'FAILED' } }));
       expect(result).toBe(false);
     });
@@ -181,7 +181,7 @@ describe('useReportStatus', () => {
         queryKey: ['reports', 'report-123', undefined, 'status'],
       })[0];
 
-      const refetchInterval = query?.options?.refetchInterval as (query: ReturnType<typeof makeFakeQuery>) => number;
+      const refetchInterval = (query?.options as any)?.refetchInterval as (query: ReturnType<typeof makeFakeQuery>) => number;
       // Before data loads, query.state.data is undefined
       const result = refetchInterval(makeFakeQuery(undefined));
       expect(result).toBe(false);
