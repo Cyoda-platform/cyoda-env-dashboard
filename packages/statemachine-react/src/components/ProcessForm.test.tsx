@@ -280,11 +280,11 @@ describe('ProcessForm Component', () => {
     }
   });
 
-  it('should disable fields when persistedType is transient', () => {
+  it('should disable fields when persistedType is runtime', () => {
     render(
       <ProcessForm
         entityClassName="com.example.Order"
-        persistedType="transient"
+        persistedType="runtime"
         mode="embedded"
       />,
       { wrapper: createWrapper() }

@@ -93,7 +93,7 @@ export const CriteriaForm: React.FC<CriteriaFormProps> = ({
   }, [condition]);
 
   const isNew = !criteriaId || criteriaId === 'new';
-  const isRuntime = persistedType === 'transient';
+  const isRuntime = persistedType === 'runtime';
 
   // Track if form has been initialized to prevent loops
   const formInitializedRef = React.useRef(false);

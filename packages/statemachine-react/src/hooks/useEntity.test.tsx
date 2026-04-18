@@ -63,18 +63,21 @@ describe('useEntity hooks', () => {
         value: 'entity-123',
         type: 'LEAF',
         presented: true,
+        decision: '',
       },
       {
         columnInfo: { columnName: 'name', name: 'name', type: 'java.lang.String' },
         value: 'Test Entity',
         type: 'LEAF',
         presented: true,
+        decision: '',
       },
       {
         columnInfo: { columnName: 'hidden', name: 'hidden', type: 'java.lang.String' },
         value: 'Hidden Field',
         type: 'LEAF',
         presented: false,
+        decision: '',
       },
     ];
 
@@ -84,12 +87,14 @@ describe('useEntity hooks', () => {
         value: 'entity-123',
         type: 'LEAF',
         presented: true,
+        decision: '',
       },
       {
         columnInfo: { columnName: 'name', name: 'name', type: 'java.lang.String' },
         value: 'Test Entity',
         type: 'LEAF',
         presented: true,
+        decision: '',
       },
     ];
 

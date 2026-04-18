@@ -41,7 +41,7 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
   const { invalidateWorkflow, invalidateTransitions } = useQueryInvalidation();
 
   const isNew = !workflowId || workflowId === 'new';
-  const isRuntime = persistedType === 'transient';
+  const isRuntime = persistedType === 'runtime';
 
   // Global UI settings
   const { entityType, isEnabledTechView } = useGlobalUiSettingsStore();

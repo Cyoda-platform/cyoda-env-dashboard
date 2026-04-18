@@ -6,7 +6,8 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import type { TableProps, SorterResult } from 'antd/es/table/interface';
+import type { TableProps } from 'antd';
+import type { SorterResult } from 'antd/es/table/interface';
 
 interface TableState {
   currentPage?: number;

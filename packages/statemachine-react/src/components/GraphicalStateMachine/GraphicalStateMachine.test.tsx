@@ -26,12 +26,12 @@ vi.mock('cytoscape', () => ({
   default: vi.fn(() => ({
     on: vi.fn(),
     nodes: vi.fn(() => {
-      const mockNodes = [] as any[];
+      const mockNodes: any = [];
       mockNodes.toggleClass = vi.fn();
       return mockNodes;
     }),
     edges: vi.fn(() => {
-      const mockEdges = [] as any[];
+      const mockEdges: any = [];
       mockEdges.toggleClass = vi.fn();
       mockEdges.filter = vi.fn(() => []);
       return mockEdges;

@@ -72,7 +72,7 @@ export const ProcessesList: React.FC<ProcessesListProps> = ({
   };
 
   const handleViewProcess = (record: ProcessRow) => {
-    const processPersistedType = record.persisted ? 'persisted' : 'transient';
+    const processPersistedType = record.persisted ? 'persisted' : 'runtime';
     navigate(
       `/process/${record.id}?persistedType=${processPersistedType}&entityClassName=${entityClassName}&workflowId=${workflowId}&workflowPersistedType=${persistedType}`
     );
@@ -80,7 +80,7 @@ export const ProcessesList: React.FC<ProcessesListProps> = ({
 
   const handleCopy = async (record: ProcessRow) => {
     try {
-      const processPersistedType = record.persisted ? 'persisted' : 'transient';
+      const processPersistedType = record.persisted ? 'persisted' : 'runtime';
       const newProcessId = await copyProcessMutation.mutateAsync({
         persistedType: processPersistedType,
         processId: record.id,
@@ -107,7 +107,7 @@ export const ProcessesList: React.FC<ProcessesListProps> = ({
       cancelText: 'Cancel',
       onOk: async () => {
         try {
-          const processPersistedType = record.persisted ? 'persisted' : 'transient';
+          const processPersistedType = record.persisted ? 'persisted' : 'runtime';
           await deleteProcessMutation.mutateAsync({
             persistedType: processPersistedType,
             processId: record.id,

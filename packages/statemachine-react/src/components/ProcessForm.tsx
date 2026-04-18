@@ -36,7 +36,7 @@ export const ProcessForm: React.FC<ProcessFormProps> = ({
   const [processParameters, setProcessParameters] = React.useState<any[]>([]);
 
   const isNew = !processId || processId === 'new';
-  const isRuntime = persistedType === 'transient';
+  const isRuntime = persistedType === 'runtime';
 
   // Queries
   const { data: process, isLoading: isLoadingProcess } = useProcess(

@@ -48,16 +48,16 @@ describe('ExportImport', () => {
       name: 'Test Workflow 1',
       entityClassName: 'TestEntity',
       persisted: true,
-      decisionTrees: [],
-      criteriaIds: [],
+      active: true,
+      creationDate: 1713398400000,
     },
     {
       id: 'workflow-2',
       name: 'Test Workflow 2',
       entityClassName: 'TestEntity',
       persisted: true,
-      decisionTrees: [],
-      criteriaIds: [],
+      active: true,
+      creationDate: 1713398400000,
     },
   ];
 

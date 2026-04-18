@@ -25,13 +25,15 @@
     /* Path mapping */
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@cyoda/cobi-react": ["./src/cobi-react.d.ts"]
     },
 
     /* Types */
     "types": ["vite/client", "vitest/globals", "@testing-library/jest-dom"]
   },
   "include": ["src"],
+  "exclude": ["src/**/*.backup", "src/**/*.backup/**"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
 
