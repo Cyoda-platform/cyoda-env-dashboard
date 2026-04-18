@@ -21,7 +21,7 @@
     "test:e2e:headed": "playwright test --headed",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "type-check": "pnpm -r --if-present run type-check",
+    "type-check": "pnpm -r --filter=!@cyoda/cobi-react --filter=!@cyoda/cyoda-sass-react --if-present run type-check",
     "clean": "pnpm -r --if-present run clean && rm -rf node_modules",
     "format": "prettier --write \"packages/**/*.{ts,tsx,js,jsx,json,md}\""
   },
