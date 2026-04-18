@@ -1116,13 +1116,19 @@ export function useTransactionsView(params?: { id?: string }) {
  * 2. useTransactionsViewMembers({ id, ...params }, options) - old signature for compatibility
  */
 export function useTransactionsViewMembers(idOrParams: string | any, paramsOrOptions?: any, options?: any) {
-  // Support both old and new signatures
+  // Support both old and new signatures; normalize before the hook call so hook order stays stable
+  let id: string;
+  let params: any;
+  let opts: any;
   if (typeof idOrParams === 'string') {
-    return useTransactionMembers(idOrParams, paramsOrOptions, options);
+    id = idOrParams;
+    params = paramsOrOptions;
+    opts = options;
   } else {
-    const { id, ...restParams } = idOrParams;
-    return useTransactionMembers(id, restParams, paramsOrOptions);
+    ({ id, ...params } = idOrParams);
+    opts = paramsOrOptions;
   }
+  return useTransactionMembers(id, params, opts);
 }
 
 /**
@@ -1132,13 +1138,19 @@ export function useTransactionsViewMembers(idOrParams: string | any, paramsOrOpt
  * 2. useTransactionsViewEvents({ id, ...params }, options) - old signature for compatibility
  */
 export function useTransactionsViewEvents(idOrParams: string | any, paramsOrOptions?: any, options?: any) {
-  // Support both old and new signatures
+  // Support both old and new signatures; normalize before the hook call so hook order stays stable
+  let id: string;
+  let params: any;
+  let opts: any;
   if (typeof idOrParams === 'string') {
-    return useTransactionEvents(idOrParams, paramsOrOptions, options);
+    id = idOrParams;
+    params = paramsOrOptions;
+    opts = options;
   } else {
-    const { id, ...restParams } = idOrParams;
-    return useTransactionEvents(id, restParams, paramsOrOptions);
+    ({ id, ...params } = idOrParams);
+    opts = paramsOrOptions;
   }
+  return useTransactionEvents(id, params, opts);
 }
 
 export default {

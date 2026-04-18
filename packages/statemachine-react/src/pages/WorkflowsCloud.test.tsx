@@ -205,9 +205,12 @@ describe('WorkflowsCloud', () => {
 
     renderPage('/workflows');
 
-    // Open the picker and click the only model.
-    await userEvent.click(screen.getByRole('combobox'));
-    await userEvent.click(await screen.findByText('Customer (v1)'));
+    // Type into the picker to trigger AutoComplete's onChange path directly.
+    // Clicking the option element does not always deliver the synthetic event
+    // under jsdom because the dropdown portal is positioned offscreen.
+    const combobox = screen.getByRole('combobox');
+    await userEvent.click(combobox);
+    await userEvent.type(combobox, 'Customer.1');
 
     // The picker invokes onChange, which calls setSearchParams. The next render
     // sees the URL state and re-invokes useWorkflowsList with the parsed modelRef.

@@ -322,6 +322,7 @@ export const WorkflowForm: React.FC<WorkflowFormProps> = ({
             </Form.Item>
 
             {/* Decision Tree feature is disabled - hidden like in Vue (v-if="false") */}
+            {/* eslint-disable-next-line no-constant-binary-expression -- intentional feature flag kept for future re-enable */}
             {false && (
               <Form.Item name="useDecisionTree" valuePropName="checked">
                 <Checkbox

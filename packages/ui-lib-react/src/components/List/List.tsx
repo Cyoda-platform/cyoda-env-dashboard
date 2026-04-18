@@ -42,7 +42,7 @@ export const List: React.FC<ListProps> = ({
   const maxLocal = allowChange ? max + 1 : max
 
   const handleChange = (checkedValues: CheckboxValueType[]) => {
-    let newValue = [...checkedValues]
+    const newValue = [...checkedValues]
     
     // If allowChange is true and more than 1 item selected, remove the first one
     if (allowChange && newValue.length > 1) {

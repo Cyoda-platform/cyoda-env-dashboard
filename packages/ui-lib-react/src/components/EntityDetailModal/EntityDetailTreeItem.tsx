@@ -33,6 +33,33 @@ const EntityDetailTreeItem: React.FC<EntityDetailTreeItemProps> = ({
   const [nestedEntity, setNestedEntity] = useState<Entity[]>([]);
   const [loading, setLoading] = useState(false);
 
+  // Load embedded data on mount for EMBEDDED columns; runs for all rows so hook order is stable
+  useEffect(() => {
+    if (column.type !== 'EMBEDDED') return;
+    const loadEmbeddedData = async () => {
+      if (!entityId || !entityClass || isExpanded) return;
+
+      setIsExpanded(true);
+      setLoading(true);
+
+      try {
+        const realClass = (column as any).realClass || '';
+        const columnPath = column.columnInfo.columnPath;
+        const { data } = await getEntityLoad(entityId, entityClass, realClass, columnPath);
+        const filteredData = HelperDetailEntity.filterData(data);
+        setNestedEntity(filteredData);
+      } catch (error) {
+        console.error('Failed to load embedded data:', error);
+        setNestedEntity([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadEmbeddedData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- preserves original mount-only behavior
+  }, []);
+
   // Get field name
   const name = column.columnInfo?.columnName || column.columnInfo?.columnPath || 'Unknown';
 
@@ -175,33 +202,8 @@ const EntityDetailTreeItem: React.FC<EntityDetailTreeItemProps> = ({
     );
   }
 
-  // Render EMBEDDED type (load nested data from server)
+  // Render EMBEDDED type (load nested data from server; effect hoisted to top for hook-order stability)
   if (column.type === 'EMBEDDED') {
-    // Load embedded data on mount
-    useEffect(() => {
-      const loadEmbeddedData = async () => {
-        if (!entityId || !entityClass || isExpanded) return;
-
-        setIsExpanded(true);
-        setLoading(true);
-
-        try {
-          const realClass = (column as any).realClass || '';
-          const columnPath = column.columnInfo.columnPath;
-          const { data } = await getEntityLoad(entityId, entityClass, realClass, columnPath);
-          const filteredData = HelperDetailEntity.filterData(data);
-          setNestedEntity(filteredData);
-        } catch (error) {
-          console.error('Failed to load embedded data:', error);
-          setNestedEntity([]);
-        } finally {
-          setLoading(false);
-        }
-      };
-
-      loadEmbeddedData();
-    }, []);
-
     return (
       <div className="detail-tree-item-expandable">
         <Collapse

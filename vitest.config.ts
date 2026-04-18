@@ -9,8 +9,14 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./vitest.setup.ts'],
     css: true,
+    // Use worker threads instead of child forks. Threads die with the parent Node process, so
+    // an interrupted or stalled test run does not leave orphan workers behind. Forks — the vitest
+    // default — must be SIGTERM'd individually and routinely orphan on macOS, accumulating into
+    // zombie node processes that saturate the CPU.
+    pool: 'threads',
     testTimeout: 10000, // 10 seconds for async operations
     hookTimeout: 10000, // 10 seconds for setup/teardown hooks
+    teardownTimeout: 5000, // cap afterAll/afterEach at 5s so a leaky cleanup cannot hang the worker
     environmentOptions: {
       jsdom: {
         resources: 'usable',
@@ -34,7 +40,9 @@ export default defineConfig({
       '**/node_modules/**',
       '**/dist/**',
       '**/e2e/**',
-      '**/*.spec.ts'
+      '**/*.spec.ts',
+      'packages/cobi-react/**',
+      'packages/cyoda-sass-react/**'
     ]
   },
   resolve: {

@@ -144,7 +144,7 @@ const dataProvider: DataProvider = {
   getApiUrl: () => API_URL,
 
   custom: async ({ url, method, filters, sorters, payload, query, headers }) => {
-    let requestUrl = `${url}`;
+    const requestUrl = `${url}`;
 
     if (headers) {
       axiosInstance.defaults.headers.common = {

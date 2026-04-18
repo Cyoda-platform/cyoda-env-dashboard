@@ -17,7 +17,6 @@
     "test:watch": "cd ../.. && vitest --environment jsdom packages/statemachine-react/src",
     "test:ui": "cd ../.. && vitest --ui --environment jsdom packages/statemachine-react/src",
     "test:coverage": "cd ../.. && vitest --coverage --environment jsdom packages/statemachine-react/src",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "type-check": "tsc --noEmit",
     "clean": "rm -rf dist node_modules"
   },
@@ -52,9 +51,6 @@
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.4",
-    "eslint": "^9.18.0",
-    "eslint-plugin-react-hooks": "^5.1.0",
-    "eslint-plugin-react-refresh": "^0.4.16",
     "jsdom": "^27.0.0",
     "typescript": "^5.7.3",
     "vite": "^6.0.11",

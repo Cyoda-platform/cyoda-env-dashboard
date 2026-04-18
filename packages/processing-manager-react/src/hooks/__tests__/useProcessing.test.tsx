@@ -399,8 +399,8 @@ describe('useProcessing Hooks', () => {
 
       expect(result.current.data).toEqual(mockData);
       expect(axiosProcessing.put).toHaveBeenCalledWith(
-        '/platform-api/entity?transactional=true',
-        params
+        '/platform-api/entity',
+        { ...params, transactional: true }
       );
     });
 

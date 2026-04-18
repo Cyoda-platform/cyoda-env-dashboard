@@ -65,6 +65,7 @@ vi.mock('@cyoda/ui-lib-react', () => {
       date: (date: string) => date ? new Date(date).toLocaleDateString() : '',
     },
     HelperStorage: MockHelperStorage,
+    ResizableTitle: (props: any) => <th {...props} />,
   };
 });
 

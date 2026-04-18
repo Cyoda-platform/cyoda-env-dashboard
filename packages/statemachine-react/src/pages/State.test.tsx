@@ -27,6 +27,16 @@ vi.mock('../hooks/useStatemachine', () => ({
     mutateAsync: mockUpdateStateMutateAsync,
     isPending: false,
   }),
+  useTransitions: () => ({ data: [], isLoading: false }),
+  statemachineKeys: {
+    all: ['statemachine'],
+    workflow: () => ['statemachine', 'workflow'],
+    workflows: () => ['statemachine', 'workflows'],
+    transitions: () => ['statemachine', 'transitions'],
+    transitionsList: () => ['statemachine', 'transitions', 'list'],
+    states: () => ['statemachine', 'states'],
+    statesList: () => ['statemachine', 'states', 'list'],
+  },
 }));
 
 // Mock antd message

@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest'
 import { render, screen } from '../../test-utils'
-import { BrowserRouter } from 'react-router-dom'
 import { Breadcrumbs } from './Breadcrumbs'
 import type { BreadcrumbItem } from './Breadcrumbs'
 
@@ -12,11 +11,7 @@ describe('Breadcrumbs', () => {
   ]
 
   const renderBreadcrumbs = (props = {}) => {
-    return render(
-      <BrowserRouter>
-        <Breadcrumbs {...props} />
-      </BrowserRouter>
-    )
+    return render(<Breadcrumbs {...props} />)
   }
 
   it('renders breadcrumb items', () => {

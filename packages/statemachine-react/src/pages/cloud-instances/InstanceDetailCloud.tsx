@@ -35,7 +35,7 @@ export const InstanceDetailCloud: React.FC = () => {
     { key: 'workflow', label: 'Workflow', children: <WorkflowTab entityId={entityId!} modelRef={modelRef} workflowName={workflowName ?? ''} /> },
     { key: 'audit', label: 'Audit', children: <AuditTab entityId={entityId!} /> },
     { key: 'lineage', label: 'Data Lineage', children: <DataLineageTab entityId={entityId!} /> },
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+   
   ], [entityId, modelRef, workflowName]);
 
   if (!entityId) return null;

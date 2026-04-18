@@ -96,7 +96,7 @@ vi.mock('@cyoda/ui-lib-react', async () => {
 
 // Mock global UI settings store
 const mockSetEntityType = vi.fn();
-let mockEntityTypeValue = 'BUSINESS';
+const mockEntityTypeValue = 'BUSINESS';
 const mockEntityType = vi.fn(() => mockEntityTypeValue);
 
 vi.mock('@cyoda/http-api-react', async () => {

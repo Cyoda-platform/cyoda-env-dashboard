@@ -4,10 +4,10 @@ import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MemoryRouter } from 'react-router-dom';
 import EntityStateMachineModal from '../EntityStateMachineModal';
-import * as hooks from '@/hooks';
+import * as hooks from '../../../hooks';
 
 // Mock the useEntityStateMachine hook
-vi.mock('@/hooks', () => ({
+vi.mock('../../../hooks', () => ({
   useEntityStateMachine: vi.fn(),
 }));
 

@@ -11,6 +11,23 @@ import React from 'react';
 import { Workflows } from '../../pages/Workflows';
 import { WorkflowDetail } from '../../pages/WorkflowDetail';
 
+// Route the Workflows dispatch to the legacy branch so we do not need to
+// mock the cloud-only hooks and components.
+vi.mock('@cyoda/http-api-react', async () => {
+  const actual = await vi.importActual<any>('@cyoda/http-api-react');
+  return {
+    ...actual,
+    useGlobalUiSettingsStore: () => ({ entityType: 'BUSINESS' }),
+    HelperFeatureFlags: {
+      ...(actual.HelperFeatureFlags ?? {}),
+      isCloudBusinessActive: () => false,
+      isCyodaCloud: () => false,
+      isWorkflowEnabled: () => true,
+      workflowEnabledTypes: () => [],
+    },
+  };
+});
+
 // Mock axios
 vi.mock('axios', () => ({
   default: {
@@ -107,7 +124,55 @@ vi.mock('../../hooks/useStatemachine', () => ({
     mutateAsync: vi.fn(),
     isPending: false,
   })),
+  statemachineKeys: {
+    all: ['statemachine'],
+    workflows: () => ['statemachine', 'workflows'],
+    workflowsList: () => ['statemachine', 'workflows', 'list'],
+    workflow: () => ['statemachine', 'workflow'],
+    workflowDoc: () => ['statemachine', 'workflows', 'doc'],
+    workflowEnabledTypes: () => ['statemachine', 'workflows', 'enabled-types'],
+    states: () => ['statemachine', 'states'],
+    statesList: () => ['statemachine', 'states', 'list'],
+    state: () => ['statemachine', 'states', 'state'],
+    transitions: () => ['statemachine', 'transitions'],
+    transitionsList: () => ['statemachine', 'transitions', 'list'],
+    transition: () => ['statemachine', 'transitions', 'transition'],
+    criteria: () => ['statemachine', 'criteria'],
+    criteriaList: () => ['statemachine', 'criteria', 'list'],
+    criteriaItem: () => ['statemachine', 'criteria', 'item'],
+    criteriacheckers: () => ['statemachine', 'criteria', 'checkers'],
+  },
 }));
+
+// Mock the statemachine store so `useStatemachineStore.getState().getAllWorkflowsList()`
+// (called from Workflows.tsx) resolves with our fixture data.
+vi.mock('../../stores/statemachineStore', () => {
+  const state = {
+    selectedWorkflow: null,
+    selectedModelRef: null,
+    selectedEntityClassName: null,
+    setSelectedWorkflow: vi.fn(),
+    setSelectedModelRef: vi.fn(),
+    setSelectedEntityClassName: vi.fn(),
+    getAllWorkflowsList: vi.fn().mockResolvedValue({
+      data: [
+        {
+          id: 'workflow-1',
+          name: 'Test Workflow',
+          entityClassName: 'com.example.Entity',
+          active: true,
+          persisted: true,
+          createdDatetime: '2024-01-01T10:00:00Z',
+        },
+      ],
+    }),
+    getWorkflowEnabledTypes: vi.fn().mockResolvedValue({ data: [] }),
+  };
+  const hook: any = (selector?: any) => (selector ? selector(state) : state);
+  hook.getState = () => state;
+  hook.setState = vi.fn();
+  return { useStatemachineStore: hook };
+});
 
 // Mock HelperDictionary
 vi.mock('@cyoda/ui-lib-react', async () => {
@@ -149,24 +214,24 @@ describe('Workflow Creation Integration', () => {
     vi.clearAllMocks();
   });
 
-  it('should display workflows list', () => {
+  it('should display workflows list', async () => {
     render(<Workflows />, { wrapper: createWrapper() });
 
-    expect(screen.getByText('Test Workflow')).toBeInTheDocument();
+    expect(await screen.findByText('Test Workflow')).toBeInTheDocument();
   });
 
-  it('should render workflows page', () => {
+  it('should render workflows page', async () => {
     render(<Workflows />, { wrapper: createWrapper() });
 
     // Should render the page with workflow data
-    expect(screen.getByText('Test Workflow')).toBeInTheDocument();
+    expect(await screen.findByText('Test Workflow')).toBeInTheDocument();
   });
 
-  it('should display workflow details', () => {
+  it('should display workflow details', async () => {
     render(<Workflows />, { wrapper: createWrapper() });
 
     // Workflow should be displayed
-    expect(screen.getByText('Test Workflow')).toBeInTheDocument();
+    expect(await screen.findByText('Test Workflow')).toBeInTheDocument();
   });
 });
 

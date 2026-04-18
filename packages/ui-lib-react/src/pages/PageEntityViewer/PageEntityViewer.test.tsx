@@ -88,7 +88,7 @@ describe('PageEntityViewer', () => {
       render(<PageEntityViewer />);
 
       await waitFor(() => {
-        expect(screen.getByText('Entity Viewer')).toBeInTheDocument();
+        expect(screen.getByText('Entity Model Viewer')).toBeInTheDocument();
       });
 
       expect(screen.getByRole('combobox')).toBeInTheDocument();
@@ -288,7 +288,7 @@ describe('PageEntityViewer', () => {
       render(<PageEntityViewer />);
 
       await waitFor(() => {
-        expect(screen.getByText('Entity Viewer')).toBeInTheDocument();
+        expect(screen.getByText('Entity Model Viewer')).toBeInTheDocument();
       });
 
       // Find zoom out icon (ZoomInOutlined)
@@ -307,7 +307,7 @@ describe('PageEntityViewer', () => {
       render(<PageEntityViewer />);
 
       await waitFor(() => {
-        expect(screen.getByText('Entity Viewer')).toBeInTheDocument();
+        expect(screen.getByText('Entity Model Viewer')).toBeInTheDocument();
       });
 
       const icons = screen.getAllByRole('img', { hidden: true });
@@ -324,7 +324,7 @@ describe('PageEntityViewer', () => {
       render(<PageEntityViewer />);
 
       await waitFor(() => {
-        expect(screen.getByText('Entity Viewer')).toBeInTheDocument();
+        expect(screen.getByText('Entity Model Viewer')).toBeInTheDocument();
       });
 
       const icons = screen.getAllByRole('img', { hidden: true });
@@ -348,7 +348,7 @@ describe('PageEntityViewer', () => {
       render(<PageEntityViewer />);
 
       await waitFor(() => {
-        expect(screen.getByText('Entity Viewer')).toBeInTheDocument();
+        expect(screen.getByText('Entity Model Viewer')).toBeInTheDocument();
       });
 
       const icons = screen.getAllByRole('img', { hidden: true });
@@ -368,7 +368,7 @@ describe('PageEntityViewer', () => {
       render(<PageEntityViewer />);
 
       await waitFor(() => {
-        expect(screen.getByText('Entity Viewer')).toBeInTheDocument();
+        expect(screen.getByText('Entity Model Viewer')).toBeInTheDocument();
       });
 
       const icons = screen.getAllByRole('img', { hidden: true });
@@ -438,7 +438,7 @@ describe('PageEntityViewer', () => {
       render(<PageEntityViewer />);
 
       await waitFor(() => {
-        expect(screen.getByText('Entity Viewer')).toBeInTheDocument();
+        expect(screen.getByText('Entity Model Viewer')).toBeInTheDocument();
       });
 
       // Import eventBus to emit event
@@ -454,7 +454,7 @@ describe('PageEntityViewer', () => {
       const { unmount } = render(<PageEntityViewer />);
 
       await waitFor(() => {
-        expect(screen.getByText('Entity Viewer')).toBeInTheDocument();
+        expect(screen.getByText('Entity Model Viewer')).toBeInTheDocument();
       });
 
       // Import eventBus to spy on it
@@ -528,7 +528,7 @@ describe('PageEntityViewer', () => {
       render(<PageEntityViewer />);
 
       await waitFor(() => {
-        expect(screen.getByText('Entity Viewer')).toBeInTheDocument();
+        expect(screen.getByText('Entity Model Viewer')).toBeInTheDocument();
       });
 
       // Monaco Editor should not be rendered
@@ -661,7 +661,7 @@ describe('PageEntityViewer', () => {
       render(<PageEntityViewer />);
 
       await waitFor(() => {
-        expect(screen.getByText('Entity Viewer')).toBeInTheDocument();
+        expect(screen.getByText('Entity Model Viewer')).toBeInTheDocument();
       });
 
       // Reset
@@ -706,7 +706,7 @@ describe('PageEntityViewer', () => {
       const { unmount } = render(<PageEntityViewer />);
 
       await waitFor(() => {
-        expect(screen.getByText('Entity Viewer')).toBeInTheDocument();
+        expect(screen.getByText('Entity Model Viewer')).toBeInTheDocument();
       });
 
       // Should not throw error on unmount

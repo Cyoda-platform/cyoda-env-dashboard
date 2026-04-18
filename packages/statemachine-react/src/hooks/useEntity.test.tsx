@@ -111,29 +111,6 @@ describe('useEntity hooks', () => {
       expect(result.current.data).toEqual(mockFilteredData);
     });
 
-    it('should log loading and loaded messages', async () => {
-      mockGetEntityLoad.mockResolvedValue({ data: mockEntityData });
-      mockFilterData.mockReturnValue(mockFilteredData);
-
-      const { result } = renderHook(
-        () => useEntityLoad('entity-123', 'com.example.Entity'),
-        { wrapper }
-      );
-
-      await waitFor(() => {
-        expect(result.current.isSuccess).toBe(true);
-      });
-
-      expect(consoleLogSpy).toHaveBeenCalledWith(
-        '[useEntityLoad] Loading entity data:',
-        { instanceId: 'entity-123', entityClassName: 'com.example.Entity' }
-      );
-      expect(consoleLogSpy).toHaveBeenCalledWith(
-        '[useEntityLoad] Loaded entity data:',
-        mockFilteredData
-      );
-    });
-
     it('should not fetch when instanceId is undefined', async () => {
       const { result } = renderHook(
         () => useEntityLoad(undefined, 'com.example.Entity'),

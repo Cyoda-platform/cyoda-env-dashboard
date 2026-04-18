@@ -2,7 +2,6 @@ import { describe, it, expect, vi } from 'vitest'
 import { render, screen, waitFor } from '../../test-utils'
 import userEvent from '@testing-library/user-event'
 import { LoginAuth0Btn } from './LoginAuth0Btn'
-import { BrowserRouter } from 'react-router-dom'
 
 // Mock useNavigate
 const mockNavigate = vi.fn()
@@ -16,11 +15,7 @@ vi.mock('react-router-dom', async () => {
 
 describe('LoginAuth0Btn', () => {
   const renderLoginAuth0Btn = (props = {}) => {
-    return render(
-      <BrowserRouter>
-        <LoginAuth0Btn {...props} />
-      </BrowserRouter>
-    )
+    return render(<LoginAuth0Btn {...props} />)
   }
 
   it('renders button with default text', () => {

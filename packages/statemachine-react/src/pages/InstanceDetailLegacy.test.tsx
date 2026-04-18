@@ -80,6 +80,10 @@ vi.mock('../hooks/useStatemachine', () => ({
     ],
     isLoading: false,
   })),
+  useTransitions: vi.fn(() => ({ data: [], isLoading: false })),
+  useProcesses: vi.fn(() => ({ data: [], isLoading: false })),
+  useCriteriaForWorkflow: vi.fn(() => ({ data: [], isLoading: false })),
+  useStatesList: vi.fn(() => ({ data: [], isLoading: false })),
 }));
 
 // Mock ui-lib-react components
@@ -123,6 +127,9 @@ vi.mock('@cyoda/ui-lib-react', () => ({
     }),
     filterData: vi.fn((data: any[]) => data), // Just return data as-is for tests
   },
+  GraphicalStateMachinePanel: ({ workflow }: any) => (
+    <div data-testid="graphical-state-machine-panel">Workflow: {workflow?.name}</div>
+  ),
 }));
 
 const createWrapper = () => {
@@ -448,11 +455,8 @@ describe('InstanceDetailLegacy', () => {
       fireEvent.click(workflowTabs[0]);
 
       await waitFor(() => {
-        // Check for workflow information
-        const stateElements = screen.getAllByText(/State/i);
-        expect(stateElements.length).toBeGreaterThan(0);
-        const workflowIdElements = screen.getAllByText(/Workflow ID/i);
-        expect(workflowIdElements.length).toBeGreaterThan(0);
+        // Workflow tab now delegates to the graphical panel; verify it is rendered
+        expect(screen.getByTestId('graphical-state-machine-panel')).toBeInTheDocument();
       }, { timeout: 3000 });
     });
 
@@ -464,9 +468,8 @@ describe('InstanceDetailLegacy', () => {
       fireEvent.click(workflowTabs[0]);
 
       await waitFor(() => {
-        // Check for "Available Transitions" card
-        const transitionsElements = screen.getAllByText(/Available Transitions/i);
-        expect(transitionsElements.length).toBeGreaterThan(0);
+        // "Available Transitions" was replaced by the graphical panel; this test now asserts the panel renders
+        expect(screen.getByTestId('graphical-state-machine-panel')).toBeInTheDocument();
       }, { timeout: 3000 });
     });
   });

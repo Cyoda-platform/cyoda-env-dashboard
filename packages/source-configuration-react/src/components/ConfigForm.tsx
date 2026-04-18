@@ -149,7 +149,7 @@ const ConfigForm: React.FC = () => {
 
   const handleSubmit = () => {
     form.validateFields().then((values) => {
-      let config: any = {
+      const config: any = {
         id: editingConfig?.id,
         name: values.name,
         columnMappingConfigs: columnMappings,

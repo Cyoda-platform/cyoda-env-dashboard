@@ -9,46 +9,46 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter } from 'react-router-dom';
 import React from 'react';
 import { TasksGrid } from '../../components/TasksGrid';
-import { TasksFilter } from '../../components/TasksFilter';
+import { useTasksPerPage, useTasksState } from '../../hooks/useTasks';
 
-// Mock the hooks
+// Mock the hooks — the factory functions must return a STABLE reference per call. If we build
+// the return object inside `vi.fn(() => ({...}))`, each render of a consuming component gets a
+// new object, which causes `useEffect(..., [data])` hooks to refire every render and trigger an
+// infinite React render loop that hangs vitest (sync — test-timeout cannot interrupt it).
 vi.mock('../../hooks/useTasks', () => ({
-  useTasksPerPage: vi.fn(() => ({
-    data: {
-      content: [
-        {
-          id: 'task-1',
-          title: 'Test Task 1',
-          state: 'OPEN',
-          priority: 5,
-          assignee: 'user1@example.com',
-          message: 'Test message 1',
-          createdDatetime: '2024-01-01T10:00:00Z',
-        },
-        {
-          id: 'task-2',
-          title: 'Test Task 2',
-          state: 'CLOSED',
-          priority: 10,
-          assignee: 'user2@example.com',
-          message: 'Test message 2',
-          createdDatetime: '2024-01-02T10:00:00Z',
-        },
-      ],
-      totalElements: 2,
-      totalPages: 1,
-      number: 0,
-      size: 5,
-    },
-    isLoading: false,
-    refetch: vi.fn(),
-  })),
-  useTasksState: vi.fn(() => ({
-    isApplyRealData: false,
-    setIsApplyRealData: vi.fn(),
-    addReadedId: vi.fn(),
-  })),
+  useTasksPerPage: vi.fn(),
+  useTasksState: vi.fn(),
 }));
+
+const stableTasksData = {
+  content: [
+    {
+      id: 'task-1',
+      title: 'Test Task 1',
+      state: 'OPEN',
+      priority: 5,
+      assignee: 'user1@example.com',
+      message: 'Test message 1',
+      createdDatetime: '2024-01-01T10:00:00Z',
+    },
+    {
+      id: 'task-2',
+      title: 'Test Task 2',
+      state: 'CLOSED',
+      priority: 10,
+      assignee: 'user2@example.com',
+      message: 'Test message 2',
+      createdDatetime: '2024-01-02T10:00:00Z',
+    },
+  ],
+  totalElements: 2,
+  totalPages: 1,
+  number: 0,
+  size: 5,
+};
+const stableRefetch = vi.fn();
+const stableSetIsApplyRealData = vi.fn();
+const stableAddReadedId = vi.fn();
 
 // Mock HelperDictionary, HelperStorage, and HelperFormat
 vi.mock('@cyoda/ui-lib-react', () => {
@@ -120,6 +120,7 @@ vi.mock('@cyoda/ui-lib-react', () => {
       toLowerCase: (str: string) => str.toLowerCase(),
       date: (date: string) => new Date(date).toLocaleDateString(),
     },
+    ResizableTitle: (props: any) => <th {...props} />,
   };
 });
 
@@ -161,6 +162,16 @@ const createWrapper = () => {
 describe('Tasks Management Integration', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(useTasksPerPage).mockReturnValue({
+      data: stableTasksData,
+      isLoading: false,
+      refetch: stableRefetch,
+    } as any);
+    vi.mocked(useTasksState).mockReturnValue({
+      isApplyRealData: false,
+      setIsApplyRealData: stableSetIsApplyRealData,
+      addReadedId: stableAddReadedId,
+    } as any);
   });
 
   it('should display tasks list with all tasks', () => {

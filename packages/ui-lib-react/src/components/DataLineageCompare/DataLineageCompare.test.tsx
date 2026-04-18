@@ -26,6 +26,8 @@ const mockIsCyodaCloud = vi.fn()
 
 vi.mock('@cyoda/http-api-react', () => ({
   getCyodaCloudEntity: (...args: any[]) => mockGetCyodaCloudEntity(...args),
+  extractCyodaEntityData: (envelope: any) => envelope?.data ?? envelope,
+  extractCyodaEntityMeta: (envelope: any) => envelope?.meta,
   HelperFeatureFlags: {
     isCyodaCloud: () => mockIsCyodaCloud(),
   },

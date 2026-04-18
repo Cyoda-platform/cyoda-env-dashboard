@@ -239,10 +239,10 @@ export const useStatemachineStore = create<StatemachineState>()(
         if (!responseData.name && responseData.id) {
           responseData.name = responseData.id;
         }
-        if (!responseData.hasOwnProperty('description')) {
+        if (!Object.prototype.hasOwnProperty.call(responseData, 'description')) {
           responseData.description = '';
         }
-        if (responseData.condition && !responseData.condition.hasOwnProperty('conditions')) {
+        if (responseData.condition && !Object.prototype.hasOwnProperty.call(responseData.condition, 'conditions')) {
           responseData.condition = {
             '@bean': 'com.cyoda.core.conditions.GroupCondition',
             operator: 'AND',
