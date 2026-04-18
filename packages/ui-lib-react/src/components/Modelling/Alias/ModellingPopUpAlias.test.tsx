@@ -390,7 +390,7 @@ describe('ModellingPopUpAlias', () => {
       <ModellingPopUpAlias
         ref={ref}
         requestClass="com.test.Customer"
-        configDefinition={configWithAlias}
+        configDefinition={configWithAlias as any}
         onChange={mockOnChange}
         onDelete={mockOnDelete}
       />,

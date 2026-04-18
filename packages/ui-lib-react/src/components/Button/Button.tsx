@@ -3,7 +3,9 @@ import { Button as AntButton } from 'antd'
 import type { ButtonProps as AntButtonProps } from 'antd'
 import './Button.scss'
 
-export interface ButtonProps extends Omit<AntButtonProps, 'type'> {
+// Omit antd's `type`, `children`, and `variant` — we narrow each to our own shape.
+// antd v5 added its own `variant` ('outlined' | 'dashed' | …) that conflicts.
+export interface ButtonProps extends Omit<AntButtonProps, 'type' | 'children' | 'variant'> {
   variant?: 'primary' | 'secondary' | 'default' | 'text' | 'link'
   children: React.ReactNode
 }

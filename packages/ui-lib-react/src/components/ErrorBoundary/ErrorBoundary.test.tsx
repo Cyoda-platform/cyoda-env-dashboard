@@ -126,8 +126,7 @@ describe('ErrorBoundary', () => {
 
     it('should display error ID for support in production', () => {
       const originalEnv = import.meta.env.DEV;
-      // @ts-expect-error mutating read-only import.meta.env.DEV for test
-      import.meta.env.DEV = false;
+      import.meta.env.DEV =false;
 
       render(
         <ErrorBoundary>
@@ -137,8 +136,7 @@ describe('ErrorBoundary', () => {
 
       expect(screen.getByText(/error id:/i)).toBeInTheDocument();
 
-      // @ts-expect-error mutating read-only import.meta.env.DEV for test
-      import.meta.env.DEV = originalEnv;
+      import.meta.env.DEV =originalEnv;
     });
   });
 
@@ -222,8 +220,7 @@ describe('ErrorBoundary', () => {
   describe('Development Mode', () => {
     it('should show error details in development mode', () => {
       const originalEnv = import.meta.env.DEV;
-      // @ts-expect-error mutating read-only import.meta.env.DEV for test
-      import.meta.env.DEV = true;
+      import.meta.env.DEV =true;
 
       render(
         <ErrorBoundary>
@@ -234,8 +231,7 @@ describe('ErrorBoundary', () => {
       // Should show error details section
       expect(screen.getByText(/error details/i)).toBeInTheDocument();
 
-      // @ts-expect-error mutating read-only import.meta.env.DEV for test
-      import.meta.env.DEV = originalEnv;
+      import.meta.env.DEV =originalEnv;
     });
   });
 

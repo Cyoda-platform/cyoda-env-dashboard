@@ -103,11 +103,8 @@ const createTestQueryClient = () =>
         staleTime: 0,
       },
     },
-    logger: {
-      log: console.log,
-      warn: console.warn,
-      error: () => {},
-    },
+    // Note: React Query v5 removed the `logger` option. Errors are now surfaced
+    // via the query's own error state, not a shared logger.
   });
 
 describe('EntityDetailModal', () => {
@@ -175,7 +172,13 @@ describe('EntityDetailModal', () => {
     vi.clearAllMocks();
 
   // Mock API response for entity data
-  mockedGetEntityLoad.mockResolvedValue({ data: mockEntityData });
+  mockedGetEntityLoad.mockResolvedValue({
+    data: mockEntityData,
+    status: 200,
+    statusText: 'OK',
+    headers: {},
+    config: {} as any,
+  });
   });
 
   const renderWithQueryClient = (ui: React.ReactElement) => {

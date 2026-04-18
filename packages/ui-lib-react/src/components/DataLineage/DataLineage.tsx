@@ -75,7 +75,12 @@ export const DataLineage: React.FC<DataLineageProps> = ({
         <Col span={6}>
           <DataLineageFilter
             filter={filter}
-            onFilterChange={setFilter}
+            onChange={(next) =>
+              setFilter({
+                dateFrom: next.dateFrom ?? '',
+                dateTo: next.dateTo ?? '',
+              })
+            }
           />
         </Col>
         <Col span={18}>

@@ -4,6 +4,12 @@ import './StatusBadge.scss'
 
 export type StatusType = 'success' | 'error' | 'warning' | 'info' | 'default' | 'processing'
 
+type AntdBadgeStatus = 'success' | 'error' | 'warning' | 'default' | 'processing'
+
+// antd Badge has no 'info' status — treat it as 'processing' (blue pulse)
+const toAntdStatus = (s: StatusType): AntdBadgeStatus =>
+  s === 'info' ? 'processing' : s
+
 export interface StatusBadgeProps {
   status?: StatusType
   text?: string
@@ -29,7 +35,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
 }) => {
   if (text) {
     return (
-      <Badge status={status} text={text} className={`status-badge ${className}`} />
+      <Badge status={toAntdStatus(status)} text={text} className={`status-badge ${className}`} />
     )
   }
 
@@ -47,7 +53,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
   }
 
   return (
-    <Badge status={status} className={`status-badge ${className}`}>
+    <Badge status={toAntdStatus(status)} className={`status-badge ${className}`}>
       {children}
     </Badge>
   )

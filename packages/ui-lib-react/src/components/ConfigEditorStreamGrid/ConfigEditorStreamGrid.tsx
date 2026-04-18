@@ -5,6 +5,7 @@ import EntityDetailModal from '../EntityDetailModal/EntityDetailModal'
 import './ConfigEditorStreamGrid.scss'
 
 export interface ConfigDefinitionRequest {
+  '@bean'?: string
   sdDef?: {
     columns?: Array<{ name: string }>
     condition?: any

@@ -49,6 +49,12 @@ interface AliasPathLocal {
   mapperParameters?: MapperParameters | string;
 }
 
+// `mapperParameters` is serialized as a JSON string on the wire; UI code
+// always treats it as the parsed object. This narrows to let downstream
+// code destructure `.parameters` without re-checking.
+const asMapperParams = (m: MapperParameters | string | undefined): MapperParameters | undefined =>
+  typeof m === 'object' ? m : undefined;
+
 interface AliasForm {
   name: string;
   desc: string;
@@ -374,7 +380,7 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
 
     const handleEditParameter = (index: number, paramName: string) => {
       const path = aliasForm.aliasPaths[index];
-      const parameter = path.mapperParameters?.parameters[paramName];
+      const parameter = asMapperParams(path.mapperParameters)?.parameters[paramName];
 
       if (parameter) {
         setSelectedMapperRow({ index, paramName });
@@ -390,13 +396,14 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
           setAliasForm((prev) => ({
             ...prev,
             aliasPaths: prev.aliasPaths.map((path, i) => {
-              if (i === index && path.mapperParameters?.parameters) {
-                const newParams = { ...path.mapperParameters.parameters };
+              const mp = asMapperParams(path.mapperParameters);
+              if (i === index && mp?.parameters) {
+                const newParams = { ...mp.parameters };
                 delete newParams[paramName];
                 return {
                   ...path,
                   mapperParameters: {
-                    ...path.mapperParameters,
+                    ...mp,
                     parameters: newParams,
                   },
                 };
@@ -414,13 +421,14 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
       setAliasForm((prev) => ({
         ...prev,
         aliasPaths: prev.aliasPaths.map((path, i) => {
-          if (i === selectedMapperRow.index && path.mapperParameters) {
+          const mp = asMapperParams(path.mapperParameters);
+          if (i === selectedMapperRow.index && mp) {
             return {
               ...path,
               mapperParameters: {
-                ...path.mapperParameters,
+                ...mp,
                 parameters: {
-                  ...path.mapperParameters.parameters,
+                  ...mp.parameters,
                   [parameter.name]: parameter,
                 },
               },
@@ -437,8 +445,9 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
       setAliasForm((prev) => ({
         ...prev,
         aliasPaths: prev.aliasPaths.map((path, i) => {
-          if (i === selectedMapperRow.index && path.mapperParameters && parameter.oldName) {
-            const newParams = { ...path.mapperParameters.parameters };
+          const mp = asMapperParams(path.mapperParameters);
+          if (i === selectedMapperRow.index && mp && parameter.oldName) {
+            const newParams = { ...mp.parameters };
             delete newParams[parameter.oldName];
             const { oldName, ...newParam } = parameter;
             newParams[parameter.name] = newParam;
@@ -446,7 +455,7 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
             return {
               ...path,
               mapperParameters: {
-                ...path.mapperParameters,
+                ...mp,
                 parameters: newParams,
               },
             };
@@ -556,7 +565,7 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
               style={{ width: '100%' }}
               showSearch
               filterOption={(input, option) =>
-                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                String(option?.label ?? '').toLowerCase().includes(input.toLowerCase())
               }
               classNames={{ popup: { root: 'modelling-alias-new-dropdown' } }}
               styles={{ popup: { root: { minWidth: '400px' } } }}
@@ -581,7 +590,7 @@ export const ModellingPopUpAliasNew = forwardRef<ModellingPopUpAliasNewRef, Mode
             return <span style={{ color: '#999' }}>Not possible</span>;
           }
 
-          const parameters = record.mapperParameters?.parameters || {};
+          const parameters = asMapperParams(record.mapperParameters)?.parameters || {};
           const paramNames = Object.keys(parameters);
 
           return (
