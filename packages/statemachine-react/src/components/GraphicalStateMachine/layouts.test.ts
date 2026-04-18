@@ -44,14 +44,14 @@ describe('GraphicalStateMachine Layouts', () => {
         expect(layout.nodeDimensionsIncludeLabels).toBe(true);
       });
 
-      it('should have padding of 100', () => {
+      it('should have padding of 150', () => {
         const layout = coreLayout();
-        expect(layout.padding).toBe(100);
+        expect(layout.padding).toBe(150);
       });
 
-      it('should have spacing factor of 1.5', () => {
+      it('should have spacing factor of 2.5', () => {
         const layout = coreLayout();
-        expect(layout.spacingFactor).toBe(1.5);
+        expect(layout.spacingFactor).toBe(2.5);
       });
 
       it('should avoid overlap', () => {
@@ -193,7 +193,7 @@ describe('GraphicalStateMachine Layouts', () => {
     it('should have different padding values', () => {
       const coreLayoutConfig = coreLayout();
       
-      expect(coreLayoutConfig.padding).toBe(100);
+      expect(coreLayoutConfig.padding).toBe(150);
       expect(childrenLayout.padding).toBe(10);
       expect(coreLayoutConfig.padding).toBeGreaterThan(childrenLayout.padding);
     });

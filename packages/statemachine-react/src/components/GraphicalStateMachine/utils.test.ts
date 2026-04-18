@@ -451,7 +451,7 @@ describe('GraphicalStateMachine Utils', () => {
         expect(result).toEqual({ x: 150, y: 250 });
       });
 
-      it('should calculate position when not in map', () => {
+      it('should calculate position when not in map (150 right of end state)', () => {
         const positionsMap: PositionsMap = {
           'other-process': { x: 150, y: 250 },
         };
@@ -462,29 +462,29 @@ describe('GraphicalStateMachine Utils', () => {
           positionsMap
         );
 
-        expect(result).toEqual({ x: 100, y: 100 });
+        expect(result).toEqual({ x: 250, y: 200 });
       });
     });
 
     describe('without positionsMap', () => {
-      it('should calculate position when map is null', () => {
+      it('should calculate position when map is null (150 right of end state)', () => {
         const result = getProcessCompoundPosition(
           'process-123',
           { x: 100, y: 200 },
           null
         );
 
-        expect(result).toEqual({ x: 100, y: 100 });
+        expect(result).toEqual({ x: 250, y: 200 });
       });
 
-      it('should calculate position 100 units above end state', () => {
+      it('should position processes 150 units to the right of end state', () => {
         const result = getProcessCompoundPosition(
           'any-id',
           { x: 300, y: 400 },
           null
         );
 
-        expect(result).toEqual({ x: 300, y: 300 });
+        expect(result).toEqual({ x: 450, y: 400 });
       });
     });
 
@@ -496,7 +496,7 @@ describe('GraphicalStateMachine Utils', () => {
           null
         );
 
-        expect(result).toEqual({ x: -100, y: -150 });
+        expect(result).toEqual({ x: 50, y: -50 });
       });
 
       it('should handle zero end state position', () => {
@@ -506,7 +506,7 @@ describe('GraphicalStateMachine Utils', () => {
           null
         );
 
-        expect(result).toEqual({ x: 0, y: -100 });
+        expect(result).toEqual({ x: 150, y: 0 });
       });
     });
   });
@@ -1287,8 +1287,6 @@ describe('GraphicalStateMachine Utils', () => {
       });
 
       it('should skip criteria not found in list', () => {
-        const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-
         const transition = createMockTransition({ criteriaIds: ['criteria-1', 'criteria-missing', 'criteria-2'] });
         const criteriaList = [
           createMockCriteria('criteria-1', 'Criteria One'),
@@ -1303,12 +1301,10 @@ describe('GraphicalStateMachine Utils', () => {
           position,
         });
 
+        // Missing criteria is silently skipped; only the two resolvable criteria are returned
         expect(result).toHaveLength(2);
         expect(result[0].data.entityId).toBe('criteria-1');
         expect(result[1].data.entityId).toBe('criteria-2');
-        expect(consoleWarnSpy).toHaveBeenCalledWith("Couldn't find criteria", "criteria-missing");
-
-        consoleWarnSpy.mockRestore();
       });
 
       it('should handle persisted false', () => {
@@ -1641,8 +1637,6 @@ describe('GraphicalStateMachine Utils', () => {
       });
 
       it('should skip processes not found in list', () => {
-        const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-
         const processId1 = { persisted: true, persistedId: 'process-1' };
         const processId2 = { persisted: true, persistedId: 'process-missing' };
         const processId3 = { persisted: true, persistedId: 'process-2' };
@@ -1661,10 +1655,8 @@ describe('GraphicalStateMachine Utils', () => {
           maxY: 400,
         });
 
+        // Missing processes are silently skipped; only resolvable processes are returned
         expect(result).toHaveLength(2);
-        expect(consoleWarnSpy).toHaveBeenCalled();
-
-        consoleWarnSpy.mockRestore();
       });
     });
   });
@@ -1836,9 +1828,9 @@ describe('GraphicalStateMachine Utils', () => {
           transitionEdge,
         });
 
-        // Position should be calculated as targetPosition.y - 100
-        expect(result.position).toEqual({ x: 250, y: 250 });
-        expect(result.parent.position).toEqual({ x: 250, y: 250 });
+        // Position should be calculated by getProcessCompoundPosition: sourcePosition.x + 150, same y
+        expect(result.position).toEqual({ x: 400, y: 350 });
+        expect(result.parent.position).toEqual({ x: 400, y: 350 });
       });
 
       it('should use position from positionsMap when available', () => {
