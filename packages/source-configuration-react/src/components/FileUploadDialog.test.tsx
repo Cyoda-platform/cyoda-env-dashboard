@@ -125,7 +125,9 @@ describe('FileUploadDialog', () => {
   it('should display upload progress when available', () => {
     useSourceConfigStore.setState({
       isUploadDialogOpen: true,
-      uploadProgress: { '1': 50 },
+      uploadProgress: {
+        '1': { configId: '1', fileName: 'test.csv', progress: 50, status: 'uploading' },
+      },
     });
     renderWithProviders(<FileUploadDialog />);
     

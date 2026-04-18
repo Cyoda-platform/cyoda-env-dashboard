@@ -80,9 +80,9 @@ export const useMappersList = () => {
         // Return default mappers if API is not available (dev mode)
         console.warn('API not available, using default mappers');
         return [
-          { className: 'StringMapper', description: 'String mapper' },
-          { className: 'IntegerMapper', description: 'Integer mapper' },
-          { className: 'DateMapper', description: 'Date mapper' },
+          { className: 'StringMapper', displayName: 'String', description: 'String mapper' },
+          { className: 'IntegerMapper', displayName: 'Integer', description: 'Integer mapper' },
+          { className: 'DateMapper', displayName: 'Date', description: 'Date mapper' },
         ];
       }
     },
