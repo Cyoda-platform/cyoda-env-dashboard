@@ -37,6 +37,7 @@ interface CatalogItem {
 }
 
 interface TableRow {
+  key?: string;
   item: CatalogItem;
   isDisableSelect: boolean;
   name: string;
@@ -133,7 +134,7 @@ export const ModellingPopUpAlias = forwardRef<ModellingPopUpAliasRef, ModellingP
       },
     });
 
-    const tableData = useMemo(() => {
+    const tableData = useMemo<TableRow[]>(() => {
       return catalogOfAliases.map((item) => ({
         key: item.id || item.name,
         item,
@@ -141,11 +142,11 @@ export const ModellingPopUpAlias = forwardRef<ModellingPopUpAliasRef, ModellingP
           (selectedAlias) => selectedAlias.name === item.aliasDef.name
         ),
         name: item.aliasDef.name,
-        paths: item.aliasDef.aliasPaths?.value?.map((aliasPath: any) => ({
+        paths: (item.aliasDef.aliasPaths?.value ?? []).map((aliasPath) => ({
           path: aliasPath.colDef.fullPath,
           mapperClass: aliasPath.mapperClass?.split('.').pop() || '',
           mapperParameters: aliasPath.mapperParameters || undefined,
-        })) || [],
+        })),
       }));
     }, [catalogOfAliases, configDefinition.aliasDefs]);
 
@@ -321,7 +322,7 @@ export const ModellingPopUpAlias = forwardRef<ModellingPopUpAliasRef, ModellingP
 
           <Table
             rowSelection={rowSelection}
-            columns={columns as any}
+            columns={columns}
             dataSource={tableData}
             loading={isLoading}
             pagination={false}

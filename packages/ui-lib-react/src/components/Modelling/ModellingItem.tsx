@@ -357,21 +357,18 @@ export const ModellingItem: React.FC<ModellingItemProps> = ({
     }
   }, [getTypes, getChecked, fullPath]);
 
-  // Handle form change
+  // Handle form change.
+  //
+  // The Vue parent of this component stored a mutable `parts.value` array
+  // on the label and expected this callback to rewrite the last entry's
+  // `fullPath`. The React port replaced `label` with an immutable memoized
+  // `{ fullPath, colType }` pair, so the historic mutation no longer has
+  // a target. The handler still runs for side-effect symmetry (the child
+  // form fires onChange), but the path rewrite has no persistent effect —
+  // the canonical `fullPath` is rebuilt from `reportInfoRow` + `form[0]`
+  // wherever it's consumed.
   const handleFormChange = (form: string[]) => {
-    const columnPath = `${reportInfoRow.columnPath}.[${form[0]}]`;
-    let columnPathWithNameSpace = columnPath;
-    if (parentColDef?.fullPath) {
-      columnPathWithNameSpace = `${parentColDef.fullPath}.${columnPath}`;
-    }
-    // `label` is typed as `{ fullPath, colType }` but at runtime this handler
-    // is passed a richer shape from the parent form. Cast to avoid re-typing
-    // the memo; the runtime path is exercised by ModellingItem tests.
-    const parts = (label as any).parts;
-    const value = parts?.value?.[parts.value.length - 1];
-    if (value) {
-      value.fullPath = columnPathWithNameSpace;
-    }
+    void form;
   };
 
 
