@@ -38,8 +38,8 @@ export const TransactionsView: React.FC = () => {
   const firstPage = data?.firstPage || false;
   const lastPage = data?.lastPage || false;
 
-  const prevCursor = tableData.length > 0 ? (tableData[0] as any).createTime : '';
-  const nextCursor = tableData.length > 0 ? (tableData[tableData.length - 1] as any).createTime : '';
+  const prevCursor = tableData.length > 0 ? tableData[0].createTime : '';
+  const nextCursor = tableData.length > 0 ? tableData[tableData.length - 1].createTime : '';
 
   const handleFilterChange = (values: any) => {
     setFilterValues(values);
@@ -100,7 +100,7 @@ export const TransactionsView: React.FC = () => {
       <TransactionsViewFilter isLoading={isLoading} onChange={handleFilterChange} />
       <TransactionsViewTable
         isLoading={isLoading}
-        tableData={tableData as any}
+        tableData={tableData}
         pageSize={paginationForm.pageSize}
         firstPage={firstPage}
         lastPage={lastPage}

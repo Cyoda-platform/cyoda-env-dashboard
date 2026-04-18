@@ -26,8 +26,8 @@ export default function EventView() {
 
   const { data, refetch, isLoading } = useProcessingQueueErrorEventByEntity(queryParams);
 
-  const event = ((data as any)?.event) || {};
-  const isDone = ((data as any)?.done) || false;
+  const event = data?.event ?? {};
+  const isDone = data?.done ?? false;
 
   const formattedCoreData = useMemo(() => {
     if (!event.coreData) return '{}';

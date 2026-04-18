@@ -18,11 +18,8 @@ export const PmComponentsServiceProcessesView: React.FC = () => {
 
   useEffect(() => {
     if (data) {
-      // Hook returns ServiceProcess[] typing; runtime envelope exposes
-      // `ready` and `noneReady` partitions.
-      const d = data as any;
-      setReady(d.ready || []);
-      setNoneReady(d.noneReady || []);
+      setReady(data.ready ?? []);
+      setNoneReady(data.noneReady ?? []);
     }
   }, [data]);
 

@@ -45,8 +45,8 @@ export default function TransitionVersions() {
   const firstPage = data?.firstPage || false;
   const lastPage = data?.lastPage || false;
 
-  const prevCursor = rows.length > 0 ? (rows[0] as any).transactionId : '';
-  const nextCursor = rows.length > 0 ? (rows[rows.length - 1] as any).transactionId : '';
+  const prevCursor = rows.length > 0 ? rows[0].transactionId : '';
+  const nextCursor = rows.length > 0 ? rows[rows.length - 1].transactionId : '';
 
   const handleFilterChange = (values: any) => {
     setFilterParams(values);
@@ -118,8 +118,8 @@ export default function TransitionVersions() {
         </div>
       ) : (
         <>
-          <TransitionVersionsAggregated rows={rows as any} />
-          <TransitionVersionsSorted rows={rows as any} />
+          <TransitionVersionsAggregated rows={rows} />
+          <TransitionVersionsSorted rows={rows} />
           <Card variant="borderless">
             <Pagination
               firstPage={firstPage}

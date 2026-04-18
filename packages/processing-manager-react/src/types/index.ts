@@ -48,6 +48,46 @@ export interface Transaction {
   user?: string;
 }
 
+/**
+ * Row shape returned by `/platform-processing/transactions/view`.
+ * Carries timing fields the compact `Transaction` summary doesn't model.
+ */
+export interface TransactionRow {
+  id: string;
+  userName: string;
+  status: string;
+  createTime: string;
+  submitTime: string;
+  finishTime: string;
+  prepareTimeMillis: number;
+  processTimeMillis: number;
+  transactionSubmitNodeId: string;
+}
+
+/**
+ * Paged envelope used by transactions-view and entity-versions endpoints.
+ */
+export interface PagedResponse<TRow> {
+  rows: TRow[];
+  firstPage: boolean;
+  lastPage: boolean;
+}
+
+/**
+ * Row shape returned by `/platform-processing/transactions/view/entity-versions`.
+ * Different from `EntityVersion` (which is a summary) — this row carries the
+ * per-column change detail the transition-versions tables render.
+ */
+export interface VersionRow {
+  version: string;
+  transactionId: string;
+  actionType: string;
+  colType: string;
+  colTimeMillis: number;
+  // Row-level fields used by the aggregated/sorted detail views.
+  [key: string]: unknown;
+}
+
 export type TransactionStatus =
   | 'PENDING'
   | 'RUNNING'
@@ -109,6 +149,50 @@ export interface ProcessEventStats {
   byShard: Record<string, number>;
 }
 
+/**
+ * Response from `/platform-processing/processing-queue/show-event.json`.
+ * The `event` object is the serialized platform event; `done` reflects
+ * whether the event has been acknowledged / processed.
+ *
+ * The event body is schema-less metadata — fields are rendered directly
+ * into descriptions lists, so we allow arbitrary indexed access.
+ */
+export interface ProcessingQueueErrorEvent {
+  coreData?: unknown;
+  clientData?: unknown;
+  errorEventTimeUUID?: string;
+  entityId?: string;
+  entityClassName?: string;
+  queueName?: string;
+  shardId?: string;
+  status?: string;
+  createTime?: string;
+  doneTime?: string;
+  errorTime?: string;
+  timeUUID?: string;
+  coreDataClassName?: string;
+  clientDataClassName?: string;
+  [key: string]: unknown;
+}
+
+export interface ProcessingQueueErrorEventResponse {
+  event: ProcessingQueueErrorEvent;
+  done: boolean;
+}
+
+/**
+ * Response from `/platform-processing/processing-queue/entities-error-list.json`.
+ * Two shapes are observed in the wild depending on feature-flag state:
+ *   - Legacy: `{ data: string[] }` (list of entity-class names)
+ *   - Enveloped: `{ data: { elements: Record<string, unknown>[] } }`
+ *   - Bare array (oldest): `string[]`
+ * Consumers narrow at the callsite.
+ */
+export type ProcessingQueueEntitiesErrorListResponse =
+  | { data: string[] }
+  | { data: { elements: Array<Record<string, unknown>> } }
+  | string[];
+
 // ============================================================================
 // Service & Resource Types
 // ============================================================================
@@ -120,6 +204,16 @@ export interface ServiceProcess {
   uptime?: number;
   memory?: number;
   cpu?: number;
+}
+
+/**
+ * Response from `/platform-processing/service-processes/service-processes-stats.do`.
+ * The endpoint partitions processes into "ready" and "not ready" buckets;
+ * the UI renders them in two tables.
+ */
+export interface ServiceProcessesStatsResponse {
+  ready: ServiceProcess[];
+  noneReady: ServiceProcess[];
 }
 
 export interface Resource {
@@ -144,6 +238,30 @@ export interface ExecutionMonitor {
   status: string;
   lastUpdate: string;
   metrics?: Record<string, any>;
+}
+
+/**
+ * Row shape returned by `/platform-processing/exec-monitors-info-json.do`.
+ * The compact `ExecutionMonitor` summary doesn't carry the per-thread counts
+ * the monitor table renders; this is the on-wire shape.
+ */
+export interface ExecutionMonitorRow {
+  index: number;
+  name: string;
+  entityId: string;
+  entityClass: string;
+  expectedThreadsCount: number;
+  lastAccessTime: string;
+  processFinished: boolean;
+  processingThreadsCount: number;
+  finishedThreadsCount: number;
+}
+
+/**
+ * Response envelope from `/platform-processing/exec-monitors-info-json.do`.
+ */
+export interface ExecutionMonitorsInfoResponse {
+  data: ExecutionMonitorRow[];
 }
 
 // ============================================================================

@@ -24,7 +24,11 @@ export const ProcessingEventsEntitiesErrorListView: React.FC = () => {
     setIsLoading(true);
     try {
       const { data } = await refetch();
-      setTableData(((data as any)?.data?.elements) || []);
+      // ProcessingQueueEntitiesErrorListResponse is a union of 3 shapes;
+      // the view only handles the enveloped `{ data: { elements } }` form.
+      const envelope = data && !Array.isArray(data) ? data : null;
+      const inner = envelope && 'data' in envelope ? envelope.data : null;
+      setTableData(inner && !Array.isArray(inner) ? inner.elements : []);
     } catch (error) {
       // Handle error silently - user will see empty table
       console.error('Failed to fetch entities error list:', error);

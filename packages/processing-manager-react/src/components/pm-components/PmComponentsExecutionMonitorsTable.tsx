@@ -9,22 +9,11 @@ import type { ColumnsType } from 'antd/es/table';
 import type { ResizeCallbackData } from 'react-resizable';
 import { HelperStorage } from '@cyoda/http-api-react';
 import { ResizableTitle } from '@cyoda/ui-lib-react';
+import type { ExecutionMonitorRow } from '../../types';
 import './PmComponentsExecutionMonitorsTable.scss';
 
-interface ExecutionMonitor {
-  index: number;
-  name: string;
-  entityId: string;
-  entityClass: string;
-  expectedThreadsCount: number;
-  lastAccessTime: string;
-  processFinished: boolean;
-  processingThreadsCount: number;
-  finishedThreadsCount: number;
-}
-
 interface PmComponentsExecutionMonitorsTableProps {
-  tableData: ExecutionMonitor[];
+  tableData: ExecutionMonitorRow[];
 }
 
 export const PmComponentsExecutionMonitorsTable: React.FC<PmComponentsExecutionMonitorsTableProps> = ({
@@ -83,7 +72,7 @@ export const PmComponentsExecutionMonitorsTable: React.FC<PmComponentsExecutionM
     };
   }, []);
 
-  const columns: ColumnsType<ExecutionMonitor> = useMemo(() => [
+  const columns: ColumnsType<ExecutionMonitorRow> = useMemo(() => [
     {
       title: '№',
       dataIndex: 'index',

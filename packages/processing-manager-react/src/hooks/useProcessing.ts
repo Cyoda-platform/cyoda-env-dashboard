@@ -46,15 +46,22 @@ import type {
   ProcessingStats,
   ProcessEvent,
   Transaction,
+  TransactionRow,
+  VersionRow,
+  PagedResponse,
   TransactionMember,
   TransactionEvent,
   EntityVersion,
   EntityChange,
   EntityStateMachine,
   ServiceProcess,
+  ServiceProcessesStatsResponse,
   ExecutionQueue,
   ExecutionMonitor,
+  ExecutionMonitorsInfoResponse,
   ProcessingFilter,
+  ProcessingQueueErrorEventResponse,
+  ProcessingQueueEntitiesErrorListResponse,
   Pagination,
 } from '../types';
 import { useProcessingStore } from '../stores';
@@ -343,7 +350,7 @@ export function useTransactions(params?: any) {
   return useQuery({
     queryKey: processingKeys.transactions(params),
     queryFn: async () => {
-      const { data } = await axiosProcessing.get<{ rows: Transaction[]; firstPage: boolean; lastPage: boolean }>(
+      const { data } = await axiosProcessing.get<PagedResponse<TransactionRow>>(
         HelperUrl.getLinkToServer('/platform-processing/transactions/view'),
         { params }
       );
@@ -440,10 +447,10 @@ export function useTransactionsEntitiesList(params?: any, options?: any) {
  * Load entities list possible
  */
 export function useEntitiesListPossible(params?: any, options?: any) {
-  return useQuery({
+  return useQuery<string[] | { data: string[] }>({
     queryKey: [...processingKeys.all, 'entities-list-possible', params],
     queryFn: async () => {
-      const { data } = await axiosProcessing.get(
+      const { data } = await axiosProcessing.get<string[] | { data: string[] }>(
         HelperUrl.getLinkToServer('/platform-processing/transactions/entities-list/possible'),
         { params }
       );
@@ -500,7 +507,7 @@ export function useEntityVersions(params?: any) {
   return useQuery({
     queryKey: processingKeys.entityVersions(apiParams),
     queryFn: async () => {
-      const { data } = await axiosProcessing.get<{ rows: EntityVersion[]; firstPage: boolean; lastPage: boolean }>(
+      const { data } = await axiosProcessing.get<PagedResponse<VersionRow>>(
         HelperUrl.getLinkToServer('/platform-processing/transactions/view/entity-versions'),
         { params: apiParams }
       );
@@ -573,7 +580,7 @@ export function useServiceProcessesStats(params?: any) {
   return useQuery({
     queryKey: processingKeys.serviceProcesses(params),
     queryFn: async () => {
-      const { data } = await axiosProcessing.get<ServiceProcess[]>(
+      const { data } = await axiosProcessing.get<ServiceProcessesStatsResponse>(
         HelperUrl.getLinkToServer('/platform-processing/service-processes/service-processes-stats.do'),
         { params }
       );
@@ -593,7 +600,7 @@ export function useExecMonitorsInfo(params?: any) {
   return useQuery({
     queryKey: processingKeys.execMonitors(params),
     queryFn: async () => {
-      const { data } = await axiosProcessing.get<ExecutionMonitor[]>(
+      const { data } = await axiosProcessing.get<ExecutionMonitorsInfoResponse>(
         HelperUrl.getLinkToServer('/platform-processing/exec-monitors-info-json.do'),
         { params }
       );
@@ -665,10 +672,10 @@ export function useProcessingQueueEventsError(params: any, options?: any) {
  * Load processing queue entities error list
  */
 export function useProcessingQueueEntitiesErrorList(params?: any, options?: any) {
-  return useQuery({
+  return useQuery<ProcessingQueueEntitiesErrorListResponse>({
     queryKey: [...processingKeys.all, 'queue-entities-error-list', params],
     queryFn: async () => {
-      const { data } = await axiosProcessing.get(
+      const { data } = await axiosProcessing.get<ProcessingQueueEntitiesErrorListResponse>(
         HelperUrl.getLinkToServer('/platform-processing/processing-queue/entities-error-list.json'),
         { params }
       );
@@ -682,10 +689,10 @@ export function useProcessingQueueEntitiesErrorList(params?: any, options?: any)
  * Load processing queue error event by entity
  */
 export function useProcessingQueueErrorEventByEntity(params?: any, options?: any) {
-  return useQuery({
+  return useQuery<ProcessingQueueErrorEventResponse>({
     queryKey: [...processingKeys.all, 'queue-error-event-by-entity', params],
     queryFn: async () => {
-      const { data } = await axiosProcessing.get(
+      const { data } = await axiosProcessing.get<ProcessingQueueErrorEventResponse>(
         HelperUrl.getLinkToServer('/platform-processing/processing-queue/show-event.json'),
         { params }
       );
