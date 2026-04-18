@@ -11,7 +11,12 @@ import FilePondPluginFileValidateSize from 'filepond-plugin-file-validate-size';
 import 'filepond/dist/filepond.min.css';
 import { useSourceConfigStore } from '../stores/sourceConfigStore';
 import { useEncompassConfigs, useUploadFile } from '../hooks/useSourceConfig';
-import type { CsvUploadConfig, XmlUploadConfig } from '../types';
+import type { CsvUploadConfig, XmlUploadConfig, UploadConfig } from '../types';
+
+// JDBC configs have no `fileType` field. Narrow a UploadConfig to one that
+// does, so callers can safely read it.
+const hasFileType = (c: UploadConfig | undefined): c is CsvUploadConfig | XmlUploadConfig =>
+  !!c && 'fileType' in c;
 import './FileUploadDialog.css';
 
 const { Text } = Typography;
@@ -63,7 +68,7 @@ const FileUploadDialog: React.FC = () => {
   };
 
   const selectedConfig = Array.isArray(configs) ? configs.find((c) => c.id === selectedConfigId) : undefined;
-  const acceptedFileTypes = selectedConfig
+  const acceptedFileTypes = hasFileType(selectedConfig)
     ? selectedConfig.fileType === 'CSV'
       ? ['text/csv', '.csv']
       : ['text/xml', 'application/xml', '.xml']
@@ -91,7 +96,7 @@ const FileUploadDialog: React.FC = () => {
           >
             {Array.isArray(configs) && configs.map((config) => (
               <Select.Option key={config.id} value={config.id}>
-                {config.name} ({config.fileType})
+                {config.name}{hasFileType(config) ? ` (${config.fileType})` : ''}
               </Select.Option>
             ))}
           </Select>
@@ -108,7 +113,7 @@ const FileUploadDialog: React.FC = () => {
                 maxFiles={1}
                 acceptedFileTypes={acceptedFileTypes}
                 maxFileSize="50MB"
-                labelIdle={`Drag & Drop your ${selectedConfig.fileType} file or <span class="filepond--label-action">Browse</span>`}
+                labelIdle={`Drag & Drop your ${hasFileType(selectedConfig) ? selectedConfig.fileType : ''} file or <span class="filepond--label-action">Browse</span>`}
                 credits={false}
               />
             </div>
@@ -117,7 +122,7 @@ const FileUploadDialog: React.FC = () => {
 
         {uploadProgress[selectedConfigId || ''] && (
           <div className="upload-progress">
-            <Text>Upload Progress: {uploadProgress[selectedConfigId || '']}%</Text>
+            <Text>Upload Progress: {uploadProgress[selectedConfigId || '']?.progress ?? 0}%</Text>
           </div>
         )}
       </Space>
