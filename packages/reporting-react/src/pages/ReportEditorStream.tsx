@@ -160,7 +160,14 @@ const updateMutation = useMutation({
         streamDataDef.rangeColDefs = [];
       }
 
-      setConfigDefinition(streamDataDef as any);
+      // `streamDataDef` is the union of two on-wire shapes (the old API
+      // returns the raw StreamDataDef at top level, the new API wraps it
+      // under `.streamDataDef`). The union's `AliasDef[]` in @cyoda/http-api-react
+      // doesn't structurally overlap with reporting-react's local `AliasDef[]`
+      // — the packages have diverged on `aliasPaths.value`. Cast via
+      // `unknown` to acknowledge the boundary; the runtime shape is
+      // compatible with everything ReportEditorStream reads.
+      setConfigDefinition(streamDataDef as unknown as StreamReportDefinition);
     }
   }, [reportData]);
 

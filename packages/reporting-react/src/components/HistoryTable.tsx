@@ -241,9 +241,9 @@ const HistoryTable: React.FC<HistoryTableProps> = ({
     }
 
     let data = reportHistoryData.map((report) => {
-      // Safely handle configName. The backend sometimes returns `name` instead
-      // of `configName` — not in the typed shape, so treat as loosely-typed.
-      const configName = report.configName || (report as any).name || 'Unknown';
+      // The backend sometimes returns `name` instead of `configName` on
+      // older deployments; both are declared optional on ReportHistoryData.
+      const configName = report.configName || report.name || 'Unknown';
       const reportName: string[] = configName.split('-');
       const configShortName: string =
         reportName.length < 3
@@ -259,9 +259,9 @@ const HistoryTable: React.FC<HistoryTableProps> = ({
       const createTimeStr = createTime.format('YYYY.MM.DD HH:mm:ss');
       const executionStr = duration ? formatDuration(duration) || 'Not yet run' : 'Not yet run';
 
-      // Safely handle user. `userId` is a fallback field when the embedded
-      // `user` object is not present (tolerated from the API, not in the type).
-      const username = report.user?.username || (report as any).userId || 'Unknown';
+      // `userId` is the fallback identifier when the embedded `user` object
+      // is missing (e.g. the principal can't be resolved in the directory).
+      const username = report.user?.username || report.userId || 'Unknown';
 
       // Find entity type info
       const reportType = report.type || '';
@@ -631,7 +631,7 @@ const HistoryTable: React.FC<HistoryTableProps> = ({
   return (
     <div className="history-table">
       <Table
-        columns={resizableColumns as any}
+        columns={resizableColumns}
         dataSource={tableData}
         loading={isLoading}
         rowKey="id"
