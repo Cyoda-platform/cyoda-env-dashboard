@@ -50,8 +50,8 @@ vi.mock('@cyoda/http-api-react', () => {
     axiosAI: mockAxiosInstance,
     getEntityLoad: vi.fn(),
     getCyodaCloudEntity: vi.fn(),
-    extractCyodaEntityData: vi.fn((envelope: any) => envelope?.data ?? envelope),
-    extractCyodaEntityMeta: vi.fn((envelope: any) => envelope?.meta ?? {}),
+    extractCyodaEntityData: vi.fn((envelope: any) => envelope?.data ?? envelope ?? null),
+    extractCyodaEntityMeta: vi.fn((envelope: any) => (envelope ? envelope.meta : undefined)),
     HelperFeatureFlags: { isCyodaCloud: () => false },
   };
 });

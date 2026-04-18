@@ -40,6 +40,9 @@ vi.mock('@cyoda/http-api-react', () => {
     getReportingFetchTypes: vi.fn(),
     getHistory: vi.fn(),
     HelperFeatureFlags: { isCyodaCloud: () => false, isWorkflowEnabled: () => true, workflowEnabledTypes: () => [] },
+    extractCyodaEntityData: vi.fn((envelope: any) => envelope?.data ?? envelope),
+    extractCyodaEntityMeta: vi.fn((envelope: any) => envelope?.meta ?? {}),
+    getCyodaCloudEntity: vi.fn(),
   };
 });
 
