@@ -28,10 +28,16 @@ export const ProcessingEventsEntitiesErrorListViewFilter: React.FC<
   });
 
   useEffect(() => {
-    // Handle both formats: array directly or { data: array }
+    // Handle the three observed response shapes of
+    // ProcessingQueueEntitiesErrorListResponse — only the string-list forms
+    // apply to this filter (legacy bare array and `{ data: string[] }`).
     if (data) {
-      const entities = Array.isArray(data) ? data : (data as any).data;
-      if (entities && Array.isArray(entities)) {
+      const entities = Array.isArray(data)
+        ? data
+        : 'data' in data && Array.isArray(data.data)
+          ? data.data
+          : null;
+      if (entities) {
         setEntityClassOptions([...entities, 'ALL']);
         onChange(form);
       }

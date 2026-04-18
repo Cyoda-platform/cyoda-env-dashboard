@@ -13,19 +13,8 @@ import type { ResizeCallbackData } from 'react-resizable';
 import { HelperStorage } from '@cyoda/http-api-react';
 import { ResizableTitle } from '@cyoda/ui-lib-react';
 import { TransactionDetailModal } from './TransactionDetailModal';
+import type { TransactionRow } from '../../types';
 import './TransactionsViewTable.scss';
-
-interface TransactionRow {
-  id: string;
-  userName: string;
-  status: string;
-  createTime: string;
-  submitTime: string;
-  finishTime: string;
-  prepareTimeMillis: number;
-  processTimeMillis: number;
-  transactionSubmitNodeId: string;
-}
 
 interface TransactionsViewTableProps {
   tableData: TransactionRow[];

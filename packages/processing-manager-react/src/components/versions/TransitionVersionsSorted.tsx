@@ -11,15 +11,8 @@ import type { ResizeCallbackData } from 'react-resizable';
 import { HelperStorage } from '@cyoda/http-api-react';
 import { ResizableTitle } from '@cyoda/ui-lib-react';
 import dayjs from 'dayjs';
+import type { VersionRow } from '../../types';
 import './TransitionVersionsSorted.scss';
-
-interface VersionRow {
-  version: string;
-  transactionId: string;
-  actionType: string;
-  colType: string;
-  colTimeMillis: number;
-}
 
 interface TransitionVersionsSortedProps {
   rows: VersionRow[];
