@@ -111,7 +111,9 @@ const createWrapper = () => {
 };
 
 describe('TasksGrid', () => {
-  const mockTasks: Task[] = [
+  // Partial fixtures — the component only reads the fields we set. Cast at
+  // the boundary rather than populate every required `Task` field.
+  const mockTasks = [
     {
       id: 'task-1',
       title: 'Test Task 1',
@@ -142,7 +144,7 @@ describe('TasksGrid', () => {
   ];
 
   const mockData = {
-    content: mockTasks,
+    content: mockTasks as unknown as Task[],
     totalElements: 3,
     totalPages: 1,
     number: 0,

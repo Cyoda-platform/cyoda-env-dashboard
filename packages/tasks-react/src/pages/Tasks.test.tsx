@@ -40,8 +40,9 @@ describe('Tasks Page', () => {
       isApplyRealData: false,
       setIsApplyRealData: mockSetIsApplyRealData,
       readedIds: [],
+      tasks: [],
+      setTasks: vi.fn(),
       addReadedId: vi.fn(),
-      removeReadedId: vi.fn(),
     });
   });
 
@@ -75,9 +76,10 @@ describe('Tasks Page', () => {
         isApplyRealData: true,
         setIsApplyRealData: mockSetIsApplyRealData,
         readedIds: [],
+      tasks: [],
+      setTasks: vi.fn(),
         addReadedId: vi.fn(),
-        removeReadedId: vi.fn(),
-      });
+        });
 
       render(<Tasks />);
 
@@ -96,9 +98,10 @@ describe('Tasks Page', () => {
         isApplyRealData: true,
         setIsApplyRealData: mockSetIsApplyRealData,
         readedIds: [],
+      tasks: [],
+      setTasks: vi.fn(),
         addReadedId: vi.fn(),
-        removeReadedId: vi.fn(),
-      });
+        });
 
       const { container } = render(<Tasks />);
 
@@ -124,9 +127,10 @@ describe('Tasks Page', () => {
         isApplyRealData: true,
         setIsApplyRealData: mockSetIsApplyRealData,
         readedIds: [],
+      tasks: [],
+      setTasks: vi.fn(),
         addReadedId: vi.fn(),
-        removeReadedId: vi.fn(),
-      });
+        });
 
       render(<Tasks />);
 
@@ -147,9 +151,10 @@ describe('Tasks Page', () => {
         isApplyRealData: true,
         setIsApplyRealData: mockSetIsApplyRealData,
         readedIds: [],
+      tasks: [],
+      setTasks: vi.fn(),
         addReadedId: vi.fn(),
-        removeReadedId: vi.fn(),
-      });
+        });
 
       render(<Tasks />);
 
@@ -220,9 +225,10 @@ describe('Tasks Page', () => {
         isApplyRealData: true,
         setIsApplyRealData: mockSetIsApplyRealData,
         readedIds: [],
+      tasks: [],
+      setTasks: vi.fn(),
         addReadedId: vi.fn(),
-        removeReadedId: vi.fn(),
-      });
+        });
 
       const { container } = render(<Tasks />);
 
