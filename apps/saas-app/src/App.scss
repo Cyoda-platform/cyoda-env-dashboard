@@ -2323,37 +2323,77 @@ div[style*="background-color:#000"] {
 // ============================================
 // MONACO EDITOR - CYODA DARK THEME
 // ============================================
-.monaco-editor,
-.monaco-editor-background,
-.monaco-editor .margin {
-  background-color: #1E2A3A !important;
+[data-theme='dark'] {
+  .monaco-editor,
+  .monaco-editor-background,
+  .monaco-editor .margin {
+    background-color: #1E2A3A !important;
+  }
+
+  .monaco-editor .view-lines {
+    color: #E0E0E0 !important;
+    font-family: 'Fira Code', 'JetBrains Mono', 'Cascadia Code', 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'Courier New', monospace !important;
+  }
+
+  .monaco-editor .line-numbers {
+    color: #6B7280 !important;
+  }
+
+  .monaco-editor .line-numbers.active-line-number {
+    color: #00D4AA !important;
+  }
+
+  .monaco-editor .current-line {
+    border-color: rgba(0, 212, 170, 0.2) !important;
+    background-color: #243142 !important;
+  }
+
+  .monaco-editor .selected-text {
+    background-color: rgba(0, 212, 170, 0.2) !important;
+  }
+
+  .monaco-editor .cursor {
+    background-color: #00D4AA !important;
+    color: #1E2A3A !important;
+  }
 }
 
-.monaco-editor .view-lines {
-  color: #E0E0E0 !important;
-  font-family: 'Fira Code', 'JetBrains Mono', 'Cascadia Code', 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'Courier New', monospace !important;
-}
+// ============================================
+// MONACO EDITOR - CYODA LIGHT THEME
+// ============================================
+[data-theme='light'] {
+  .monaco-editor,
+  .monaco-editor-background,
+  .monaco-editor .margin {
+    background-color: #FFFFFF !important;
+  }
 
-.monaco-editor .line-numbers {
-  color: #6B7280 !important;
-}
+  .monaco-editor .view-lines {
+    color: #111827 !important;
+    font-family: 'Fira Code', 'JetBrains Mono', 'Cascadia Code', 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'Courier New', monospace !important;
+  }
 
-.monaco-editor .line-numbers.active-line-number {
-  color: #00D4AA !important;
-}
+  .monaco-editor .line-numbers {
+    color: #9CA3AF !important;
+  }
 
-.monaco-editor .current-line {
-  border-color: rgba(0, 212, 170, 0.2) !important;
-  background-color: #243142 !important;
-}
+  .monaco-editor .line-numbers.active-line-number {
+    color: #00B894 !important;
+  }
 
-.monaco-editor .selected-text {
-  background-color: rgba(0, 212, 170, 0.2) !important;
-}
+  .monaco-editor .current-line {
+    border-color: rgba(0, 184, 148, 0.2) !important;
+    background-color: #F3F4F6 !important;
+  }
 
-.monaco-editor .cursor {
-  background-color: #00D4AA !important;
-  color: #1E2A3A !important;
+  .monaco-editor .selected-text {
+    background-color: rgba(0, 184, 148, 0.2) !important;
+  }
+
+  .monaco-editor .cursor {
+    background-color: #00B894 !important;
+    color: #FFFFFF !important;
+  }
 }
 
 // ============================================
