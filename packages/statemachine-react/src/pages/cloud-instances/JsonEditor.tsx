@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Editor, { type OnMount } from '@monaco-editor/react';
 
 export interface JsonEditorProps {
@@ -24,10 +24,17 @@ const getCurrentTheme = (): 'vs-dark' | 'light' =>
 export const JsonEditor: React.FC<JsonEditorProps> = ({ value, onChange, height = 480, resetKey }) => {
   const initial = useMemo(() => stringify(value), [resetKey]); // eslint-disable-line react-hooks/exhaustive-deps
   const editorRef = useRef<Parameters<OnMount>[0] | null>(null);
+  const [theme, setTheme] = useState<'vs-dark' | 'light'>(getCurrentTheme);
 
   useEffect(() => {
     if (editorRef.current) editorRef.current.setValue(stringify(value));
   }, [resetKey]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => setTheme(getCurrentTheme()));
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    return () => observer.disconnect();
+  }, []);
 
   const handleMount: OnMount = (editor, monaco) => {
     editorRef.current = editor;
@@ -56,7 +63,7 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({ value, onChange, height 
       height={height}
       defaultLanguage="json"
       defaultValue={initial}
-      theme={getCurrentTheme()}
+      theme={theme}
       onMount={handleMount}
       onChange={handleChange}
       options={{
