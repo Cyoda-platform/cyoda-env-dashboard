@@ -1,193 +1,187 @@
-# 📝 Environment Files Guide
+# Environment Files Guide
 
-## 🎯 Quick Answer: Which .env file should I use?
+## Quick answer — which `.env` file do I use?
 
-### For SaaS App Development (99% of cases):
+### SaaS app development (the common case)
 
-**Use:** `apps/saas-app/.env` (already configured, no changes needed!)
+Edit **`apps/saas-app/.env`**. After cloning, copy the template once:
 
 ```bash
-# Just run the app - it works out of the box!
-npm run dev
+cp apps/saas-app/.env.template apps/saas-app/.env
+# edit values as needed, then:
+pnpm dev
 ```
 
-### For Standalone Package Development (rare):
+The app starts on **http://localhost:5173** (see
+[`apps/saas-app/vite.config.ts`](./apps/saas-app/vite.config.ts) and
+[PORTS.md](./PORTS.md)). `VITE_APP_BASE_URL` is required — Vite will refuse
+to start without it.
 
-**Use:** `.env.development.local.example` → copy to `.env.development.local`
+### Standalone package development (rare)
+
+Copy the root `.env.template` into the package you're working on as
+`.env.development.local`:
+
+```bash
+cp .env.template packages/<package-name>/.env.development.local
+# edit for your local backend, then:
+pnpm --filter @cyoda/<package-name> dev
+```
 
 ---
 
-## 📂 Environment Files Structure
+## Env files in this repo
 
 ```
-cyoda-saas-platform/
-│
-├── .env.template                          # ⚠️  For standalone packages only
-├── .env.development.local.example         # ⚠️  For standalone packages only
+cyoda-env-dashboard/
+├── .env.template                           # Template — standalone package dev
+├── .env.template.development.local         # Older template variant (kept for reference)
 │
 ├── apps/saas-app/
-│   ├── .env                              # ✅ MAIN CONFIG - Used by SaaS app
-│   ├── .env.example                      # Template for SaaS app
-│   └── .env.development.local            # ✅ Local overrides (feature flags)
+│   ├── .env.template                       # Template for the SaaS app
+│   ├── .env                                # Main config (gitignored)
+│   └── .env.development.local              # Local overrides (gitignored)
 │
 └── packages/
-    ├── cobi-react/
-    │   ├── .env.template                 # For standalone mode
-    │   └── .env.development.local        # For standalone mode
-    ├── tableau-react/
-    │   └── .env.development              # For standalone mode
-    └── ... (other packages)
+    ├── reporting-react/, statemachine-react/, tasks-react/, ...
+    │   └── .env.development.local          # Standalone package config (gitignored)
 ```
+
+> `.gitignore` rule: `.env*` is ignored except for `.env.template`. This means
+> `apps/saas-app/.env.template` (and every nested `.env.template`) is **not**
+> whitelisted by the root rule alone — review `.gitignore` before relying on it.
 
 ---
 
-## 🚀 SaaS App Configuration
+## SaaS app configuration
 
-### Files Used by SaaS App:
+### `apps/saas-app/.env` (main config)
 
-#### 1. `apps/saas-app/.env` (Main Configuration)
+- **Status:** gitignored; create it by copying `apps/saas-app/.env.template`.
+- **Purpose:** main configuration for the SaaS app. Vite's dev-server proxy
+  uses `VITE_APP_BASE_URL` to route `/api`, `/platform-api`,
+  `/platform-processing`, `/platform-common`, and `/auth` to the backend
+  (see `apps/saas-app/vite.config.ts`).
 
-**Status:** ✅ Already configured and committed to git
+Typical content:
 
-**Content:**
 ```bash
 VITE_APP_API_BASE=/api
 VITE_APP_API_BASE_PROCESSING=
 VITE_APP_BASE_URL=https://cyoda-develop.kube3.cyoda.org/
-VITE_APP_AUTH0_DOMAIN=dev-ex6r-yqc.us.auth0.com
-VITE_APP_AUTH0_CLIENT_ID=2kuC9TpwD2lxTYbzFO3GLpx4EHO6362A
-# ... other settings
+VITE_APP_AUTH0_DOMAIN=auth.cyoda.net
+VITE_APP_AUTH0_CLIENT_ID=<your-client-id>
+VITE_APP_AUTH0_AUDIENCE=https://cloud.cyoda.com/api
+# ...
 ```
 
-**Purpose:** Main configuration for SaaS app. Works with Vite proxy to connect to Cyoda backend.
+See [`apps/saas-app/README.md`](./apps/saas-app/README.md) for the full
+variable reference.
 
-**Action Required:** ❌ None - works out of the box!
+### `apps/saas-app/.env.development.local` (optional overrides)
 
-#### 2. `apps/saas-app/.env.development.local` (Optional Overrides)
+- **Status:** gitignored; local only.
+- **Purpose:** per-developer overrides and feature flags that should not be
+  checked in.
 
-**Status:** ✅ In .gitignore (local only)
+Example:
 
-**Content:**
 ```bash
 VITE_FEATURE_FLAG_USE_MODELS_INFO=true
+VITE_FEATURE_FLAG_IS_CYODA_GO=false
 ```
 
-**Purpose:** Local feature flags and developer-specific overrides.
+---
 
-**Action Required:** ❌ None - optional file for local customization
+## Files NOT used by the SaaS app
+
+### `.env.template` (root)
+
+Template for **standalone package development only**. The SaaS app ignores it
+— Vite loads env files from `apps/saas-app/` when running `pnpm dev`.
+
+### `.env.template.development.local` (root)
+
+Older, equivalent template kept for historical reference. Prefer
+`.env.template`.
 
 ---
 
-## ⚠️ Files NOT Used by SaaS App
+## How Vite loads `.env` files
 
-### 1. `.env.template` (Root Directory)
+### Running `pnpm dev` (SaaS app)
 
-**Status:** ⚠️ Template only - NOT used by SaaS app
+Vite reads from **`apps/saas-app/`** in this order (later files override
+earlier ones):
 
-**Purpose:** Template for standalone package development
+1. `.env`
+2. `.env.development`
+3. `.env.local`
+4. `.env.development.local`
 
-**When to use:** Only when developing individual packages in isolation
+Vite does **not** load:
 
-**Example:**
-```bash
-# Developing tableau-react package standalone
-cd packages/tableau-react
-cp ../../.env.template .env.development.local
-npm run dev  # Runs on port 3002
-```
+- `.env.template` or `.env.template.development.local` at the repo root
+- Any `.env*` files under `packages/*`
 
-### 2. `.env.development.local.example` (Root Directory)
+### Running a package standalone
 
-**Status:** ⚠️ Example only - NOT used by SaaS app
-
-**Purpose:** Example configuration for standalone package development
-
-**When to use:** Same as `.env.template` - only for standalone packages
+Vite reads from the package directory, e.g.
+`packages/reporting-react/.env.development.local` when running
+`pnpm --filter @cyoda/reporting-react dev`.
 
 ---
 
-## 🔍 How Vite Loads .env Files
+## Common scenarios
 
-### For SaaS App (`npm run dev`):
-
-Vite looks for .env files in **`apps/saas-app/`** directory in this order:
-
-1. `.env.development.local` (highest priority - local overrides)
-2. `.env.local`
-3. `.env.development`
-4. `.env` (base configuration)
-
-**❌ Vite does NOT load:**
-- `.env.template` (root)
-- `.env.development.local.example` (root)
-- Any .env files from `packages/*`
-
-### For Standalone Package (`npm run dev -w packages/tableau-react`):
-
-Vite looks for .env files in **`packages/tableau-react/`** directory.
-
----
-
-## 🎯 Common Scenarios
-
-### Scenario 1: I'm a new developer, how do I start?
+### 1. First-time setup
 
 ```bash
-# 1. Install dependencies
 pnpm install
-
-# 2. Run the app (no .env setup needed!)
-npm run dev
-
-# 3. Open browser
-# http://localhost:3000
+cp apps/saas-app/.env.template apps/saas-app/.env
+# edit VITE_APP_BASE_URL and Auth0 values
+pnpm dev
+# open http://localhost:5173
 ```
 
-**No .env file creation needed!** Everything is already configured.
+### 2. Change the backend endpoint
 
-### Scenario 2: I want to change API endpoint
-
-**Edit:** `apps/saas-app/.env`
+Edit `apps/saas-app/.env`:
 
 ```bash
-# Change from remote to local backend
-VITE_APP_API_BASE=http://localhost:8082/api
+# remote (via Vite proxy)
+VITE_APP_BASE_URL=https://cyoda-develop.kube3.cyoda.org/
+VITE_APP_API_BASE=/api
+
+# or local
+VITE_APP_BASE_URL=http://localhost:8082/
+VITE_APP_API_BASE=/api
 ```
 
-Then restart dev server:
-```bash
-npm run dev
-```
+Restart the dev server.
 
-### Scenario 3: I want to enable a feature flag
+### 3. Enable a feature flag
 
-**Create/Edit:** `apps/saas-app/.env.development.local`
+Edit `apps/saas-app/.env.development.local` (gitignored):
 
 ```bash
 VITE_FEATURE_FLAG_CHATBOT=true
 VITE_FEATURE_FLAG_USE_MODELS_INFO=true
 ```
 
-This file is in `.gitignore`, so it won't be committed.
-
-### Scenario 4: I'm developing a package standalone
+### 4. Standalone package development
 
 ```bash
-# 1. Copy template
-cp .env.development.local.example .env.development.local
-
-# 2. Edit for your local backend
-nano .env.development.local
-
-# 3. Run package standalone
-npm run dev -w packages/tableau-react
+cp .env.template packages/reporting-react/.env.development.local
+# edit for your local backend
+pnpm --filter @cyoda/reporting-react dev
+# port for each package: see PORTS.md
 ```
 
-### Scenario 5: I'm running against a Cyoda-Go backend
+### 5. Running against a Cyoda-Go backend
 
-Cyoda-Go is a digital twin of Cyoda Cloud that does **not** expose the legacy `/platform-*` endpoints. To enable cyoda-go mode in the SaaS app:
-
-**Edit:** `apps/saas-app/.env.development.local`
+Cyoda-Go is a digital twin of Cyoda Cloud that does **not** expose the legacy
+`/platform-*` endpoints. In `apps/saas-app/.env.development.local`:
 
 ```bash
 VITE_FEATURE_FLAG_IS_CYODA_GO=true
@@ -195,92 +189,76 @@ VITE_FEATURE_FLAG_IS_CYODA_GO=true
 
 When this flag is set:
 
-- `VITE_FEATURE_FLAG_IS_CYODA_CLOUD` is implicitly `true` — you do **not** need to set both. The `HelperFeatureFlags.isCyodaCloud()` helper enforces the implication in code, so a misconfigured `.env` with only `IS_CYODA_GO=true` still produces correct cloud behavior.
-- The menu shows only **Trino**, **Lifecycle** (Workflows + Instances), and **Entity Viewer**. Reporting, Tasks, and Processing are hidden because their endpoints do not exist on cyoda-go.
+- `VITE_FEATURE_FLAG_IS_CYODA_CLOUD` is implicitly `true`.
+  `HelperFeatureFlags.isCyodaCloud()` enforces this in code, so a config with
+  only `IS_CYODA_GO=true` still behaves correctly.
+- The menu shows only **Trino**, **Lifecycle** (Workflows + Instances), and
+  **Entity Viewer**. Reporting, Tasks, and Processing are hidden because
+  their endpoints don't exist on cyoda-go.
 - `VITE_APP_BASE_URL` should point at your cyoda-go instance.
 
-> ⚠️ **Instances is not yet ported to cyoda-go.** The Lifecycle → Instances page is visible in the menu but still calls the legacy `/platform-*` endpoints under the hood and will fail against a cyoda-go backend. The cloud-mode port lands in a later sub-branch of the cyoda-go support build. Workflows and Entity Viewer work as expected.
+> See [`docs/feature-matrix.md`](./docs/feature-matrix.md) for the full
+> panel-by-mode matrix and the current known gaps (notably: the
+> Business/Technical entity-type toggle has no meaningful "Technical" option
+> in Go mode, since legacy `/platform-*` endpoints aren't reachable).
 
 ---
 
-## 📊 Configuration Comparison
+## Summary
 
-| File | Used By | Purpose | In Git? |
-|------|---------|---------|---------|
-| `apps/saas-app/.env` | SaaS App | Main config | ✅ Yes |
-| `apps/saas-app/.env.example` | - | Template | ✅ Yes |
-| `apps/saas-app/.env.development.local` | SaaS App | Local overrides | ❌ No (.gitignore) |
-| `.env.template` | Standalone packages | Template | ✅ Yes |
-| `.env.development.local.example` | Standalone packages | Example | ✅ Yes |
-| `packages/*/.env.*` | Standalone packages | Package config | ⚠️ Mixed |
+| File                                       | Used by              | Purpose           | In git? |
+|--------------------------------------------|----------------------|-------------------|---------|
+| `apps/saas-app/.env`                       | SaaS app             | Main config       | No (.gitignore) |
+| `apps/saas-app/.env.template`              | —                    | Template          | No¹     |
+| `apps/saas-app/.env.development.local`     | SaaS app             | Local overrides   | No (.gitignore) |
+| `.env.template`                            | Standalone packages  | Template          | Yes (whitelisted) |
+| `.env.template.development.local`          | Standalone packages  | Older template    | No¹     |
+| `packages/*/.env*.local`                   | Standalone packages  | Package config    | No (.gitignore) |
 
----
-
-## 🐛 Troubleshooting
-
-### Problem: My .env changes are not applied
-
-**Solution:**
-1. Make sure you're editing `apps/saas-app/.env` (not root `.env.template`)
-2. Restart dev server: `npm run dev`
-3. Clear browser cache
-
-### Problem: I see "API connection failed"
-
-**Check:**
-1. `apps/saas-app/.env` has correct values
-2. Vite proxy is configured in `apps/saas-app/vite.config.ts`
-3. Backend is accessible: `curl https://cyoda-develop.kube3.cyoda.org/api`
-
-### Problem: I accidentally edited root `.env.template`
-
-**Solution:**
-```bash
-# Restore from git
-git checkout .env.template
-
-# Edit the correct file instead
-nano apps/saas-app/.env
-```
+¹ `.gitignore` only whitelists the root `.env.template`; the nested and
+alternate-named templates are ignored by default.
 
 ---
 
-## ✅ Best Practices
+## Troubleshooting
 
-### DO:
+**My .env changes aren't applied.**
+Make sure you're editing `apps/saas-app/.env` (not the root `.env.template`),
+then restart `pnpm dev`. Vite only reads env files at startup.
 
-✅ Edit `apps/saas-app/.env` for SaaS app configuration
-✅ Use `apps/saas-app/.env.development.local` for local overrides
-✅ Keep `.env.development.local` in `.gitignore`
-✅ Document any required environment variables in `.env.example`
+**`VITE_APP_BASE_URL is not set` on startup.**
+Vite enforces this in `apps/saas-app/vite.config.ts`. Copy
+`apps/saas-app/.env.template` to `apps/saas-app/.env` and set a value.
 
-### DON'T:
-
-❌ Don't edit root `.env.template` for SaaS app
-❌ Don't commit `.env.development.local` files
-❌ Don't use absolute paths in .env (use relative paths for Vite proxy)
-❌ Don't store secrets in committed .env files
-
----
-
-## 📚 Related Documentation
-
-- **Quick Start:** `QUICK_START_NEW_USER.md`
-- **SaaS App:** `apps/saas-app/README.md`
-- **Ports:** `PORTS.md`
+**Backend connection fails.**
+- Check `VITE_APP_BASE_URL` in `apps/saas-app/.env`.
+- Confirm the proxy targets in `apps/saas-app/vite.config.ts` resolve.
+- Verify the backend is reachable:
+  `curl -I <VITE_APP_BASE_URL>/api`.
 
 ---
 
-## 🎉 Summary
+## Do / don't
 
-**For 99% of developers:**
+**Do:**
+- Edit `apps/saas-app/.env` for SaaS app config.
+- Use `apps/saas-app/.env.development.local` for local overrides.
+- Keep every local `.env*` file out of git (the repo's `.gitignore` handles
+  this — don't force-add).
 
-Just run `npm run dev` - no .env setup needed!
+**Don't:**
+- Don't put real secrets behind a `VITE_` prefix. Vite inlines them into the
+  client bundle. See the security notice at the top of
+  `apps/saas-app/.env.template`.
+- Don't use npm or yarn in this repo — the workspace uses pnpm. The only
+  exception is `tools/backend-mock-server`, which is outside the workspace
+  and ships its own `package-lock.json`.
 
-The app is already configured to work with the Cyoda backend via Vite proxy.
+---
 
-**Only edit .env files if you need to:**
-- Change API endpoints
-- Enable/disable feature flags
-- Develop packages in standalone mode
+## Related documentation
 
+- [README.md](./README.md) — monorepo overview and root scripts
+- [PORTS.md](./PORTS.md) — dev-server port assignments
+- [`apps/saas-app/README.md`](./apps/saas-app/README.md) — full SaaS app
+  setup walkthrough and variable reference

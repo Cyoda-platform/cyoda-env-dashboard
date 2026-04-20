@@ -1,7 +1,8 @@
 # Development server ports
 
 This file lists the dev-server ports used by the workspaces in this monorepo.
-Each port is set in the corresponding `vite.config.ts`.
+Each port is set either in the corresponding `vite.config.ts` or, where the
+package's `dev` script overrides it, in that script in `package.json`.
 
 ## Application
 
@@ -14,34 +15,34 @@ local development. The port is set explicitly in `apps/saas-app/vite.config.ts`.
 
 ## Packages (standalone development)
 
-Each package can be run on its own dev server. Use this when iterating on a
-single package without bringing up `apps/saas-app`.
+Each package with its own dev server can be run standalone. Use this when
+iterating on a single package without bringing up `apps/saas-app`.
 
 | Port   | Workspace                                | Start command                                              |
 |--------|------------------------------------------|------------------------------------------------------------|
-| `3001` | `packages/cobi-react`                    | `pnpm --filter @cyoda/cobi-react dev`                      |
-| `3002` | `packages/reporting-react`               | `pnpm --filter @cyoda/reporting-react dev`                 |
+| `3000` | `packages/reporting-react`               | `pnpm --filter @cyoda/reporting-react dev`                 |
+| `3001` | `packages/cobi-react` (legacy)           | `pnpm --filter @cyoda/cobi-react dev`                      |
 | `3008` | `packages/processing-manager-react`      | `pnpm --filter @cyoda/processing-manager-react dev`        |
 | `3010` | `packages/tasks-react`                   | `pnpm --filter @cyoda/tasks-react dev`                     |
-| `3011` | `packages/cyoda-sass-react`              | `pnpm --filter @cyoda/cyoda-sass-react dev`                |
+| `3011` | `packages/cyoda-sass-react` (legacy)     | `pnpm --filter @cyoda/cyoda-sass-react dev`                |
 | `3014` | `packages/statemachine-react`            | `pnpm --filter @cyoda/statemachine-react dev`              |
 | `5176` | `packages/source-configuration-react`    | `pnpm --filter @cyoda/source-configuration-react dev`      |
 
-`packages/ui-lib-react` and `packages/http-api-react` are libraries; they have
-no standalone dev server.
+`packages/ui-lib-react`, `packages/http-api-react`, and `packages/cli` are
+libraries with no standalone dev server.
 
-## Configuration files
+## Where each port is defined
 
-| Port   | File                                                          |
-|--------|---------------------------------------------------------------|
-| `5173` | `apps/saas-app/vite.config.ts`                                |
-| `3001` | `packages/cobi-react/vite.config.ts`                          |
-| `3002` | `packages/reporting-react/vite.config.ts`                     |
-| `3008` | `packages/processing-manager-react/vite.config.ts`            |
-| `3010` | `packages/tasks-react/vite.config.ts`                         |
-| `3011` | `packages/cyoda-sass-react/vite.config.ts`                    |
-| `3014` | `packages/statemachine-react/vite.config.ts`                  |
-| `5176` | `packages/source-configuration-react/vite.config.ts`          |
+| Port   | Source                                                                                  |
+|--------|-----------------------------------------------------------------------------------------|
+| `5173` | `apps/saas-app/vite.config.ts` (`server.port`)                                          |
+| `3000` | `packages/reporting-react/package.json` (`dev` script: `vite --port 3000`, overrides config) |
+| `3001` | `packages/cobi-react/vite.config.ts`                                                    |
+| `3008` | `packages/processing-manager-react/vite.config.ts`                                      |
+| `3010` | `packages/tasks-react/vite.config.ts`                                                   |
+| `3011` | `packages/cyoda-sass-react/vite.config.ts`                                              |
+| `3014` | `packages/statemachine-react/package.json` (`dev` script: `vite --port 3014`)           |
+| `5176` | `packages/source-configuration-react/vite.config.ts`                                    |
 
 ## Rules
 

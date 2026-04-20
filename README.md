@@ -15,12 +15,12 @@ cyoda-env-dashboard/
 │   └── saas-app/                  # Deployable application (Vite + React)
 ├── packages/
 │   ├── cli/                       # Internal CLI helpers
-│   ├── cobi-react/                # Data mapping (not bundled into saas-app)
-│   ├── cyoda-sass-react/          # Trino SQL schema management
+│   ├── cobi-react/                # Data mapping (legacy — not bundled into saas-app)
+│   ├── cyoda-sass-react/          # Trino SQL schema management (legacy)
 │   ├── http-api-react/            # HTTP client, hooks, EntityViewer
 │   ├── processing-manager-react/  # Processing node / transition UI
 │   ├── reporting-react/           # Reports & catalogue of aliases
-│   ├── source-configuration-react/# Source configuration (not bundled)
+│   ├── source-configuration-react/# Source configuration (standalone only)
 │   ├── statemachine-react/        # Workflows, instances, state machine
 │   ├── tasks-react/               # Task management
 │   └── ui-lib-react/              # Shared UI components, layout, theming
@@ -110,21 +110,25 @@ Vite will start on **http://localhost:5173** (the port configured in
 
 ### Other useful root scripts
 
-| Script                  | What it does                                                                  |
-|-------------------------|-------------------------------------------------------------------------------|
-| `pnpm dev`              | Start the SaaS app dev server                                                 |
-| `pnpm dev:all`          | Start every workspace that defines a `dev` script (parallel)                  |
-| `pnpm build`            | Build every workspace                                                         |
-| `pnpm build:saas`       | Build `apps/saas-app` and all its workspace dependencies in topological order |
-| `pnpm test`             | Run the Vitest unit-test suite (watch mode)                                   |
-| `pnpm test:run`         | Run Vitest once (CI mode)                                                     |
-| `pnpm test:coverage`    | Vitest with coverage                                                          |
-| `pnpm test:e2e`         | Run Playwright E2E suite (`e2e/`)                                             |
-| `pnpm test:e2e:ui`      | Playwright in interactive UI mode                                             |
-| `pnpm lint`             | Run lint in every workspace that defines it                                   |
-| `pnpm type-check`       | `tsc --noEmit` in every workspace that defines it                             |
-| `pnpm format`           | Prettier across `packages/**`                                                 |
-| `pnpm clean`            | Remove `node_modules` everywhere                                              |
+| Script                  | What it does                                                                                           |
+|-------------------------|--------------------------------------------------------------------------------------------------------|
+| `pnpm dev`              | Start the SaaS app dev server                                                                          |
+| `pnpm dev:saas`         | Explicit alias for `pnpm dev`                                                                          |
+| `pnpm dev:all`          | Start every workspace that defines a `dev` script (parallel)                                           |
+| `pnpm build`            | Build every workspace                                                                                  |
+| `pnpm build:saas`       | Build `apps/saas-app` and all its workspace dependencies in topological order                          |
+| `pnpm test`             | Run the Vitest unit-test suite (watch mode)                                                            |
+| `pnpm test:run`         | Run Vitest once (CI mode)                                                                              |
+| `pnpm test:ui`          | Vitest with interactive browser UI                                                                     |
+| `pnpm test:coverage`    | Vitest with coverage                                                                                   |
+| `pnpm test:e2e`         | Run Playwright E2E suite (`e2e/`)                                                                      |
+| `pnpm test:e2e:ui`      | Playwright in interactive UI mode                                                                      |
+| `pnpm test:e2e:headed`  | Playwright in headed mode (visible browser)                                                            |
+| `pnpm lint`             | Run `eslint .` across the repository                                                                   |
+| `pnpm lint:fix`         | Run `eslint . --fix` across the repository                                                             |
+| `pnpm type-check`       | `tsc --noEmit` in every workspace that defines it (excludes legacy `cobi-react` and `cyoda-sass-react`) |
+| `pnpm format`           | Prettier across `packages/**`                                                                          |
+| `pnpm clean`            | Run each workspace's `clean` script, then remove the root `node_modules`                               |
 
 ### Working on a single package
 
@@ -133,7 +137,7 @@ the assigned ports. Example:
 
 ```bash
 pnpm --filter @cyoda/statemachine-react dev   # port 3014
-pnpm --filter @cyoda/reporting-react dev      # port 3002
+pnpm --filter @cyoda/reporting-react dev      # port 3000
 ```
 
 Standalone mode reads its own `.env*` files from the package directory; it does
@@ -172,8 +176,17 @@ The app uses Auth0. You need a working tenant configured via the
 - **E2E tests** — Playwright, configured at the repository root
   (`playwright.config.ts`); specs live under `e2e/`. Run with `pnpm test:e2e`.
 
-E2E tests rely on `TEST_ENV_USER` / `TEST_ENV_SECRET` from
-`apps/saas-app/.env`.
+### E2E credentials
+
+The Playwright suite reads `TEST_ENV_USER` and `TEST_ENV_SECRET` from the
+environment. These are **test-user credentials and must never be committed**.
+Provide them one of two ways:
+
+- **Locally** — add them to your gitignored `apps/saas-app/.env`
+  (or export them in your shell before running `pnpm test:e2e`).
+- **CI** — inject them as secret environment variables in the CI job.
+
+Do not add these to any `.env.template` or other checked-in file.
 
 ## Documentation
 
