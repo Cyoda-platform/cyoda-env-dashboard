@@ -60,9 +60,9 @@ means identical behavior to the named column.
 | Reporting (Reports / Stream / Catalog) | implicit | shown (legacy `/platform-*`) | shown (legacy) | shown (legacy) | — | — |
 | Tasks | `TASKS` | shown (legacy) | shown (legacy) | shown (legacy) | — | — |
 | Workflows list | implicit | legacy table | **cloud** (`/model/{e}/{v}/workflow/export`) | legacy table | cloud | edge case |
-| Workflow editor (Create/Edit) | implicit | legacy granular pages (state/transition/criteria/process) | **cloud single-page editor** (sub-branch 4) | legacy granular pages | cloud | edge case |
-| Instances list | implicit | legacy (`/platform-api/statemachine/instances`) | cloud (sub-branch 5) | legacy | cloud (sub-branch 5) | edge case |
-| Instance detail | implicit | legacy | cloud (sub-branch 5) | legacy | cloud (sub-branch 5) | edge case |
+| Workflow editor (Create/Edit) | implicit | legacy granular pages (state/transition/criteria/process) | **cloud single-page editor** | legacy granular pages | cloud | edge case |
+| Instances list | implicit | legacy (`/platform-api/statemachine/instances`) | **cloud** (`InstancesCloud.tsx`) | legacy | cloud | edge case |
+| Instance detail | implicit | legacy | **cloud** (`InstanceDetailCloud.tsx`) | legacy | cloud | edge case |
 | Entity Model Viewer | implicit | legacy | cloud (`/model/export/SIMPLE_VIEW/{e}/{v}` + `/entity/{id}`) | legacy | cloud | edge case |
 | Processing Manager | implicit | shown (legacy `/platform-processing/*`) | shown (legacy) | shown (legacy) | — | — |
 | ChatBot | `CHATBOT` | shown if flag | shown if flag | shown if flag | shown if flag | shown if flag |
@@ -72,15 +72,15 @@ Notes:
 - "implicit" gating means the panel is always visible unless the mode itself
   hides it (Reporting / Tasks / Processing-Manager are hidden under Go because
   they require `/platform-*`).
-- **Workflows list / editor:** "cloud" branch lives in `Workflows.tsx`'s
-  early-return (`HelperFeatureFlags.isCloudWorkflowsActive(entityType)`).
-  The legacy code path runs in all other cases, including Cloud+Technical.
+- **Workflows list / editor / Instances list / Instance detail:** each page
+  is a thin router that branches on
+  `HelperFeatureFlags.isCloudBusinessActive(entityType)` and renders either
+  the cloud variant (`*Cloud.tsx` / `cloud-*` subfolders) or the legacy
+  component. The legacy code path runs in all other cases, including
+  Cloud+Technical.
 - **Entity Viewer:** the same `isCyodaCloud() && entityType === 'BUSINESS'`
   gating predates this matrix and lives inline at `PageEntityViewer.tsx:49`.
   Worth promoting to the helper layer in a future cleanup.
-- **Instances:** the cloud variant lands in sub-branch 5. Until then, the
-  Cloud+Business cell shows "cloud (sub-branch 5)" but currently degrades to
-  legacy (which works in Cloud mode because `/platform-*` is still reachable).
 
 ## Known gaps
 
@@ -94,13 +94,6 @@ legacy calls and fail.
 **Recommended UX**: hide or disable the entity-type toggle in Go mode entirely —
 the only meaningful option there is BUSINESS. Implementation tracked as a
 follow-up; not part of sub-branch 3.
-
-### Instances on Go: doesn't work at all yet
-
-Even in Go+Business, Instances currently uses the legacy
-`/platform-api/statemachine/instances` endpoint and will fail. Sub-branch 5
-ports it to `openapi-entity-search.yml`. Documented in the relevant
-sub-branch plans.
 
 ### Reporting / Tasks / Processing on Go
 
@@ -128,7 +121,7 @@ Located in `packages/http-api-react/src/utils/HelperFeatureFlags.ts`:
 
 - `isCyodaGo()` — raw `IS_CYODA_GO` flag.
 - `isCyodaCloud()` — `IS_CYODA_CLOUD` OR `isCyodaGo()`.
-- `isCloudWorkflowsActive(entityType)` — `isCyodaCloud() && entityType === 'BUSINESS'`.
+- `isCloudBusinessActive(entityType)` — `isCyodaCloud() && entityType === 'BUSINESS'`. (Gates the cloud vs. legacy branch in Workflows, Workflow Editor, Instances, and Instance Detail.)
 - `isReportingAvailable()` — `!isCyodaGo()`.
 - `isTasksAvailable()` — `!isCyodaGo() && isTasksEnabled()`.
 - `isProcessingManagerAvailable()` — `!isCyodaGo()`.
